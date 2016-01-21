@@ -53,7 +53,7 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 * * *
 
-###Markov Decision Processes.
+###Markov decision processes.
 * **Dynamic Probabilistic Systems, Volume II: Semi-Markov and Decision Processes. Vol. 2. Courier Corporation, 2013.** ([book](http://store.doverpublications.com/0486458725.html))
     * Need to find a pdf or a cheap used hard-cover.
 * **Markov Decision Processes: Discrete Stochastic Dynamic Programming**
@@ -67,3 +67,11 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
     * This paper seems particularly relevant given the connections between control and RL, but the other atomic norm stuff is pretty cool too.
 * **Practical Large-Scale Optimization for Max-Norm Regularization** ([pdf](http://www.eecs.berkeley.edu/~brecht/papers/maxnorm.NIPS10.pdf))
     * Similar to previous one, could be helpful when we are picking our regularization scheme, particular since we are thinking about topic models, which can be viewed as low-rank matrix factorization.
+
+* * *
+
+###Reinforcement learning.
+* **Bayesian Reinforcement Learning - A Survey** 
+    * This one's behind a pay wall, but you can get it through U-M's library subscription to Foundations and Trends.
+* **Optimal Sensor Scheduling via Classification Reduction of Policy Search (CROPS)** [pdf](http://web.eecs.umich.edu/~hero/Preprints/BlattHero_ICAPS06.pdf)
+* **From Weighted Classification to Policy Search** [pdf](http://papers.nips.cc/paper/2778-from-weighted-classification-to-policy-search.pdf)
