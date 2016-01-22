@@ -1,7 +1,7 @@
 #Tentative Reading List for Winter 2016 Research
 
 * This is organized vaguely thematically and also vaguely by author. May try to refine it later.
-* This list is going for high recall, possibly low precision. These are the papers I think I might need to read. As the project evolves, I will almost definitelyremove some of them from the list.
+* This list is going for high recall, possibly low precision. These are the papers I think I might need to read. As the project evolves, I will almost definitely remove some of them from the list.
 
 * * *
 
@@ -93,4 +93,5 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 ###Bayesian Models
 * **Model Selection Using Database Characteristics: Developing a Classification Tree for Longitudinal Incidence Data** ([pdf](http://pubsonline.informs.org/doi/pdf/10.1287/mksc.2013.0825))
+    * Home team!
 * **Bayesian Nonparametric Bandits** ([project euclid page](http://projecteuclid.org/euclid.aos/1176349753))
