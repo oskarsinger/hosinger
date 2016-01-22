@@ -47,12 +47,15 @@ Some of the following bodies of literature may be useful to us.
 ####Questions
 * @Eric: 
     * What did you mean by 'full control' for the pricing project?
+        * Unresolved.
     * Can you send me the data sets and some description and background whenever you get a chance?
+        * Unresolved.
     * Can you send me the info on Jake's reading group?
+        * Answer: I got the big email from Jake anyway.
 
 * @Al: 
     * Could the adaptive structure learning project start as an adaptive extension of Josh Meng's work? I'd be interested in taking that direction.
-
+        * Answer: There are multiple ways to make an adaptive extension of his work. Some of it is already adpative in some sense. Yes, we can do something like this.
 
 ###<a name='18jan'>18 January 2016</a>
 
@@ -60,7 +63,10 @@ Some of the following bodies of literature may be useful to us.
 * Made a separate file for a reading list.
 
 ####Our Ideas
+* Earlier we were thinking about having the regularization constants be functions of the population heterogeneity model. What if we also had an epoch schedule and made the epoch schedule a function of the population model?
 
 ####Engineering
 
 ####Questions
+@Eric:
+    * Unresolved questions from [last week](#11jan).

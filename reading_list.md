@@ -73,5 +73,5 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 ###Reinforcement learning.
 * **Bayesian Reinforcement Learning - A Survey** 
     * This one's behind a pay wall, but you can get it through U-M's library subscription to Foundations and Trends.
-* **Optimal Sensor Scheduling via Classification Reduction of Policy Search (CROPS)** [pdf](http://web.eecs.umich.edu/~hero/Preprints/BlattHero_ICAPS06.pdf)
-* **From Weighted Classification to Policy Search** [pdf](http://papers.nips.cc/paper/2778-from-weighted-classification-to-policy-search.pdf)
+* **Optimal Sensor Scheduling via Classification Reduction of Policy Search (CROPS)** ([pdf](http://web.eecs.umich.edu/~hero/Preprints/BlattHero_ICAPS06.pdf))
+* **From Weighted Classification to Policy Search** ([pdf](http://papers.nips.cc/paper/2778-from-weighted-classification-to-policy-search.pdf))
