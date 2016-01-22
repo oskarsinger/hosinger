@@ -68,5 +68,5 @@ Some of the following bodies of literature may be useful to us.
 ####Engineering
 
 ####Questions
-@Eric:
+* @Eric:
     * Unresolved questions from [last week](#11jan).
