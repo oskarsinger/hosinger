@@ -56,6 +56,8 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
     * This paper covers some pretty crucial aspects of optimizing deep neural networks, especially with respect to the difficulties encountered because of non-convexity.
 * **New insights and perspectives on the natural gradient method** ([arXiv](http://arxiv.org/abs/1412.1193))
     * This one comes from the deep learning community, and its quite recent. It has a nice theoretical interpretation (related to approximate Hessians and the conditioning of the problem), it is efficient, and hopefully it is empirically effective.
+* **NIPS 2015 Workshop on Non-convex Optimization for Machine Learning: Theory and Practice** ([website](https://sites.google.com/site/nips2015nonconvexoptimization/papers))
+    * A lot of these may be batch-style algorithms, but some of them are definitely online.
 
 * * *
 
@@ -83,3 +85,5 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
     * Home team!
 * **From Weighted Classification to Policy Search** ([pdf](http://papers.nips.cc/paper/2778-from-weighted-classification-to-policy-search.pdf))
     * Home team!
+* **On-the-Job Learning with Bayesian Decision Theory** ([pdf](http://cs.stanford.edu/~pliang/papers/onthejob-nips2015.pdf))
+    * This doesn't explicitly use the words 'reinforcement learning' (though they do mention policies and Monte Carlo Tree Search) or 'active learning' in the abstract, but it sounds like that's what it is. It seems like they have both nice theory and serious empirical results in the context of a real-time, deployed system, which is super cool.
