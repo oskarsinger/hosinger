@@ -8,8 +8,10 @@
 Split the learning into epochs and make the epoch length a function of the data (or the data's heterogeneity model).
 
 ####Motivation
+* Might address the issue of a non-stationary distribution.
 
 ####Approach
+* Maybe it could come from some operator norm evaluation on our low-rank matrix factorization?
 
 ###Adaptive Regularization
 Make the regularization constants a function of the data (or the data's heterogeneity model).
@@ -17,13 +19,17 @@ Make the regularization constants a function of the data (or the data's heteroge
 ####Motivation
 
 ####Approach
+* Maybe it could come from some operator norm evaluation on our low-rank matrix factorization?
 
 ###Heterogeneous Population Model
 Attempt to account for different subgroups of the population in a data-dependent manner.
 
 ####Motivation
+* Could result in interesting low-dimensional state representation.
 
-####Approach
+####Potential Approaches
+* Heirarchical Bayesian model
+* Low-rank matrix factorization
 
 * * *
 
