@@ -49,7 +49,7 @@ Some of the following bodies of literature may be useful to us.
     * What did you mean by 'full control' for the pricing project?
         * Unresolved.
     * Can you send me the data sets and some description and background whenever you get a chance?
-        * Unresolved.
+        * Answer: still waiting on permission from the company, but will send it once we have permission.
     * Can you send me the info on Jake's reading group?
         * Answer: I got the big email from Jake anyway.
 
@@ -63,12 +63,21 @@ Some of the following bodies of literature may be useful to us.
 * Made a separate file for a reading list.
 
 ####Our Ideas
+* Clarified that we are mostly interested in the sense of adaptivity in which the environment is actually changing. We have not yet determined if we will assume that the environment is changing independent of or dependent upon the agent's actions, although the latter scenario seems more likely.
+
 * Earlier we were thinking about having the regularization constants be functions of the population heterogeneity model. What if we also had an epoch schedule and made the epoch schedule a function of the population model?
 
-* Use low-rank matrix factorization or sparse coding for state representation?
+* Use low-rank matrix factorization (with maybe a spectral interpretation) or sparse coding for state representation? This seems a bit like low-hanging fruit. My guess is that somebody (or many people) has already done this.
 
 ####Engineering
+* I was pointed to the UCI ML Repository, which has a tone of free data sets, so we can mess around on those until we have the pricing data.
+
+* It could also be interesting to write up some code that simulates a random process with the characteristics that we are assuming (certain rate of drift, etc.). That is the kind of thing that might be useful to a lot of people.
+
+* I set up a git repo with all of our documents. It will also eventually hold code and documentation for the code.
+
+* Speaking of documentation, I should think about using some nice documentation library for Python or C++. Would be a good learning experience and good for reproducability.
 
 ####Questions
 * @Eric:
-    * Unresolved questions from [last week](#11jan).
+    * Unresolved question from [last week](#11jan).
