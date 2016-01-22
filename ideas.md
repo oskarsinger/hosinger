@@ -17,6 +17,7 @@ Split the learning into epochs and make the epoch length a function of the data 
 Make the regularization constants a function of the data (or the data's heterogeneity model).
 
 ####Motivation
+* This could result in regularization that adapts as the population's structure changes.
 
 ####Approach
 * Maybe it could come from some operator norm evaluation on our low-rank matrix factorization?
@@ -30,6 +31,18 @@ Attempt to account for different subgroups of the population in a data-dependent
 ####Potential Approaches
 * Heirarchical Bayesian model
 * Low-rank matrix factorization
+
+###Low-D State Representations
+Develop a method for compressing state representations.
+
+####Motivation
+We are almost definitely going to have high-D state, so we will need to compress it somehow. Deep learning has been successful at producing salient, concise state representations, but it has its own limitations. It would be nice if we could come up with something that was more efficient to learn or required less data, maybe with a small loss in accuracy.
+
+This idea seems like a more general version of the population heterogeneity model if I am understanding the latter correctly.
+
+####Approaches
+* Low-rank matrix factorization
+* Sparse coding
 
 * * *
 
@@ -52,6 +65,6 @@ Attempt to account for different subgroups of the population in a data-dependent
     * difficult data format like some sort of weird image
 
 ###Clinical Stuff
-* Keep in touch with Ambuj Tewari and keep looking at Susan Murphy's page, especially since Ambuj said they'd be teaching that RL-for-health course next year.
+* Keep in touch with Ambuj Tewari and keep looking at Susan Murphy's page, especially since Ambuj said that he and Susan would be teaching that RL-for-health course next year.
 
-* The Hulu/Netflix binge-watching data set that Eric mentioned is a really interesting example of addiction behavior. Feels a little sinister, though. Step carefully.
+* The Hulu/Netflix binge-watching data set that Eric mentioned is a really interesting example of addiction behavior. Feels a little sinister, though. Think carefully about what your project's objective is, who would be using your work, and what they are gaining from it. Think about how you would feel if you knew somebody else was using your data this way, even without your name stamped on it.

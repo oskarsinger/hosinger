@@ -65,6 +65,8 @@ Some of the following bodies of literature may be useful to us.
 ####Our Ideas
 * Earlier we were thinking about having the regularization constants be functions of the population heterogeneity model. What if we also had an epoch schedule and made the epoch schedule a function of the population model?
 
+* Use low-rank matrix factorization or sparse coding for state representation?
+
 ####Engineering
 
 ####Questions
