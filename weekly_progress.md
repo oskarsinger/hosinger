@@ -81,3 +81,4 @@ Some of the following bodies of literature may be useful to us.
 ####Questions
 * @Eric:
     * Unresolved question from [last week](#11jan).
+    * Will we be able to publish if we use the company's data?
