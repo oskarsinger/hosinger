@@ -95,3 +95,4 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 * **Model Selection Using Database Characteristics: Developing a Classification Tree for Longitudinal Incidence Data** ([pdf](http://pubsonline.informs.org/doi/pdf/10.1287/mksc.2013.0825))
     * Home team!
 * **Bayesian Nonparametric Bandits** ([project euclid page](http://projecteuclid.org/euclid.aos/1176349753))
+* **Risk and Regret of Heirarchical Bayesian Learners** ([pdf](http://arxiv.org/pdf/1505.04984.pdf))
