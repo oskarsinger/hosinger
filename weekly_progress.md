@@ -88,4 +88,4 @@ Some of the following bodies of literature may be useful to us.
 * @Both:
     * I am reading the Foundations and Trends Bayesian RL tutorial, and it says that the regret of a Bayesian multi-armed bandit grows with the number of rounds, which is counter-intuitive to me. Did I just misread what they were saying, or do I misunderstand MABs?
     * Could you all take a look at the reading list PDF I sent to you and help me narrow it down a bit? I'd be happy to resend the list if the email got lost in your inboxes.
-    * What perspective and approach are we taking on the population heterogeneity model?
+    * What perspective and approach are we taking on the population heterogeneity model? Matrix factorization? Bayesian topic model? Both?
