@@ -82,3 +82,6 @@ Some of the following bodies of literature may be useful to us.
 * @Eric:
     * Unresolved question from [last week](#11jan).
     * Will we be able to publish if we use the company's data?
+
+* @Both:
+    * I am reading the Foundations and Trends Bayesian RL tutorial, and it says that the regret of a Bayesian multi-armed bandit grows with the number of rounds, which is counter-intuitive to me. Did I just misread what they were saying, or do I misunderstand MABs?
