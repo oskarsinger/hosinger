@@ -60,21 +60,23 @@ Some of the following bodies of literature may be useful to us.
 ###<a name='18jan'>18 January 2016</a>
 
 ####Previous Work
-* Made a separate file for a reading list.
+* I made a separate file for a reading list and added a bunch of potential readings to it, including the ones you all mentioned in your responses to last week's report as well as some of my own browsings.
+
+* I read and took notes on a bunch of the Bayesian RL tutorial.
 
 ####Our Ideas
 * Clarified that we are mostly interested in the sense of adaptivity in which the environment is actually changing. We have not yet determined if we will assume that the environment is changing independent of or dependent upon the agent's actions, although the latter scenario seems more likely.
 
 * Earlier we were thinking about having the regularization constants be functions of the population heterogeneity model. What if we also had an epoch schedule and made the epoch schedule a function of the population model?
 
-* Use low-rank matrix factorization (with maybe a spectral interpretation) or sparse coding for state representation? This seems a bit like low-hanging fruit. My guess is that somebody (or many people) has already done this.
+* Use low-rank matrix factorization (with maybe a spectral interpretation) or sparse coding for state representation? This seems a bit like low-hanging fruit in terms of the idea itself. My guess is that somebody (or many people) has already done this.
 
 ####Engineering
 * I was pointed to the UCI ML Repository, which has a tone of free data sets, so we can mess around on those until we have the pricing data.
 
-* It could also be interesting to write up some code that simulates a random process with the characteristics that we are assuming (certain rate of drift, etc.). That is the kind of thing that might be useful to a lot of people.
+* It could also be interesting to write up some code that simulates a random process with the characteristics that we are assuming (certain rate of drift, etc.). That is the kind of thing that might be useful to a lot of people.We could release it to the public maybe.
 
-* I set up a git repo with all of our documents. It will also eventually hold code and documentation for the code.
+* I set up a git repo with all of our documents (reading list, paper reviews, weekly reports, eventually code and documentation). I moved the repo over to the lab's account.
 
 * Speaking of documentation, I should think about using some nice documentation library for Python or C++. Would be a good learning experience and good for reproducability.
 
@@ -85,3 +87,5 @@ Some of the following bodies of literature may be useful to us.
 
 * @Both:
     * I am reading the Foundations and Trends Bayesian RL tutorial, and it says that the regret of a Bayesian multi-armed bandit grows with the number of rounds, which is counter-intuitive to me. Did I just misread what they were saying, or do I misunderstand MABs?
+    * Could you all take a look at the reading list PDF I sent to you and help me narrow it down a bit? I'd be happy to resend the list if the email got lost in your inboxes.
+    * What perspective and approach are we taking on the population heterogeneity model?
