@@ -88,10 +88,12 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
     * Home team!
 * **On-the-Job Learning with Bayesian Decision Theory** ([pdf](http://cs.stanford.edu/~pliang/papers/onthejob-nips2015.pdf))
     * This doesn't explicitly use the words 'reinforcement learning' (though they do mention policies and Monte Carlo Tree Search) or 'active learning' in the abstract, but it sounds like that's what it is. It seems like they have both nice theory and serious empirical results in the context of a real-time, deployed system, which is super cool.
+* **Large-Scale Bandit Problems and KWIK Learning** ([pdf](http://web.eecs.umich.edu/~amkareem/pubs/AbernethyAminDraiefKearnsICML2013.pdf))
+    * This covers an interesting scenario of a large (and possibly infinite, although not continuous) action space with a growing number of 'available' actions. Also, its by Jake and Kareem!
 
 * * *
 
-###Bayesian Models
+###Bayesian models.
 * **Model Selection Using Database Characteristics: Developing a Classification Tree for Longitudinal Incidence Data** ([pdf](http://pubsonline.informs.org/doi/pdf/10.1287/mksc.2013.0825))
     * Home team!
 * **Bayesian Nonparametric Bandits** ([project euclid page](http://projecteuclid.org/euclid.aos/1176349753))
