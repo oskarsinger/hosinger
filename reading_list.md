@@ -78,6 +78,8 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
     * Similar to previous one, could be helpful when we are picking our regularization scheme, particular since we are thinking about topic models, which can be viewed as low-rank matrix factorization.
 * **Fighting Bandits with a New Kind of Smoothness** ([pdf](http://papers.nips.cc/paper/6030-fighting-bandits-with-a-new-kind-of-smoothness.pdf))
     * The focus of the paper is a new regularization scheme. Not really sure about its relevance to us, especially since it focuses on convex scenarios, but I am curious, and maybe we will get something out of it.
+* **Bethe Projections for Non-Local Inference** ([arXiv](http://arxiv.org/abs/1503.01397))
+    * This is a sort of prediction-time regularization-type-thing, but its a little more sophisticated. Going to read a bit more to understand whether its relevant for us. The first authors are friends/research mentors from my old lab!
 
 * * *
 

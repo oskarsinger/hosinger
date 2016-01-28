@@ -6,6 +6,7 @@ Each week is indexed by the date of Monday.
 
 * [11 January 2016](#11jan)
 * [18 January 2016](#18jan)
+* [25 January 2016](#25jan)
 
 ##Progress Reports
 
@@ -74,8 +75,7 @@ Some of the following bodies of literature may be useful to us.
 ####Engineering
 * I was pointed to the UCI ML Repository, which has a tone of free data sets, so we can mess around on those until we have the pricing data.
 
-* It could also be interesting to write up some code that simulates a random process with the characteristics that we are assuming (certain rate of drift, etc.). That is the kind of thing that might be useful to a lot of people.We could release it to the public maybe.
-
+* It could also be interesting to write up some code that simulates a random process with the characteristics that we are assuming (certain rate of drift, etc.). That is the kind of thing that might be useful to a lot of people.We could release it to the public maybe.  
 * I set up a git repo with all of our documents (reading list, paper reviews, weekly reports, eventually code and documentation). I moved the repo over to the lab's account.
 
 * Speaking of documentation, I should think about using some nice documentation library for Python or C++. Would be a good learning experience and good for reproducability.
@@ -89,3 +89,26 @@ Some of the following bodies of literature may be useful to us.
     * I am reading the Foundations and Trends Bayesian RL tutorial, and it says that the regret of a Bayesian multi-armed bandit grows with the number of rounds, which is counter-intuitive to me. Did I just misread what they were saying, or do I misunderstand MABs?
     * Could you all take a look at the reading list PDF I sent to you and help me narrow it down a bit? I'd be happy to resend the list if the email got lost in your inboxes.
     * What perspective and approach are we taking on the population heterogeneity model? Matrix factorization? Bayesian topic model? Both?
+
+###<a name='25jan'>25 January 2016</a>
+
+####Previous Work
+* Read more of the Bayesian RL tutorial and marked up some pages with questions and comments, some general RL questions, some related to our project specifically.
+
+* Started reading Elad Hazan's online convex optimization book. I am just in the convex optimization review chapter, but there's some stuff that wasn't covered in 611, so I need it. I am going back to the Boyd book for details when necessary.
+
+* There's an active learning paper from Sanjoy Dasgupta that uses a heirarchical clustering of the data seen up to the current time step to select data points for oracle query. It's not exactly what we want to do, but it has some nice theoretical results, and it is related to the population heterogeneity idea.
+
+* I am checking out a paper from my old lab about a cool augmentation to structured objective functions that is a bit like variational inference and posterior regularization. It could be a nice way to integrate the population heterogeneity model into our optimization scheme.
+
+####Our Ideas
+* I had a conversation with Al about target tracking, and he gave a concrete example of tracking a car along a road. I am not sure if he intended it has a metaphor for tracking a mobile (i.e. non-stationary) parameterization of our model, but that's the idea that popped into my head.
+
+* If we do choose a matrix-factorization-style population model, could we apply Laura and Dejiao's GROUSE work?
+
+####Engineering
+* Gathered a couple more websites that maintain collections of data sets. One is a website of US gov. data sets. Its called 'data.gov'. The other is Kaggle's new (I think free) data set collection.
+
+####Questions
+* @Both:
+    * Questions about the Bayesian RL monograph if Eric and I don't cover them in our meeting on Friday.
