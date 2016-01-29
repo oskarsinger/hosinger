@@ -106,8 +106,23 @@ Some of the following bodies of literature may be useful to us.
 
 * If we do choose a matrix-factorization-style population model, could we apply Laura and Dejiao's GROUSE work?
 
-####Engineering
+* Bandits with survival models. Ex: customer acquisition and churn. Delayed rewards. Elaborate later. Delay and reward are linked (deterministically?).
+
+####Data
+* No features about companies who are receiving the offers. This is not ideal. Maybe go with the Nielsen data set instead.
+
 * Gathered a couple more websites that maintain collections of data sets. One is a website of US gov. data sets. Its called 'data.gov'. The other is Kaggle's new (I think free) data set collection.
+
+####Engineering
+
+####Meeting with Eric
+* Good possibility of going with Nielsen. Eric is thinking of other data sets as well.
+
+* Will have a data set to work with soon.
+
+* Discussed the delayed reward/survival bandits idea.
+
+* Narrowed reading list to things that will be of immediate practical importance.
 
 ####Questions
 * @Both:
