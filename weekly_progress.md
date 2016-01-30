@@ -97,33 +97,46 @@ Some of the following bodies of literature may be useful to us.
 
 * Started reading Elad Hazan's online convex optimization book. I am just in the convex optimization review chapter, but there's some stuff that wasn't covered in 611, so I need it. I am going back to the Boyd book for details when necessary.
 
-* There's an active learning paper from Sanjoy Dasgupta that uses a heirarchical clustering of the data seen up to the current time step to select data points for oracle query. It's not exactly what we want to do, but it has some nice theoretical results, and it is related to the population heterogeneity idea.
+* There's an active learning paper from Sanjoy Dasgupta that uses a heirarchical clustering (e.g. heirarchical k-means, so not the same type of heirarchical as Bayesian heirarchical models) of the data seen up to the current time step to select data points for oracle query. It's not exactly what we want to do, but it has some nice theoretical results, and it is related to the idea of informing our choice of action with a model of heterogeneity in the population.
 
-* I am checking out a paper from my old lab about a cool augmentation to structured objective functions that is a bit like variational inference and posterior regularization. It could be a nice way to integrate the population heterogeneity model into our optimization scheme.
+* I am checking out a paper from my old lab about a cool augmentation to structured objective functions that is a bit like variational inference and posterior regularization.
+    * This paper directly informs learning of a model with a 'non-linear [and possibly non-convex] energy function'. The energy function can be parameterized by the data (e.g. the topic distributions from a topic model) and gives some score to the choice of parameters, so it is quite flexible.
+    * The meta-algorithm uses some special projection method to efficiently project the minimizing model parameterization into the feasible region. The projection method is tailored to a (supervised) graphical model scenario, which involves a specific type of feasible region for the parameters called a marginal polytope. That is not what we are working on, but the non-local energy function could be useful for us.
+
+* To clarify, I added the section on pairwise comparisons to the reading list because the population model may at some point involve something like a kernel matrix, which we will want to populate as efficiently as possible.
 
 ####Our Ideas
 * I had a conversation with Al about target tracking, and he gave a concrete example of tracking a car along a road. I am not sure if he intended it has a metaphor for tracking a mobile (i.e. non-stationary) parameterization of our model, but that's the idea that popped into my head.
 
-* If we do choose a matrix-factorization-style population model, could we apply Laura and Dejiao's GROUSE work?
+* It seems highly likely that we will be doing some sort of online matrix factorization. 
 
-* Bandits with survival models. Ex: customer acquisition and churn. Delayed rewards. Elaborate later. Delay and reward are linked (deterministically?).
+* Eric and I discussed the idea of bandits with delayed reward (i.e. with a survival model plugged in). 
+    * This scenario starts with the typical bandit scenario, but instead of being limited to a single, instantaneous reward, each action provides a (random or deterministic) reward for a random number of contiguous time steps after the action is played. An example here is customer acquisition and churn for a subscription-based service.
+    * The survival period and the cumulative reward from a single played action are linked here by a (deterministic?) function, which may simplify the scenario to some extent.
+    * This has immediate practical implications as well as an interesting and novel methodological and theoretical component. 
+    * Bandits are an easier problem computationally than reinforcement learning. It may be good to start with this problem and gradually add the additional computational challenges introduced by an RL scenario.
+    * This idea is similar to active learning, but with a very interesting sample/query probability function, which is the expected survival time/subscription length or equivalently the expected cumulative reward.
 
 ####Data
-* No features about companies who are receiving the offers. This is not ideal. Maybe go with the Nielsen data set instead.
+* The pricing data set gives no contextual features about companies who are receiving the offers. This is not ideal. Maybe go with the Nielsen data set instead.
 
-* Gathered a couple more websites that maintain collections of data sets. One is a website of US gov. data sets. Its called 'data.gov'. The other is Kaggle's new (I think free) data set collection.
+* Gathered a couple more websites that maintain collections of data sets.
+    * One is a website of US gov. data sets. Its called 'data.gov'. 
+    * The other is Kaggle's new (I think free) data set collection.
 
 ####Engineering
+* No updates this week.
 
 ####Meeting with Eric
-* Good possibility of going with Nielsen. Eric is thinking of other data sets as well.
+* There's a good possibility of going with Nielsen since we have it, and it has rich features for observations and actions. Eric is thinking of other data sets as well.
 
-* Will have a data set to work with soon.
+* Discussed the delayed reward/survival bandits idea. I like this idea a lot. More detail in the 'Our Ideas' section.
 
-* Discussed the delayed reward/survival bandits idea.
-
-* Narrowed reading list to things that will be of immediate practical importance.
+* Split reading list to things that will be of immediate practical importance, and things that will be important later, once we have some preliminary results.
 
 ####Questions
+* @Eric:
+    * Does the Nielsen data set have data for the delayed reward scenario?
+
 * @Both:
     * Questions about the Bayesian RL monograph if Eric and I don't cover them in our meeting on Friday.
