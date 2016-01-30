@@ -105,6 +105,10 @@ Some of the following bodies of literature may be useful to us.
 
 * To clarify, I added the section on pairwise comparisons to the reading list because the population model may at some point involve something like a kernel matrix, which we will want to populate as efficiently as possible.
 
+* Based on my coversation with Eric, I refined the reading list a lot.
+    * Each thematic section is now split into readings that will be practically relevant now, practically relevant later, or relevant for eventual theoretical analysis.
+    * There are now about 10 papers on the immediate high priority list, mainly related to bandits, reinforcement learning, and online optimization.
+
 ####Our Ideas
 * I had a conversation with Al about target tracking, and he gave a concrete example of tracking a car along a road. I am not sure if he intended it has a metaphor for tracking a mobile (i.e. non-stationary) parameterization of our model, but that's the idea that popped into my head.
 
