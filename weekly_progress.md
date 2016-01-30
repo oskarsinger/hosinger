@@ -108,6 +108,9 @@ Some of the following bodies of literature may be useful to us.
 * Based on my coversation with Eric, I refined the reading list a lot.
     * Each thematic section is now split into readings that will be practically relevant now, practically relevant later, or relevant for eventual theoretical analysis.
     * There are now about 10 papers on the immediate high priority list, mainly related to bandits, reinforcement learning, and online optimization.
+    * Most of the papers in the 'practical later' sections fall into two categories:
+        * Methods for the population heterogeneity model, most related to matrix optimization problems
+        * Methods for using the population model to inform the learning of the pricing or customer selection model
 
 ####Our Ideas
 * I had a conversation with Al about target tracking, and he gave a concrete example of tracking a car along a road. I am not sure if he intended it has a metaphor for tracking a mobile (i.e. non-stationary) parameterization of our model, but that's the idea that popped into my head.
