@@ -121,7 +121,7 @@ Some of the following bodies of literature may be useful to us.
     * This scenario starts with the typical bandit scenario, but instead of being limited to a single, instantaneous reward, each action provides a (random or deterministic) reward for a random number of contiguous time steps after the action is played. An example here is customer acquisition and churn for a subscription-based service.
     * The survival period and the cumulative reward from a single played action are linked here by a (deterministic?) function, which may simplify the scenario to some extent.
     * This has immediate practical implications as well as an interesting and novel methodological and theoretical component. 
-    * Bandits are an easier problem computationally than reinforcement learning. It may be good to start with this problem and gradually add the additional computational challenges introduced by an RL scenario.
+    * As I understand it, bandits are an easier problem computationally than reinforcement learning. It may be good to start with this problem and gradually add the additional computational challenges introduced by an RL scenario.
     * This idea is similar to active learning, but with a very interesting sample/query probability function, which is the expected survival time/subscription length or equivalently the expected cumulative reward.
 
 ####Data
@@ -131,15 +131,10 @@ Some of the following bodies of literature may be useful to us.
     * One is a website of US gov. data sets. Its called 'data.gov'. 
     * The other is Kaggle's new (I think free) data set collection.
 
-####Engineering
-* No updates this week.
-
-####Meeting with Eric
 * There's a good possibility of going with Nielsen since we have it, and it has rich features for observations and actions. Eric is thinking of other data sets as well.
 
-* Discussed the delayed reward/survival bandits idea. I like this idea a lot. More detail in the 'Our Ideas' section.
-
-* Split reading list to things that will be of immediate practical importance, and things that will be important later, once we have some preliminary results.
+####Engineering
+* No updates this week.
 
 ####Questions
 * @Eric:
