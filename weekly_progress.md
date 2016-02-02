@@ -7,6 +7,7 @@ Each week is indexed by the date of Monday.
 * [11 January 2016](#11jan)
 * [18 January 2016](#18jan)
 * [25 January 2016](#25jan)
+* [1 February 2016](#1feb)
 
 ##Progress Reports
 
@@ -142,3 +143,19 @@ Some of the following bodies of literature may be useful to us.
 
 * @Both:
     * Questions about the Bayesian RL monograph if Eric and I don't cover them in our meeting on Friday.
+
+###<a name='1feb'>1 February 2016</a>
+
+####Previous Work
+
+####Our Ideas
+* Could we make the posterior dependent on our topic model by adding appropriate edges in a graphical model? This might provide an opportunity for interesting structure learning.
+
+####Data
+* We still have no data set.
+
+####Engineering
+
+####Questions
+* @Eric:
+    * Unresolved question from [last week](#25jan)
