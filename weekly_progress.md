@@ -147,15 +147,24 @@ Some of the following bodies of literature may be useful to us.
 ###<a name='1feb'>1 February 2016</a>
 
 ####Previous Work
+* Should eventually read about submodularity if we work with MDPs or semi-MDPs.
+
+* Look at the non-Gaussian CCA paper with the Radon-Nikodym derivative. This could be a start for our PH model. If we want to extend to an online scenario, should investigate the Dean Foster online CCA paper. Maybe we could extend it to work in the non-Gaussian augmentation.
 
 ####Our Ideas
-* Could we make the posterior dependent on our topic model by adding appropriate edges in a graphical model? This might provide an opportunity for interesting structure learning.
+* Could we make the posterior in a Thompson sampling scenario dependent on our topic model by adding appropriate edges in a graphical model? This might provide an opportunity for interesting structure learning.
+
+* Extend the non-Gaussian CCA to an online scenario. This could be a very interesting problem on its own.
+
+* If we start looking at MDPs or semi-MDPs, should think about showing the submodularity of the Bellman equation updates. If we can show a submodular property to the dynamic programming problem, we can put nice error bounds on it.
+
+* There are definitely multiple opportunities to apply the delayed rewards algorithms on this data set. Maybe to predict whether a preventative treatment will be effective.
 
 ####Data
-* We still have no data set.
+* Going to think about applying PH models to Yaya's virus data set.
 
 ####Engineering
 
 ####Questions
-* @Eric:
-    * Unresolved question from [last week](#25jan)
+* @Al:
+    * You mentioned that there are only 20-30 people in Yaya's data set. Is that going to cause problems for a heterogeneous population model?
