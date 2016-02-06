@@ -1,7 +1,11 @@
-class AbstractLearner:
+from abc import ABCMeta, abstractmethod
 
+class AbstractLearner(metaclass=ABCMeta):
+
+    @abstractmethod
     def get_action(self):
-        raise NotImplementedError( 'Implementation of this method is required.')
+        pass
 
+    @abstractmethod
     def update_reward(self, value):
-        raise NotImplementedError( 'Implementation of this method is required.')
+        pass
