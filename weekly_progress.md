@@ -149,7 +149,7 @@ Some of the following bodies of literature may be useful to us.
 ####Previous Work
 * Should eventually read about submodularity if we work with MDPs or semi-MDPs.
 
-* Look at the non-Gaussian CCA paper with the Radon-Nikodym derivative. This could be a start for our PH model. If we want to extend to an online scenario, should investigate the Dean Foster online CCA paper. Maybe we could extend it to work in the non-Gaussian augmentation.
+* Look at the non-Gaussian CCA paper with the Radon-Nikodym derivative. This could be a start for our PH model. If we want to extend to an online scenario, should investigate the Dean Foster online CCA paper.
 
 ####Our Ideas
 * Could we make the posterior in a Thompson sampling scenario dependent on our topic model by adding appropriate edges in a graphical model? This might provide an opportunity for interesting structure learning.
@@ -160,10 +160,22 @@ Some of the following bodies of literature may be useful to us.
 
 * There are definitely multiple opportunities to apply the delayed rewards algorithms on this data set. Maybe to predict whether a preventative treatment will be effective.
 
+* Met with Kareem and discussed the fact that the Joulani paper's formulation (and all previous work on delayed rewards for that matter) does not really fit our problem. He has an idea of how to address this by parameterizing the length of the delay with a geometric distribution.
+
+* Maybe we could use the Dean Foster CCA paper to extend the non-Gaussian CCA to a stochastic/online setting.
+
 ####Data
 * Going to think about applying PH models to Yaya's virus data set.
 
 ####Engineering
+* Started implementing code for bandits with delayed reward experiments. Right now, I have a first draft of the BOLD meta-algorithm written up in Python. 
+
+* My next steps are to 
+    1. implement UCB and Thompson sampling (probably with beta-Bernoulli) and plug them into BOLD for testing
+    2. repeat with the other meta-algorithm mentioned in the Joulani paper
+    3. implement Kareem's idea and start toying around with my own solutions until I find something that works.
+
+* For Yaya's project, I'd like to have prototypes of the non-Gaussian and online CCA running on data from UCI ML repo before we get the project data.
 
 ####Questions
 * @Al:

@@ -126,11 +126,25 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 * * *
 
+###CCA.
+
+####Practical now.
+
+* **Finding Linear Structure in Large Datasets with Scalable Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1506.08170))
+    * Offers efficient approximate algorithms for both batch and online CCA, both with nice theoretical guarantees.
+    * Give experiments showing similar performance to un-approximated CCA on the same datasets.
+
+* **On Measure Transformed Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1111.6308))
+    * Extends CCA to non-linear relationships between variables with an easily-implementable modification to the join distribution.
+    * Home team!
+
 ###Bayesian models.
 
 ####Practical now.
 * **Model Selection Using Database Characteristics: Developing a Classification Tree for Longitudinal Incidence Data** ([pdf](http://pubsonline.informs.org/doi/pdf/10.1287/mksc.2013.0825))
     * Home team!
+
+* **Customer-Base Valuation in a Contractual Setting: The Perils of Ignoring Heterogeneity** ([pdf](http://www.brucehardie.com/papers/022/fader_hardie_mksc_10.pdf))
 
 ####Theoretical.
 * **Risk and Regret of Heirarchical Bayesian Learners** ([pdf](http://arxiv.org/pdf/1505.04984.pdf))
