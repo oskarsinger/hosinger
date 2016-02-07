@@ -171,7 +171,7 @@ Some of the following bodies of literature may be useful to us.
 
 * If we start looking at MDPs or semi-MDPs, should think about showing the submodularity of the Bellman equation updates. If we can show a submodular property to the dynamic programming problem, we can put nice error bounds on it.
 
-* There are definitely multiple opportunities to apply the delayed rewards algorithms on this data set. I can think of a couple examples of actions with delayed but incremental feedback:
+* There are definitely multiple opportunities to apply the delayed rewards algorithms on Yaya's data set. I can think of a couple examples of actions with delayed but incremental feedback:
     * The spread of the virus is a delayed effect of the action of innoculation.
     * The extent of success of a treatment could be a delayed reward of the treatment.
 
