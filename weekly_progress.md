@@ -178,7 +178,9 @@ Some of the following bodies of literature may be useful to us.
 * Met with Kareem and discussed the Joulani paper. He thinks that we can get better regret bounds by imposing the additional structure of our problem onto the scenario they propose. A naive attempt doesn't get us anywhere, but he thinks a good direction is to put a geometric distribution on subscription length.
 
 ####Data
-* For now, I will probably just use simulated data sets or data sets from UCI ML repo. It should be pretty easy to
+* For now, I will probably just use simulated data sets or data sets from UCI ML repo. 
+    * It should be pretty easy to find a data set for testing CCA.
+    * It may be trickier to find something to test the delayed rewards algorithms, but I can just simulate data for now. 
 
 * Still waiting on data from Eric. He still hasn't really said what kind of data we'd use for the delayed rewards problem, although I think there'd be opportunities for it in Yaya's data set.
 
