@@ -149,23 +149,38 @@ Some of the following bodies of literature may be useful to us.
 ####Previous Work
 * Should eventually read about submodularity if we work with MDPs or semi-MDPs.
 
-* Look at the non-Gaussian CCA paper with the Radon-Nikodym derivative. This could be a start for our PH model. If we want to extend to an online scenario, should investigate the Dean Foster online CCA paper.
+* I added the measure-transformed CCA paper to my reading list. This could be a great starting point for the heterogenenous population model. It has interesting theoretical properties, and, according to the paper, its not much more complicated to implement that regular linear CCA. I need to figure out what it uses for the SVD routine under the hood. Hopefully its TroppSVD.
+
+* If we want to extend to an online scenario, should investigate Dean Foster's students' online CCA paper, although I don't yet know enough about Yaya's project to know if that's necessary. I started reading the paper a bit more in depth since I have the background from Golub and Zha now. Its much easier to follow.
+
+* I read a bunch of Golub and Zha's 1992 paper on CCA. I didn't get to the actual computation section, but we probably don't want to use their method anyway since its from 1992. I was mostly interested in the problem formulation section since the paper I am reading now relies on Gloub and Zha's problem formulation without giving much detail. It offered multiple perspectives, which was quite helpful, although I still have a few questions on some proof details.
+
+* I read about half of the Joulani paper on delayed rewards and discussed it with Kareem. Its pretty clear from the paper that we'll need to significantly modify our approach to address the core of the 'subscription-based service' problem. 
+    * In the paper, they assume that no information/reward is received until the delaye feedback comes back all at once. Since we expect something like month payments, this does not fit our model.
+    * They see delay as completely undesirable. We see delay as desirable, but we would prefer if a group with shorter expected subscription length tends to cut their subscription earlier so that we stop recruiting them and start recruiting the other group as soon as possible.
+
+* This is a bit out of left field, but I was reading about sum-of-squares optimization last night.
+    * It is related to convex algebraic geometry and semi-definite programming. Basically, the idea is to find the coefficient matrix of a convex quadratic of polynomial equations, as in the x in the equation x^TAx is actually a polynomial whose square somehow models our problem, and we want to find optimal A.
+    * It has become popular in the robotics and control communities lately. I have a friend at U-M in the MechE department whose adviser wants to use it to put a highly non-convex 'safety' distribution over possible routes from one location to another on a physical map. 
+    * It is super cool and seems like a powerful tool just in terms of offering more expressive models. I am wondering if it is relevant to us given our eventual goal of reinforcement learning, which as strong ties to control and robotics. This is probably something we'd look at much later, but I'd like to throw it out there now.
 
 ####Our Ideas
 * Could we make the posterior in a Thompson sampling scenario dependent on our topic model by adding appropriate edges in a graphical model? This might provide an opportunity for interesting structure learning.
 
-* Extend the non-Gaussian CCA to an online scenario. This could be a very interesting problem on its own.
+* Extend the measure-transformed CCA to an online scenario. This could be a very interesting problem on its own. Maybe we could use the Dean Foster paper.
 
 * If we start looking at MDPs or semi-MDPs, should think about showing the submodularity of the Bellman equation updates. If we can show a submodular property to the dynamic programming problem, we can put nice error bounds on it.
 
-* There are definitely multiple opportunities to apply the delayed rewards algorithms on this data set. Maybe to predict whether a preventative treatment will be effective.
+* There are definitely multiple opportunities to apply the delayed rewards algorithms on this data set. I can think of a couple examples of actions with delayed but incremental feedback:
+    * The spread of the virus is a delayed effect of the action of innoculation.
+    * The extent of success of a treatment could be a delayed reward of the treatment.
 
-* Met with Kareem and discussed the fact that the Joulani paper's formulation (and all previous work on delayed rewards for that matter) does not really fit our problem. He has an idea of how to address this by parameterizing the length of the delay with a geometric distribution.
-
-* Maybe we could use the Dean Foster CCA paper to extend the non-Gaussian CCA to a stochastic/online setting.
+* Met with Kareem and discussed the Joulani paper. He thinks that we can get better regret bounds by imposing the additional structure of our problem onto the scenario they propose. A naive attempt doesn't get us anywhere, but he thinks a good direction is to put a geometric distribution on subscription length.
 
 ####Data
-* Going to think about applying PH models to Yaya's virus data set.
+* For now, I will probably just use simulated data sets or data sets from UCI ML repo. It should be pretty easy to
+
+* Still waiting on data from Eric. He still hasn't really said what kind of data we'd use for the delayed rewards problem, although I think there'd be opportunities for it in Yaya's data set.
 
 ####Engineering
 * Started implementing code for bandits with delayed reward experiments. Right now, I have a first draft of the BOLD meta-algorithm written up in Python. 
@@ -175,8 +190,10 @@ Some of the following bodies of literature may be useful to us.
     2. repeat with the other meta-algorithm mentioned in the Joulani paper
     3. implement Kareem's idea and start toying around with my own solutions until I find something that works.
 
-* For Yaya's project, I'd like to have prototypes of the non-Gaussian and online CCA running on data from UCI ML repo before we get the project data.
+* For Yaya's project, I'd like to have prototypes of the measure-transformed and online CCA before we get the project data. I think I can start implementation pretty soon as I am starting to understand CCA much better.
 
 ####Questions
 * @Al:
     * You mentioned that there are only 20-30 people in Yaya's data set. Is that going to cause problems for a heterogeneous population model?
+    * Or is our 'population' for which the CCA is intended more abstract than the literal population of human subjects?
+    * Do we know anything about the structure of Yaya's data matrix? There seems to be some good literature on how to modify CCA computations to take advantage of matrix structure.
