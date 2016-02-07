@@ -8,6 +8,7 @@ Each week is indexed by the date of Monday.
 * [18 January 2016](#18jan)
 * [25 January 2016](#25jan)
 * [1 February 2016](#1feb)
+* [8 February 2016](#8feb)
 
 ##Progress Reports
 
@@ -199,3 +200,15 @@ Some of the following bodies of literature may be useful to us.
     * You mentioned that there are only 20-30 people in Yaya's data set. Is that going to cause problems for a heterogeneous population model?
     * Or is our 'population' for which the CCA is intended more abstract than the literal population of human subjects?
     * Do we know anything about the structure of Yaya's data matrix? There seems to be some good literature on how to modify CCA computations to take advantage of matrix structure.
+
+###<a name='8feb'>8 February 2016</a>
+
+####Previous Work
+
+####Our Ideas
+
+####Data
+
+####Engineering
+
+####Questions
