@@ -204,8 +204,10 @@ Some of the following bodies of literature may be useful to us.
 ###<a name='8feb'>8 February 2016</a>
 
 ####Previous Work
+* Looking for excuses to read more Sivaraman Balakrishnan papers.
 
 ####Our Ideas
+* Can we develop an online CCA algorithm that uses a black-box offline CCA routine? Sometimes I think the idea of an effective oracle-based algorithm is too optimistic, but it might be worth a try.
 
 ####Data
 
