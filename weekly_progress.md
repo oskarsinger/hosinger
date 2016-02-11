@@ -207,7 +207,7 @@ Some of the following bodies of literature may be useful to us.
 * Looking for excuses to read more Sivaraman Balakrishnan papers.
 
 ####Our Ideas
-* Can we develop an online CCA algorithm that uses a black-box offline CCA routine? Sometimes I think the idea of an effective oracle-based algorithm is too optimistic, but it might be worth a try.
+* The paper _Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis_ has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They further investigation here. Maybe this could be us?
 
 ####Data
 
