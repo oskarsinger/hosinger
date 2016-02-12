@@ -9,3 +9,7 @@ class AbstractLearner(metaclass=ABCMeta):
     @abstractmethod
     def update_reward(self, value):
         pass
+
+    @abstractmethod
+    def get_status(self):
+        pass
