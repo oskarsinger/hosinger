@@ -204,19 +204,22 @@ Some of the following bodies of literature may be useful to us.
 ###<a name='8feb'>8 February 2016</a>
 
 ####Previous Work
-* Sivaraman Balakrishnan has a paper _Sparse Additive Functional and Kernel CCA_ that I am looking at since we are thinking of using functional CCA for Yaya's project.
+* Sivaraman Balakrishnan has a paper [Sparse Additive Functional and Kernel CCA](http://www.stat.cmu.edu/~siva/Papers/CCA12.pdf) that I am looking at since we are thinking of using functional CCA for Yaya's project.
 
-* Almost done going through the online CCA paper.
+* Almost done going through the online CCA paper. It mentions a couple pieces of previous work about using CCA to find correlations between genotype and phenotype, which I believe is part of what we want to do, so I am going to check those out as well.
 
 ####Our Ideas
-* The paper _Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis_ has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They further investigation here. Maybe this could be us?
+* The paper [Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis](http://arxiv.org/pdf/1506.08170.pdf) has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They further investigation here. Maybe this could be us?
 
 ####Data
+* Downloaded the AlgoSnap/Crowdsignals data and looked at the documentation a bit. I am going to try running it through my CCA code once that is ready.
 
 ####Engineering
 * I am developing a nice, modular Python framework for running our delayed feedback bandit experiments. It is very bare-bones right now, but I think it will get more sophisticated as we start testing more algorithms and running on more data sets.
 
 * I have first draft implementation of the exp3 and ucb1 algorithms within the framework I've set up. My next step is to make a data simulator to test the implementations first on their own, and then in the BOLD meta-algorithm.
+
+* I just did some very rough coding for the first CCA algorithm I'd like to try. I'll probably need to change a lot before its ready. I expect to have to explicitly use some sparse linear algebra routines, change the calls to numpy SVD to a randomized, approximate version from [this paper](http://arxiv.org/abs/0909.4061), and maybe even implement some stuff in C++ or C with Eigen. However, its a start!
 
 * I am looking into using Doxygen or Sphinx to make documentation for the code I am writing.
 
