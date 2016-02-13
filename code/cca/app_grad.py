@@ -29,17 +29,22 @@ def get_batch_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2):
         (unn_Phi_t1, Phi_t1) = _get_updated_bases(X, Y, unn_Phi_t, Psi_t, Sx, k, eta1)
         (unn_Psi_t1, Psi_t1) = _get_updated_bases(Y, X, unn_Psi_t, Phi_t, Sy, k, eta2)
 
-        # Calculate deviation from previous time step using Frobenius norm
-        Phi_diff = norm(unn_Phi_t - unn_Phi_t1)
-        Psi_diff = norm(unn_Psi_t - unn_Psi_t1)
-
         # Check if error is below tolerance threshold
-        converged = Phi_diff < epsilon1 and Psi_diff < epsilon2
+        converged = _is_converged(unn_Phi_t, unn_Phi_t1) and \
+            _is_converged(unn_Psi_t, unn_Psi_t1)
 
         # Update state
         (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (unn_Phi_t1, Phi_t1, unn_Psi_t1, Psi_t1)
 
     return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)
+
+def _is_converged(unnormed, unnormed_next, epsilon):
+
+    # Calculate distance between current and previous timesteps' bases under 
+    # Frobenius norm
+    distance = norm(unnormed - unnormed_next)
+
+    return distance < epsilon
 
 def _get_updated_bases(X1, X2, unnormed1, normed2, S1, k, eta1):
 
