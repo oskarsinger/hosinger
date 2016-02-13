@@ -22,7 +22,7 @@ def get_svd_r(A, k=None, q=2, p=None):
         raise ValueError(
             'The sum k+p must be less than the smallest dimension of A.')
 
-    Q = get_orthonormal_basis(Omega, k+p, q)
+    Q = get_orthonormal_basis_r(Omega, k+p, q)
 
     B = np.dot(Q.T, A)
     U, s, V = svd(B)
