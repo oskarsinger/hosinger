@@ -17,7 +17,7 @@ def get_batch_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2):
     Sy = np.dot(Y.T, Y) / n
 
     # Randomly initialize normalized and unnormalized canonical bases for 
-    # timesteps t and t+1
+    # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
     (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = _init_bases(p, p1, p2)
     (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
 
@@ -25,13 +25,13 @@ def get_batch_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2):
 
     while not converged:
 
-        # Get updated 
+        # Get basis updates for both X and Y's canonical bases, normed and unnormed
         (unn_Phi_t1, Phi_t1) = _get_updated_bases(X, Y, unn_Phi_t, Psi_t, Sx, k, eta1)
         (unn_Psi_t1, Psi_t1) = _get_updated_bases(Y, X, unn_Psi_t, Phi_t, Sy, k, eta2)
 
         # Check if error is below tolerance threshold
-        converged = _is_converged(unn_Phi_t, unn_Phi_t1) and \
-            _is_converged(unn_Psi_t, unn_Psi_t1)
+        converged = _is_converged(unn_Phi_t, unn_Phi_t1, epsilon1) and \
+            _is_converged(unn_Psi_t, unn_Psi_t1, epsilon2)
 
         # Update state
         (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (unn_Phi_t1, Phi_t1, unn_Psi_t1, Psi_t1)
@@ -66,6 +66,7 @@ def _get_updated_bases(X1, X2, unnormed1, normed2, S1, k, eta1):
 
 def _init_bases(p, p1, p2):
     
+    # Initialize Gaussian matrices for bases
     Phi = np.randn(p1, p)
     unn_Phi = np.randn(p1, p)
     Psi = np.randn(p2, p)

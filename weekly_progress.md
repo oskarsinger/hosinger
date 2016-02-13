@@ -219,8 +219,16 @@ Some of the following bodies of literature may be useful to us.
 
 * I have first draft implementation of the exp3 and ucb1 algorithms within the framework I've set up. My next step is to make a data simulator to test the implementations first on their own, and then in the BOLD meta-algorithm.
 
-* I just did some very rough coding for the first CCA algorithm I'd like to try. I'll probably need to change a lot before its ready. I expect to have to explicitly use some sparse linear algebra routines, change the calls to numpy SVD to a randomized, approximate version from [this paper](http://arxiv.org/abs/0909.4061), and maybe even implement some stuff in C++ or C with Eigen. However, its a start!
+* CCA:
+    * I have a Python implementation of the batch algorithm from the CCA paper mentioned in the 'Our Ideas' section. The code looks pretty good, but I need to actually run it on some simulated data to see how it compares with something like Scikit-Learn's CCA implementation. I also still need to add some of the things they mention in the experiments section, like some perturbation/regularization for stability.
+    * I implemented some randomized subroutines from [this paper](http://arxiv.org/abs/0909.4061), one for finding an orthonormal basis, and the other for finding an SVD. This should help with scaling up pretty much any of our ideas for CCA. Right now, I am just using Numpy's QR and SVD implementations for subroutines underneath the randomized part.
+    * Depending on the scale of our data or the slowness of Python, I may need to reimplement some of this stuff in C or C++. There are good SVD implementations that I can use, but I'll have to change the wrappers that handle randomization and such.
+    * I've implemented some short utility functions for tedious pieces of code snippets that I expect to use many times.
+    * All of the code is organized into thematic modules, which is nice for code reuse and possible release to the public.
 
-* I am looking into using Doxygen or Sphinx to make documentation for the code I am writing.
+* For the most practical considerations, I am looking into
+    * Doxygen or Sphinx to make documentation for the code I am writing
+    * nosetests for my testing framework
+    * bokeh for charts and graphs
 
 ####Questions
