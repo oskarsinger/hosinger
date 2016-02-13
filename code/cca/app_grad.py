@@ -1,4 +1,4 @@
-from np.linalg import norm
+from numpy.random import randn
 
 def get_batch_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2):
 
@@ -42,7 +42,7 @@ def _is_converged(unnormed, unnormed_next, epsilon):
 
     # Calculate distance between current and previous timesteps' bases under 
     # Frobenius norm
-    distance = norm(unnormed - unnormed_next)
+    distance = np.linalg.norm(unnormed - unnormed_next)
 
     return distance < epsilon
 
@@ -67,9 +67,9 @@ def _get_updated_bases(X1, X2, unnormed1, normed2, S1, k, eta1):
 def _init_bases(p, p1, p2):
     
     # Initialize Gaussian matrices for bases
-    Phi = np.randn(p1, p)
-    unn_Phi = np.randn(p1, p)
-    Psi = np.randn(p2, p)
-    unn_Psi = np.randn(p2, p)
+    Phi = randn(p1, p)
+    unn_Phi = randn(p1, p)
+    Psi = randn(p2, p)
+    unn_Psi = randn(p2, p)
 
     return (Phi, unn_Phi, Psi, unn_Psi)

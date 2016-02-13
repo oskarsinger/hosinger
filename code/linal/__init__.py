@@ -1,5 +1,6 @@
 # External imports
 import numpy as np
+import math
 
 # Out-of-module internal mports
 

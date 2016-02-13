@@ -14,7 +14,7 @@ def get_svd_r(A, k=None, q=2, p=None):
             'The value of k cannot exceed the smallest dimension of A.')
 
     if p is None:
-        p = math.log(k)
+        p = np.log(k)
 
         if k+p > max_rank:
             p = max_rank - k
@@ -22,13 +22,13 @@ def get_svd_r(A, k=None, q=2, p=None):
         raise ValueError(
             'The sum k+p must be less than the smallest dimension of A.')
 
-    Q = get_orthonormal_basis_r(Omega, k+p, q)
+    Q = get_orthonormal_basis_r(A, k+p, q)
 
     B = np.dot(Q.T, A)
     U, s, V = svd(B)
     U = np.dot(Q, U)
 
-    return (U, s, V)
+    return (U, np.diag(s), V)
 
 def get_orthonormal_basis_r(A, l, q=2):
 
@@ -39,7 +39,7 @@ def get_orthonormal_basis_r(A, l, q=2):
         raise ValueError(
             'The value l cannot exceed the smallest dimension of A.')
 
-    Omega = np.randn(n, l)
+    Omega = np.random.randn(n, l)
     Y = np.dot(A, Omega)
     (Q, R) = qr(Y)
 
