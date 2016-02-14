@@ -209,7 +209,13 @@ Some of the following bodies of literature may be useful to us.
 * Almost done going through the online CCA paper. It mentions a couple pieces of previous work about using CCA to find correlations between genotype and phenotype, which I believe is part of what we want to do, so I am going to check those out as well.
 
 ####Our Ideas
-* The paper [Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis](http://arxiv.org/pdf/1506.08170.pdf) has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They further investigation here. Maybe this could be us?
+* The paper [Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis](http://arxiv.org/pdf/1506.08170.pdf) (henceforth referred to as FLSLDSCCA) has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They further investigation here. Maybe this could be us?
+
+* In general, it seems like online CCA is mostly an open problem. FLSLDSCCA's online stochastic algorithm has significantly lower performance than their batch algorithm. Also, I think they mention that it can be extended to kernel CCA easily, but it requires the whole kernel matrix, which seems to counteract some of the performance benefits they get from their gradient-based algorithm. They don't offer experiments with a kernelized version.
+
+* We could try to show that its easier to implement a non-linear online CCA via the measure transformation than a kernelization.
+
+* There's a cool paper from Jake's postdoc and some other interesting learning theory people on adaptively adding polynomial features to a regression problem. They just show results for linear regression. Maybe we could extend that to CCA, although this is basically a partial kernelization, which is what we are trying to show is not efficient.
 
 ####Data
 * Downloaded the AlgoSnap/Crowdsignals data and looked at the documentation a bit. I am going to try running it through my CCA code once that is ready.
@@ -230,5 +236,8 @@ Some of the following bodies of literature may be useful to us.
     * Doxygen or Sphinx to make documentation for the code I am writing
     * nosetests for my testing framework
     * bokeh for charts and graphs
+    * Eigen for C++ linear algebra, and Cython for hooking into Python
 
 ####Questions
+* @Al:
+    * I have a much better understanding of CCA in general, but I am a little unclear on the semantics of the data matrices for our specific application. What corresponds to each row and each column of each of the data matrices?
