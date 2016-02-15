@@ -206,16 +206,18 @@ Some of the following bodies of literature may be useful to us.
 ####Previous Work
 * Sivaraman Balakrishnan has a paper [Sparse Additive Functional and Kernel CCA](http://www.stat.cmu.edu/~siva/Papers/CCA12.pdf) that I am looking at since we are thinking of using functional CCA for Yaya's project.
 
-* Almost done going through the online CCA paper. It mentions a couple pieces of previous work about using CCA to find correlations between genotype and phenotype, which I believe is part of what we want to do, so I am going to check those out as well.
+* I have finished going through the online CCA paper. It mentions a couple pieces of previous work about using CCA to find correlations between genotype and phenotype, which I believe is part of what we want to do, so I am going to check those out as well.
+
+* I have started working through the measure-transformed CCA paper. It is much less over my head than I expected, although it may take me a while to get through the whole thing.
+
+* There's a cool paper from Jake's postdoc and some other interesting learning theory people on adaptively adding polynomial features to a regression problem. They just show results for linear regression. Maybe we could extend that to CCA, although this is basically a partial kernelization, which is what we are trying to avoid.
 
 ####Our Ideas
-* The paper [Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis](http://arxiv.org/pdf/1506.08170.pdf) (henceforth referred to as FLSLDSCCA) has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They further investigation here. Maybe this could be us?
+* The paper [Finding Linear Structure in Large Datasets with Scalabe Canonical Correlation Analysis](http://arxiv.org/pdf/1506.08170.pdf) (henceforth referred to as FLSLDSCCA) has an interesting topic in the future work section. They claim that their algorithm enables easy thresholding where normal CCA would not. They also claim that this thresholding performs well empirically. They encourage further investigation here. Maybe this could be us?
 
-* In general, it seems like online CCA is mostly an open problem. FLSLDSCCA's online stochastic algorithm has significantly lower performance than their batch algorithm. Also, I think they mention that it can be extended to kernel CCA easily, but it requires the whole kernel matrix, which seems to counteract some of the performance benefits they get from their gradient-based algorithm. They don't offer experiments with a kernelized version.
+* Online CCA is basically an open problem. FLSLDSCCA's online stochastic algorithm has significantly lower performance than their batch algorithm. Also, I think they mention that the batch version can be extended to kernel CCA easily, but it requires the whole kernel matrix, which may counteract the performance benefits they get from their gradient-based algorithm. They don't offer experiments with a kernelized version.
 
 * We could try to show that its easier to implement a non-linear online CCA via the measure transformation than a kernelization.
-
-* There's a cool paper from Jake's postdoc and some other interesting learning theory people on adaptively adding polynomial features to a regression problem. They just show results for linear regression. Maybe we could extend that to CCA, although this is basically a partial kernelization, which is what we are trying to show is not efficient.
 
 ####Data
 * Downloaded the AlgoSnap/Crowdsignals data and looked at the documentation a bit. I am going to try running it through my CCA code once that is ready.
@@ -227,17 +229,20 @@ Some of the following bodies of literature may be useful to us.
 
 * CCA:
     * I have a Python implementation of the batch algorithm from the CCA paper mentioned in the 'Our Ideas' section. The code looks pretty good, but I need to actually run it on some simulated data to see how it compares with something like Scikit-Learn's CCA implementation. I also still need to add some of the things they mention in the experiments section, like some perturbation/regularization for stability.
-    * I implemented some randomized subroutines from [this paper](http://arxiv.org/abs/0909.4061), one for finding an orthonormal basis, and the other for finding an SVD. This should help with scaling up pretty much any of our ideas for CCA. Right now, I am just using Numpy's QR and SVD implementations for subroutines underneath the randomized part.
+    * I implemented some randomized subroutines from [this paper](http://arxiv.org/abs/0909.4061), one for finding an orthonormal basis, and the other for finding an SVD. This should help with scaling up pretty much any of our ideas for CCA. Right now, I am just using Numpy's QR and SVD implementations for subroutines underneath the randomized meta-algorithms.
     * Depending on the scale of our data or the slowness of Python, I may need to reimplement some of this stuff in C or C++. There are good SVD implementations that I can use, but I'll have to change the wrappers that handle randomization and such.
-    * I've implemented some short utility functions for tedious pieces of code snippets that I expect to use many times.
-    * All of the code is organized into thematic modules, which is nice for code reuse and possible release to the public.
+    * I've implemented some short utility functions for tedious code snippets that I expect to use many times.
+    * All of the code is organized into thematic modules, which is nice for code reuse and eventual release to the public.
 
 * For the most practical considerations, I am looking into
     * Doxygen or Sphinx to make documentation for the code I am writing
     * nosetests for my testing framework
+        * This will work for Python. I am not yet sure what I'll use for C++ code.
     * bokeh for charts and graphs
+        * I used bokeh a bit last semester, and I saw some people use it over the summer. Its much prettier and more versatile than matplotlib and at least as easy to use.
     * Eigen for C++ linear algebra, and Cython for hooking into Python
+        * I have browsed some tutorials and documentaiton for these two, and it looks like its fairly common to combine them (this is not surprising), so its probably a good direction to take if we want to scale.
 
 ####Questions
 * @Al:
-    * I have a much better understanding of CCA in general, but I am a little unclear on the semantics of the data matrices for our specific application. What corresponds to each row and each column of each of the data matrices?
+    * I have a much better understanding of CCA in general, but I am a little unclear on the semantics of the data matrices for our specific application. What corresponds to each row and each column of each of the data matrices? What are the two sets of variables we are working with?

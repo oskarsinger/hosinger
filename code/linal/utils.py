@@ -34,7 +34,7 @@ def get_square_rank_k(m, k):
         raise ValueError(
             'The value of k must not exceed the matrix dimension.')
 
-    A = np.zeros(m,n)
+    A = np.zeros(m,m)
 
     for i in range(m):
         v = np.random.randn(m,1)
