@@ -222,6 +222,10 @@ Some of the following bodies of literature may be useful to us.
 ####Data
 * Downloaded the AlgoSnap/Crowdsignals data and looked at the documentation a bit. I am going to try running it through my CCA code once that is ready.
 
+* Wrote some code to produce random low-rank matrices.
+
+* Going to write some code to simulate delayed reward data.
+
 ####Engineering
 * I am developing a nice, modular Python framework for running our delayed feedback bandit experiments. It is very bare-bones right now, but I think it will get more sophisticated as we start testing more algorithms and running on more data sets.
 
