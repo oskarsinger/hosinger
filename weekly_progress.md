@@ -9,6 +9,7 @@ Each week is indexed by the date of Monday.
 * [25 January 2016](#25jan)
 * [1 February 2016](#1feb)
 * [8 February 2016](#8feb)
+* [15 February 2016](#15feb)
 
 ##Progress Reports
 
@@ -255,3 +256,9 @@ Some of the following bodies of literature may be useful to us.
 ####Questions
 * @Al:
     * I have a much better understanding of CCA in general, but I am a little unclear on the semantics of the data matrices for our specific application. What corresponds to each row and each column of each of the data matrices? What are the two sets of variables we are working with?
+
+
+###<a name='15feb'>15 February 2016</a>
+
+####Previous Work
+* I just found a series of papers on deep estimators for CCA, including a paper on SGD-based optimization of a CCA objective. Should keep an eye on this so we don't repeat other work. Plus their stochastic optimization method may be useful.
