@@ -1,4 +1,5 @@
 from numpy.random import choice
+from learner import AbstractLearner
 
 import math
 
@@ -13,6 +14,7 @@ class Exp3(AbstractLearner):
         self._actions = list(range(num_actions))
         self._is_waiting = False
         self._history = []
+        self._num_rounds = 0
 
     def get_status(self):
 
@@ -50,7 +52,7 @@ class Exp3(AbstractLearner):
 
         action = self._history[-1][0]
         self._history[-1] = (action, value, self._weights[action])
-        estimated_reward = value / self._weights[choice]
+        estimated_reward = value / self._weights[action]
         self._weights[action] = self._weights[action] * math.exp(
             estimated_reward * self._gamma / len(self._actions))
 
@@ -58,7 +60,7 @@ class Exp3(AbstractLearner):
 
         weight_sum = sum(self._weights)
         update = lambda w: (1.0 - self._gamma) * (w / weight_sum) + \
-                           self._gamma / len(weights)
+                           self._gamma / len(self._weights)
 
         self._weights = [update(w)
-                         for w in weights]
+                         for w in self._weights]

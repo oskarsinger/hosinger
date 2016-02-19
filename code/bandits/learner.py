@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
-class AbstractLearner(metaclass=ABCMeta):
+class AbstractLearner:
+    __metaclass__=ABCMeta
 
     @abstractmethod
     def get_action(self):

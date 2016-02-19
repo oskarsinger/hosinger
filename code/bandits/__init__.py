@@ -1,5 +1,8 @@
-__all__ = ['Bold', 'Exp3']
+__all__ = [
+    'bold',
+    'exp3',
+    'ucb1',
+    'thompson'
+]
 
-from bold import Bold
-from learner import AbstractLearner
-from exp3 import Exp3
+import bold, exp3, ucb1, thompson, learner

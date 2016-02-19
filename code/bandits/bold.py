@@ -1,19 +1,14 @@
 class Bold():
 
-    def __init__(self, get_learner):
+    def __init__(self, get_learner, num_actions):
 
         self._get_learner = get_learner
+        self._num_actions = num_actions
 
         self._no_feedback = {}
         self._learners = [(self._get_learner(), True)]
 
     def process(self, item, rewards):
-
-        """
-        The order in which _get_action and _update_subroutines are called
-        is important because they both modify the same state-maintaining class 
-        variables.
-        """
 
         action = self._get_action(item)
 
@@ -31,7 +26,7 @@ class Bold():
         if len(av_subs) > 0:
             i, sub = av_subs[0] #maybe switch this to randomly select
         else:
-            sub = self._get_learner()
+            sub = self._get_learner(self._num_actions)
             i = len(self._learners)
 
             self._learners.append((sub, True))

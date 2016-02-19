@@ -1,3 +1,8 @@
+from learner import AbstractLearner
+from itertools import izip
+
+import math
+
 class UCB1(AbstractLearner):
 
     def __init__(self, num_actions):
@@ -54,8 +59,8 @@ class UCB1(AbstractLearner):
         self._history[-1] = (action, value, ucb)
         self._reward_sums[action] = self._reward_sums[action] + value
 
-    def _get_ucb(reward_sum, num_plays):
+    def _get_ucb(self, reward_sum, num_plays):
 
-        upper_bound = math.sqrt(2 * math.log(self._num_rounds + 1) num_plays)
+        upper_bound = math.sqrt(2 * math.log(self._num_rounds + 1) / num_plays)
 
         return reward_sum / num_plays + upper_bound

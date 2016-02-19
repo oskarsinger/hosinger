@@ -28,16 +28,17 @@ def get_svd_invert(A, k=None, random=True):
 
     return multi_dot([U, np.power(s, -0.5), V])
 
-def get_square_rank_k(m, k):
+def get_rank_k(m, n, k):
 
     if k > m:
         raise ValueError(
             'The value of k must not exceed the matrix dimension.')
 
-    A = np.zeros(m,m)
+    A = np.zeros(m,n)
 
     for i in range(m):
-        v = np.random.randn(m,1)
-        A = A + np.dot(v, v.T)
+        u = np.random.randn(m,1)
+        v = np.random.randn(1,n)
+        A = A + np.dot(u, v)
 
     return A
