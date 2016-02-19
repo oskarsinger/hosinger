@@ -262,3 +262,9 @@ Some of the following bodies of literature may be useful to us.
 
 ####Previous Work
 * I just found a series of papers on deep estimators for CCA, including a paper on SGD-based optimization of a CCA objective. Should keep an eye on this so we don't repeat other work. Plus their stochastic optimization method may be useful.
+
+####Engineering
+* CCA
+    * Reimplemented some of the randomized linear algebra in C++ with considerable performance improvements.
+* Bandits
+    * Beta-Bernoulli bandits, UCB1, and Exp3 are now all working correctly.

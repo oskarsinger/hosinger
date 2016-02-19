@@ -1,48 +1,61 @@
-class Bold():
+from learner import AbstractLearner
+
+class Bold(AbstractLearner):
 
     def __init__(self, get_learner, num_actions):
 
         self._get_learner = get_learner
         self._num_actions = num_actions
 
-        self._no_feedback = {}
         self._learners = [(self._get_learner(), True)]
+        self._history = []
+        self._num_rounds = 0
 
-    def process(self, item, rewards):
+    def get_status(self):
 
-        action = self._get_action(item)
+        return {
+            'learners': self._learners,
+            'history': self._history
+        }
 
-        self._update_learners(rewards)
+    def get_action(self):
+
+        action = self._get_action(self._num_rounds)
+
+        self._num_rounds = self._num_rounds + 1
 
         return action
 
     def _get_action(self, item):
 
-        av_subs = [(i, learner)
-                   for i, (learner, available) in enumerate(self._learners)
-                   if available]
-        sub = None
+        availables = [(i, learner)
+                      for i, (learner, available) in enumerate(self._learners)
+                      if available]
+        chosen_learner = None
+        learner_id = None
 
-        if len(av_subs) > 0:
-            i, sub = av_subs[0] #maybe switch this to randomly select
+        if len(availables) > 0:
+            learner_id, chosen_learner = availables[0]
         else:
-            sub = self._get_learner(self._num_actions)
-            i = len(self._learners)
+            chosen_learner = self._get_learner(self._num_actions)
+            learner_id = len(self._learners)
 
-            self._learners.append((sub, True))
+            self._learners.append((chosen_learner, True))
 
-        action = sub.get_action()
-        self._learners[i] = (sub, False)
+        action = chosen_learner.get_action()
+        self._learners[learner_id] = (chosen_learner, False)
 
-        self._no_feedback[item['id']] = (item, i)
+        self.history.append((action, learner_id, None))
 
         return action
 
-    def _update_learners(rewards):
+    def update_reward(self, rewards):
 
         for reward in rewards:
-            i = self._no_feedback[reward['id']][1]
-            learner = self._learners[i]
+            (action, learner_id, blank) = self._history[reward['id']]
+            learner = self._learners[learner_id]
 
             learner.update_reward(reward['value'])
-            self._learners[i] = (learner, True)
+
+            self.history[reward['id']] = (action, learner_id, reward['value'])
+            self._learners[learner_id] = (learner, True)
