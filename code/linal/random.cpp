@@ -115,6 +115,7 @@ std::vector<MatrixXd> get_random_svd(MatrixXd A, const int k, const int q)
     return UsV;
 }
 
+/*
 int main(){
     MatrixXd m = get_rank_k_matrix(500,500,20);
 
@@ -145,3 +146,4 @@ int main(){
 
     std::cout << cum_error << std::endl;
 }
+*/
