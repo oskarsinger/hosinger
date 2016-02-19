@@ -1,13 +1,13 @@
 from learner import AbstractLearner
 
-class Bold(AbstractLearner):
+class BOLD(AbstractLearner):
 
     def __init__(self, get_learner, num_actions):
 
         self._get_learner = get_learner
         self._num_actions = num_actions
 
-        self._learners = [(self._get_learner(), True)]
+        self._learners = [(self._get_learner(num_actions), True)]
         self._history = []
         self._num_rounds = 0
 
@@ -45,7 +45,7 @@ class Bold(AbstractLearner):
         action = chosen_learner.get_action()
         self._learners[learner_id] = (chosen_learner, False)
 
-        self.history.append((action, learner_id, None))
+        self._history.append((action, learner_id, None))
 
         return action
 
@@ -53,9 +53,9 @@ class Bold(AbstractLearner):
 
         for reward in rewards:
             (action, learner_id, blank) = self._history[reward['id']]
-            learner = self._learners[learner_id]
+            learner = self._learners[learner_id][0]
 
             learner.update_reward(reward['value'])
 
-            self.history[reward['id']] = (action, learner_id, reward['value'])
+            self._history[reward['id']] = (action, learner_id, reward['value'])
             self._learners[learner_id] = (learner, True)
