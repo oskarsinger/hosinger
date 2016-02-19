@@ -1,4 +1,5 @@
 from bandits import *
+from numpy import random
 
 def get_UCB1_factory():
 
