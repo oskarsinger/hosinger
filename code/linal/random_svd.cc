@@ -14,21 +14,21 @@
 namespace linal {
 namespace random {
 
-std::vector<MatrixXd> RandomSVD::get_random_svd(MatrixXd A)
+std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A)
 {
     int m = A.rows();
     int n = A.cols();
     int max_rank = std::min(m, n);
 
-    return get_random_svd(A, max_rank);
+    return GetRandomSvd(A, max_rank);
 }
 
-std::vector<MatrixXd> RandomSVD::get_random_svd(MatrixXd A, const int k)
+std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A, const int k)
 {
-    return get_random_svd(A, k, 1);
+    return GetRandomSvd(A, k, 1);
 }
 
-std::vector<MatrixXd> RandomSVD::get_random_svd(MatrixXd A, const int k, const int q)
+std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A, const int k, const int q)
 {
     int n = A.rows();
     int m = A.cols();
@@ -40,7 +40,7 @@ std::vector<MatrixXd> RandomSVD::get_random_svd(MatrixXd A, const int k, const i
     }
 
     RandomOrthonormalBasis rob();
-    MatrixXd Q = rob::get_orthonormal_basis(A, k, q);
+    MatrixXd Q = rob::GetRankKBasis(A, k, q);
 
     time_t before, after;
 

@@ -11,8 +11,8 @@ class RandomMatrixFactory
 {
  public:
   RandomMatrixFactory();
-  Eigen::MatrixXd get_rank_k_matrix(const int m, const int n, const int k);
-  Eigen::MatrixXd get_normal_matrix(const int m, const int n);
+  Eigen::MatrixXd GetRankKMatrix(const int m, const int n, const int k);
+  Eigen::MatrixXd GetNormalMatrix(const int m, const int n);
 }
 
 } // namespace random

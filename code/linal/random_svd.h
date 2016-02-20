@@ -7,14 +7,14 @@
 namespace linal {
 namespace random {
 
-class RandomSVD
+class RandomSvd
 {
 
  public:
-  RandomSVD();
-  std::vector<MatrixXd> get_random_svd(MatrixXd A);
-  std::vector<MatrixXd> get_random_svd(MatrixXd A, const int k);
-  std::vector<MatrixXd> get_random_svd(MatrixXd A, const int k, const int q);
+  RandomSvd();
+  std::vector<MatrixXd> GetRandomSvd(MatrixXd A);
+  std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k);
+  std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k, const int q);
 }
 
 } // namespace random

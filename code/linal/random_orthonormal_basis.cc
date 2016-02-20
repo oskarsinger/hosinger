@@ -14,27 +14,27 @@
 namespace linal {
 namespace random {
 
-Eigen::MatrixXd RandomOrthonormalBasis::get_epsilon_basis(Eigen::MatrixXd A, const double epsilon)
+Eigen::MatrixXd RandomOrthonormalBasis::GetEpsilonBasis(Eigen::MatrixXd A, const double epsilon)
 {
     std::cout << "WARNING: this method is not implemented and will return a zero matrix." << std::endl;
     return Eigen::MatrixXd::Zero(A.rows(), A.cols());
 }
 
-Eigen::MatrixXd RandomOrthonormalBasis::get_full_rank_basis(Eigen::MatrixXd A)
+Eigen::MatrixXd RandomOrthonormalBasis::GetFullRankBasis(Eigen::MatrixXd A)
 {
     int m = A.rows();
     int n = A.cols();
     int max_rank = std::min(m,n);
 
-    return get_rank_k_basis(A, max_rank);
+    return GetRankKBasis(A, max_rank);
 }
 
-Eigen::MatrixXd RandomOrthonormalBasis::get_rank_k_basis(Eigen::MatrixXd A, const int k)
+Eigen::MatrixXd RandomOrthonormalBasis::GetRankKBasis(Eigen::MatrixXd A, const int k)
 {
-    return get_rank_k_basis(A, k, 1);
+    return GetRankKBasis(A, k, 1);
 }
 
-Eigen::MatrixXd RandomOrthonormalBasis::get_rank_k_basis(Eigen::MatrixXd A, const int k, const int q)
+Eigen::MatrixXd RandomOrthonormalBasis::GetRankKBasis(Eigen::MatrixXd A, const int k, const int q)
 {
     int m = A.rows(); 
     int n = A.cols();
@@ -49,7 +49,7 @@ Eigen::MatrixXd RandomOrthonormalBasis::get_rank_k_basis(Eigen::MatrixXd A, cons
 
     time(&before);
     RandomMatrixFactory fac();
-    Eigen::MatrixXd Y = A * fac::get_normal_matrix(n, k);
+    Eigen::MatrixXd Y = A * fac::GetNormalMatrix(n, k);
     time(&after);
     std::cout << "Acquired random matrix" << difftime(after, before) << std::endl;
 

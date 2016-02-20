@@ -8,7 +8,7 @@
 namespace linal {
 namespace random {
 
-MatrixXd RandomMatrixFactory::get_rank_k_matrix(const int m, const int n, const int k)
+Eigen::MatrixXd RandomMatrixFactory::GetRankKMatrix(const int m, const int n, const int k)
 {
     int max_rank = std::min(m,n);
 
@@ -27,7 +27,7 @@ MatrixXd RandomMatrixFactory::get_rank_k_matrix(const int m, const int n, const 
     return A;
 }
 
-MatrixXd RandomMatrixFactory::get_normal_matrix(const int m, const int n)
+Eigen::MatrixXd RandomMatrixFactory::GetNormalMatrix(const int m, const int n)
 {
     //Random number generation stuff
     std::random_device rd;
