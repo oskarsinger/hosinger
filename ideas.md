@@ -23,7 +23,9 @@ Make the regularization constants a function of the data (or the data's heteroge
 * Maybe it could come from some operator norm evaluation on our low-rank matrix factorization?
 
 ###Heterogeneous Population Model
-Attempt to account for different subgroups of the population in a data-dependent manner.
+* Attempt to account for different subgroups of the population in a data-dependent manner.
+
+* Directly throw a matrix norm into our main objective function as a regularizer/non-local energy function. Which matrix norm? What do we want to encourage with the norm?
 
 ####Motivation
 * Could result in interesting low-dimensional state representation.
