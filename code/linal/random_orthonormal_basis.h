@@ -15,7 +15,7 @@ class RandomOrthonormalBasis
   Eigen::MatrixXd GetFullRankBasis(Eigen::MatrixXd A);
   Eigen::MatrixXd GetRankKBasis(Eigen::MatrixXd A, const int k);
   Eigen::MatrixXd GetRankKBasis(Eigen::MatrixXd A, const int k, const int q);
-}
+};
 
 } // namespace random
 } // namespace linal

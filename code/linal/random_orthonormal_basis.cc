@@ -1,5 +1,5 @@
 // Class header
-#include "random_rank_k_basis.h"
+#include "random_orthonormal_basis.h"
 
 // Imports from C++
 #include <iostream>
@@ -14,13 +14,15 @@
 namespace linal {
 namespace random {
 
-Eigen::MatrixXd RandomOrthonormalBasis::GetEpsilonBasis(Eigen::MatrixXd A, const double epsilon)
+using namespace Eigen;
+
+MatrixXd RandomOrthonormalBasis::GetEpsilonBasis(MatrixXd A, const double epsilon)
 {
     std::cout << "WARNING: this method is not implemented and will return a zero matrix." << std::endl;
-    return Eigen::MatrixXd::Zero(A.rows(), A.cols());
+    return MatrixXd::Zero(A.rows(), A.cols());
 }
 
-Eigen::MatrixXd RandomOrthonormalBasis::GetFullRankBasis(Eigen::MatrixXd A)
+MatrixXd RandomOrthonormalBasis::GetFullRankBasis(MatrixXd A)
 {
     int m = A.rows();
     int n = A.cols();
@@ -29,12 +31,12 @@ Eigen::MatrixXd RandomOrthonormalBasis::GetFullRankBasis(Eigen::MatrixXd A)
     return GetRankKBasis(A, max_rank);
 }
 
-Eigen::MatrixXd RandomOrthonormalBasis::GetRankKBasis(Eigen::MatrixXd A, const int k)
+MatrixXd RandomOrthonormalBasis::GetRankKBasis(MatrixXd A, const int k)
 {
     return GetRankKBasis(A, k, 1);
 }
 
-Eigen::MatrixXd RandomOrthonormalBasis::GetRankKBasis(Eigen::MatrixXd A, const int k, const int q)
+MatrixXd RandomOrthonormalBasis::GetRankKBasis(MatrixXd A, const int k, const int q)
 {
     int m = A.rows(); 
     int n = A.cols();
@@ -48,13 +50,13 @@ Eigen::MatrixXd RandomOrthonormalBasis::GetRankKBasis(Eigen::MatrixXd A, const i
     time_t before, after;
 
     time(&before);
-    RandomMatrixFactory fac();
-    Eigen::MatrixXd Y = A * fac::GetNormalMatrix(n, k);
+    RandomMatrixFactory rmf;
+    MatrixXd Y = A * rmf.GetNormalMatrix(n, k);
     time(&after);
     std::cout << "Acquired random matrix" << difftime(after, before) << std::endl;
 
     time(&before);
-    Eigen::MatrixXd Q = Eigen::HouseholderQR<Eigen::MatrixXd>(Y).householderQ();
+    MatrixXd Q = Eigen::HouseholderQR<MatrixXd>(Y).householderQ();
     time(&after);
     std::cout << "Got first QR" << difftime(after, before) << std::endl;
 
@@ -62,9 +64,9 @@ Eigen::MatrixXd RandomOrthonormalBasis::GetRankKBasis(Eigen::MatrixXd A, const i
     for (int i = 0; i < q; i++)
     {
         Y = A.transpose() * Q;
-        Q = Eigen::HouseholderQR<Eigen::MatrixXd>(Y).householderQ();
+        Q = Eigen::HouseholderQR<MatrixXd>(Y).householderQ();
         Y = A * Q;
-        Q = Eigen::HouseholderQR<Eigen::MatrixXd>(Y).householderQ();
+        Q = Eigen::HouseholderQR<MatrixXd>(Y).householderQ();
     }
     time(&after);
     std::cout << "Completed power iteration" << difftime(after, before) << std::endl;

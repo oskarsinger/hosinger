@@ -14,6 +14,8 @@
 namespace linal {
 namespace random {
 
+using namespace Eigen;
+
 std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A)
 {
     int m = A.rows();
@@ -39,8 +41,8 @@ std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A, const int k, const int
         std::cout << "WARNING: The value of k must not exceed the number of columns or rows of A." << std::endl;
     }
 
-    RandomOrthonormalBasis rob();
-    MatrixXd Q = rob::GetRankKBasis(A, k, q);
+    RandomOrthonormalBasis rob;
+    MatrixXd Q = rob.GetRankKBasis(A, k, q);
 
     time_t before, after;
 

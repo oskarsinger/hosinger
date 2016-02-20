@@ -7,6 +7,8 @@
 namespace linal {
 namespace random {
 
+using namespace Eigen;
+
 class RandomSvd
 {
 
@@ -15,7 +17,7 @@ class RandomSvd
   std::vector<MatrixXd> GetRandomSvd(MatrixXd A);
   std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k);
   std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k, const int q);
-}
+};
 
 } // namespace random
 } // namespace linal
