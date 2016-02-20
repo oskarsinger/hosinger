@@ -25,10 +25,16 @@
 
 * For the bandits, test against various data scenarios:
     * Stochastic with varying parameters.
+        * Geometric delay with different parameters.
+        * Different deltas between arm means. 
+            * (Bigger is easier, smaller is going toward not worth solving the problem.)
     * Pre-set adversarial with varying levels of difficulty. 
         * Is there a 'smooth' function for tuning difficulty of an adversary?
     * Online adversarial with varying levels of difficulty.
         * Is there a 'smooth' function for tuning difficulty of an adversary?
+    * Subroutines without BOLD, just one learner with cumulative rewards, where reward's causal action is visible to learner.
+    * Warm start within BOLD.
+    * Updating as we are waiting (censored observations).
 
 ###Efficiency
 * Start doing stress tests on the scale that can be handled by the Python code.
@@ -81,9 +87,15 @@
 
 ##Bandits
 * Implement the second meta-algorithm from Joulani's paper.
+* Consider Kaplan-Meier estimates. Non-parametric version of maximum likelihood estimator of survival curve.
 
 ##Scaling
 * If scaling becomes an issue, consider using SFrames.
 
 ##Documentation
 * Figure out how to use Sphinx or Doxygen.
+
+#Publication
+
+##Delayed Rewards
+* Start writing up the paper.
