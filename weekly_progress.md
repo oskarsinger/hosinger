@@ -263,22 +263,25 @@ Some of the following bodies of literature may be useful to us.
 ####Previous Work
 * I just found a series of papers on deep estimators for CCA, including a paper on SGD-based optimization of a CCA objective. Should keep an eye on this so we don't repeat other work. Plus their stochastic optimization method may be useful.
 
+* Eric gave me a few papers on bandits applied to marketing scenarios, one of which considers delayed rewards, and another of which considers population heterogeneity.
+
 ####Engineering
 * CCA
     * Reimplemented some of the randomized linear algebra in C++ with considerable performance improvements.
-    * Refactored randomized linear algebra for easier extension and future use.
-    * Started a Makefile for compiling the shared library of the C++ code so I an easily import into Python.
+    * Refactored randomized linear algebra for easier interaction with Python and future use.
+    * Started a Makefile for compiling the shared library of the C++ code so I can easily import into Python.
     * Started writing Cython bridge to use C++ code on the Python side.
 
 * Bandits
     * Beta-Bernoulli bandits, UCB1, and Exp3 are now all working correctly.
-    * Bold has at least one remaining bug, but I have a very rudimentary test just for code correctness.
+    * Bold has at least one remaining bug, but I have a very rudimentary test just for code correctness. Should be able to tease out any bugs this way.
 
 ####Our Ideas
 * Meeting with Eric.
     * Discussed possible extension of BOLD and other solutions to address our specific problem.
-        * Warm start each new learner.
-        * Try just vanilla learners with only internal utility for keeping track of delayed rewards.
+        * Warm start each new learner with the wins and losses up until now.
+            * Maybe warm-start with some sort of regularization?
+        * Try just vanilla learners with internal table look-up for keeping track of delayed rewards.
         * Try bandits that maintain a probabilistic model for delay length.
     * Discussed test cases for simulated data-generating process. Probably will focus on stochastic data generating process.
         * Different distributions with different parameters.
@@ -288,11 +291,20 @@ Some of the following bodies of literature may be useful to us.
 * Meeting with Al.
     * Discussed my questions and confusion about measure-transformed CCA.
     * Determined course of action for long-term online, non-stationary CCA.
-        * Derive simplest possible probabilistic model for drifting data-generating distribution.
         * Start digging into the Puterman book on MDPs.
+        * Derive simplest possible probabilistic model for drifting data-generating distribution.
     * Determined short-term course of action for project with Yaya.
         * Finish implementing Zhuang Ma online CCA.
         * Implement measure-transform CCA.
-        * Extend online CCA to online MTCCA.
-            * Pre-compute parameters for MT functions.
-            * Update parameters for MT functions with each round of mini-batch gradient ascent.
+        * Combine online and MTCCA to create online MTCCA.
+            * Will need to try at least two schemes for learning the MT parameters.
+                * Pre-compute parameters for MT functions.
+                * With each round of mini-batch gradient ascent, use the mini-batch to make gradient updates to both the MT parameters and the CCA parameters.
+
+####Data
+* Yaya's data is coming in soon.
+
+* We will probably use the Bonobos data for delayed rewards. 
+
+####Questions
+None that I can think of right now.
