@@ -6,7 +6,7 @@ cdef class RandomMatrixFactory:
     cdef RandomMatrixFactory* thisptr
 
     def __cinit__(self):
-        self.thisptr = new RandomMatrixFactory
+        self.thisptr = new RandomMatrixFactory()
 
     def __dealloc__(self):
         del self.thisptr
