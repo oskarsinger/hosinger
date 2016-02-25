@@ -10,7 +10,8 @@ namespace random {
 class RandomMatrixFactory
 {
  public:
-  RandomMatrixFactory();
+  RandomMatrixFactory(){}
+  ~RandomMatrixFactory(){}
   Eigen::MatrixXd GetRankKMatrix(const int m, const int n, const int k);
   Eigen::MatrixXd GetNormalMatrix(const int m, const int n);
 };
