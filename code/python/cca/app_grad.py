@@ -1,4 +1,7 @@
+import numpy as np
+
 from numpy.random import randn
+from linal.utils import quadratic, get_svd_invert
 
 def get_batch_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2):
 
@@ -57,7 +60,7 @@ def _get_updated_bases(X1, X2, unnormed1, normed2, S1, k, eta1):
     unnormed1_next = unnormed1 - eta1 * gradient
 
     # Take randomized SVD of quadratic of unnormed1 with coefficient matrix S1
-    unnormed1_quad_invert = get_svd_invert(quadratic(unnormed1_next, S1), k=k)
+    unnormed1_quad_invert = get_svd_invert(quadratic(unnormed1_next, S1), random=False)
 
     # Normalize unnormed 1 with inversion of quadratic
     normed1 = np.dot(unnormed1_next, unnormed1_quad_invert)
