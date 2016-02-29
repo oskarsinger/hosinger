@@ -11,19 +11,24 @@
     * exp3
     * ucb1
 
-###Accuracy
+###Empirical Performance
 * Write up a somewhat general framework for running experiments.
     * Would be nice if it automatically printed charts/graphs/tables.
     * Should have some data generator or multiple data generators for interacting with the bandits and BOLD.
 
+####Randomized Linal
 * Test the accuracy of the randomized QR and SVD.
     * Test easy matrices like identity, diagonal, etc.
     * Write code to produce rank-k matrices.
     * Compare results of my code against results of Scikit-Learn's implementations.
 
+####CCA
 * Test CCA against Scikit-Learn's implementations.
+    * Issue: the canonical basis returned by sklearn does not satisfy the quadratic norm orthonormality constraints of the CCA problem.
+* Get some real data from Yaya and run your code on it.
 
-* For the bandits, test against various data scenarios:
+####Bandits
+* Test against various data scenarios:
     * Stochastic with varying parameters.
         * Geometric delay with different parameters.
         * Different deltas between arm means. 
@@ -78,6 +83,7 @@
         * There are some single-pass algorithms, but the authors claim that they result in significant loss of precision, and should only be used if the entire matrix cannot be fit into memory.
 
 ###CCA
+* Implement the SGD version of the Zhuang Ma algorithm.
 * Implement measure-transformed CCA.
     * Try the classical approach to CCA calculation.
     * Extend Zhuang Ma's gradient-based version to do the measure-transformed version.
@@ -85,7 +91,7 @@
 * I wonder if the proof for convergence of the gradient-based CCA will be different for the measure-transformed version?
 * Farm out some of the more expensive subroutines to C++.
 
-##Bandits
+###Bandits
 * Implement the second meta-algorithm from Joulani's paper.
 * Consider Kaplan-Meier estimates. Non-parametric version of maximum likelihood estimator of survival curve.
 
