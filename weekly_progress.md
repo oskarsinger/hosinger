@@ -10,6 +10,7 @@ Each week is indexed by the date of Monday.
 * [1 February 2016](#1feb)
 * [8 February 2016](#8feb)
 * [15 February 2016](#15feb)
+* [29 February 2016](#29feb)
 
 ##Progress Reports
 
@@ -308,3 +309,10 @@ Some of the following bodies of literature may be useful to us.
 
 ####Questions
 None that I can think of right now.
+
+###<a name='29feb'>29 February 2016</a>
+
+####Our Ideas
+* Use differential geometry to do (functional?) CCA on some manifold so it is more sensitive to non-linear relationships. Is this somehow equivalent to the measure transform?
+
+* I think SciKit-Learn's CCA implementation has a bug. Their canonical bases do not produce an identity when plugged into a quadratic parameterized by the empirical second moment matrix.
