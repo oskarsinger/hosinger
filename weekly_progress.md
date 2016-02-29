@@ -313,6 +313,8 @@ None that I can think of right now.
 ###<a name='29feb'>29 February 2016</a>
 
 ####Our Ideas
-* Use differential geometry to do (functional?) CCA on some manifold so it is more sensitive to non-linear relationships. Is this somehow equivalent to the measure transform?
+* Use differential geometry to do (functional?) CCA on some manifold so it is more sensitive to non-linear relationships. Is this somehow equivalent to the measure transform? This is sort of inspired by reading about Fisher info and natural gradient.
+
+* Somewhat related to the previous bullet point, what do the canonical vectors tell us about the geometry of our problem? Does it make sense to use them as parameters for some sort of quadratic norm regularizer for a downstream optimization problem?
 
 * I think SciKit-Learn's CCA implementation has a bug. Their canonical bases do not produce an identity when plugged into a quadratic parameterized by the empirical second moment matrix.
