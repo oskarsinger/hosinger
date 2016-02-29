@@ -1,7 +1,7 @@
 #ifndef RANDOM_MATRIX_H_
 #define RANDOM_MATRIX_H_
 
-// Imports form external projects
+// Imports from external projects
 #include <Eigen/Dense>
 
 namespace linal {

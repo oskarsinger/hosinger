@@ -3,6 +3,13 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
+        "extra_compile_args": [
+            "-std=c++11"
+        ], 
+        "include_dirs": [
+            "../eigen/", 
+            "../linal/"
+        ], 
         "language": "c++"
     }
 }
@@ -254,6 +261,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #define __PYX_HAVE__rmf
 #define __PYX_HAVE_API__rmf
 #include "../../linal/random_matrix_factory.h"
+#include "../../linal/py_eigen.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -468,8 +476,8 @@ static const char *__pyx_f[] = {
 /*--- Type declarations ---*/
 struct __pyx_obj_3rmf_RandomMatrixFactory;
 
-/* "rmf.pyx":7
- * # distutils: sources = random_matrix_factory.cc
+/* "rmf.pyx":3
+ * from classes cimport RandomMatrixFactory as RMF
  * 
  * cdef class RandomMatrixFactory:             # <<<<<<<<<<<<<<
  *     cdef RMF *rmf
@@ -593,7 +601,7 @@ static int __pyx_pf_3rmf_19RandomMatrixFactory___cinit__(struct __pyx_obj_3rmf_R
 static void __pyx_pf_3rmf_19RandomMatrixFactory_2__dealloc__(struct __pyx_obj_3rmf_RandomMatrixFactory *__pyx_v_self); /* proto */
 static PyObject *__pyx_tp_new_3rmf_RandomMatrixFactory(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 
-/* "rmf.pyx":10
+/* "rmf.pyx":6
  *     cdef RMF *rmf
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -622,7 +630,7 @@ static int __pyx_pf_3rmf_19RandomMatrixFactory___cinit__(struct __pyx_obj_3rmf_R
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "rmf.pyx":11
+  /* "rmf.pyx":7
  * 
  *     def __cinit__(self):
  *         self.rmf = new RMF()             # <<<<<<<<<<<<<<
@@ -631,7 +639,7 @@ static int __pyx_pf_3rmf_19RandomMatrixFactory___cinit__(struct __pyx_obj_3rmf_R
  */
   __pyx_v_self->rmf = new linal::random::RandomMatrixFactory();
 
-  /* "rmf.pyx":10
+  /* "rmf.pyx":6
  *     cdef RMF *rmf
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -645,7 +653,7 @@ static int __pyx_pf_3rmf_19RandomMatrixFactory___cinit__(struct __pyx_obj_3rmf_R
   return __pyx_r;
 }
 
-/* "rmf.pyx":13
+/* "rmf.pyx":9
  *         self.rmf = new RMF()
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -669,7 +677,7 @@ static void __pyx_pf_3rmf_19RandomMatrixFactory_2__dealloc__(struct __pyx_obj_3r
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "rmf.pyx":14
+  /* "rmf.pyx":10
  * 
  *     def __dealloc__(self):
  *         if self.rmf is not NULL:             # <<<<<<<<<<<<<<
@@ -678,14 +686,14 @@ static void __pyx_pf_3rmf_19RandomMatrixFactory_2__dealloc__(struct __pyx_obj_3r
   __pyx_t_1 = ((__pyx_v_self->rmf != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "rmf.pyx":15
+    /* "rmf.pyx":11
  *     def __dealloc__(self):
  *         if self.rmf is not NULL:
  *             del self.rmf             # <<<<<<<<<<<<<<
  */
     delete __pyx_v_self->rmf;
 
-    /* "rmf.pyx":14
+    /* "rmf.pyx":10
  * 
  *     def __dealloc__(self):
  *         if self.rmf is not NULL:             # <<<<<<<<<<<<<<
@@ -693,7 +701,7 @@ static void __pyx_pf_3rmf_19RandomMatrixFactory_2__dealloc__(struct __pyx_obj_3r
  */
   }
 
-  /* "rmf.pyx":13
+  /* "rmf.pyx":9
  *         self.rmf = new RMF()
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -929,9 +937,9 @@ PyMODINIT_FUNC PyInit_rmf(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_3rmf_RandomMatrixFactory) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_3rmf_RandomMatrixFactory) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_3rmf_RandomMatrixFactory.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "RandomMatrixFactory", (PyObject *)&__pyx_type_3rmf_RandomMatrixFactory) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "RandomMatrixFactory", (PyObject *)&__pyx_type_3rmf_RandomMatrixFactory) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_3rmf_RandomMatrixFactory = &__pyx_type_3rmf_RandomMatrixFactory;
   /*--- Type import code ---*/
   /*--- Variable import code ---*/
@@ -942,9 +950,9 @@ PyMODINIT_FUNC PyInit_rmf(void)
   #endif
 
   /* "rmf.pyx":1
- * cimport classes             # <<<<<<<<<<<<<<
- * from classes cimport RandomMatrixFactory as RMF
+ * from classes cimport RandomMatrixFactory as RMF             # <<<<<<<<<<<<<<
  * 
+ * cdef class RandomMatrixFactory:
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
