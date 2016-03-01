@@ -1,3 +1,4 @@
+import copy
 import sys
 
 sys.path.append("/home/oskar/GitRepos/OskarResearch/code/delayed_rewards")
@@ -38,6 +39,7 @@ def get_sim_data(T, reward_func, delay_func):
 
 def run_test(learner, data):
 
+    data = copy.deepcopy(data)
     T = len(data)
 
     for i in xrange(T):
@@ -51,11 +53,12 @@ def run_test(learner, data):
 
             reward, delay = current_data[j]
 
-            if delay >= 0:
-                data[j] = (reward, delay-1)
+            if delay >= -1:
+                delay = delay-1
+                data[j] = (reward, delay)
 
-                if delay == -1:
-                    updates.append({'value':reward, 'id':j})
+            if delay == -1:
+                updates.append({'value':reward, 'id':j})
 
         learner.update_reward(updates)
 
@@ -75,8 +78,11 @@ def main():
     exp3_bold = bold.BOLD(get_Exp3_factory(0.07), 2)
     tsbb_bold = bold.BOLD(get_TSBB_factory(1,1), 2)
 
+    print "UCB1"
     run_test(ucb1_bold, data)
+    print "Exp3"
     run_test(exp3_bold, data)
+    print "TSBB"
     run_test(tsbb_bold, data)
 
     print ucb1_bold.get_status()
