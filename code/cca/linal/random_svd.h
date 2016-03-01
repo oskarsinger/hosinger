@@ -13,7 +13,11 @@ class RandomSvd
 {
 
  public:
-  RandomSvd();
+  // Constructor
+  RandomSvd() {}
+  ~RandomSvd() {}
+
+  // Methods
   std::vector<MatrixXd> GetRandomSvd(MatrixXd A);
   std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k);
   std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k, const int q);

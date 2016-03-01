@@ -7,17 +7,21 @@
 namespace linal {
 namespace python {
 
-class PyEigen
+class PyEigenMatrixXd
 {
  public:
-  PyEigen(int rows, int cols);
-  ~PyEigen() {}
+  // Constructor and destructor
+  PyEigenMatrixXd(int rows, int cols);
+  PyEigenMatrixXd(Eigen::MatrixXd initial);
+  ~PyEigenMatrixXd() {}
+
+  // Methods
   double Get(int row, int col);
   void Set(int row, int col, double val);
   int Rows();
   int Cols();
 
- private:
+  // Data members
   Eigen::MatrixXd matrix;
 };
 

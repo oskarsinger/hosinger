@@ -3,7 +3,7 @@ import numpy as np
 from numpy.random import randn, choice
 from linal.utils import quadratic, get_svd_invert
 
-def get_batch_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size=None):
+def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size=None):
 
     (n1, p1) = X.shape
     (n2, p2) = Y.shape

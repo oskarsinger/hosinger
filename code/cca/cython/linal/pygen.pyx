@@ -1,20 +1,24 @@
-from classes cimport PyEigen as PE
+from classes cimport PyEigenMatrixXd as PEM
 from numpy import array, zeros
 
 cdef class PygenMatrix:
-    cdef PE *pe
+    cdef PEM *pe
 
     def __cinit__(self, mat):
 
         (rows, cols) = mat.shape
 
-        self.pe = new PE(int(rows), int(cols))
+        self.pe = new PEM(int(rows), int(cols))
 
         self._from_numpy(mat)
 
     def __dealloc__(self):
         if self.pe is not NULL:
             del self.pe
+
+    def get_matrix():
+
+        return self.pe
 
     def _from_numpy(self, mat):
 
