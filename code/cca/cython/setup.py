@@ -21,6 +21,11 @@ extensions = [
         ["linal/pygen.pyx", "../linal/py_eigen.cc"],
         include_dirs=linal_include_dirs,
         extra_compile_args=compile_args,
+        language="c++"),
+    Extension("random_svd",
+        ["linal/pyrsvd.pyx", "../linal/py_random_svd.cc"],
+        include_dirs=linal_include_dirs,
+        extra_compile_args=compile_args,
         language="c++")
 ]
 

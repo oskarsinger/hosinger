@@ -2,33 +2,28 @@ from classes cimport PyEigenMatrixXd as PEM
 from numpy import array, zeros
 
 cdef class PygenMatrix:
-    cdef PEM *pe
+    cdef PEM *pem
 
-    def __cinit__(self, mat):
+    def __cinit__(self):
 
-        (rows, cols) = mat.shape
-
-        self.pe = new PEM(int(rows), int(cols))
-
-        self._from_numpy(mat)
+        self.pem = NULL
 
     def __dealloc__(self):
-        if self.pe is not NULL:
-            del self.pe
+        if self.pem is not NULL:
+            del self.pem
 
-    def get_matrix():
-
-        return self.pe
-
-    def _from_numpy(self, mat):
+    def from_numpy(self, mat):
 
         (rows, cols) = mat.shape
+        cdef PEM *pem = new PEM(rows, cols)
 
         cdef int i, j
 
         for i in xrange(rows):
             for j in xrange(cols):
-                self.pe.Set(i, j, mat[i,j])
+                pem.Set(i, j, mat[i,j])
+
+        return PygenMatrix_Init(pem)
 
     def to_numpy(self):
 
@@ -39,22 +34,12 @@ cdef class PygenMatrix:
 
         for i in xrange(rows):
             for j in xrange(cols):
-                A[i,j] = self.pe.Get(i, j)
+                A[i,j] = self.pem.Get(i, j)
 
         return A
 
-    def get(self, int row, int col):
-        
-        return self.pe.Get(row, col)
+cdef PygenMatrix_Init(PEM *pem):
+    mat = PygenMatrix()
+    mat.pem = pem
 
-    def set(self, int row, int col, double val):
-
-        self.pe.Set(row, col, val)
-
-    def rows(self):
-
-        return self.pe.Rows()
-
-    def cols(self):
-
-        return self.pe.Cols()
+    return mat

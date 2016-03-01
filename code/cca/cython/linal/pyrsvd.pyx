@@ -4,16 +4,30 @@ from libcpp.vector cimport vector
 from pygen import PygenMatrix
 
 cdef class RandomSvd:
-    cdef PyRSvd *pr_svd
+    cdef PyRSvd *r_svd
 
     def __cinit__(self):
-        self.pr_svd = new PyRSvd()
+        self.r_svd = new PyRSvd()
 
     def __dealloc(self):
-        if self.pr_svd is not NULL:
-            del self.pr_svd
+        if self.r_svd is not NULL:
+            del self.r_svd
 
-    def get_random_svd(PygenMatrix A):
+    def get_random_svd(self, numpy_mat, k=None):
         
-        cdef PEM mat = A.get_matrix()
-        cdef vector[PEM] svd = self.svd.GetRandomSvd(mat)
+        pygen_mat = PygenMatrix.from_numpy(numpy_mat)
+
+        cdef PEM *pem = extract<PEM*>(pygen_mat.pem)
+        cdef vector[PEM] c_svd 
+        
+        if k is None:
+            c_svd = self.r_svd.GetRandomSvd(pem)
+        else:
+            c_svd = self.r_svd.GetRandomSvd(pem, k)
+
+        py_svd = []
+
+        for i in range(3):
+            py_svd.append(PygenMatrix_Init(c_svd[i]).to_numpy())
+
+        return py_svd

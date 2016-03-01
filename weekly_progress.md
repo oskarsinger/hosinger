@@ -318,3 +318,7 @@ None that I can think of right now.
 * Somewhat related to the previous bullet point, what do the canonical vectors tell us about the geometry of our problem? Does it make sense to use them as parameters for some sort of quadratic norm regularizer for a downstream optimization problem?
 
 * I think SciKit-Learn's CCA implementation has a bug. Their canonical bases do not produce an identity when plugged into a quadratic parameterized by the empirical second moment matrix.
+
+* I wonder if we could focus more on the distributed aspect of BOLD and its possible extensions. Could we find some unique advantage to those types of algorithms from this perspective?
+    * Potential issues: BOLD may require a lot of communication overhead. Not sure, though. Should think about this carefully.
+    * Maybe the new visiting researcher or Yasin will have some ideas about this?
