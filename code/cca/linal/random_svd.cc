@@ -16,7 +16,7 @@ namespace random {
 
 using namespace Eigen;
 
-std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A)
+std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A) const
 {
     int m = A.rows();
     int n = A.cols();
@@ -25,12 +25,12 @@ std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A)
     return GetRandomSvd(A, max_rank);
 }
 
-std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A, const int k)
+std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k) const
 {
     return GetRandomSvd(A, k, 1);
 }
 
-std::vector<MatrixXd> RandomSvd::GetRandomSvd(MatrixXd A, const int k, const int q)
+std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k, const int q) const
 {
     int n = A.rows();
     int m = A.cols();

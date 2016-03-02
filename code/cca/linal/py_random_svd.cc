@@ -9,34 +9,36 @@ namespace python {
 
 using namespace Eigen;
 
-std::vector<PyEigenMatrixXd> PyRandomSvd::GetRandomSvd(PyEigenMatrixXd A)
+const random::RandomSvd PyRandomSvd::rSvd = random::RandomSvd();
+
+std::vector<PyEigenMatrixXd *> PyRandomSvd::GetRandomSvd(const PyEigenMatrixXd &A) const
 {
     MatrixXd matrix = A.matrix;
 
-    return WrapVector(rSvd.GetRandomSvd(matrix));
+    return WrapVector(this->rSvd.GetRandomSvd(matrix));
 }
 
-std::vector<PyEigenMatrixXd> PyRandomSvd::GetRandomSvd(PyEigenMatrixXd A, const int k);
+std::vector<PyEigenMatrixXd *> PyRandomSvd::GetRandomSvd(const PyEigenMatrixXd &A, const int k) const
 {
     MatrixXd matrix = A.matrix;
 
-    return WrapVector(rSvd.GetRandomSvd(matrix, k));
+    return WrapVector(this->rSvd.GetRandomSvd(matrix, k));
 }
 
-std::vector<PyEigenMatrixXd> PyRandomSvd::GetRandomSvd(PyEigenMatrixXd A, const int k, const int q);
+std::vector<PyEigenMatrixXd *> PyRandomSvd::GetRandomSvd(const PyEigenMatrixXd &A, const int k, const int q) const
 {
     MatrixXd matrix = A.matrix;
 
-    return WrapVector(rSvd.GetRandomSvd(matrix, k, q));
+    return WrapVector(this->rSvd.GetRandomSvd(matrix, k, q));
 }
 
-std::vector<PyEigenMatrixXd> WrapVector(std::vector<MatrixXd> matrices)
+std::vector<PyEigenMatrixXd *> WrapVector(const std::vector<MatrixXd> &matrices) const
 {
-    std::vector<PyEigenMatrixXd> wrapped = std::vector<PyEigenMatrixXd>();
+    std::vector<PyEigenMatrixXd *> wrapped = std::vector<PyEigenMatrixXd *>();
 
     for (auto itr = matrices.begin(); itr != matrices.end(); ++itr)
     {
-        wrapped.push_back(PyEigenMatrixXd(*itr));
+        wrapped.push_back(new PyEigenMatrixXd(*itr));
     }
 
     return wrapped;

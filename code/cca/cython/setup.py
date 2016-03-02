@@ -18,7 +18,7 @@ extensions = [
         extra_compile_args=compile_args,
         language="c++"),
     Extension("pygen",
-        ["linal/pygen.pyx", "../linal/py_eigen.cc"],
+        ["linal/pygen.pyx", "../linal/py_eigen_matrix.cc"],
         include_dirs=linal_include_dirs,
         extra_compile_args=compile_args,
         language="c++"),

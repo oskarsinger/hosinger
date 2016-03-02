@@ -18,9 +18,9 @@ class RandomSvd
   ~RandomSvd() {}
 
   // Methods
-  std::vector<MatrixXd> GetRandomSvd(MatrixXd A);
-  std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k);
-  std::vector<MatrixXd> GetRandomSvd(MatrixXd A, const int k, const int q);
+  std::vector<MatrixXd> GetRandomSvd(const MatrixXd &A) const;
+  std::vector<MatrixXd> GetRandomSvd(const MatrixXd &A, const int k) const;
+  std::vector<MatrixXd> GetRandomSvd(const MatrixXd &A, const int k, const int q) const;
 };
 
 } // namespace random

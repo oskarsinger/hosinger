@@ -260,8 +260,14 @@ static CYTHON_INLINE float __PYX_NAN() {
 
 #define __PYX_HAVE__rmf
 #define __PYX_HAVE_API__rmf
+#include <vector>
+#include "ios"
+#include "new"
+#include "stdexcept"
+#include "typeinfo"
 #include "../../linal/random_matrix_factory.h"
-#include "../../linal/py_eigen.h"
+#include "../../linal/py_eigen_matrix.h"
+#include "../../linal/py_random_svd.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -584,6 +590,8 @@ static int __Pyx_check_binary_version(void);
 
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
+
+/* Module declarations from 'libcpp.vector' */
 
 /* Module declarations from 'classes' */
 
