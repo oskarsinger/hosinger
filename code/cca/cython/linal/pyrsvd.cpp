@@ -3,9 +3,20 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "depends": [], 
+        "depends": [
+            "../linal/py_eigen_matrix.h", 
+            "../linal/py_random_svd.h"
+        ], 
         "extra_compile_args": [
             "-std=c++11"
+        ], 
+        "extra_objects": [
+            "build/linal/py_eigen_matrix.o", 
+            "build/linal/random_matrix_factory.o", 
+            "build/linal/py_eigen.o", 
+            "build/linal/py_random_svd.o", 
+            "build/linal/random_svd.o", 
+            "build/linal/random_orthonormal_basis.o"
         ], 
         "include_dirs": [
             "../eigen/", 
@@ -259,14 +270,13 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__pyrsvd
-#define __PYX_HAVE_API__pyrsvd
+#define __PYX_HAVE__linal__pyrsvd
+#define __PYX_HAVE_API__linal__pyrsvd
 #include <vector>
 #include "ios"
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
-#include "../../linal/random_matrix_factory.h"
 #include "../../linal/py_eigen_matrix.h"
 #include "../../linal/py_random_svd.h"
 #ifdef _OPENMP
@@ -481,16 +491,16 @@ static const char *__pyx_f[] = {
 };
 
 /*--- Type declarations ---*/
-struct __pyx_obj_6pyrsvd_RandomSvd;
+struct __pyx_obj_5linal_6pyrsvd_RandomSvd;
 
-/* "pyrsvd.pyx":6
+/* "linal/pyrsvd.pyx":6
  * from pygen import PygenMatrix
  * 
  * cdef class RandomSvd:             # <<<<<<<<<<<<<<
  *     cdef PyRSvd *r_svd
  * 
  */
-struct __pyx_obj_6pyrsvd_RandomSvd {
+struct __pyx_obj_5linal_6pyrsvd_RandomSvd {
   PyObject_HEAD
   linal::python::PyRandomSvd *r_svd;
 };
@@ -613,14 +623,14 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 /* Module declarations from 'libcpp.vector' */
 
-/* Module declarations from 'classes' */
+/* Module declarations from 'linal.classes' */
 
-/* Module declarations from 'pyrsvd' */
-static PyTypeObject *__pyx_ptype_6pyrsvd_RandomSvd = 0;
-#define __Pyx_MODULE_NAME "pyrsvd"
-int __pyx_module_is_main_pyrsvd = 0;
+/* Module declarations from 'linal.pyrsvd' */
+static PyTypeObject *__pyx_ptype_5linal_6pyrsvd_RandomSvd = 0;
+#define __Pyx_MODULE_NAME "linal.pyrsvd"
+int __pyx_module_is_main_linal__pyrsvd = 0;
 
-/* Implementation of 'pyrsvd' */
+/* Implementation of 'linal.pyrsvd' */
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
 static char __pyx_k_pygen[] = "pygen";
@@ -631,11 +641,11 @@ static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_pygen;
 static PyObject *__pyx_n_s_test;
-static int __pyx_pf_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_6pyrsvd_RandomSvd *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_6pyrsvd_RandomSvd *__pyx_v_self); /* proto */
-static PyObject *__pyx_tp_new_6pyrsvd_RandomSvd(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static int __pyx_pf_5linal_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_5linal_6pyrsvd_RandomSvd *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_5linal_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_5linal_6pyrsvd_RandomSvd *__pyx_v_self); /* proto */
+static PyObject *__pyx_tp_new_5linal_6pyrsvd_RandomSvd(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 
-/* "pyrsvd.pyx":9
+/* "linal/pyrsvd.pyx":9
  *     cdef PyRSvd *r_svd
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -644,27 +654,27 @@ static PyObject *__pyx_tp_new_6pyrsvd_RandomSvd(PyTypeObject *t, PyObject *a, Py
  */
 
 /* Python wrapper */
-static int __pyx_pw_6pyrsvd_9RandomSvd_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_6pyrsvd_9RandomSvd_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_5linal_6pyrsvd_9RandomSvd_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_5linal_6pyrsvd_9RandomSvd_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
   if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
     __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
   if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__cinit__", 0))) return -1;
-  __pyx_r = __pyx_pf_6pyrsvd_9RandomSvd___cinit__(((struct __pyx_obj_6pyrsvd_RandomSvd *)__pyx_v_self));
+  __pyx_r = __pyx_pf_5linal_6pyrsvd_9RandomSvd___cinit__(((struct __pyx_obj_5linal_6pyrsvd_RandomSvd *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_6pyrsvd_RandomSvd *__pyx_v_self) {
+static int __pyx_pf_5linal_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_5linal_6pyrsvd_RandomSvd *__pyx_v_self) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "pyrsvd.pyx":10
+  /* "linal/pyrsvd.pyx":10
  * 
  *     def __cinit__(self):
  *         self.r_svd = new PyRSvd()             # <<<<<<<<<<<<<<
@@ -673,7 +683,7 @@ static int __pyx_pf_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_6pyrsvd_Random
  */
   __pyx_v_self->r_svd = new linal::python::PyRandomSvd();
 
-  /* "pyrsvd.pyx":9
+  /* "linal/pyrsvd.pyx":9
  *     cdef PyRSvd *r_svd
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -687,7 +697,7 @@ static int __pyx_pf_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_6pyrsvd_Random
   return __pyx_r;
 }
 
-/* "pyrsvd.pyx":12
+/* "linal/pyrsvd.pyx":12
  *         self.r_svd = new PyRSvd()
  * 
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
@@ -696,25 +706,25 @@ static int __pyx_pf_6pyrsvd_9RandomSvd___cinit__(struct __pyx_obj_6pyrsvd_Random
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6pyrsvd_9RandomSvd_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_6pyrsvd_9RandomSvd_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_5linal_6pyrsvd_9RandomSvd_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_5linal_6pyrsvd_9RandomSvd_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc (wrapper)", 0);
-  __pyx_r = __pyx_pf_6pyrsvd_9RandomSvd_2__dealloc(((struct __pyx_obj_6pyrsvd_RandomSvd *)__pyx_v_self));
+  __pyx_r = __pyx_pf_5linal_6pyrsvd_9RandomSvd_2__dealloc(((struct __pyx_obj_5linal_6pyrsvd_RandomSvd *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_6pyrsvd_RandomSvd *__pyx_v_self) {
+static PyObject *__pyx_pf_5linal_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_5linal_6pyrsvd_RandomSvd *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("__dealloc", 0);
 
-  /* "pyrsvd.pyx":13
+  /* "linal/pyrsvd.pyx":13
  * 
  *     def __dealloc(self):
  *         if self.r_svd is not NULL:             # <<<<<<<<<<<<<<
@@ -723,14 +733,14 @@ static PyObject *__pyx_pf_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_6pyrsvd
   __pyx_t_1 = ((__pyx_v_self->r_svd != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "pyrsvd.pyx":14
+    /* "linal/pyrsvd.pyx":14
  *     def __dealloc(self):
  *         if self.r_svd is not NULL:
  *             del self.r_svd             # <<<<<<<<<<<<<<
  */
     delete __pyx_v_self->r_svd;
 
-    /* "pyrsvd.pyx":13
+    /* "linal/pyrsvd.pyx":13
  * 
  *     def __dealloc(self):
  *         if self.r_svd is not NULL:             # <<<<<<<<<<<<<<
@@ -738,7 +748,7 @@ static PyObject *__pyx_pf_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_6pyrsvd
  */
   }
 
-  /* "pyrsvd.pyx":12
+  /* "linal/pyrsvd.pyx":12
  *         self.r_svd = new PyRSvd()
  * 
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
@@ -753,7 +763,7 @@ static PyObject *__pyx_pf_6pyrsvd_9RandomSvd_2__dealloc(struct __pyx_obj_6pyrsvd
   return __pyx_r;
 }
 
-static PyObject *__pyx_tp_new_6pyrsvd_RandomSvd(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_5linal_6pyrsvd_RandomSvd(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
     o = (*t->tp_alloc)(t, 0);
@@ -761,13 +771,13 @@ static PyObject *__pyx_tp_new_6pyrsvd_RandomSvd(PyTypeObject *t, CYTHON_UNUSED P
     o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
   }
   if (unlikely(!o)) return 0;
-  if (unlikely(__pyx_pw_6pyrsvd_9RandomSvd_1__cinit__(o, __pyx_empty_tuple, NULL) < 0)) {
+  if (unlikely(__pyx_pw_5linal_6pyrsvd_9RandomSvd_1__cinit__(o, __pyx_empty_tuple, NULL) < 0)) {
     Py_DECREF(o); o = 0;
   }
   return o;
 }
 
-static void __pyx_tp_dealloc_6pyrsvd_RandomSvd(PyObject *o) {
+static void __pyx_tp_dealloc_5linal_6pyrsvd_RandomSvd(PyObject *o) {
   #if PY_VERSION_HEX >= 0x030400a1
   if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
@@ -776,17 +786,17 @@ static void __pyx_tp_dealloc_6pyrsvd_RandomSvd(PyObject *o) {
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static PyMethodDef __pyx_methods_6pyrsvd_RandomSvd[] = {
-  {"__dealloc", (PyCFunction)__pyx_pw_6pyrsvd_9RandomSvd_3__dealloc, METH_NOARGS, 0},
+static PyMethodDef __pyx_methods_5linal_6pyrsvd_RandomSvd[] = {
+  {"__dealloc", (PyCFunction)__pyx_pw_5linal_6pyrsvd_9RandomSvd_3__dealloc, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_6pyrsvd_RandomSvd = {
+static PyTypeObject __pyx_type_5linal_6pyrsvd_RandomSvd = {
   PyVarObject_HEAD_INIT(0, 0)
-  "pyrsvd.RandomSvd", /*tp_name*/
-  sizeof(struct __pyx_obj_6pyrsvd_RandomSvd), /*tp_basicsize*/
+  "linal.pyrsvd.RandomSvd", /*tp_name*/
+  sizeof(struct __pyx_obj_5linal_6pyrsvd_RandomSvd), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_6pyrsvd_RandomSvd, /*tp_dealloc*/
+  __pyx_tp_dealloc_5linal_6pyrsvd_RandomSvd, /*tp_dealloc*/
   0, /*tp_print*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -814,7 +824,7 @@ static PyTypeObject __pyx_type_6pyrsvd_RandomSvd = {
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_6pyrsvd_RandomSvd, /*tp_methods*/
+  __pyx_methods_5linal_6pyrsvd_RandomSvd, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
   0, /*tp_base*/
@@ -824,7 +834,7 @@ static PyTypeObject __pyx_type_6pyrsvd_RandomSvd = {
   0, /*tp_dictoffset*/
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_6pyrsvd_RandomSvd, /*tp_new*/
+  __pyx_tp_new_5linal_6pyrsvd_RandomSvd, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -955,14 +965,14 @@ PyMODINIT_FUNC PyInit_pyrsvd(void)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
-  if (__pyx_module_is_main_pyrsvd) {
+  if (__pyx_module_is_main_linal__pyrsvd) {
     if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!PyDict_GetItemString(modules, "pyrsvd")) {
-      if (unlikely(PyDict_SetItemString(modules, "pyrsvd", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!PyDict_GetItemString(modules, "linal.pyrsvd")) {
+      if (unlikely(PyDict_SetItemString(modules, "linal.pyrsvd", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
@@ -974,10 +984,10 @@ PyMODINIT_FUNC PyInit_pyrsvd(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_6pyrsvd_RandomSvd) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_6pyrsvd_RandomSvd.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "RandomSvd", (PyObject *)&__pyx_type_6pyrsvd_RandomSvd) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_6pyrsvd_RandomSvd = &__pyx_type_6pyrsvd_RandomSvd;
+  if (PyType_Ready(&__pyx_type_5linal_6pyrsvd_RandomSvd) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_type_5linal_6pyrsvd_RandomSvd.tp_print = 0;
+  if (PyObject_SetAttrString(__pyx_m, "RandomSvd", (PyObject *)&__pyx_type_5linal_6pyrsvd_RandomSvd) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_5linal_6pyrsvd_RandomSvd = &__pyx_type_5linal_6pyrsvd_RandomSvd;
   /*--- Type import code ---*/
   /*--- Variable import code ---*/
   /*--- Function import code ---*/
@@ -986,7 +996,7 @@ PyMODINIT_FUNC PyInit_pyrsvd(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "pyrsvd.pyx":4
+  /* "linal/pyrsvd.pyx":4
  * from libcpp.vector cimport vector
  * 
  * from pygen import PygenMatrix             # <<<<<<<<<<<<<<
@@ -1007,7 +1017,7 @@ PyMODINIT_FUNC PyInit_pyrsvd(void)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "pyrsvd.pyx":1
+  /* "linal/pyrsvd.pyx":1
  * from classes cimport PyRandomSvd as PyRSvd, PyEigenMatrixXd as PEM             # <<<<<<<<<<<<<<
  * from libcpp.vector cimport vector
  * 
@@ -1025,11 +1035,11 @@ PyMODINIT_FUNC PyInit_pyrsvd(void)
   __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init pyrsvd", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init linal.pyrsvd", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init pyrsvd");
+    PyErr_SetString(PyExc_ImportError, "init linal.pyrsvd");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();

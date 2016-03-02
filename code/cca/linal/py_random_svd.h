@@ -23,10 +23,10 @@ class PyRandomSvd
   ~PyRandomSvd() {}
 
   // Methods
-  std::vector<PyEigenMatrixXd *> GetRandomSvd(const PyEigenMatrixXd &A) const;
-  std::vector<PyEigenMatrixXd *> GetRandomSvd(const PyEigenMatrixXd &A, const int k) const;
-  std::vector<PyEigenMatrixXd *> GetRandomSvd(const PyEigenMatrixXd &A, const int k, const int q) const;
-  std::vector<PyEigenMatrixXd *> WrapVector(const std::vector<Eigen::MatrixXd> &matrices) const;
+  std::vector<PyEigenMatrixXd> GetRandomSvd(const PyEigenMatrixXd &A) const;
+  std::vector<PyEigenMatrixXd> GetRandomSvd(const PyEigenMatrixXd &A, const int k) const;
+  std::vector<PyEigenMatrixXd> GetRandomSvd(const PyEigenMatrixXd &A, const int k, const int q) const;
+  std::vector<PyEigenMatrixXd> WrapVector(const std::vector<Eigen::MatrixXd> &matrices) const;
 };
 
 } // namespace python
