@@ -330,13 +330,14 @@ Some of the following bodies of literature may be useful to us.
         * **Possible problem formulations with possible methodologies.**
             * Non-linear CCA
                 * Measure-transform functions
+                    * For now, pre-compute measure-transform parameters, then plug into CCA. Later, simultaneously learn both.
                     * Need to find best way to learn measure-transform functions. For now just try SGD. Maybe get more sophisticated later.
                 * Kernelization
                     * Can this be scaled? Maybe use random matrix approximations?
             * Time-varying CCA
                 * Need to set up a state space model and formulate the dynamic programming problem.
             * Graph CCA
-                * Start with a graph where each node is an instance (with internal structure between multiple modalities represented by a graphical model), and each 
+                * Start with a graph where each node is an instance (with internal structure between multiple modalities represented by a graphical model), and each edge represents dependency that results in a consistency constraint. End up solving an SDP-type problem for a non-convex objective function. Should investigate John Wright papers to see what kind of structural penalties we can impose on our objective to result in well-behaving non-convexity.
             * Asynch CCA
                 * If we choose time invariance, this can be done with something like Hogwild.
                 * Can we do time-varying CCA with asynchronous, stochastic updates?
@@ -344,10 +345,14 @@ Some of the following bodies of literature may be useful to us.
                 * For the active learning component, the asynchronous algorithms used for delayed reward could be applied, or we could take inspiration from them somehow.
         * **Possible applications.** 
             * These ones are not as appealing to me, but there is data, and it will be less difficult or even unnecessary to find domain-specific collaborators.
-                * Web search
-                * Marketing
-                * Events in Twitter
+                * Web search: allow more interesting search queries by things like similar image or text content.
+                * Marketing: want to take population non-homogeneity into consideration when making marketing decisions like who to target and how to best reach them.
+                * Events in Twitter: I am a bit skeptical about the ability to gain actionable information from individual or even sequences of tweets, but we are thinking more of very large aggregations, so its not necessary to master the NLP aspect.
             * These ones are much more exciting to me, and there is data, but finding collaborators may be more difficult.
-                * Genomic
-                * Astronomy
-    * On the scalability front, I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and practical, engineering levels. This is related to Josh Meng's work, I believe.
+                * Genomic: continue working with dataset from Yaya.
+                * Astronomy: discovery of dark matter through multiple measurement types.
+        * **Scalability and Distributed Computing.** 
+            * As disparity between ambient and true dimension goes up, projected gradient becomes slower.
+            * Make graphical model structural assumptions to facilitate distributability of the computation.
+            * I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and engineering levels.
+            * Most of the decentralized estimation techniques I have read about involve subgradient methods, which are very slow.
