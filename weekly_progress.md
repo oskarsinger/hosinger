@@ -308,7 +308,7 @@ Some of the following bodies of literature may be useful to us.
 * We will probably use the Bonobos data for delayed rewards. 
 
 ####Questions
-None that I can think of right now.
+* None that I can think of right now.
 
 ###<a name='29feb'>29 February 2016</a>
 
@@ -322,3 +322,32 @@ None that I can think of right now.
 * I wonder if we could focus more on the distributed aspect of BOLD and its possible extensions. Could we find some unique advantage to those types of algorithms from this perspective?
     * Potential issues: BOLD may require a lot of communication overhead. Not sure, though. Should think about this carefully.
     * Maybe the new visiting researcher or Yasin will have some ideas about this?
+
+####Meetings
+* Al:
+    * In general, we are interested in active learning and CCA. First we should focus on some particular challenges within CCA, then impose an active learning scenario onto that.
+    * Lately has been more of a survey stage. Now we need to start zooming in. First focus on a problem formulation, then methodology, then scalable computation, then real-world applications.
+        * **Possible problem formulations with possible methodologies.**
+            * Non-linear CCA
+                * Measure-transform functions
+                    * Need to find best way to learn measure-transform functions. For now just try SGD. Maybe get more sophisticated later.
+                * Kernelization
+                    * Can this be scaled? Maybe use random matrix approximations?
+            * Time-varying CCA
+                * Need to set up a state space model and formulate the dynamic programming problem.
+            * Graph CCA
+                * Start with a graph where each node is an instance (with internal structure between multiple modalities represented by a graphical model), and each 
+            * Asynch CCA
+                * If we choose time invariance, this can be done with something like Hogwild.
+                * Can we do time-varying CCA with asynchronous, stochastic updates?
+                    * Split the time series into blocks to be used for the asynchronous updates. Will blocks of size two be enough, or do they need to be bigger? Is there some way to characterize a trade-off between block size, sample complexity, and empirical performance?
+                * For the active learning component, the asynchronous algorithms used for delayed reward could be applied, or we could take inspiration from them somehow.
+        * **Possible applications.** 
+            * These ones are not as appealing to me, but there is data, and it will be less difficult or even unnecessary to find domain-specific collaborators.
+                * Web search
+                * Marketing
+                * Events in Twitter
+            * These ones are much more exciting to me, and there is data, but finding collaborators may be more difficult.
+                * Genomic
+                * Astronomy
+    * On the scalability front, I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and practical, engineering levels. This is related to Josh Meng's work, I believe.
