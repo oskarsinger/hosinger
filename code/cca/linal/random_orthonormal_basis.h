@@ -7,14 +7,17 @@
 namespace linal {
 namespace random {
 
+using namespace Eigen;
+
 class RandomOrthonormalBasis
 {
  public:
-  RandomOrthonormalBasis();
-  Eigen::MatrixXd GetEpsilonBasis(Eigen::MatrixXd A, const double epsilon);
-  Eigen::MatrixXd GetFullRankBasis(Eigen::MatrixXd A);
-  Eigen::MatrixXd GetRankKBasis(Eigen::MatrixXd A, const int k);
-  Eigen::MatrixXd GetRankKBasis(Eigen::MatrixXd A, const int k, const int q);
+  RandomOrthonormalBasis() {}
+  ~RandomOrthonormalBasis() {}
+  MatrixXd GetEpsilonBasis(MatrixXd A, const double epsilon);
+  MatrixXd GetFullRankBasis(MatrixXd A);
+  MatrixXd GetRankKBasis(MatrixXd A, const int k);
+  MatrixXd GetRankKBasis(MatrixXd A, const int k, const int q);
 };
 
 } // namespace random

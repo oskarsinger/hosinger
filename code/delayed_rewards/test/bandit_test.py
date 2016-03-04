@@ -32,7 +32,7 @@ def get_TSBB_factory(alpha, beta):
 
     return get_TSBB
     
-def get_sim_data(T, reward_func, delay_func):
+def get_sim_data(T, reward_funcs, delay_funcs):
 
     return [(reward_func(), delay_func())
             for i in xrange(T)]
