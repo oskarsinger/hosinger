@@ -11,6 +11,6 @@ cdef extern from "../../linal/py_eigen_matrix.h" namespace "linal::python":
 cdef extern from "../../linal/py_random_svd.h" namespace "linal::python":
     cdef cppclass PyRandomSvd:
         PyRandomSvd()
-        vector[PyEigenMatrixXd] GetRandomSvd(const PyEigenMatrixXd &A)
-        vector[PyEigenMatrixXd] GetRandomSvd(const PyEigenMatrixXd &A, int k)
-        vector[PyEigenMatrixXd] GetRandomSvd(const PyEigenMatrixXd &A, int k, int q)
+        vector[PyEigenMatrixXd] GetRandomSvd(const PyEigenMatrixXd &A) const
+        vector[PyEigenMatrixXd] GetRandomSvd(const PyEigenMatrixXd &A, int k) const
+        vector[PyEigenMatrixXd] GetRandomSvd(const PyEigenMatrixXd &A, int k, int q) const
