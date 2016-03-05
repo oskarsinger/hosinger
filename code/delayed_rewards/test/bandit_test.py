@@ -4,9 +4,8 @@ import sys
 sys.path.append("/home/oskar/GitRepos/OskarResearch/code/delayed_rewards")
 
 from bandits import *
-from rewards import *
-from delays import *
-from numpy.random import geometric
+from data_servers.action_maps import *
+from data_servers import DelayedRewardDataServer
 
 def get_UCB1_factory():
 
@@ -32,11 +31,6 @@ def get_TSBB_factory(alpha, beta):
 
     return get_TSBB
     
-def get_sim_data(T, reward_funcs, delay_funcs):
-
-    return [(reward_func(), delay_func())
-            for i in xrange(T)]
-
 def run_test(learner, data):
 
     data = copy.deepcopy(data)

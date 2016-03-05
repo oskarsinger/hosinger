@@ -323,6 +323,12 @@ Some of the following bodies of literature may be useful to us.
     * Potential issues: BOLD may require a lot of communication overhead. Not sure, though. Should think about this carefully.
     * Maybe the new visiting researcher or Yasin will have some ideas about this?
 
+* Imagine the following problem:
+    1. A user specifies arbitrary dependence between rewards, delays, context, state, and actions.
+    2. From the specification, we automatically produce an algorithm that gives good performance in the specified scenario.
+    
+    Wouldn't it be awesome if we could do this? I am thinking of something a bit like STAN, but for online learning.
+
 ####Meetings
 * Al:
     * In general, we are interested in active learning and CCA. First we should focus on some particular challenges within CCA, then impose an active learning scenario onto that.
