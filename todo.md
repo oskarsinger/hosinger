@@ -25,7 +25,9 @@
 ####CCA
 * Test CCA against Scikit-Learn's implementations.
     * Issue: the canonical basis returned by sklearn does not satisfy the quadratic norm orthonormality constraints of the CCA problem.
+* Test CCA against Matlab's implementation.
 * Get some real data from Yaya and run your code on it.
+    * Issue: Yaya has not sent the data and doesn't respond to my emails about it.
 
 ####Bandits
 * Test against various data scenarios:
