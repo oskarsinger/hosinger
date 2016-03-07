@@ -362,3 +362,11 @@ Some of the following bodies of literature may be useful to us.
             * Make graphical model structural assumptions to facilitate distributability of the computation.
             * I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and engineering levels.
             * Most of the decentralized estimation techniques I have read about involve subgradient methods, which are very slow.
+
+####Engineering
+* CCA:
+    * Fixed a ton of C++ bugs, but running into some issues in the Cython layer.
+
+* Delayed Rewards:
+    * Made a ton of progress on a modular data-serving framework that can include data from pretty much any source: static or streamed, simulated or real.
+    * Started running tests with this framework to find that, when plugged into BOLD, exp3 and ucb1 seem to be making random decision even after ~1000 rounds on 6 arms of Bernoulli rewards with means 0.1, 0.1, 0.1, 0.1, 0.1 and 0.5, and a fixed delay of 1 for each arm. Need to investigate what's wrong with my implementation.

@@ -8,7 +8,7 @@ class AbstractLearner:
         pass
 
     @abstractmethod
-    def update_reward(self, value):
+    def update_rewards(self, value):
         pass
 
     @abstractmethod

@@ -40,7 +40,7 @@ class BetaBernoulli(AbstractLearner):
 
         return action
 
-    def update_reward(self, value):
+    def update_rewards(self, value):
 
         if not self._is_waiting:
             raise_no_action_error()

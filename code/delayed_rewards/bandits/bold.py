@@ -49,15 +49,13 @@ class BOLD(AbstractLearner):
 
         return action
 
-    def update_reward(self, rewards):
-
-        print rewards
+    def update_rewards(self, rewards):
 
         for reward in rewards:
             (action, learner_id, blank) = self._history[reward['id']]
             learner = self._learners[learner_id][0]
 
-            learner.update_reward(reward['value'])
+            learner.update_rewards(reward['value'])
 
             self._history[reward['id']] = (action, learner_id, reward['value'])
             self._learners[learner_id] = (learner, True)

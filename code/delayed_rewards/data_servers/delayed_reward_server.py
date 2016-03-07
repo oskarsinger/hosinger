@@ -1,3 +1,5 @@
+from data_server import AbstractDataServer
+
 class DelayedRewardDataServer(AbstractDataServer):
 
     def __init__(self, reward_func, delay_func, incremental=False):
@@ -25,10 +27,10 @@ class DelayedRewardDataServer(AbstractDataServer):
                 d = d - 1
                 self._data[i] = (r, d)
 
-                if incremental:
-                    updates.append({'reward':r, 'id':i})
+                if self._incremental:
+                    updates.append({'value':r, 'id':i})
                 elif d == -1:
-                    updates.append({'reward':r, 'id':i})
+                    updates.append({'value':r, 'id':i})
 
         return updates
 
@@ -37,6 +39,6 @@ class DelayedRewardDataServer(AbstractDataServer):
         return {
             'data': self._data,
             'history': self._history,
-            'reward_func': self._reward_func
+            'reward_func': self._reward_func,
             'delay_func': self._delay_func
         }
