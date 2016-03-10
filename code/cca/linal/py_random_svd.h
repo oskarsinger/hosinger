@@ -11,7 +11,7 @@
 namespace linal {
 namespace python {
 
-class PyRandomSvd
+class PyRandomSvd: public PyEigenMatrixXd
 {
 
  public:
@@ -19,14 +19,22 @@ class PyRandomSvd
   static const random::RandomSvd rSvd;
 
   // Constructor
-  PyRandomSvd() {}
-  ~PyRandomSvd() {}
+  PyRandomSvd(const std::vector<std::vector<double> > > &initial);
+  ~PyRandomSvd(){}
 
   // Methods
-  std::vector<PyEigenMatrixXd> GetRandomSvd(const PyEigenMatrixXd &A) const;
-  std::vector<PyEigenMatrixXd> GetRandomSvd(const PyEigenMatrixXd &A, const int k) const;
-  std::vector<PyEigenMatrixXd> GetRandomSvd(const PyEigenMatrixXd &A, const int k, const int q) const;
-  std::vector<PyEigenMatrixXd> WrapVector(const std::vector<Eigen::MatrixXd> &matrices) const;
+  void GetRandomSvd();
+  GetRandomSvd(const int k);
+  GetRandomSvd(const int k, const int q);
+
+  // Data members
+  std::vector<std::vector<double>* >* U;
+  std::vector<std::vector<double>* >* s;
+  std::vector<std::vector<double>* >* V;
+
+ private:
+  void fill_svd(const std::vector<Eigen::MatrixXd> &matrices);
+
 };
 
 } // namespace python

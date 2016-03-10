@@ -11,15 +11,11 @@ class PyEigenMatrixXd
 {
  public:
   // Constructor and destructor
-  PyEigenMatrixXd(int rows, int cols);
-  PyEigenMatrixXd(Eigen::MatrixXd initial);
+  PyEigenMatrixXd(const std::vector<std::vector<double> > &initial);
+  PyEigenMatrixXd(const Eigen::MatrixXd &initial);
   ~PyEigenMatrixXd() {}
 
-  // Methods
-  double Get(int row, int col);
-  void Set(int row, int col, double val);
-  int Rows();
-  int Cols();
+  std::vector<std::vector<double>* >* to_vector();
 
   // Data members
   Eigen::MatrixXd matrix;

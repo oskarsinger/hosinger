@@ -14,10 +14,10 @@ class RandomOrthonormalBasis
  public:
   RandomOrthonormalBasis() {}
   ~RandomOrthonormalBasis() {}
-  MatrixXd GetEpsilonBasis(MatrixXd A, const double epsilon);
-  MatrixXd GetFullRankBasis(MatrixXd A);
-  MatrixXd GetRankKBasis(MatrixXd A, const int k);
-  MatrixXd GetRankKBasis(MatrixXd A, const int k, const int q);
+  MatrixXd GetEpsilonBasis(const MatrixXd &A, const double epsilon);
+  MatrixXd GetFullRankBasis(const MatrixXd &A);
+  MatrixXd GetRankKBasis(const MatrixXd &A, const int k);
+  MatrixXd GetRankKBasis(const MatrixXd &A, const int k, const int q);
 };
 
 } // namespace random

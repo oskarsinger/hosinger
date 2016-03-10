@@ -16,13 +16,13 @@ namespace random {
 
 using namespace Eigen;
 
-MatrixXd RandomOrthonormalBasis::GetEpsilonBasis(MatrixXd A, const double epsilon)
+MatrixXd RandomOrthonormalBasis::GetEpsilonBasis(const MatrixXd &A, const double epsilon)
 {
     std::cout << "WARNING: this method is not implemented and will return a zero matrix." << std::endl;
     return MatrixXd::Zero(A.rows(), A.cols());
 }
 
-MatrixXd RandomOrthonormalBasis::GetFullRankBasis(MatrixXd A)
+MatrixXd RandomOrthonormalBasis::GetFullRankBasis(const MatrixXd &A)
 {
     int m = A.rows();
     int n = A.cols();
@@ -31,12 +31,12 @@ MatrixXd RandomOrthonormalBasis::GetFullRankBasis(MatrixXd A)
     return GetRankKBasis(A, max_rank);
 }
 
-MatrixXd RandomOrthonormalBasis::GetRankKBasis(MatrixXd A, const int k)
+MatrixXd RandomOrthonormalBasis::GetRankKBasis(const MatrixXd &A, const int k)
 {
     return GetRankKBasis(A, k, 1);
 }
 
-MatrixXd RandomOrthonormalBasis::GetRankKBasis(MatrixXd A, const int k, const int q)
+MatrixXd RandomOrthonormalBasis::GetRankKBasis(const MatrixXd &A, const int k, const int q)
 {
     int m = A.rows(); 
     int n = A.cols();

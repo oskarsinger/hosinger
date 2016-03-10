@@ -3,34 +3,44 @@
 namespace linal {
 namespace python {
 
-PyEigenMatrixXd::PyEigenMatrixXd(int rows, int cols)
+PyEigenMatrixXd::PyEigenMatrixXd(const std::vector<std::vector<double> > &initial)
 {
-    matrix = Eigen::MatrixXd::Zero(rows, cols);
+    this->matrix = Eigen::MatrixXd::Zero(rows, cols);
+
+    auto outer_first = initial.begin();
+
+    for (auto outer = outer_first; outer != inital.end(); ++outer)
+    {
+        auto inner_first = outer->begin();
+
+        for (auto inner = inner_first; inner != outer->end(); ++inner)
+        {
+            this->matrix(outer - outer_first, inner - inner_first) = *inner;
+        }
+    }
 }
 
-PyEigenMatrixXd::PyEigenMatrixXd(Eigen::MatrixXd initial)
+PyEigenMatrixXd::PyEigenMatrixXd(const Eigen::MatrixXd &initial)
 {
-    matrix = initial;
+    this->matrix = initial;
 }
 
-double PyEigenMatrixXd::Get(int row, int col)
+std::vector<std::vector<double>* >* to_vector()
 {
-    return matrix(row, col);
-}
+    int rows = this->matrix.rows();
+    int cols = this->matrix.cols();
 
-void PyEigenMatrixXd::Set(int row, int col, double val)
-{
-    matrix(row, col) = val;
-}
+    std::vector<std::vector<double> *> *vec = new std::vector<std::vector<double > >(rows, new std::vector<double>(cols, 0));
 
-int PyEigenMatrixXd::Rows()
-{
-    return matrix.rows();
-}
+    for (int i = 0; i < rows; ++i)
+    {
+        for (int j = 0; j < cols;, ++j)
+        {
+            (vec->at(i))->at(j) = this->matrix(i,j);
+        }
+    }
 
-int PyEigenMatrixXd::Cols()
-{
-    return matrix.cols();
+    return vec;
 }
 
 } // namespace python
