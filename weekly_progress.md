@@ -10,7 +10,7 @@ Each week is indexed by the date of Monday.
 * [1 February 2016](#1feb)
 * [8 February 2016](#8feb)
 * [15 February 2016](#15feb)
-* [29 February 2016](#29feb)
+* [29 February 2016/6 March 2016](#29feb)
 
 ##Progress Reports
 
@@ -310,7 +310,10 @@ Some of the following bodies of literature may be useful to us.
 ####Questions
 * None that I can think of right now.
 
-###<a name='29feb'>29 February 2016</a>
+###<a name='29feb'>29 February 2016 and 6 March 2016</a>
+
+####Previous Work
+* Hogwild could be quite helpful to us, especially considering our desire to impose sparsity penalties/constraints. The idea behind Hogwild seems quite similar to the idea behind the marginal likelihood for distributed parameter estimation paper.
 
 ####Our Ideas
 * Use differential geometry to do (functional?) CCA on some manifold so it is more sensitive to non-linear relationships. Is this somehow equivalent to the measure transform? This is sort of inspired by reading about Fisher info and natural gradient.
@@ -328,6 +331,10 @@ Some of the following bodies of literature may be useful to us.
     2. From the specification, we automatically produce an algorithm that gives good performance in the specified scenario.
     
     Wouldn't it be awesome if we could do this? I am thinking of something a bit like STAN, but for online learning.
+
+* Active learning is usually sold as a way to minimize queries to expensive labeling oracles, but labeling is not necessarily the only cost associated with a specific training example. We could think about generalizing the idea of the cost of a training example, e.g. communication overhead of making parameter updates in a distributed system or computational cost of a model with expensive updates. Interesting aspects to this idea:
+    * not specific to supervised learning problems
+    * can possibly deal with multiple costs and actions (e.g. considering the costs of oracle query, update computation, and communication overhead, should we label this example, and to which nodes should we send the parameter update?)
 
 ####Meetings
 * Al:
@@ -370,3 +377,7 @@ Some of the following bodies of literature may be useful to us.
 * Delayed Rewards:
     * Made a ton of progress on a modular data-serving framework that can include data from pretty much any source: static or streamed, simulated or real.
     * Started running tests with this framework to find that, when plugged into BOLD, exp3 and ucb1 seem to be making random decision even after ~1000 rounds on 6 arms of Bernoulli rewards with means 0.1, 0.1, 0.1, 0.1, 0.1 and 0.5, and a fixed delay of 1 for each arm. Need to investigate what's wrong with my implementation.
+
+####Questions
+* @Both:
+    * Are there scenarios in which the cost of computing a parameter update is dependent on the observation?
