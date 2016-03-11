@@ -11,7 +11,7 @@ using namespace Eigen;
 
 const random::RandomSvd PyRandomSvd::rSvd = random::RandomSvd();
 
-PyRandomSvd::PyRandomSvd(const std::vector<std::vector<double> > > &initial)
+PyRandomSvd::PyRandomSvd(const std::vector<std::vector<double> > &initial)
     : PyEigenMatrixXd(initial)
 {}
 
@@ -25,7 +25,7 @@ void PyRandomSvd::GetRandomSvd(const int k)
     fill_svd(this->rSvd.GetRandomSvd(this->matrix, k));
 }
 
-void PyRandomSvd::GetRandomSvd(const int k, const int q) const
+void PyRandomSvd::GetRandomSvd(const int k, const int q)
 {
     fill_svd(this->rSvd.GetRandomSvd(this->matrix, k, q));
 }

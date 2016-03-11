@@ -26,11 +26,6 @@ linal_sources = [linal_dir + linal_source + ".cc"
                  for linal_source in linal_sources]
 
 extensions = [
-    Extension("pygen",
-        ["linal/pygen.pyx"]+[linal_sources[2]],
-        include_dirs=linal_include_dirs,
-        extra_compile_args=compile_args,
-        language="c++"),
     Extension("random_svd",
         ["linal/random_svd.pyx"]+linal_sources,
         include_dirs=linal_include_dirs,

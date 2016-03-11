@@ -15,7 +15,7 @@ class PyEigenMatrixXd
   PyEigenMatrixXd(const Eigen::MatrixXd &initial);
   ~PyEigenMatrixXd() {}
 
-  std::vector<std::vector<double>* >* to_vector();
+  std::vector<std::vector<double> > to_vector();
 
   // Data members
   Eigen::MatrixXd matrix;

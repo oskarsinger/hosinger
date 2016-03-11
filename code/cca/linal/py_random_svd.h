@@ -19,18 +19,18 @@ class PyRandomSvd: public PyEigenMatrixXd
   static const random::RandomSvd rSvd;
 
   // Constructor
-  PyRandomSvd(const std::vector<std::vector<double> > > &initial);
+  PyRandomSvd(const std::vector<std::vector<double> > &initial);
   ~PyRandomSvd(){}
 
   // Methods
   void GetRandomSvd();
-  GetRandomSvd(const int k);
-  GetRandomSvd(const int k, const int q);
+  void GetRandomSvd(const int k);
+  void GetRandomSvd(const int k, const int q);
 
   // Data members
-  std::vector<std::vector<double>* >* U;
-  std::vector<std::vector<double>* >* s;
-  std::vector<std::vector<double>* >* V;
+  std::vector<std::vector<double> > U;
+  std::vector<std::vector<double> > s;
+  std::vector<std::vector<double> > V;
 
  private:
   void fill_svd(const std::vector<Eigen::MatrixXd> &matrices);

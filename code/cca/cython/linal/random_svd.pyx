@@ -1,9 +1,7 @@
 from classes cimport PyRandomSvd as PyRSvd
 from libcpp.vector cimport vector
 
-from pygen import PygenMatrix
-
-from cython.operator cimport dereference as deref
+from numpy import array
 
 cdef class RandomSvd:
     cdef PyRSvd *r_svd
@@ -17,15 +15,13 @@ cdef class RandomSvd:
 
     def get_svd(self, k=None):
 
-        (n,p) = numpy_mat.shape
-
         if k is not None:
             self.r_svd.GetRandomSvd(k)
         else:
             self.r_svd.GetRandomSvd()
 
-        U = self.r_svd.U
-        s = self.r_svd.s
-        V = self.r_svd.V
+        U = array(self.r_svd.U)
+        s = array(self.r_svd.s)
+        V = array(self.r_svd.V)
 
         return (U,s,V)

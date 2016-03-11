@@ -7,5 +7,5 @@ cdef extern from "../../linal/py_random_svd.h" namespace "linal::python":
         vector[vector[double]] V
         PyRandomSvd(const vector[vector[double]] &initial)
         void GetRandomSvd()
-        void GetRandomSvd(int k)
-        void GetRandomSvd(int k, int q)
+        void GetRandomSvd(const int k)
+        void GetRandomSvd(const int k, const int q)
