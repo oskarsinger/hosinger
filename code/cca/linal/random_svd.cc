@@ -35,14 +35,16 @@ std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k, co
     int n = A.rows();
     int m = A.cols();
     int max_rank = std::min(n,m);
+    int rank = k;
 
     if (k > max_rank)
     {
-        std::cout << "WARNING: The value of k must not exceed the number of columns or rows of A." << std::endl;
+        std::cout << "WARNING: The value of k must not exceed the number of columns or rows of A. Setting k to maximum possible rank." << std::endl;
+        rank = max_rank;
     }
 
     RandomOrthonormalBasis rob;
-    MatrixXd Q = rob.GetRankKBasis(A, k, q);
+    MatrixXd Q = rob.GetRankKBasis(A, rank, q);
 
     time_t before, after;
 

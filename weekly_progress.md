@@ -313,7 +313,7 @@ Some of the following bodies of literature may be useful to us.
 ###<a name='29feb'>29 February 2016 and 6 March 2016</a>
 
 ####Previous Work
-* Hogwild could be quite helpful to us, especially considering our desire to impose sparsity penalties/constraints. The idea behind Hogwild seems quite similar to the idea behind the marginal likelihood for distributed parameter estimation paper.
+* Hogwild could be quite helpful to us, especially considering our desire to impose sparsity penalties/constraints. The idea behind Hogwild seems quite similar to the idea behind the marginal likelihood for distributed parameter estimation paper, which will also be quite useful.
 
 ####Our Ideas
 * Use differential geometry to do (functional?) CCA on some manifold so it is more sensitive to non-linear relationships. Is this somehow equivalent to the measure transform? This is sort of inspired by reading about Fisher info and natural gradient.
@@ -336,6 +336,8 @@ Some of the following bodies of literature may be useful to us.
     * not specific to supervised learning problems
     * can possibly deal with multiple costs and actions (e.g. considering the costs of oracle query, update computation, and communication overhead, should we label this example, and to which nodes should we send the parameter update?)
 
+* How hard would it be to develop distributed estimation algorithms that take advantage of structural sparsity _and_ are able to deal with adaptive structural assumptions?
+
 ####Meetings
 * Al:
     * In general, we are interested in active learning and CCA. First we should focus on some particular challenges within CCA, then impose an active learning scenario onto that.
@@ -352,27 +354,28 @@ Some of the following bodies of literature may be useful to us.
             * Graph CCA
                 * Start with a graph where each node is an instance (with internal structure between multiple modalities represented by a graphical model), and each edge represents dependency that results in a consistency constraint. End up solving an SDP-type problem for a non-convex objective function. Should investigate John Wright papers to see what kind of structural penalties we can impose on our objective to result in well-behaving non-convexity.
             * Asynch CCA
-                * If we choose time invariance, this can be done with something like Hogwild.
+                * If we choose time invariance, this can definitely be done with something like Hogwild, which also appeals to potential sparsity assumptions.
                 * Can we do time-varying CCA with asynchronous, stochastic updates?
                     * Split the time series into blocks to be used for the asynchronous updates. Will blocks of size two be enough, or do they need to be bigger? Is there some way to characterize a trade-off between block size, sample complexity, and empirical performance?
                 * For the active learning component, the asynchronous algorithms used for delayed reward could be applied, or we could take inspiration from them somehow.
         * **Possible applications.** 
-            * These ones are not as appealing to me, but there is data, and it will be less difficult or even unnecessary to find domain-specific collaborators.
+            * For these applications, there is available data, and we already have collaborators, both domain-specific and in engineering.
                 * Web search: allow more interesting search queries by things like similar image or text content.
                 * Marketing: want to take population non-homogeneity into consideration when making marketing decisions like who to target and how to best reach them.
-                * Events in Twitter: I am a bit skeptical about the ability to gain actionable information from individual or even sequences of tweets, but we are thinking more of very large aggregations, so its not necessary to master the NLP aspect.
-            * These ones are much more exciting to me, and there is data, but finding collaborators may be more difficult.
+                * Events in Twitter: I am a bit skeptical about the ability to gain actionable information from individual or even sequences of tweets, but we are thinking more of very large aggregations, so it may not be necessary to master the NLP aspect.
                 * Genomic: continue working with dataset from Yaya.
                 * Astronomy: discovery of dark matter through multiple measurement types.
         * **Scalability and Distributed Computing.** 
             * As disparity between ambient and true dimension goes up, projected gradient becomes slower.
             * Make graphical model structural assumptions to facilitate distributability of the computation.
-            * I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and engineering levels.
+            * I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and engineering levels. Thibaut also seems interested in this topic.
             * Most of the decentralized estimation techniques I have read about involve subgradient methods, which are very slow.
 
 ####Engineering
 * CCA:
-    * Fixed a ton of C++ bugs, but running into some issues in the Cython layer.
+    * The Cython layer for the randomized SVD tool is fixed, and I have a _much_ better general understanding of Cython now. Using it from this point forward should be much easier.
+    * There is an odd bug in the randomized SVD so that all of the corresponding entries of my singular vectors and numpy's singular vectors have identical absolute value, but some of the signs are flipped, and there doesn't seem to be a pattern to the sign flips. Is this a numerical stability issue?
+    * Implemented the stochastic gradient CCA in Python.
 
 * Delayed Rewards:
     * Made a ton of progress on a modular data-serving framework that can include data from pretty much any source: static or streamed, simulated or real.
