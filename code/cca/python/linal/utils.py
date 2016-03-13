@@ -2,18 +2,13 @@ import numpy as np
 
 def multi_dot(As):
 
-    B = np.identity(As[0].shape[0])
-
-    for A in As:
-        B = np.dot(B, A)
-
-    return B
+    return reduce(lambda B,A: np.dot(B,A), As)
 
 def quadratic(X, A):
 
     return multi_dot([X.T, A, X])
 
-def get_svd_invert(A, k=None, random=True):
+def get_svd_invert(A, power=-1, k=None, random=True):
 
     (U, s, V) = (None, None, None)
 
@@ -26,7 +21,7 @@ def get_svd_invert(A, k=None, random=True):
     else:
         (U, s, V) = np.linalg.svd(A)
 
-    return multi_dot([U, np.diag(np.power(s, -0.5)), V])
+    return multi_dot([U, np.diag(np.power(s, power)), V])
 
 def get_rank_k(m, n, k):
 

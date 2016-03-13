@@ -671,6 +671,7 @@ int __pyx_module_is_main_linal__random_svd = 0;
 
 /* Implementation of 'linal.random_svd' */
 static PyObject *__pyx_builtin_range;
+static char __pyx_k_T[] = "T";
 static char __pyx_k_k[] = "k";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
@@ -680,6 +681,7 @@ static char __pyx_k_range[] = "range";
 static char __pyx_k_import[] = "__import__";
 static char __pyx_k_tolist[] = "tolist";
 static char __pyx_k_numpy_mat[] = "numpy_mat";
+static PyObject *__pyx_n_s_T;
 static PyObject *__pyx_n_s_array;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_k;
@@ -1015,7 +1017,7 @@ static PyObject *__pyx_pf_5linal_10random_svd_9RandomSvd_4get_svd(struct __pyx_o
  * 
  *         U = array(self.r_svd.U)             # <<<<<<<<<<<<<<
  *         s = array(self.r_svd.s)
- *         V = array(self.r_svd.V)
+ *         V = array(self.r_svd.V).T
  */
   __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
@@ -1054,7 +1056,7 @@ static PyObject *__pyx_pf_5linal_10random_svd_9RandomSvd_4get_svd(struct __pyx_o
  * 
  *         U = array(self.r_svd.U)
  *         s = array(self.r_svd.s)             # <<<<<<<<<<<<<<
- *         V = array(self.r_svd.V)
+ *         V = array(self.r_svd.V).T
  * 
  */
   __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1093,7 +1095,7 @@ static PyObject *__pyx_pf_5linal_10random_svd_9RandomSvd_4get_svd(struct __pyx_o
   /* "linal/random_svd.pyx":25
  *         U = array(self.r_svd.U)
  *         s = array(self.r_svd.s)
- *         V = array(self.r_svd.V)             # <<<<<<<<<<<<<<
+ *         V = array(self.r_svd.V).T             # <<<<<<<<<<<<<<
  * 
  *         return (U,s,V)
  */
@@ -1127,28 +1129,31 @@ static PyObject *__pyx_pf_5linal_10random_svd_9RandomSvd_4get_svd(struct __pyx_o
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_v_V = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_T); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_v_V = __pyx_t_5;
+  __pyx_t_5 = 0;
 
   /* "linal/random_svd.pyx":27
- *         V = array(self.r_svd.V)
+ *         V = array(self.r_svd.V).T
  * 
  *         return (U,s,V)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_v_U);
   __Pyx_GIVEREF(__pyx_v_U);
-  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_U);
+  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_v_U);
   __Pyx_INCREF(__pyx_v_s);
   __Pyx_GIVEREF(__pyx_v_s);
-  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_v_s);
+  PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_v_s);
   __Pyx_INCREF(__pyx_v_V);
   __Pyx_GIVEREF(__pyx_v_V);
-  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_v_V);
-  __pyx_r = __pyx_t_4;
-  __pyx_t_4 = 0;
+  PyTuple_SET_ITEM(__pyx_t_5, 2, __pyx_v_V);
+  __pyx_r = __pyx_t_5;
+  __pyx_t_5 = 0;
   goto __pyx_L0;
 
   /* "linal/random_svd.pyx":16
@@ -1654,6 +1659,7 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_n_s_T, __pyx_k_T, sizeof(__pyx_k_T), 0, 0, 1, 1},
   {&__pyx_n_s_array, __pyx_k_array, sizeof(__pyx_k_array), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_k, __pyx_k_k, sizeof(__pyx_k_k), 0, 0, 1, 1},

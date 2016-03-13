@@ -1,7 +1,7 @@
 import numpy as np
 
 from numpy.random import randn, choice
-from linal.utils import quadratic, get_svd_invert
+from linal.utils import quadratic as quad, get_svd_invert
 
 def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size=None):
 
@@ -28,8 +28,8 @@ def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size
         Sx = _get_minibatch_S(X, batch_size)
         Sy = _get_minibatch_S(Y, batch_size)
     else:
-        Sx = _get_regged_gram(X) / n1
-        Sy = _get_regged_gram(Y) / n1
+        Sx = _get_regged_gram(X, reg) / n1
+        Sy = _get_regged_gram(Y, reg) / n1
 
     # Randomly initialize normalized and unnormalized canonical bases for 
     # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
@@ -66,9 +66,8 @@ def _get_minibatch_S(A, batch_size, reg):
 
 def _get_regged_gram(A, reg):
 
-    p = A.shape[1]
     gram = np.dot(A.T, A)
-    reg_matrix = np.diag(np.array([reg] * p))
+    reg_matrix = reg * np.identity(A.shape[1])
 
     return gram + reg
 
@@ -91,7 +90,7 @@ def _get_updated_bases(X1, X2, unnormed1, normed2, S1, k, eta1):
     unnormed1_next = unnormed1 - eta1 * gradient
 
     # Normalize unnormed 1 with inversion of matrix quadratic
-    normed1 = _get_quadratic_normalized(unnormed1_next, S1)
+    normed1 = _get_quad_normed(unnormed1_next, S1)
 
     return (unnormed1_next, normed1)
 
@@ -106,13 +105,13 @@ def _get_init_bases(Sx, Sy):
     unn_Psi = randn(p2, p)
 
     # Normalize for initial normalized bases
-    Phi = _get_quadratic_normalized(unn_Phi, Sx)
-    Psi = _get_quadratic_normalized(unn_Psi, Sy) 
+    Phi = _get_quad_normed(unn_Phi, Sx)
+    Psi = _get_quad_normed(unn_Psi, Sy) 
 
     return (Phi, unn_Phi, Psi, unn_Psi)
 
-def _get_quadratic_normalized(unnormed, S):
+def _get_quad_normed(unnormed, S):
 
-    normalizer = get_svd_invert(quadratic(unnormed, S), random=False)
+    normalizer = get_svd_invert(quad(unnormed, S), random=False, power=-0.5)
 
     return np.dot(unnormed, normalizer)
