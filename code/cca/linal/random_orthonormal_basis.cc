@@ -33,7 +33,7 @@ MatrixXd RandomOrthonormalBasis::GetFullRankBasis(const MatrixXd &A)
 
 MatrixXd RandomOrthonormalBasis::GetRankKBasis(const MatrixXd &A, const int k)
 {
-    return GetRankKBasis(A, k, 1);
+    return GetRankKBasis(A, k, 2);
 }
 
 MatrixXd RandomOrthonormalBasis::GetRankKBasis(const MatrixXd &A, const int k, const int q)

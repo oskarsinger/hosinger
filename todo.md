@@ -93,3 +93,13 @@
 
 ##Delayed Rewards
 * Start writing up the paper.
+
+#Plots
+
+##Delayed Rewards
+* Arm counts vs time
+    * either by n-length period or by individual time step (cumulative percentage of arm usage at each time step or period).
+* Reward vs time.
+    * Percentage of optimal. Should be increasing.
+* Or regret vs time.
+    * Difference from optimal regret. Should be decreasing.

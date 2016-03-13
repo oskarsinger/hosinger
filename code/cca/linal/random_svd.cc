@@ -27,7 +27,7 @@ std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A) const
 
 std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k) const
 {
-    return GetRandomSvd(A, k, 1);
+    return GetRandomSvd(A, k, 2);
 }
 
 std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k, const int q) const

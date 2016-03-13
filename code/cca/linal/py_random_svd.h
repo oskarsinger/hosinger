@@ -29,7 +29,7 @@ class PyRandomSvd: public PyEigenMatrixXd
 
   // Data members
   std::vector<std::vector<double> > U;
-  std::vector<std::vector<double> > s;
+  std::vector<double> s;
   std::vector<std::vector<double> > V;
 
  private:

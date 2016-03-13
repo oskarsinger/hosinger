@@ -374,7 +374,7 @@ Some of the following bodies of literature may be useful to us.
 ####Engineering
 * CCA:
     * The Cython layer for the randomized SVD tool is fixed, and I have a _much_ better general understanding of Cython now. Using it from this point forward should be much easier.
-    * There is an odd bug in the randomized SVD so that all of the corresponding entries of my singular vectors and numpy's singular vectors have identical absolute value, but some of the signs are flipped, and there doesn't seem to be a pattern to the sign flips. Is this a numerical stability issue?
+    * Figured out that some of the singular vectors from the randomized SVD have the signs flipped, but the corresponding V and U vectors always have the same sign, so it doesn't actually matter.
     * Implemented the stochastic gradient CCA in Python.
 
 * Delayed Rewards:

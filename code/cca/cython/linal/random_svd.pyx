@@ -22,6 +22,6 @@ cdef class RandomSvd:
 
         U = array(self.r_svd.U)
         s = array(self.r_svd.s)
-        V = array(self.r_svd.V)
+        V = array(self.r_svd.V).T
 
         return (U,s,V)
