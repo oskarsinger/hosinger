@@ -3,7 +3,6 @@
 
 // Imports from C++
 #include <iostream>
-#include <time.h>
 
 // Imports from external projects
 #include <Eigen/SVD>
@@ -27,7 +26,7 @@ std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A) const
 
 std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k) const
 {
-    return GetRandomSvd(A, k, 2);
+    return GetRandomSvd(A, k, 1);
 }
 
 std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k, const int q) const
@@ -46,15 +45,10 @@ std::vector<MatrixXd> RandomSvd::GetRandomSvd(const MatrixXd &A, const int k, co
     RandomOrthonormalBasis rob;
     MatrixXd Q = rob.GetRankKBasis(A, rank, q);
 
-    time_t before, after;
+    std::cout << "Q cols: " << Q.cols() << " Q rows: " << Q.rows() << std::endl;
 
-    time(&before);
     Eigen::JacobiSVD<MatrixXd> svd(Q.transpose() * A, ComputeFullU | ComputeFullV);
-    time(&after);
-    std::cout << "Completed SVD" << difftime(after, before) << std::endl;
-
-    MatrixXd U = Q * svd.matrixU();
-    std::vector<MatrixXd> UsV = {U, svd.singularValues(), svd.matrixV()};
+    std::vector<MatrixXd> UsV = {Q * svd.matrixU(), svd.singularValues(), svd.matrixV()};
 
     return UsV;
 }

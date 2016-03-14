@@ -23,7 +23,7 @@ MatrixXd RandomMatrixFactory::GetRankKMatrix(const int m, const int n, const int
 
     for (int i = 0; i < k; ++i)
     {
-        A += MatrixXd::Random(m,1) * MatrixXd::Random(1,n);
+        A.noalias() += MatrixXd::Random(m,1) * MatrixXd::Random(1,n);
     }
 
     return A;

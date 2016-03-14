@@ -7,11 +7,17 @@ def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size
 
     (n1, p1) = X.shape
     (n2, p2) = Y.shape
+    p = min([p1, p2])
     stochastic = False
 
     if not n1 == n2:
         raise ValueError(
             'Data matrices must have same number of data points.')
+
+    if k > p:
+        raise ValueError(
+            'The value of k must be less than or equal to the minimum of the' +
+            ' number of columns of X and Y.')
 
     if batch_size is not None:
         if batch_size < k:
@@ -23,30 +29,50 @@ def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size
     Sx = None
     Sy = None
 
+    print "Getting Sx and Sy"
+
     # Empirical second moment matrices for X and Y
     if stochastic:
-        Sx = _get_minibatch_S(X, batch_size)
-        Sy = _get_minibatch_S(Y, batch_size)
+        Sx = _get_minibatch_S(X, batch_size, reg)
+        Sy = _get_minibatch_S(Y, batch_size, reg)
     else:
         Sx = _get_regged_gram(X, reg) / n1
         Sy = _get_regged_gram(Y, reg) / n1
 
+    print "Getting initial basis estimates"
+
     # Randomly initialize normalized and unnormalized canonical bases for 
     # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
-    (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = _get_init_bases(Sx, Sy)
+    (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = _get_init_bases(Sx, Sy, k)
     (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
 
     converged = False
 
+    i = 1
+
     while not converged:
 
+        print "Iteration:", i
+
+        eta1_current = eta1 / i**0.5
+        eta2_current = eta2 / i**0.5
+        i = i + 1
+
         if stochastic:
-            Sx = _get_minibatch_S(X, batch_size)
-            Sy = _get_minibatch_S(Y, batch_size)
+            print "\tGetting minibatch Sx and Sy"
+
+            Sx = _get_minibatch_S(X, batch_size, reg)
+            Sy = _get_minibatch_S(Y, batch_size, reg)
+
+        print "\tGetting updated basis estimates"
 
         # Get basis updates for both X and Y's canonical bases, normed and unnormed
-        (unn_Phi_t1, Phi_t1) = _get_updated_bases(X, Y, unn_Phi_t, Psi_t, Sx, k, eta1)
-        (unn_Psi_t1, Psi_t1) = _get_updated_bases(Y, X, unn_Psi_t, Phi_t, Sy, k, eta2)
+        (unn_Phi_t1, Phi_t1) = _get_updated_bases(
+            X, Y, unn_Phi_t, Psi_t, Sx, k, eta1_current)
+        (unn_Psi_t1, Psi_t1) = _get_updated_bases(
+            Y, X, unn_Psi_t, Phi_t, Sy, k, eta2_current)
+
+        print "\tChecking for convergence"
 
         # Check if error is below tolerance threshold
         converged = _is_converged(unn_Phi_t, unn_Phi_t1, epsilon1) and \
@@ -59,7 +85,8 @@ def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size
 
 def _get_minibatch_S(A, batch_size, reg):
 
-    indexes = choice(np.arange(n1), replace=False, size=batch_size)
+    indexes = choice(
+        np.arange(A.shape[0]), replace=False, size=batch_size)
     A_t = A[indexes,:]
 
     return _get_regged_gram(A_t, reg) / batch_size
@@ -69,13 +96,15 @@ def _get_regged_gram(A, reg):
     gram = np.dot(A.T, A)
     reg_matrix = reg * np.identity(A.shape[1])
 
-    return gram + reg
+    return gram + reg_matrix
 
 def _is_converged(unnormed, unnormed_next, epsilon):
 
     # Calculate distance between current and previous timesteps' bases under 
     # Frobenius norm
     distance = np.linalg.norm(unnormed - unnormed_next)
+
+    print "\t\tDistance:", distance
 
     return distance < epsilon
 
@@ -94,15 +123,11 @@ def _get_updated_bases(X1, X2, unnormed1, normed2, S1, k, eta1):
 
     return (unnormed1_next, normed1)
 
-def _get_init_bases(Sx, Sy):
+def _get_init_bases(Sx, Sy, k):
 
-    p1 = Sx.shape[0]
-    p2 = Sy.shape[0]
-    p = min([p1,p2])
-    
     # Initialize Gaussian matrices for unnormalized bases
-    unn_Phi = randn(p1, p)
-    unn_Psi = randn(p2, p)
+    unn_Phi = randn(Sx.shape[0], k)
+    unn_Psi = randn(Sy.shape[0], k)
 
     # Normalize for initial normalized bases
     Phi = _get_quad_normed(unn_Phi, Sx)
@@ -112,6 +137,7 @@ def _get_init_bases(Sx, Sy):
 
 def _get_quad_normed(unnormed, S):
 
-    normalizer = get_svd_invert(quad(unnormed, S), random=False, power=-0.5)
+    normalizer = get_svd_invert(
+        quad(unnormed, S), random=False, power=-0.5)
 
     return np.dot(unnormed, normalizer)

@@ -7,7 +7,11 @@
             "../linal/py_random_svd.h"
         ], 
         "extra_compile_args": [
-            "-std=c++11"
+            "-std=c++11", 
+            "-fopenmp"
+        ], 
+        "extra_link_args": [
+            "-lgomp"
         ], 
         "include_dirs": [
             "../eigen/", 

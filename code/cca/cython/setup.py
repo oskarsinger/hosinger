@@ -5,7 +5,12 @@ from Cython.Build import cythonize
 import os
 
 compile_args = [
-    "-std=c++11"
+    "-std=c++11",
+    "-fopenmp"
+]
+
+link_args = [
+    "-lgomp"
 ]
 
 eigen_dir = "../eigen/"
@@ -30,6 +35,7 @@ extensions = [
         ["linal/random_svd.pyx"]+linal_sources,
         include_dirs=linal_include_dirs,
         extra_compile_args=compile_args,
+        extra_link_args=link_args,
         language="c++")
 ]
 

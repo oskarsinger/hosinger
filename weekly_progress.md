@@ -371,11 +371,19 @@ Some of the following bodies of literature may be useful to us.
             * I will need to start familiarizing myself with distributed estimation techniques, on both theoretical and engineering levels. Thibaut also seems interested in this topic.
             * Most of the decentralized estimation techniques I have read about involve subgradient methods, which are very slow.
 
+* Eric:
+    * Presented my engineering progress on the delayed rewards problem, including the testing framework and data generation framework and its interaction with the bandit algorithm framework. Presented plans for next steps in engineering, including expansion to allow for more complex correlations/relationships between delay and reward.
+    * Discussed informative plots for analysis and sanity checks on empirical results of the various bandit algorithms.
+    * Discussed plan for empirical tests on the algorithms we have chosen.
+    * Explained potential for delayed reward scenario to address distributed data collection problem, as well as my idea about active learning generalized to different types of rewards and costs beyond decrease in expected loss and cost of oracle query.
+
 ####Engineering
 * CCA:
     * The Cython layer for the randomized SVD tool is fixed, and I have a _much_ better general understanding of Cython now. Using it from this point forward should be much easier.
     * Figured out that some of the singular vectors from the randomized SVD have the signs flipped, but the corresponding V and U vectors always have the same sign, so it doesn't actually matter.
-    * Implemented the stochastic gradient CCA in Python.
+    * Randomized SVD is really slow right now. There are a couple bottlenecks including the randomized part, which can be mitigated to some extent with use of a structured random matrix or an error-correcting code matrix. I am currently looking at a couple of papers on using these types of matrices to speed-up randomized matrix factorization.
+    * The batch version of gradient-based CCA is producing canonical bases that satisfy the constraints of the CCA optimization problem.
+    * Implemented the stochastic gradient CCA in Python. Currently, there is a bug that is resulting in the canonical bases not satisfying the normalization constraints. I am not yet sure if it is a code issue or a poor choice of hyperparameters. On first glance, increasing the batch size with respect to the size of the canonical basis seems to help.
 
 * Delayed Rewards:
     * Made a ton of progress on a modular data-serving framework that can include data from pretty much any source: static or streamed, simulated or real.
