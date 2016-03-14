@@ -61,8 +61,8 @@ def get_app_grad_decomp(X, Y, k, eta1, eta2, epsilon1, epsilon2, reg, batch_size
         if stochastic:
             print "\tGetting minibatch Sx and Sy"
 
-            Sx = _get_minibatch_S(X, batch_size, reg)
-            Sy = _get_minibatch_S(Y, batch_size, reg)
+            Sx = (_get_minibatch_S(X, batch_size, reg) + (i - 1) * Sx) / i
+            Sy = (_get_minibatch_S(Y, batch_size, reg) + (i - 1) * Sy) / i
 
         print "\tGetting updated basis estimates"
 
