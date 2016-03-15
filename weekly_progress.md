@@ -313,7 +313,7 @@ Some of the following bodies of literature may be useful to us.
 ###<a name='29feb'>29 February 2016 and 6 March 2016</a>
 
 ####Previous Work
-* Hogwild could be quite helpful to us, especially considering our desire to impose sparsity penalties/constraints. The idea behind Hogwild seems quite similar to the idea behind the marginal likelihood for distributed parameter estimation paper, which will also be quite useful.
+* Hogwild could be quite helpful to us, especially considering our desire to impose sparsity penalties/constraints. The idea behind Hogwild seems quite similar to the idea behind the marginal likelihood for distributed parameter estimation paper, which will also be quite useful. If we randomly sparsify our gradient updates as is done in Hogwild, can we then get the advantages enjoyed by AdaGrad in a sparse scenario? Is it problematic to keep seperate AdaGrad step size parameters for each thread to avoid communication overhead? This overhead is more in terms of difficulty of implementation than a computational issue.
 
 ####Our Ideas
 * Use differential geometry to do (functional?) CCA on some manifold so it is more sensitive to non-linear relationships. Is this somehow equivalent to the measure transform? This is sort of inspired by reading about Fisher info and natural gradient.
@@ -336,7 +336,7 @@ Some of the following bodies of literature may be useful to us.
     * not specific to supervised learning problems
     * can possibly deal with multiple costs and actions (e.g. considering the costs of oracle query, update computation, and communication overhead, should we label this example, and to which nodes should we send the parameter update?)
 
-* How hard would it be to develop distributed estimation algorithms that take advantage of structural sparsity _and_ are able to deal with adaptive structural assumptions?
+* Would it be difficult to develop distributed estimation algorithms that take advantage of structural sparsity _and_ are able to deal with adaptive structural assumptions?
 
 ####Meetings
 * Al:
@@ -377,13 +377,17 @@ Some of the following bodies of literature may be useful to us.
     * Discussed plan for empirical tests on the algorithms we have chosen.
     * Explained potential for delayed reward scenario to address distributed data collection problem, as well as my idea about active learning generalized to different types of rewards and costs beyond decrease in expected loss and cost of oracle query.
 
+* Thibaut:
+    * Discussed potential for using Spark (with Hogwild applied to the online CCA algorithm) and GPUs/multi-threading (applied to the randomized linear algebra) to improve the computational efficiency on large scale CCA.
+
 ####Engineering
 * CCA:
     * The Cython layer for the randomized SVD tool is fixed, and I have a _much_ better general understanding of Cython now. Using it from this point forward should be much easier.
     * Figured out that some of the singular vectors from the randomized SVD have the signs flipped, but the corresponding V and U vectors always have the same sign, so it doesn't actually matter.
-    * Randomized SVD is really slow right now. There are a couple bottlenecks including the randomized part, which can be mitigated to some extent with use of a structured random matrix or an error-correcting code matrix. I am currently looking at a couple of papers on using these types of matrices to speed-up randomized matrix factorization.
+    * Randomized SVD is really slow right now. There are a couple bottlenecks including the randomized part, which can be mitigated to some extent with use of a structured random matrix or an error-correcting code matrix. I am currently looking at a couple of papers on using these types of matrices to speed-up randomized matrix factorization. I am also trying to set up a Flux allocation with a lot of cores so we can multi-thread many of the matrix compuations (this is especially easy with randomized linear algebra). Flux machines are also equipped with a math subroutine package that performs especially well on Intel machines and can be used by the linear algebra library I am using.
     * The batch version of gradient-based CCA is producing canonical bases that satisfy the constraints of the CCA optimization problem.
-    * Implemented the stochastic gradient CCA in Python. Currently, there is a bug that is resulting in the canonical bases not satisfying the normalization constraints. I am not yet sure if it is a code issue or a poor choice of hyperparameters. On first glance, increasing the batch size with respect to the size of the canonical basis seems to help.
+    * Implemented the stochastic gradient CCA in Python. The orthogonality constraints are not satisfied unless the batch size is significantly larger than the canonical bases' dimension. This is because the algorithm from the paper does the normalization with the minibatch Gram matrices, which do not reflect the full datasets subspace. It seems to help if the normalization of the canonical bases is done with the average of all previous minibatch Gram matrices instead of just the minibatch Gram matrix from the current round. This makes sense.
+    * The vanilla SGD takes a lot of iterations to converge (it is still pretty fast), so I am investigating AdaGrad as an option to speed things up.
 
 * Delayed Rewards:
     * Made a ton of progress on a modular data-serving framework that can include data from pretty much any source: static or streamed, simulated or real.
@@ -392,3 +396,4 @@ Some of the following bodies of literature may be useful to us.
 ####Questions
 * @Both:
     * Are there scenarios in which the cost of computing a parameter update is dependent on the observation?
+    * How do we feel about going for the NIPS deadline (May 20th) with at least one of these two projects? I'd have almost a month to devote to just research after final exams end. We could also try for workshop paper deadlines, which come a little later and are easier.
