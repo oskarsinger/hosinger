@@ -4,9 +4,16 @@ def multi_dot(As):
 
     return reduce(lambda B,A: np.dot(B,A), As)
 
-def quadratic(X, A):
+def norm(X, A=None, order=None):
 
-    return multi_dot([X.T, A, X])
+    if A is not None:
+        norm = multi_dot([X.T, A, X])
+    elif order is None:
+        norm = np.linalg.norm(X)
+    else:
+        norm = np.linalg.norm(X, ord=order)
+
+    return norm
 
 def get_svd_invert(A, power=-1, k=None, random=True):
 
