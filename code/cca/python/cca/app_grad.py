@@ -23,8 +23,6 @@ class AppGradCCA:
         p = min([p1, p2])
         stochastic = False
 
-        reg = self.reg
-
         if not n1 == n2:
             raise ValueError(
                 'Data matrices must have same number of data points.')
@@ -41,18 +39,10 @@ class AppGradCCA:
             else:
                 stochastic = True
 
-        Sx = None
-        Sy = None
-
         print "Getting Sx and Sy"
 
-        # Empirical second moment matrices for X and Y
-        if stochastic:
-            Sx = _get_minibatch_S(X, batch_size)
-            Sy = _get_minibatch_S(Y, batch_size)
-        else:
-            Sx = _get_regged_gram(X) / n1
-            Sy = _get_regged_gram(Y) / n1
+        Sx = _get_regged_gram(X)
+        Sy = _get_regged_gram(Y)
 
         print "Getting initial basis estimates"
 
@@ -72,12 +62,6 @@ class AppGradCCA:
             eta1 = self.eta1 / i**0.5
             eta2 = self.eta2 / i**0.5
             i = i + 1
-
-            if stochastic:
-                print "\tGetting minibatch Sx and Sy"
-
-                Sx = (_get_minibatch_S(X, batch_size) + (i - 1) * Sx) / i
-                Sy = (_get_minibatch_S(Y, batch_size) + (i - 1) * Sy) / i
 
             print "\tGetting updated basis estimates"
 
@@ -100,22 +84,72 @@ class AppGradCCA:
 
     def _get_stochastic_cca(self, X, Y, k, batch_size):
 
-        print "Some stuff"
+        # Empirical second moment matrices for X and Y
+        X_current = _get_minibatch(X, batch_size)
+        Y_current = _get_minibatch(Y, batch_size)
+        Sx = get_regged_gram(X_current)
+        Sy = get_regged_gram(Y_current)
+
+        print "Getting initial basis estimates"
+
+        # Randomly initialize normalized and unnormalized canonical bases for 
+        # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
+        (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = _get_init_bases(Sx, Sy, k)
+        (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
+
+        converged = False
+
+        i = 1
+
+        while not converged:
+
+            print "Iteration:", i
+
+            eta1 = self.eta1 / i**0.5
+            eta2 = self.eta2 / i**0.5
+            i = i + 1
+
+            print "\tGetting minibatch Sx and Sy"
+
+            X_current = _get_minibatch(X, batch_size)
+            Y_current = _get_minibatch(Y, batch_size)
+            Sx = _get_regged_gram(X_current) #(_get_regged_gram(X) + (i - 1) * Sx) / i
+            Sy = _get_regged_gram(Y_current) #(_get_regged_gram(Y) + (i - 1) * Sy) / i
+
+            print "\tGetting updated basis estimates"
+
+            # Get basis updates for both X and Y's canonical bases, normed and unnormed
+            (unn_Phi_t1, Phi_t1) = _get_updated_bases(
+                X_current, Y_current, unn_Phi_t, Psi_t, Sx, k, eta1)
+            (unn_Psi_t1, Psi_t1) = _get_updated_bases(
+                Y_current, X_current, unn_Psi_t, Phi_t, Sy, k, eta2)
+
+            print "\tChecking for convergence"
+
+            # Check if error is below tolerance threshold
+            converged = _is_converged(unn_Phi_t, unn_Phi_t1, self.eps1) and \
+                _is_converged(unn_Psi_t, unn_Psi_t1, self.eps2)
+
+            # Update state
+            (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (unn_Phi_t1, Phi_t1, unn_Psi_t1, Psi_t1)
+
+        return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)
+
+    def _stochastic_basis_updates(self, X, Y
 
     def _get_minibatch_S(self, A, batch_size):
 
         indexes = choice(
             np.arange(A.shape[0]), replace=False, size=batch_size)
-        A_t = A[indexes,:]
 
-        return _get_regged_gram(A_t) / batch_size
+        return A[indexes,:]
 
     def _get_regged_gram(self, A):
 
         gram = np.dot(A.T, A)
         reg_matrix = self.reg * np.identity(A.shape[1])
 
-        return gram + reg_matrix
+        return (gram + reg_matrix) / A.shape[0]
 
     def _is_converged(self, unnormed, unnormed_next, epsilon):
 
