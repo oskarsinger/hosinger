@@ -78,8 +78,8 @@ class AppGradCCA:
             if self.stochastic:
                 X = self._get_minibatch(self.X)
                 Y = self._get_minibatch(self.Y)
-                Sx = (self._get_regged_gram(X) + (i - 1) * Sx) / i
-                Sy = (self._get_regged_gram(Y) + (i - 1) * Sy) / i
+                Sx = self._get_regged_gram(X)#(self._get_regged_gram(X) + (i - 1) * Sx) / i
+                Sy = self._get_regged_gram(Y)#(self._get_regged_gram(Y) + (i - 1) * Sy) / i
 
             # Get basis updates for both X and Y's canonical bases, normed and unnormed
             (unn_Phi_t1, Phi_t1) = self._get_updated_bases(

@@ -5,8 +5,8 @@ import numpy as np
 
 def main():
 
-    n = 1000
-    (p1, p2) = (20, 50)
+    n = 10000
+    (p1, p2) = (200, 500)
     k = 5
     (eta1, eta2) = (0.1, 0.1)
     (eps1, eps2) = (0.0001, 0.0001)
@@ -14,9 +14,9 @@ def main():
     batch_size = 100
 
     X = np.random.randn(n, p1)
-    Y = np.random.randn(n, p2) 
+    Y = np.random.randn(n, p2)
 
-    app_grad = AppGradCCA(X, Y, k, batch_size=batch_size)
+    app_grad = AppGradCCA(X, Y, k, batch_size=batch_size, eta1=eta1, eta2=eta2)
 
     (Phi, unn_Phi, Psi, unn_Psi) = app_grad.get_cca()
     Sx = np.dot(X.T, X) / n
