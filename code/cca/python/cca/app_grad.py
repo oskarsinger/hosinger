@@ -48,8 +48,17 @@ class AppGradCCA:
     
     def get_cca(self):
 
+        # Determine data set
         X = self._get_minibatch(self.X) if self.stochastic else self.X
         Y = self._get_minibatch(self.Y) if self.stochastic else self.Y
+
+        # Normalize features
+        X_sum = np.sum(X, axis=0)
+        X_sum[X_sum == 0] = 1
+        Y_sum = np.sum(Y, axis=0)
+        Y_sum[Y_sum == 0] = 1
+        X = X / X_sum
+        Y = Y / Y_sum
 
         print "Getting Sx and Sy"
 
@@ -62,6 +71,8 @@ class AppGradCCA:
         # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
         (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = self._get_init_bases(Sx, Sy)
         (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
+
+        # Initialize iteration-related variables
         converged = False
         i = 1
 
@@ -69,12 +80,15 @@ class AppGradCCA:
 
             print "Iteration:", i
 
+            # Update step scales for gradient updates
             eta1 = self.eta1 / i**0.5
             eta2 = self.eta2 / i**0.5
+
             i = i + 1
 
             print "\tGetting updated basis estimates"
 
+            # Update random minibatches if doing SGD
             if self.stochastic:
                 X = self._get_minibatch(self.X)
                 Y = self._get_minibatch(self.Y)
@@ -118,8 +132,6 @@ class AppGradCCA:
         # Frobenius norm
         distance = np.linalg.norm(unnormed - unnormed_next)
 
-        print "\t\tDistance:", distance
-
         return distance < epsilon
 
     def _get_updated_bases(self, X1, X2, unnormed1, normed2, S1, eta1):
@@ -149,7 +161,8 @@ class AppGradCCA:
 
     def _get_mah_normed(self, unnormed, S):
 
+        basis_quad = quad(unnormed, S)
         normalizer = get_svd_invert(
-            quad(unnormed, S), random=False, power=-0.5)
+            basis_quad, random=False, power=-0.5)
 
         return np.dot(unnormed, normalizer)

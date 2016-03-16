@@ -1,3 +1,3 @@
 import linal
 import cca
-import bandits
+import test

@@ -53,17 +53,19 @@
 
 ###CCA
 * Should I try to put any framework-y type structure on the CCA stuff?
+* Make sure to add more diagnostics in CCA code like printing the current objective value, etc.
+    * Should add a "verbose" mode to enable such diagnostics.
+    * Should consider logging as well?
 
 ###C++/Python Interaction
 
 ##Algorithms
 
 ###Randomized Linear Algebra
+* Look into using multithreading and GPUs for these algorithms. They don't necessarily have advantage otherwise.
 * There are some changes from the paper that I could make to the algorithms I have implemented, and they may make serious performance improvements.
     * Orthogonal basis/range finding
         * I could use a specific type of random matrix that allows for faster matrix-matrix multiplies in one of the major bottlenecks.
-            * This structured matrix seems quite tricky to produce, so I am questioning the net worth of that performance enhancement.
-            * They give the structured matrix for the complex case, but don't explain how to deal with the real case. I'll look around for other resources, though. There may be something in their citation list.
         * There's an algorithm that automatically finds the approximate range of a matrix up to a fixed precision rather than a fixed rank.
             * It seems like we are more interested in fixing a rank a priori for computational efficiency or dimensionality reduction, so I am not sure this one is relevant.
             * Both fixed-rank and fixed-precision algorithms seem quite useful, so maybe I will just make both available.

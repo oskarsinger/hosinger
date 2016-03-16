@@ -3,7 +3,7 @@ from linal.utils import quadratic as quad
 
 import numpy as np
 
-def main():
+def random_test():
 
     n = 10000
     (p1, p2) = (200, 500)
@@ -16,7 +16,7 @@ def main():
     X = np.random.randn(n, p1)
     Y = np.random.randn(n, p2)
 
-    app_grad = AppGradCCA(X, Y, k, batch_size=batch_size, eta1=eta1, eta2=eta2)
+    app_grad = AppGradCCA(X, Y, k, eta1=eta1, eta2=eta2)
 
     (Phi, unn_Phi, Psi, unn_Psi) = app_grad.get_cca()
     Sx = np.dot(X.T, X) / n
@@ -24,6 +24,3 @@ def main():
 
     print np.linalg.norm(quad(Phi, A=Sx) - np.identity(k))
     print np.linalg.norm(quad(Psi, A=Sy) - np.identity(k))
-
-if __name__=='__main__':
-    main()

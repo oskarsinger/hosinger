@@ -21,7 +21,10 @@ def get_svd_invert(A, power=-1, k=None, random=True):
     else:
         (U, s, V) = np.linalg.svd(A)
 
-    return multi_dot([U, np.diag(np.power(s, power)), V])
+    power_vec = np.ones(s.shape)
+    power_vec[s != 0] = power
+
+    return multi_dot([U, np.diag(np.power(s, power_vec)), V])
 
 def get_rank_k(m, n, k):
 
