@@ -52,6 +52,7 @@ class AppGradCCA:
         X = self._get_minibatch(self.X) if self.stochastic else self.X
         Y = self._get_minibatch(self.Y) if self.stochastic else self.Y
 
+        """
         # Normalize features
         X_sum = np.sum(X, axis=0)
         X_sum[X_sum == 0] = 1
@@ -59,11 +60,21 @@ class AppGradCCA:
         Y_sum[Y_sum == 0] = 1
         X = X / X_sum
         Y = Y / Y_sum
+        """
 
         print "Getting Sx and Sy"
 
         Sx = self._get_regged_gram(X)
         Sy = self._get_regged_gram(Y)
+
+        print (
+            "Sx shape:", Sx.shape, 
+            "Sx rank:", np.linalg.matrix_rank(Sx),
+            "Sx cond:", np.linalg.cond(Sx))
+        print (
+            "Sy shape:", Sy.shape,
+            "Sy rank:", np.linalg.matrix_rank(Sy),
+            "Sy cond:", np.linalg.cond(Sy))
 
         print "Getting initial basis estimates"
 
@@ -84,6 +95,8 @@ class AppGradCCA:
             eta1 = self.eta1 / i**0.5
             eta2 = self.eta2 / i**0.5
 
+            print "\teta1:", eta1, "\teta2:", eta2
+
             i = i + 1
 
             print "\tGetting updated basis estimates"
@@ -95,20 +108,48 @@ class AppGradCCA:
                 Sx = self._get_regged_gram(X)#(self._get_regged_gram(X) + (i - 1) * Sx) / i
                 Sy = self._get_regged_gram(Y)#(self._get_regged_gram(Y) + (i - 1) * Sy) / i
 
+                print (
+                    "Sx shape:", Sx.shape, 
+                    "Sx rank:", np.linalg.matrix_rank(Sx),
+                    "Sx cond:", np.linalg.cond(Sx))
+                print (
+                    "Sy shape:", Sy.shape,
+                    "Sy rank:", np.linalg.matrix_rank(Sy),
+                    "Sy cond:", np.linalg.cond(Sy))
+
             # Get basis updates for both X and Y's canonical bases, normed and unnormed
             (unn_Phi_t1, Phi_t1) = self._get_updated_bases(
                 X, Y, unn_Phi_t, Psi_t, Sx, eta1)
             (unn_Psi_t1, Psi_t1) = self._get_updated_bases(
                 Y, X, unn_Psi_t, Phi_t, Sy, eta2)
 
+            print "\tPhi orthogonal?", np.linalg.norm(quad(Phi_t1, Sx) - np.identity(Phi_t1.shape[1]))
+            print "\tPsi orthogonal?", np.linalg.norm(quad(Psi_t1, Sy) - np.identity(Psi_t1.shape[1]))
+
             print "\tChecking for convergence"
 
-            # Check if error is below tolerance threshold
-            converged = self._is_converged(unn_Phi_t, unn_Phi_t1, self.eps1) and \
-                self._is_converged(unn_Psi_t, unn_Psi_t1, self.eps2)
+            # Calculate distance between current and previous iterates of unnormalized 
+            # canonical bases
+            unn_Phi_dist = np.linalg.norm(unn_Phi_t - unn_Phi_t1)
+            unn_Psi_dist = np.linalg.norm(unn_Psi_t - unn_Psi_t1)
+
+            if np.isnan(unn_Phi_dist) or np.isnan(unn_Psi_dist):
+                break
+
+            print "\tUnnormalized Phi distance: ", unn_Phi_dist
+            print "\tUnnormalized Psi distance: ", unn_Psi_dist
+
+            # Check if distances are below tolerance threshold
+            converged = unn_Phi_dist < self.eps1 and unn_Psi_dist < self.eps2
+
+            print "\tObjective: ", np.linalg.norm(np.dot(X, Phi_t1) - np.dot(Y, Psi_t1))
 
             # Update state
-            (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (unn_Phi_t1, Phi_t1, unn_Psi_t1, Psi_t1)
+            (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (
+                np.copy(unn_Phi_t1), 
+                np.copy(Phi_t1), 
+                np.copy(unn_Psi_t1), 
+                np.copy(Psi_t1))
 
         return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)
 
@@ -126,14 +167,6 @@ class AppGradCCA:
 
         return (gram + reg_matrix) / A.shape[0]
 
-    def _is_converged(self, unnormed, unnormed_next, epsilon):
-
-        # Calculate distance between current and previous timesteps' bases under 
-        # Frobenius norm
-        distance = np.linalg.norm(unnormed - unnormed_next)
-
-        return distance < epsilon
-
     def _get_updated_bases(self, X1, X2, unnormed1, normed2, S1, eta1):
 
         # Calculate the gradient with respect to unnormed1
@@ -144,6 +177,8 @@ class AppGradCCA:
 
         # Normalize unnormed 1 with inversion of matrix quadratic
         normed1 = self._get_mah_normed(unnormed1_next, S1)
+
+        print "\tOrthogonal?", quad(normed1, S1)
 
         return (unnormed1_next, normed1)
 
