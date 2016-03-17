@@ -5,7 +5,7 @@ import os
 from cca import AppGradCCA
 from linal.utils import quadratic as quad
 
-def get_data(data_dir, start, end):
+def get_data_summaries(data_dir, start, end):
 
     file_names = [file_name
                   for file_name in os.listdir(data_dir)
@@ -25,9 +25,9 @@ def get_data(data_dir, start, end):
 
     return np.array(data_points)
 
-def test_cca(data_dir, k, reg, num_points):
+def test_cca_on_data_summaries(data_dir, k, reg, num_points):
 
-    data = get_data(data_dir, 7, -2)
+    data = get_data_summaries(data_dir, 7, -2)
     (n, p) = data.shape
     split_point = p/2
     X = data[:num_points,:split_point]

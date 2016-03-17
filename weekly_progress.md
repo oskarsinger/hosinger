@@ -11,6 +11,7 @@ Each week is indexed by the date of Monday.
 * [8 February 2016](#8feb)
 * [15 February 2016](#15feb)
 * [29 February 2016/6 March 2016](#29feb)
+* [13 March 2016](#13mar)
 
 ##Progress Reports
 
@@ -397,3 +398,16 @@ Some of the following bodies of literature may be useful to us.
 * @Both:
     * Are there scenarios in which the cost of computing a parameter update is dependent on the observation?
     * How do we feel about going for the NIPS deadline (May 20th) with at least one of these two projects? I'd have almost a month to devote to just research after final exams end. We could also try for workshop paper deadlines, which come a little later and are easier.
+
+###<a name='13mar'>13 March 2016</a>
+
+####Our Ideas
+* Still thinking about the generalized cost in active learning idea. What if we accumulated examples and sent a parameter update across the network once we found that the informativeness of the minibatch outweighed the cost of the communication overhead?
+    * Potential issues:
+        * The delay of parameter updates may have significant implications for bias and regret of the estimator. One nice thing about this problem is that we can compare the cost of the delay vs the advantage gained from the accumulated examples through the regret analysis from the Joulani paper.
+        * How do we decide the scaling at which to compare informativeness and cost of communication overhead?
+
+* Let's say that we are in the following bandit scenario. Each arm is a source of training data. The outcome is a training example, and the reward is the reduction in our empirical average loss from training on that example. The arms can be real-world data sources, or they can be buckets/tiles of some region in R^d from which we can take arbitrary or randomly-sampled measurements and receive labels for said measurements. Is there a meaningful contextual bandit extension?
+
+####Questions
+    * What if there were a bandit scenario where different arms were distributed across different machines? Would that significantly change our approach to the problem? This seems to fall under the partial monitering scenario considered by Joulani.
