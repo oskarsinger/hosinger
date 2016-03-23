@@ -65,13 +65,14 @@
 * Look into using multithreading and GPUs for these algorithms. They don't necessarily have advantage otherwise.
 * There are some changes from the paper that I could make to the algorithms I have implemented, and they may make serious performance improvements.
     * Orthogonal basis/range finding
-        * I could use a specific type of random matrix that allows for faster matrix-matrix multiplies in one of the major bottlenecks.
+        * I could use specific types of random matrix that allows for faster matrix-matrix multiplies in one of the major bottlenecks.
         * There's an algorithm that automatically finds the approximate range of a matrix up to a fixed precision rather than a fixed rank.
             * It seems like we are more interested in fixing a rank a priori for computational efficiency or dimensionality reduction, so I am not sure this one is relevant.
             * Both fixed-rank and fixed-precision algorithms seem quite useful, so maybe I will just make both available.
     * SVD
         * There is an alternative algorithm that uses an interpolative decomposition to speed up SVD computation. However, this would require implementing an efficient interpolative decomposition subroutine, which seems non-trivial. I'll look around, but not sure if this one is worth the effort.
         * There are some single-pass algorithms, but the authors claim that they result in significant loss of precision, and should only be used if the entire matrix cannot be fit into memory.
+
 
 ###CCA
 * Implement measure-transformed CCA.
@@ -80,6 +81,15 @@
         * For now, will still need to calculate the MT functions ahead of time.
 * I wonder if the proof for convergence of the gradient-based CCA will be different for the measure-transformed version?
 * Farm out some of the more expensive subroutines to C++.
+* Do PCA dimensionality reduction of the data matrices before putting them into CCA. How does this interact with the data matrix whitening step? Equivalent?
+    * Need to figure out how to do incremental PCA for the online setting. Does it maintain the PCA properties at every update?
+        *Can use incremental PCA implementation from SciKitLearn.
+* Try a few different stochastic gradient methods on CCA. Should take a look in Sebastian Bubeck's optimization survey to get a start. May want to try asynch stuff from Chris Re's asynch SGD review paper if I have time.
+    * SVRG
+    * RDA
+    * AdaGrad
+    * Natural gradient
+* Try my idea for N-ary CCA.
 
 ###Bandits
 * Implement the second meta-algorithm from Joulani's paper.

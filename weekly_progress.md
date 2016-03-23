@@ -409,5 +409,13 @@ Some of the following bodies of literature may be useful to us.
 
 * Let's say that we are in the following bandit scenario. Each arm is a source of training data. The outcome is a training example, and the reward is the reduction in our empirical average loss from training on that example. The arms can be real-world data sources, or they can be buckets/tiles of some region in R^d from which we can take arbitrary or randomly-sampled measurements and receive labels for said measurements. Is there a meaningful contextual bandit extension?
 
+####Engineering
+* Good news: SciKit-Learn has incremental PCA, so we can easily try that for getting rid of linear dependence online.
+
 ####Questions
+* @Both:
     * What if there were a bandit scenario where different arms were distributed across different machines? Would that significantly change our approach to the problem? This seems to fall under the partial monitering scenario considered by Joulani.
+    
+* @Al:
+    * Where can we expect sparsity in Yaya's data set?
+    * Where do we want to induce sparsity?
