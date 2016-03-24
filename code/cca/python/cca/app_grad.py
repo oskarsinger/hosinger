@@ -1,7 +1,8 @@
 import numpy as np
 
 from numpy.random import randn, choice
-from linal.utils import quadratic as quad, get_svd_invert
+from linal.utils import quadratic as quad
+from linal.mp_pinv import get_mp_pinv as get_pinv
 
 class AppGradCCA:
 
@@ -169,7 +170,7 @@ class AppGradCCA:
     def _get_mah_normed(self, unnormed, S):
 
         basis_quad = quad(unnormed, S)
-        normalizer = get_svd_invert(
-            basis_quad, random=False, power=-0.5)
+        normalizer = get_pinv(
+            basis_quad, energy=0.9, sqrt=True)
 
         return np.dot(unnormed, normalizer)
