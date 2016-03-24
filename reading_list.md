@@ -6,6 +6,10 @@
 
 * * *
 
+##Machine learning.
+
+* * *
+
 ###Structure learning and sparsity in graphical models. 
 This is mostly from Josh Meng.
 
@@ -20,16 +24,6 @@ This is mostly from Josh Meng.
 
 * * *
 
-###Adaptive data analysis.
-This is mostly from Moritz Hardt
-
-####Practical later.
-* **Generalization in Adaptive Data Analysis and Holdout Reuse** ([arXiv](http://arxiv.org/abs/1506.02629))
-* **Workshop on Adaptive Data Analysis** ([website](http://wadapt.org/index.html))
-    * Should check out some of the papers from this workshop. They look like they might be important for understanding adaptive scenarios in general.
-
-* * *
-
 ###Pairwise comparisons.
 This is mostly from Kevin Jamieson and Robert Nowak.
 
@@ -41,66 +35,6 @@ This is mostly from Kevin Jamieson and Robert Nowak.
 
 ####Theoretical.
 * **Query Complexity of Derivative-Free Optimization** ([pdf](http://www.cs.berkeley.edu/~kjamieson/resources/QueryComplexityOfDFO.pdf))
-
-* * *
-
-###Deep reinforcement learning.
-
-####Eventually.
-This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in the last year. I don't yet know enough about RL to choose which ones look promising. Most of them seem to be focused on using deep learning to compress high-dimensional state spaces into something more manageable using a deep model. I didn't read deeply (ouch, that's cheesy) enough to understand whether they were using supervised or unsupervised deep models or doing pre-training.
-
-* * *
-
-###Online gradient-based optimization.
-
-####Practical now.
-* **Fast gradient descent for drifting least squares regression, with application to bandits** ([pdf](http://arxiv.org/pdf/1307.3176v4.pdf))
-    * The abstract mentions something about an adaptive regularizer, and they speak about it in some detail later in the paper.
-    * We are not doing least squares, but they show that SGD accounts to some extent for drifting target hypothesis (or something like that), and this could be helpful for us.
-* **Introduction to Online Convex Optimization** ([pdf](http://ocobook.cs.princeton.edu/OCObook.pdf))
-    * Much of the current non-convex optimization literature builds on online convex optimization, so I think it will be good to understand this stuff. 
-    * Found a friend from Corso's lab who also needs to learn this stuff and wants to read it with me.
-* **On the importance of initialization and momentum in deep learning** ([pdf](http://www.cs.toronto.edu/~jmartens/docs/Momentum_Deep.pdf))
-    * This paper covers some pretty crucial aspects of optimizing deep neural networks, especially with respect to the difficulties encountered because of non-convexity.
-* **New insights and perspectives on the natural gradient method** ([arXiv](http://arxiv.org/abs/1412.1193))
-    * This one comes from the deep learning community, and its quite recent. It has a nice theoretical interpretation (related to approximate Hessians and the conditioning of the problem), it is efficient, and hopefully it is empirically effective.
-
-####Practical later.
-* **NIPS 2015 Workshop on Non-convex Optimization for Machine Learning: Theory and Practice** ([website](https://sites.google.com/site/nips2015nonconvexoptimization/papers))
-    * A lot of these may be batch-style algorithms, but some of them are definitely online.
-
-####Theoretical.
-* **Train faster, generalize better: Stability of stochastic gradient descent** ([arXiv](http://arxiv.org/abs/1509.01240))
-    * Not from the deep learning community, but somewhat motivated by deep learning.
-    * They show that running SGD for a few epochs over the full data set improves generalization, even for non-convex problems. Emphasis on a few. They note that running fewer epochs prevents overfitting, which makes intuitive sense as well.
-    * They also show that some of the deep learning community's regularization heuristics and the practice of 'drop-out' improve their generalization bounds.
-
-* * *
-
-###Markov decision processes.
-* **Dynamic Probabilistic Systems, Volume II: Semi-Markov and Decision Processes. Vol. 2. Courier Corporation, 2013.** ([book](http://store.doverpublications.com/0486458725.html))
-    * Need to find a pdf or a cheap used hard-cover. Maybe Al has a copy lying around.
-* **Markov Decision Processes: Discrete Stochastic Dynamic Programming**
-    * Found a pdf, would be nice to find a cheap used hard-cover. Maybe Al has an extra copy lying around.
-* **Dynamic Allocation of Pharmaceutical Detailing and Sampling for Long-Term Profitability** ([pdf](http://www.dii.uchile.cl/~rmontoya/papers/Dynamic_Allocation.pdf))
-
-* * *
-
-###Regularization.
-
-####Practical later.
-* **Linear System Identification via Atomic Norm Regularization** ([pdf](http://www.eecs.berkeley.edu/~brecht/papers/12.Sha.EtAl.Hankel.pdf))
-    * I think this paper might be useful for choosing (or adapting) the regularizer that encodes our structural assumptions.
-    * This paper seems particularly relevant given the connections between control and RL, but the other atomic norm stuff is pretty cool too.
-* **Practical Large-Scale Optimization for Max-Norm Regularization** ([pdf](http://www.eecs.berkeley.edu/~brecht/papers/maxnorm.NIPS10.pdf))
-    * Similar to previous one, could be helpful when we are picking our regularization scheme, particular since we are thinking about topic models, which can be viewed as low-rank matrix factorization.
-* **Bethe Projections for Non-Local Inference** ([arXiv](http://arxiv.org/abs/1503.01397))
-    * This is a sort of prediction-time regularization-type-thing, but its a little more sophisticated. Going to read a bit more to understand whether its relevant for us. The first authors are friends/research mentors from my old lab!
-
-####Theoretical.
-* **Fighting Bandits with a New Kind of Smoothness** ([pdf](http://papers.nips.cc/paper/6030-fighting-bandits-with-a-new-kind-of-smoothness.pdf))
-    * The focus of the paper is a new regularization scheme. Not really sure about its relevance to us, especially since it focuses on convex scenarios, but I am curious, and maybe we will get something out of it.
-    * Is the name of this paper a cheeky reference to Stephen Wolfram's book?
 
 * * *
 
@@ -126,10 +60,102 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 * * *
 
+###Deep reinforcement learning.
+
+####Eventually.
+This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in the last year. I don't yet know enough about RL to choose which ones look promising. Most of them seem to be focused on using deep learning to compress high-dimensional state spaces into something more manageable using a deep model. I didn't read deeply (ouch, that's cheesy) enough to understand whether they were using supervised or unsupervised deep models or doing pre-training.
+
+* * *
+
+###Markov decision processes.
+* **Dynamic Probabilistic Systems, Volume II: Semi-Markov and Decision Processes. Vol. 2. Courier Corporation, 2013.** ([book](http://store.doverpublications.com/0486458725.html))
+    * Need to find a pdf or a cheap used hard-cover. Maybe Al has a copy lying around.
+* **Markov Decision Processes: Discrete Stochastic Dynamic Programming**
+    * Found a pdf, would be nice to find a cheap used hard-cover. Maybe Al has an extra copy lying around.
+* **Dynamic Allocation of Pharmaceutical Detailing and Sampling for Long-Term Profitability** ([pdf](http://www.dii.uchile.cl/~rmontoya/papers/Dynamic_Allocation.pdf))
+
+* * *
+
+##Optimization.
+
+* * *
+
+###Second Order Information in Stochastic Gradient Methods.
+
+####Practical now.
+* **On the importance of initialization and momentum in deep learning** ([pdf](http://www.cs.toronto.edu/~jmartens/docs/Momentum_Deep.pdf))
+    * This paper covers some pretty crucial aspects of optimizing deep neural networks, especially with respect to the difficulties encountered because of non-convexity.
+* **New insights and perspectives on the natural gradient method** ([arXiv](http://arxiv.org/abs/1412.1193))
+    * This one comes from the deep learning community, and its quite recent. It has a nice theoretical interpretation (related to approximate Hessians and the conditioning of the problem), it is efficient, and hopefully it is empirically effective.
+* **Adaptive Subgradient Methods for Online Learning and Stochastic Optimization** ([pdf](http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf))
+
+* * *
+
+###Regularization.
+
+####Practical later.
+* **Linear System Identification via Atomic Norm Regularization** ([pdf](http://www.eecs.berkeley.edu/~brecht/papers/12.Sha.EtAl.Hankel.pdf))
+    * I think this paper might be useful for choosing (or adapting) the regularizer that encodes our structural assumptions.
+    * This paper seems particularly relevant given the connections between control and RL, but the other atomic norm stuff is pretty cool too.
+* **Practical Large-Scale Optimization for Max-Norm Regularization** ([pdf](http://www.eecs.berkeley.edu/~brecht/papers/maxnorm.NIPS10.pdf))
+    * Similar to previous one, could be helpful when we are picking our regularization scheme, particular since we are thinking about topic models, which can be viewed as low-rank matrix factorization.
+* **Bethe Projections for Non-Local Inference** ([arXiv](http://arxiv.org/abs/1503.01397))
+    * This is a sort of prediction-time regularization-type-thing, but its a little more sophisticated. Going to read a bit more to understand whether its relevant for us. The first authors are friends/research mentors from my old lab!
+
+####Theoretical.
+* **Fighting Bandits with a New Kind of Smoothness** ([pdf](http://papers.nips.cc/paper/6030-fighting-bandits-with-a-new-kind-of-smoothness.pdf))
+    * The focus of the paper is a new regularization scheme. Not really sure about its relevance to us, especially since it focuses on convex scenarios, but I am curious, and maybe we will get something out of it.
+    * Is the name of this paper a cheeky reference to Stephen Wolfram's book?
+
+* * *
+
+###Distributed.
+
+####Practical later.
+* **DimWitted: A Study of Main Memory Statistical Analysis** ([arXiv](http://arxiv.org/pdf/1403.7550))
+* **Taming the Wild: A Unified Analysis of Hogwild!-Style Algorithms** ([arXiv](http://arxiv.org/abs/1506.06438))
+* **Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent** ([pdf](https://www.eecs.berkeley.edu/~brecht/papers/hogwildTR.pdf))
+* **Exponential Stochastic Cellular Automata for Massively Parallel Inference** ([pdf](http://www.manzil.ml/res/Papers/2015_NIPSW_sca.pdf))
+
+* * *
+
+###Numerical linear algebra.
+
+####Practical later.
+* **Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions** ([arXiv](http://arxiv.org/pdf/0909.4061v2))
+* **Improved Matrix Algorithm via the Subsampled Randomized Hadamard Transform** ([arXiv](http://arxiv.org/pdf/1204.0062))
+* **Low rank approximation and decomposition of large matrices using error correcting codes** ([arXiv](http://arxiv.org/pdf/1512.09156))
+
+###Misc.
+
+####Practical now.
+* **Fast gradient descent for drifting least squares regression, with application to bandits** ([pdf](http://arxiv.org/pdf/1307.3176v4.pdf))
+    * The abstract mentions something about an adaptive regularizer, and they speak about it in some detail later in the paper.
+    * We are not doing least squares, but they show that SGD accounts to some extent for drifting target hypothesis (or something like that), and this could be helpful for us.
+* **Introduction to Online Convex Optimization** ([pdf](http://ocobook.cs.princeton.edu/OCObook.pdf))
+    * Much of the current non-convex optimization literature builds on online convex optimization, so I think it will be good to understand this stuff. 
+    * Found a friend from Corso's lab who also needs to learn this stuff and wants to read it with me.
+* **Global Convergence of Stochastic Gradient Descent for Some Non-convex Matrix Problems** ([arXiv](http://arxiv.org/pdf/1411.1134))
+
+####Practical later.
+* **NIPS 2015 Workshop on Non-convex Optimization for Machine Learning: Theory and Practice** ([website](https://sites.google.com/site/nips2015nonconvexoptimization/papers))
+    * A lot of these may be batch-style algorithms, but some of them are definitely online.
+
+####Theoretical.
+* **Train faster, generalize better: Stability of stochastic gradient descent** ([arXiv](http://arxiv.org/abs/1509.01240))
+    * Not from the deep learning community, but somewhat motivated by deep learning.
+    * They show that running SGD for a few epochs over the full data set improves generalization, even for non-convex problems. Emphasis on a few. They note that running fewer epochs prevents overfitting, which makes intuitive sense as well.
+    * They also show that some of the deep learning community's regularization heuristics and the practice of 'drop-out' improve their generalization bounds.
+
+* * *
+
+##Statistics.
+
+* * *
+
 ###CCA.
 
 ####Practical now.
-
 * **Finding Linear Structure in Large Datasets with Scalable Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1506.08170))
     * Offers efficient approximate algorithms for both batch and online CCA, both with nice theoretical guarantees.
     * Give experiments showing similar performance to un-approximated CCA on the same datasets.
@@ -137,6 +163,7 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 * **On Measure Transformed Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1111.6308))
     * Extends CCA to non-linear relationships between variables with an easily-implementable modification to the join distribution.
     * Home team!
+* **A greedy approach to sparse canonical correlation analysis** ([arXiv](http://arxiv.org/pdf/0801.2748v1))
 
 ###Bayesian models.
 
@@ -148,3 +175,13 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 ####Theoretical.
 * **Risk and Regret of Heirarchical Bayesian Learners** ([pdf](http://arxiv.org/pdf/1505.04984.pdf))
+
+* * *
+
+###Adaptive data analysis.
+This is mostly from Moritz Hardt
+
+####Practical later.
+* **Generalization in Adaptive Data Analysis and Holdout Reuse** ([arXiv](http://arxiv.org/abs/1506.02629))
+* **Workshop on Adaptive Data Analysis** ([website](http://wadapt.org/index.html))
+    * Should check out some of the papers from this workshop. They look like they might be important for understanding adaptive scenarios in general.
