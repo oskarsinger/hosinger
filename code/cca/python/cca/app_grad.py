@@ -52,33 +52,14 @@ class AppGradCCA:
         X = self._get_minibatch(self.X) if self.stochastic else self.X
         Y = self._get_minibatch(self.Y) if self.stochastic else self.Y
 
-        """
-        # Normalize features
-        X_sum = np.sum(X, axis=0)
-        X_sum[X_sum == 0] = 1
-        Y_sum = np.sum(Y, axis=0)
-        Y_sum[Y_sum == 0] = 1
-        X = X / X_sum
-        Y = Y / Y_sum
-        """
-
         print "Getting Sx and Sy"
 
         Sx = self._get_regged_gram(X)
         Sy = self._get_regged_gram(Y)
 
-        print (
-            "Sx shape:", Sx.shape, 
-            "Sx rank:", np.linalg.matrix_rank(Sx),
-            "Sx cond:", np.linalg.cond(Sx))
-        print (
-            "Sy shape:", Sy.shape,
-            "Sy rank:", np.linalg.matrix_rank(Sy),
-            "Sy cond:", np.linalg.cond(Sy))
-
         print "Getting initial basis estimates"
 
-        # Randomly initialize normalized and unnormalized canonical bases for 
+        # Randomly initialize normalized and unnormalized canonical bases for
         # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
         (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = self._get_init_bases(Sx, Sy)
         (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
@@ -105,17 +86,8 @@ class AppGradCCA:
             if self.stochastic:
                 X = self._get_minibatch(self.X)
                 Y = self._get_minibatch(self.Y)
-                Sx = self._get_regged_gram(X)#(self._get_regged_gram(X) + (i - 1) * Sx) / i
-                Sy = self._get_regged_gram(Y)#(self._get_regged_gram(Y) + (i - 1) * Sy) / i
-
-                print (
-                    "Sx shape:", Sx.shape, 
-                    "Sx rank:", np.linalg.matrix_rank(Sx),
-                    "Sx cond:", np.linalg.cond(Sx))
-                print (
-                    "Sy shape:", Sy.shape,
-                    "Sy rank:", np.linalg.matrix_rank(Sy),
-                    "Sy cond:", np.linalg.cond(Sy))
+                Sx = self._get_regged_gram(X) #(self._get_regged_gram(X) + (i - 1) * Sx) / i
+                Sy = self._get_regged_gram(Y) #(self._get_regged_gram(Y) + (i - 1) * Sy) / i
 
             # Get basis updates for both X and Y's canonical bases, normed and unnormed
             (unn_Phi_t1, Phi_t1) = self._get_updated_bases(
@@ -146,9 +118,9 @@ class AppGradCCA:
 
             # Update state
             (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (
-                np.copy(unn_Phi_t1), 
-                np.copy(Phi_t1), 
-                np.copy(unn_Psi_t1), 
+                np.copy(unn_Phi_t1),
+                np.copy(Phi_t1),
+                np.copy(unn_Psi_t1),
                 np.copy(Psi_t1))
 
         return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)
