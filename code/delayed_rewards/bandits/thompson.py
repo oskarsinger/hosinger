@@ -22,6 +22,7 @@ class BetaBernoulli(AbstractLearner):
             'beta': self._beta,
             'posteriors': self._wins_losses,
             'waiting': self._is_waiting,
+            'actions': self._actions,
             'history': self._history
         }
 

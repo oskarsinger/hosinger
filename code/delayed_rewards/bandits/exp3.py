@@ -22,6 +22,7 @@ class Exp3(AbstractLearner):
         return {
             'gamma': self._gamma,
             'weights': self._weights,
+            'actions': self._actions,
             'waiting': self._is_waiting,
             'history': self._history
         }

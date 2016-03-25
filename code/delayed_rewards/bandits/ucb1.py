@@ -21,6 +21,7 @@ class UCB1(AbstractLearner):
 
         return {
             'ucbs': self._ucbs,
+            'actions': list(range(self._num_actions)),
             'waiting': self._is_waiting,
             'history': self._history
         }
