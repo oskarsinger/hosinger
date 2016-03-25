@@ -39,9 +39,8 @@ def run_test(learner, data_server, T):
     
         learner.update_rewards(rewards)
     
-def main():
+def test_ucb1_exp3_tsbb(T):
 
-    T = 10
     reward_ps = [0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
     num_actions = len(reward_ps)
     delay_consts = [1] * num_actions
@@ -57,15 +56,10 @@ def main():
     tsbb_bold = bold.BOLD(get_TSBB_factory(1,1), num_actions)
 
     print "UCB1"
-    run_test(ucb1_bold, ucb1_data_server, 1000)
+    run_test(ucb1_bold, ucb1_data_server, T)
     print "Exp3"
-    run_test(exp3_bold, exp3_data_server, 1000)
+    run_test(exp3_bold, exp3_data_server, T)
     print "TSBB"
-    run_test(tsbb_bold, tsbb_data_server, 1000)
+    run_test(tsbb_bold, tsbb_data_server, T)
 
-    print ucb1_bold.get_status()['history'][-10:]
-    print exp3_bold.get_status()['history'][-10:]
-    print tsbb_bold.get_status()['history'][-10:]
-
-if __name__=='__main__':
-    main()
+    return (ucb1_bold, exp3_bold, tsbb_bold)

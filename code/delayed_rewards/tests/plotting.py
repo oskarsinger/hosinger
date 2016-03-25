@@ -6,10 +6,13 @@ from bokeh.palettes import Spectral10
 
 def get_arms_vs_time(bandit, filename=None):
 
+    if filename is None:
+        filename = 'pullage.html'
+
     status = bandit.get_status()
     history = status['history']
-    actions = status['actions']
-    times = list(range(len(history)))
+    actions = [str(a) for a in status['actions']]
+    times = [str(i) for i in range(len(history))]
 
     # Set up the data for plotting. We will need to have values for every
     # pair of year/month names. Map the rate to a color.
@@ -20,17 +23,18 @@ def get_arms_vs_time(bandit, filename=None):
     rate = []
 
     for (i, (a_i, r, p)) in enumerate(history):
-        action_counts[a_i] += 1
+        action_counts[str(a_i)] += 1
 
-        rates = {key : float(count)/float(i)
+        rates = {key : float(count)/float(i+1)
                  for key, count in action_counts.items()}
 
         for a in actions:
             action.append(a)
             time.append(i) 
             rate_a_i = rates[a]
-            rate.append(rates[a])
-            index = int(10*(rate_a_i - (rate_a_i % 10)))
+            rate.append(rate_a_i)
+            index = int(10*(rate_a_i - (rate_a_i % 0.1)))
+            print a, index, rate_a_i
             color.append(Spectral10[index])
 
     source = ColumnDataSource(
@@ -59,6 +63,6 @@ def get_arms_vs_time(bandit, filename=None):
         ('rate', '@rate'),
     ]
 
-    output_file('pullage.html', title="Pullage per arm over time")
+    output_file(filename, title="Pullage per arm over time")
 
     show(p)      # show the plot 
