@@ -17,17 +17,12 @@
     * Would be nice if it automatically printed charts/graphs/tables.
 
 ####Randomized Linal
-* Test the accuracy of the randomized QR and SVD.
-    * Test easy matrices like identity, diagonal, etc.
-    * Write code to produce rank-k matrices.
-    * Compare results of my code against results of Scikit-Learn's implementations.
 
 ####CCA
 * Test CCA against Scikit-Learn's implementations.
     * Issue: the canonical basis returned by sklearn does not satisfy the quadratic norm orthonormality constraints of the CCA problem.
 * Test CCA against Matlab's implementation.
-* Get some real data from Yaya and run your code on it.
-    * Issue: Yaya has not sent the data and doesn't respond to my emails about it.
+* Figure out why CCA is unstable. For some reason, the initial first one or two singular values of the normalization and Gram matrices are very large, both absolutely and relative to the others, so the gradients and singular values in subsequent rounds are blowing up. Taking 90% of the energy from the singular values doesn't seem to be helping, so I need to find another solution.
 
 ####Bandits
 * Test against various data scenarios:
@@ -80,7 +75,6 @@
     * Extend Zhuang Ma's gradient-based version to do the measure-transformed version.
         * For now, will still need to calculate the MT functions ahead of time.
 * I wonder if the proof for convergence of the gradient-based CCA will be different for the measure-transformed version?
-* Farm out some of the more expensive subroutines to C++.
 * Do PCA dimensionality reduction of the data matrices before putting them into CCA. How does this interact with the data matrix whitening step? Equivalent?
     * Need to figure out how to do incremental PCA for the online setting. Does it maintain the PCA properties at every update?
         *Can use incremental PCA implementation from SciKitLearn.
@@ -115,3 +109,8 @@
     * Percentage of optimal. Should be increasing.
 * Or regret vs time.
     * Difference from optimal regret. Should be decreasing.
+    * I thought the regret is not explicitly calculatable. Maybe this is not possible?
+
+##CCA
+* What kind of plots would be useful for CCA?
+    * Maybe the kind from the gradient-based CCA paper where they compare the correlation captured by AppGrad to the correlation captured by naive CCA? That might require calling Matlab, though.

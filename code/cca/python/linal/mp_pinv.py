@@ -1,5 +1,7 @@
 import numpy as np
 
+from utils import multi_dot
+
 def get_mp_pinv(A, energy=None, k=None, sqrt=False, random=False):
 
     (n, p) = A.shape
@@ -12,6 +14,8 @@ def get_mp_pinv(A, energy=None, k=None, sqrt=False, random=False):
         (U, s, V) = np.linalg.svd(A)
 
         s = _get_thresholded(s, energy=energy, k=k)
+
+    print s
 
     pseudo_inv_sigma = np.diag(_get_safe_power(s, power))
 

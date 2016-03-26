@@ -10,7 +10,7 @@ class AppGradCCA:
         X, Y, k,
         batch_size=None,
         eta1=0.1, eta2=0.1, 
-        eps1=10**(-5), eps2=10**(-5), 
+        eps1=10**(-4), eps2=10**(-4), 
         reg=0.001):
 
         (n1, p1) = X.shape
@@ -171,6 +171,6 @@ class AppGradCCA:
 
         basis_quad = quad(unnormed, S)
         normalizer = get_pinv(
-            basis_quad, energy=0.9, sqrt=True)
+            basis_quad, energy=0.95, sqrt=True)
 
         return np.dot(unnormed, normalizer)

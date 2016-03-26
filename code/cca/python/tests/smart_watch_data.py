@@ -2,10 +2,10 @@ import numpy as np
 
 import os
 
-from cca import AppGradCCA
+from app_grad import AppGradCCA
 from linal.utils import quadratic as quad
 
-def get_data_summaries(data_dir, start, end):
+def get_data_summaries(data_dir, start_column, end_column):
 
     file_names = [file_name
                   for file_name in os.listdir(data_dir)
@@ -25,13 +25,13 @@ def get_data_summaries(data_dir, start, end):
 
     return np.array(data_points)
 
-def test_cca_on_data_summaries(data_dir, k, reg, num_points):
+def run_test(data_dir, k, reg, n):
 
     data = get_data_summaries(data_dir, 7, -2)
-    (n, p) = data.shape
+    (true_n, p) = data.shape
     split_point = p/2
-    X = data[:num_points,:split_point]
-    Y = data[:num_points,split_point:]
+    X = data[:n,:split_point]
+    Y = data[:n,split_point:]
     Sx = np.dot(X.T, X) / X.shape[0]
     Sy = np.dot(Y.T, Y) / Y.shape[0]
     (Phi, unn_Phi, Psi, unn_Psi) = AppGradCCA(X, Y, k, reg=reg).get_cca()
