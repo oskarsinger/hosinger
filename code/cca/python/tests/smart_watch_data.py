@@ -5,6 +5,8 @@ import os
 from app_grad import AppGradCCA
 from linal.utils import quadratic as quad
 
+from sklearn.decomposition import PCA
+
 def get_data_summaries(data_dir, start_column, end_column):
 
     file_names = [file_name
@@ -19,19 +21,30 @@ def get_data_summaries(data_dir, start_column, end_column):
 
             for line in f:
                 processed = [float(word)
-                             for word in line.split(',')[start:end]]
+                             for word in line.split(',')[start_column:end_column]]
 
                 data_points.append(processed)
 
     return np.array(data_points)
+
+def get_pca(data, n_comps=0.9):
+
+    pca = PCA(n_components=n_comps)
+
+    pca.fit(data)
+
+    return pca.components_
 
 def run_test(data_dir, k, reg, n):
 
     data = get_data_summaries(data_dir, 7, -2)
     (true_n, p) = data.shape
     split_point = p/2
-    X = data[:n,:split_point]
-    Y = data[:n,split_point:]
+    X = get_pca(data[:n,:split_point])
+    Y = get_pca(data[:n,split_point:])
+    min_n = min([X.shape[0], Y.shape[0]])
+    X = X[:min_n,:]
+    Y = Y[:min_n,:]
     Sx = np.dot(X.T, X) / X.shape[0]
     Sy = np.dot(Y.T, Y) / Y.shape[0]
     (Phi, unn_Phi, Psi, unn_Psi) = AppGradCCA(X, Y, k, reg=reg).get_cca()
