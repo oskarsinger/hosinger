@@ -1,8 +1,4 @@
-from math import pi
-
-from bokeh.models import HoverTool
-from bokeh.plotting import ColumnDataSource, figure, show, output_file
-from bokeh.palettes import Spectral10
+from plotting import plot_matrix_heat
 
 def plot_arms_vs_time(bandit, filename=None):
 
@@ -19,7 +15,6 @@ def plot_arms_vs_time(bandit, filename=None):
     action_counts = {action : 0 for action in actions}
     action = []
     time = []
-    color = []
     rate = []
 
     for (i, (a_i, r, p)) in enumerate(history):
@@ -33,36 +28,12 @@ def plot_arms_vs_time(bandit, filename=None):
             time.append(i) 
             rate_a_i = rates[a]
             rate.append(rate_a_i)
-            index = int(10*(rate_a_i - (rate_a_i % 0.1)))
-            print a, index, rate_a_i
-            color.append(Spectral10[index])
 
-    source = ColumnDataSource(
-        data=dict(action=action, time=time, color=color, rate=rate)
-    )
-
-    TOOLS = "resize,hover,save,pan,box_zoom,wheel_zoom"
-
-    p = figure(title="Percentage of total pullage per arm over time",
-               x_range=times, y_range=list(reversed(actions)),
-               x_axis_location="above", plot_width=900, plot_height=400,
-               toolbar_location="left", tools=TOOLS)
-
-    p.grid.grid_line_color = None
-    p.axis.axis_line_color = None
-    p.axis.major_tick_line_color = None
-    p.axis.major_label_text_font_size = "5pt"
-    p.axis.major_label_standoff = 0
-    p.xaxis.major_label_orientation = pi/3
-
-    p.rect("time", "action", 1, 1, source=source,
-           color="color", line_color=None)
-
-    p.select_one(HoverTool).tooltips = [
-        ('time and action', '@time @action'),
-        ('rate', '@rate'),
-    ]
-
-    output_file(filename, title="Pullage per arm over time")
-
-    show(p)      # show the plot 
+    plot_matrix_heat(
+        action,
+        time,
+        rates,
+        'Percent pullage per arm over time',
+        'action',
+        'time',
+        '%pullage') 

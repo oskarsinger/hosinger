@@ -29,3 +29,6 @@ def plot_action_counts(data_dir):
 
     show(p)
 
+def plot_canonical_bases(AppGradCCA):
+
+    print "Some stuff"
