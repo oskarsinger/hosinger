@@ -4,7 +4,7 @@ from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure, show, output_file
 from bokeh.palettes import Spectral10
 
-def get_arms_vs_time(bandit, filename=None):
+def plot_arms_vs_time(bandit, filename=None):
 
     if filename is None:
         filename = 'pullage.html'
