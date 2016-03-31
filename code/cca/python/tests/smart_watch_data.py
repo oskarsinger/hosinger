@@ -1,31 +1,10 @@
 import numpy as np
 
-import os
-
 from app_grad import AppGradCCA
 from linal.utils import quadratic as quad
+from data.smart_watch import get_data_summaries
 
 from sklearn.decomposition import PCA
-
-def get_data_summaries(data_dir, start_column, end_column):
-
-    file_names = [file_name
-                  for file_name in os.listdir(data_dir)
-                  if 'summary' in file_name]
-    
-    data_points = []
-
-    for file_name in file_names:
-        with open(data_dir + file_name) as f:
-            f.readline()
-
-            for line in f:
-                processed = [float(word)
-                             for word in line.split(',')[start_column:end_column]]
-
-                data_points.append(processed)
-
-    return np.array(data_points)
 
 def get_pca(data, n_comps=0.9):
 
@@ -37,7 +16,7 @@ def get_pca(data, n_comps=0.9):
 
 def run_test(data_dir, k, reg, n):
 
-    data = get_data_summaries(data_dir, 7, -2)
+    data = get_data_summaries(data_dir)['obs']
     (true_n, p) = data.shape
     split_point = p/2
     X = get_pca(data[:n,:split_point])
