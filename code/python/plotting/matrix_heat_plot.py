@@ -18,25 +18,12 @@ def plot_matrix_heat(
     x_name,
     val_name,
     norm_axis=0,
-    filename=None,
     width=900,
     height=400):
 
     if not np.all(value_matrix >= 0):
         raise ValueError(
             'Elements of value_matrix must all be non-negative.')
-
-    if filename is None:
-        filename = '_'.join([
-            val_name,
-            'of',
-            y_name,
-            'per',
-            x_name,
-            'matrix',
-            'heat',
-            'plot']) + '.html'
-    
 
     source = _populate_data_source(
         value_matrix, 
@@ -53,10 +40,8 @@ def plot_matrix_heat(
         x_name,
         y_name,
         val_name)
-    filepath = os.path.join(get_plot_path(), filename)
 
-    output_file(filepath, title=title)
-    show(p)
+    return p
 
 def _initialize_figure(
     source, 
@@ -102,8 +87,7 @@ def _populate_data_source(value_matrix, x_labels, y_labels, norm_axis):
     normed = value_matrix / normalizer \
         if norm_axis == 0 else \
         (value_matrix.T / normalizer).T
-    get_index = np.frompyfunc(lambda v: int(10*(v - (v % 0.1))), 1, 1)
-    color_matrix = get_index(normed)
+    get_index = lambda v: int(10*(v - (v % 0.1)))
     x_element = []
     y_element = []
     value = []
@@ -114,7 +98,7 @@ def _populate_data_source(value_matrix, x_labels, y_labels, norm_axis):
             x_element.append(x_labels[j])
             y_element.append(y_labels[i])
             value.append(value_matrix[i,j])
-            color.append(Spectral10[color_matrix[i,j]])
+            color.append(Spectral10[get_index(normed[i,j])])
 
     return ColumnDataSource(
         data=dict(

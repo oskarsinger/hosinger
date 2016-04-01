@@ -1,6 +1,11 @@
+import os
+
 import numpy as np
 
 from plotting import plot_matrix_heat
+from plotting.utils import get_plot_path
+
+from bokeh.plotting import figure, show, output_file, vplot
 
 def plot_arms_vs_time(bandit):
 
@@ -17,7 +22,7 @@ def plot_arms_vs_time(bandit):
         for a in actions:
             counts[a, i] = action_counts[a]
 
-    plot_matrix_heat(
+    p = plot_matrix_heat(
         counts,
         actions,
         times,
@@ -25,3 +30,9 @@ def plot_arms_vs_time(bandit):
         'action',
         'time',
         'pullage') 
+    filepath = os.path.join(
+        get_plot_path(), 
+        'pullage_per_arm_over_time.html')
+
+    output_file(filepath, title='percent pullage per arm over time')
+    show(p)
