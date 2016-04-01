@@ -1,6 +1,7 @@
 from math import log
 
 from data.smart_watch import get_data_summaries
+from plotting import plot_matrix_heat
 
 from bokeh.plotting import figure, show, output_file
 
@@ -31,4 +32,13 @@ def plot_label_counts(data_dir):
 
 def plot_canonical_basis(basis):
 
-    print "Some stuff"  
+    (p, k) = basis.shape
+
+    plot_matrix_heat(
+        basis,
+        list(range(p)),
+        list(range(k)),
+        'Percent mass per feature over canonical basis elements',
+        'feature',
+        'basis element',
+        'mass')

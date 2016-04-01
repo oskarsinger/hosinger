@@ -1,10 +1,13 @@
 import numpy as np
 
 from math import pi
+import os
 
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure, show, output_file
 from bokeh.palettes import Spectral10
+
+from utils import get_plot_path
 
 def plot_matrix_heat(
     value_matrix,
@@ -33,6 +36,7 @@ def plot_matrix_heat(
             'matrix',
             'heat',
             'plot']) + '.html'
+    
 
     source = _populate_data_source(
         value_matrix, 
@@ -41,17 +45,24 @@ def plot_matrix_heat(
         norm_axis)
     p = _initialize_figure(
         source,
+        width,
+        height,
+        title,
         x_labels,
         y_labels,
         x_name,
         y_name,
         val_name)
+    filepath = os.path.join(get_plot_path(), filename)
 
-    output_file(filename, title=title)
-    show(p)      # show the plot 
+    output_file(filepath, title=title)
+    show(p)
 
 def _initialize_figure(
     source, 
+    width,
+    height,
+    title,
     x_labels, 
     y_labels, 
     x_name, 
@@ -72,12 +83,12 @@ def _initialize_figure(
     p.axis.major_label_standoff = 0
     p.xaxis.major_label_orientation = pi/3
 
-    p.rect(x_name, y_name, 1, 1, source=source,
+    p.rect('x_element', 'y_element', 1, 1, source=source,
            color='color', line_color=None)
 
     p.select_one(HoverTool).tooltips = [
-        (x_name + ' and ' + y_name, '@'+ x_name + ' @' + y_name),
-        (val_name, '@' + val_name),
+        (x_name + ' and ' + y_name, '@x_element @y_element'),
+        (val_name, '@value'),
     ]
 
     return p
@@ -90,24 +101,24 @@ def _populate_data_source(value_matrix, x_labels, y_labels, norm_axis):
     normed = value_matrix / normalizer \
         if norm_axis == 0 else \
         (value_matrix.T / normalizer).T
-    get_index = np.frompyfunc(lambda v: int(10*(v - (v % 0.1))))
+    get_index = np.frompyfunc(lambda v: int(10*(v - (v % 0.1))), 1, 1)
     color_matrix = get_index(normed)
     x_element = []
     y_element = []
     value = []
     color = []
 
-    for i in xrange(p):
-        for j in xrange(n):
-            x_elements.append(x_labels[i])
-            y_elements.append(y_labels[j])
+    for j in xrange(p):
+        for i in xrange(n):
+            x_element.append(x_labels[j])
+            y_element.append(y_labels[i])
             value.append(value_matrix[i,j])
             color.append(Spectral10[color_matrix[i,j]])
 
     return ColumnDataSource(
         data=dict(
-            y_name=y_element,
-            x_name=x_element,
+            y_element=y_element,
+            x_element=x_element,
             color=color, 
-            value=values)
+            value=value)
     )
