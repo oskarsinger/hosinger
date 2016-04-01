@@ -47,7 +47,7 @@ class AppGradCCA:
         self.eps2 = eps2
         self.reg = reg
     
-    def get_cca(self):
+    def get_cca(self, verbose=False):
 
         # Determine data set
         X = self._get_minibatch(self.X) if self.stochastic else self.X
@@ -71,17 +71,15 @@ class AppGradCCA:
 
         while not converged:
 
-            print "Iteration:", i
-
             # Update step scales for gradient updates
             eta1 = self.eta1 / i**0.5
             eta2 = self.eta2 / i**0.5
-
-            print "\teta1:", eta1, "\teta2:", eta2
-
             i = i + 1
 
-            print "\tGetting updated basis estimates"
+            if verbose:
+                print "Iteration:", i
+                print "\teta1:", eta1, "\teta2:", eta2
+                print "\tGetting updated basis estimates"
 
             # Update random minibatches if doing SGD
             if self.stochastic:
@@ -96,7 +94,8 @@ class AppGradCCA:
             (unn_Psi_t1, Psi_t1) = self._get_updated_bases(
                 Y, X, unn_Psi_t, Phi_t, Sy, eta2)
 
-            print "\tChecking for convergence"
+            if verbose:
+                print "\tChecking for convergence"
 
             # Calculate distance between current and previous iterates of unnormalized 
             # canonical bases
@@ -106,13 +105,15 @@ class AppGradCCA:
             if np.isnan(unn_Phi_dist) or np.isnan(unn_Psi_dist):
                 break
 
-            print "\tUnnormalized Phi distance: ", unn_Phi_dist
-            print "\tUnnormalized Psi distance: ", unn_Psi_dist
+            if verbose:
+                print "\tUnnormalized Phi distance: ", unn_Phi_dist
+                print "\tUnnormalized Psi distance: ", unn_Psi_dist
 
             # Check if distances are below tolerance threshold
             converged = unn_Phi_dist < self.eps1 and unn_Psi_dist < self.eps2
 
-            print "\tObjective: ", np.linalg.norm(np.dot(X, Phi_t1) - np.dot(Y, Psi_t1))
+            if verbose:
+                print "\tObjective: ", np.linalg.norm(np.dot(X, Phi_t1) - np.dot(Y, Psi_t1))
 
             # Update state
             (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (
@@ -149,8 +150,6 @@ class AppGradCCA:
 
         # Normalize unnormed 1 with inversion of matrix quadratic
         normed1 = self._get_mah_normed(unnormed1_next, S1)
-
-        print "\tOrthogonal?", quad(normed1, S1)
 
         return (unnormed1_next, normed1)
 

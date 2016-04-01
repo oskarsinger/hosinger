@@ -87,8 +87,9 @@ def _initialize_figure(
            color='color', line_color=None)
 
     p.select_one(HoverTool).tooltips = [
-        (x_name + ' and ' + y_name, '@x_element @y_element'),
-        (val_name, '@value'),
+        (x_name, '@x_element'),
+        (y_name, '@y_element'),
+        (val_name, '@value')
     ]
 
     return p

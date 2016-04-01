@@ -16,3 +16,5 @@ def run_test(k, reg, n, p1, p2):
 
     print np.linalg.norm(quad(Phi, A=Sx) - np.identity(k))
     print np.linalg.norm(quad(Psi, A=Sy) - np.identity(k))
+
+    return (Phi, Psi)

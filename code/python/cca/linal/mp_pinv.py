@@ -15,8 +15,6 @@ def get_mp_pinv(A, energy=None, k=None, sqrt=False, random=False):
 
         s = _get_thresholded(s, energy=energy, k=k)
 
-    print s
-
     pseudo_inv_sigma = np.diag(_get_safe_power(s, power))
 
     return multi_dot([U, pseudo_inv_sigma, V])

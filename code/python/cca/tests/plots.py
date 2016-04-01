@@ -1,3 +1,5 @@
+import numpy as np
+
 from math import log
 
 from data.smart_watch import get_data_summaries
@@ -19,7 +21,7 @@ def plot_label_counts(data_dir):
     factors = counts.keys()
     x = counts.values()
     x_max = max(x)
-    scale = 10**(log(x_max), base=10)
+    scale = 10**(log(x_max, base=10))
     x_max = (x_max - x_max % scale) + scale
     p = figure(title="Label Counts", tools="resize,save", y_range=factors, x_range=[0,x_max])
 
@@ -33,11 +35,13 @@ def plot_label_counts(data_dir):
 def plot_canonical_basis(basis):
 
     (p, k) = basis.shape
+    features = [str(i) for i in range(p)]
+    basis_elements = [str(i) for i in range(k)]
 
     plot_matrix_heat(
-        basis,
-        list(range(p)),
-        list(range(k)),
+        np.abs(basis),
+        features,
+        basis_elements,
         'Percent mass per feature over canonical basis elements',
         'feature',
         'basis element',
