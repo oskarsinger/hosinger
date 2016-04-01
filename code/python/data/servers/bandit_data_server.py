@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-class AbstractDataServer:
+class AbstractBanditDataServer:
     __metaclass__ = ABCMeta
 
     @abstractmethod

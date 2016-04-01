@@ -22,3 +22,10 @@ def get_rank_k(m, n, k):
         A = A + np.dot(u, v)
 
     return A
+
+def get_t_regged_gram(A, reg_const):
+
+    gram = np.dot(A.T, A)
+    reg_matrix = reg * np.identity(A.shape[1])
+
+    return (gram + reg_matrix) / A.shape[0]
