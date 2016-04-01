@@ -96,9 +96,6 @@ class AppGradCCA:
             (unn_Psi_t1, Psi_t1) = self._get_updated_bases(
                 Y, X, unn_Psi_t, Phi_t, Sy, eta2)
 
-            print "\tPhi orthogonal?", np.linalg.norm(quad(Phi_t1, Sx) - np.identity(Phi_t1.shape[1]))
-            print "\tPsi orthogonal?", np.linalg.norm(quad(Psi_t1, Sy) - np.identity(Psi_t1.shape[1]))
-
             print "\tChecking for convergence"
 
             # Calculate distance between current and previous iterates of unnormalized 
@@ -129,7 +126,9 @@ class AppGradCCA:
     def _get_minibatch(self, A):
 
         indexes = choice(
-            np.arange(A.shape[0]), replace=False, size=self.batch_size)
+            np.arange(A.shape[0]), 
+            replace=False, 
+            size=self.batch_size)
 
         return A[indexes,:]
 

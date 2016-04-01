@@ -1,8 +1,6 @@
 import copy
 import sys
 
-sys.path.append("/home/oskar/GitRepos/OskarResearch/code/delayed_rewards")
-
 from bandits import *
 from data_servers.action_maps import *
 from data_servers import DelayedRewardDataServer as DRDS

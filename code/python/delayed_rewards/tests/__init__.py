@@ -1,2 +1,2 @@
-import plotting
+import plots
 import bandit_test
