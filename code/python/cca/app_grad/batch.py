@@ -59,7 +59,7 @@ class BatchAppGradCCA:
             if verbose:
                 print "\tObjective:", agu.get_objective(self.X, Phi_t1, self.Y, Psi_t1)
 
-            converged = is_converged(
+            converged = agu.is_converged(
                 unn_Phi_t,
                 unn_Phi_t1,
                 unn_Psi_t,

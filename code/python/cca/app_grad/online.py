@@ -59,4 +59,32 @@ class OnlineAppGradCCA:
             (X, Sx) = self.X_ds.get_batch_and_gram()
             (Y, Sy) = self.Y_ds.get_batch_and_gram()
 
-             
+            if verbose:
+                print "\tGetting updated basis estimates"
+
+            # Get basis updates for both X and Y's canonical bases, normed and unnormed
+            (unn_Phi_t1, Phi_t1) = agu.get_updated_bases(
+                X, Y, unn_Phi_t, Psi_t, Sx, eta1)
+            (unn_Psi_t1, Psi_t1) = agu.get_updated_bases(
+                Y, X, unn_Psi_t, Phi_t, Sy, eta2)
+
+            if verbose:
+                print "\tObjective:", agu.get_objective(self.X, Phi_t1, self.Y, Psi_t1)
+
+            converged = agu.is_converged(
+                unn_Phi_t,
+                unn_Phi_t1,
+                unn_Psi_t,
+                unn_Psi_t1
+                self.eps1,
+                self.eps2,
+                verbose)
+
+            # Update state
+            (unn_Phi_t, Phi_t, unn_Psi_t, Psi_t) = (
+                np.copy(unn_Phi_t1),
+                np.copy(Phi_t1),
+                np.copy(unn_Psi_t1),
+                np.copy(Psi_t1))
+
+        return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)

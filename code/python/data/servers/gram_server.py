@@ -8,11 +8,11 @@ class AbstractGramServer:
         pass
 
     @abstractmethod
-    def rows():
+    def rows(self):
         pass
 
     @abstractmethod
-    def cols():
+    def cols(self):
         pass
 
     @abstractmethod

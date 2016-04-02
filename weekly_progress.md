@@ -399,18 +399,31 @@ Some of the following bodies of literature may be useful to us.
     * Are there scenarios in which the cost of computing a parameter update is dependent on the observation?
     * How do we feel about going for the NIPS deadline (May 20th) with at least one of these two projects? I'd have almost a month to devote to just research after final exams end. We could also try for workshop paper deadlines, which come a little later and are easier.
 
-###<a name='13mar'>13 March 2016</a>
+###<a name='13mar'>13 March 2016 and 20 March 2016 and 27 March 2016</a>
 
 ####Our Ideas
-* Still thinking about the generalized cost in active learning idea. What if we accumulated examples and sent a parameter update across the network once we found that the informativeness of the minibatch outweighed the cost of the communication overhead?
+* Still thinking about the generalized cost in active learning idea. What if we accumulated examples and sent a parameter update across the network once we found that the informativeness of the minibatch outweighed the cost of the communication overhead? Would it be difficult to use the knowledge of which values are currently missing to determine how valuable an example is?
     * Potential issues:
         * The delay of parameter updates may have significant implications for bias and regret of the estimator. One nice thing about this problem is that we can compare the cost of the delay vs the advantage gained from the accumulated examples through the regret analysis from the Joulani paper.
         * How do we decide the scaling at which to compare informativeness and cost of communication overhead?
 
 * Let's say that we are in the following bandit scenario. Each arm is a source of training data. The outcome is a training example, and the reward is the reduction in our empirical average loss from training on that example. The arms can be real-world data sources, or they can be buckets/tiles of some region in R^d from which we can take arbitrary or randomly-sampled measurements and receive labels for said measurements. Is there a meaningful contextual bandit extension?
 
-####Engineering
+####Experiments
+* Running batch gradient CCA on the principle components of the data rather than the raw data seemed to help.
 * Good news: SciKit-Learn has incremental PCA, so we can easily try that for getting rid of linear dependence online.
+
+####Engineering
+* Massive structural overhaul of Python code base.
+    * Separating reusable functionality into self-contained, composable modules and packages. Its fascilitating easy running of lots of different experiments.
+    * Emphasizing code structure that can be friendly to streaming/online scenarios and agnostic to data collection methods.
+
+* New functionality.
+    * More sub-routines for testing different modifications and augmentations of our algorithms.
+    * More utility functions in the linear algebra and optimization toolkits.
+    * More plotting for both bandits and CCA.
+    * More composable data processing/serving tools for both bandits and CCA.
+        * Data serving is part of the friendliness to streaming/online scenarios. With data servers, a model queries for a minibatch or datapoint instead of receiving the whole data set in advance.
 
 ####Questions
 * @Both:
