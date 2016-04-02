@@ -1,6 +1,6 @@
 from bandits import bold, exp3, ucb1, thompson
-from data_servers.action_maps import *
-from data_servers import DelayedRewardDataServer as DRDS
+from data.servers import action_maps as am
+from data.servers import DelayedRewardServer as DRS
 
 def get_UCB1_factory():
 
@@ -26,9 +26,9 @@ def get_TSBB_factory(alpha, beta):
 
     return get_TSBB
 
-def run_DRDS_test(learner, reward_func, delay_func, T):
+def run_DRS_test(learner, reward_func, delay_func, T):
 
-    ds = DRDS(reward_func, delay_func)
+    ds = DRS(reward_func, delay_func)
 
     for t in range(T):
         action = learner.get_action()
@@ -42,18 +42,18 @@ def test_ucb1_exp3_tsbb(T):
     num_actions = len(reward_ps)
     delay_consts = [1] * num_actions
 
-    reward_func = get_bernoulli_action_map(reward_ps)
-    delay_func = get_const_action_map(delay_consts)
+    reward_func = am.get_bernoulli_action_map(reward_ps)
+    delay_func = am.get_const_action_map(delay_consts)
     ucb1_bold = bold.BOLD(get_UCB1_factory(), num_actions)
     exp3_bold = bold.BOLD(get_Exp3_factory(0.07), num_actions)
     tsbb_bold = bold.BOLD(get_TSBB_factory(1,1), num_actions)
 
     print "UCB1"
-    run_DRDS_test(ucb1_bold, reward_func, delay_func, T)
+    run_DRS_test(ucb1_bold, reward_func, delay_func, T)
     print "Exp3"
-    run_DRDS_test(exp3_bold, reward_func, delay_func, T)
+    run_DRS_test(exp3_bold, reward_func, delay_func, T)
     print "TSBB"
-    run_DRDS_test(tsbb_bold, reward_func, delay_func, T)
+    run_DRS_test(tsbb_bold, reward_func, delay_func, T)
 
     return {
         'ucb1': ucb1_bold, 

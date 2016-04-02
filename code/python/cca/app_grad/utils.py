@@ -3,7 +3,13 @@ import numpy as np
 from numpy.random import randn, choice
 from linal.utils import quadratic as quad
 from linal.mp_pinv import get_mp_pinv as get_pinv
-from optimization.utils import is_converged
+from optimization.utils import is_conv
+
+def is_k_valid(X_ds, Y_ds, k):
+
+    p = min([X_ds.cols(), Y_ds.cols()])
+
+    return k < p
 
 def is_converged(
     unn_Phi_t, 
@@ -14,12 +20,12 @@ def is_converged(
     eps2, 
     verbose):
 
-    Phi_converged = is_converged(unn_Phi_t, unn_Phi_t1, eps1, verbose)
-    Psi_converged = is_converged(unn_Psi_t, unn_Psi_t1, eps2, verbose)
+    Phi_converged = is_conv(unn_Phi_t, unn_Phi_t1, eps1, verbose)
+    Psi_converged = is_conv(unn_Psi_t, unn_Psi_t1, eps2, verbose)
 
     return Phi_converged and Psi_converged
 
-def objective(X, Phi, Y, Psi):
+def get_objective(X, Phi, Y, Psi):
 
     X_trans = np.dot(X, Phi)
     Y_trans = np.dot(Y, Psi)

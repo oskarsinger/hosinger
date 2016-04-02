@@ -1,4 +1,6 @@
-import os, sys
+import os
+
+from subprocess import call
 
 def init_path():
 
@@ -10,5 +12,6 @@ def init_path():
         full = os.path.join(cwd, dir_item)
 
         if os.path.isdir(full):
-
-            sys.path.append(full)
+            call([
+                "export",
+                "PYTHONPATH=\"${PYTHONPATH}:" + full + "\""])

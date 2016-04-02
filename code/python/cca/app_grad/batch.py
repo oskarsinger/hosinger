@@ -5,29 +5,19 @@ import utils as agu
 class BatchAppGradCCA:
 
     def __init__(self, 
-        X, Y, k,
+        X_ds, Y_ds, k,
         eta1=0.1, eta2=0.1, 
-        eps1=10**(-4), eps2=10**(-4), 
-        reg=0.001):
-
-        (n1, p1) = X.shape
-        (n2, p2) = Y.shape
-        p = min([p1, p2])
-        
-        if not n1 == n2:
-            raise ValueError(
-                'Data matrices must have same number of data points.')
-        else:
-            self.X = X
-            self.Y = Y
-
-        if k > p:
+        eps1=10**(-4), eps2=10**(-4)):
+     
+        if agu.is_k_valid(X_ds, Y_ds, k):
             raise ValueError(
                 'The value of k must be less than or equal to the minimum of the' +
                 ' number of columns of X and Y.')
         else:
             self.k = k
 
+        (self.X, self.Sx) = X_ds.get_batch_and_gram()
+        (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
         self.eta1 = eta1
         self.eta2 = eta2
         self.eps1 = eps1
@@ -36,20 +26,12 @@ class BatchAppGradCCA:
 
     def get_cca(self, verbose=False):
 
-        X = self.X
-        Y = self.Y
-
-        print "Getting Sx and Sy"
-
-        Sx = agu.get_regged_gram(X, reg)
-        Sy = agu.get_regged_gram(Y, reg)
-
         print "Getting initial basis estimates"
 
         # Randomly initialize normalized and unnormalized canonical bases for
         # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
         (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = agu.get_init_bases(
-            Sx, Sy, self.k)
+            self.Sx, self.Sy, self.k)
         (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
 
         # Initialize iteration-related variables
@@ -70,9 +52,12 @@ class BatchAppGradCCA:
 
             # Get basis updates for both X and Y's canonical bases, normed and unnormed
             (unn_Phi_t1, Phi_t1) = agu.get_updated_bases(
-                X, Y, unn_Phi_t, Psi_t, Sx, eta1)
+                self.X, self.Y, unn_Phi_t, Psi_t, self.Sx, eta1)
             (unn_Psi_t1, Psi_t1) = agu.get_updated_bases(
-                Y, X, unn_Psi_t, Phi_t, Sy, eta2)
+                self.Y, self.X, unn_Psi_t, Phi_t, self.Sy, eta2)
+
+            if verbose:
+                print "\tObjective:", agu.get_objective(self.X, Phi_t1, self.Y, Psi_t1)
 
             converged = is_converged(
                 unn_Phi_t,

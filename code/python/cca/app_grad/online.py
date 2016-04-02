@@ -5,35 +5,19 @@ import utils as agu
 class OnlineAppGradCCA:
 
     def __init__(self, 
-        data_server, k,
-        batch_size=None,
+        X_ds, Y_ds, k,
         eta1=0.1, eta2=0.1, 
-        eps1=10**(-4), eps2=10**(-4), 
-        reg=0.001):
+        eps1=10**(-4), eps2=10**(-4)):
 
-        (n1, p1) = X.shape
-        (n2, p2) = Y.shape
-        p = min([p1, p2])
-        
-        if not n1 == n2:
-            raise ValueError(
-                'Data matrices must have same number of data points.')
-        else:
-            self.X = X
-            self.Y = Y
-
-        if k > p:
+        if agu.is_k_valid(X_ds, Y_ds, k):
             raise ValueError(
                 'The value of k must be less than or equal to the minimum of the' +
                 ' number of columns of X and Y.')
         else:
             self.k = k
 
-        if batch_size is not None and batch_size < k:
-            raise ValueError(
-                'Batch size must be greater than or equal to the value of k.')
-
-        self.ds = data_server
+        self.X_ds = X_ds
+        self.Y_ds = Y_ds
         self.eta1 = eta1
         self.eta2 = eta2
         self.eps1 = eps1
@@ -45,10 +29,8 @@ class OnlineAppGradCCA:
         print "Getting initial minibatches and Sx and Sy"
 
         # Determine data set
-        X = self.ds.get_minibatch(self.X)
-        Y = self.ds.get_minibatch(self.Y)
-        Sx = self.ds.get_gram(X, self.reg)
-        Sy = self.ds.get_gram(Y, self.reg)
+        (X, Sx) = self.X_ds.get_batch_and_gram()
+        (Y, Sy) = self.Y_ds.get_batch_and_gram()
 
         print "Getting initial basis estimates"
 
@@ -74,9 +56,7 @@ class OnlineAppGradCCA:
                 print "\tGetting updated minibatches and Sx and Sy"
 
             # Update random minibatches if doing SGD
-            X = self.ds.get_minibatch(self.X)
-            Y = self.ds.get_minibatch(self.Y)
-            Sx = self.ds.get_gram(X, self.reg)
-            Sy = self.ds.get_gram(Y, self.reg)
+            (X, Sx) = self.X_ds.get_batch_and_gram()
+            (Y, Sy) = self.Y_ds.get_batch_and_gram()
 
-            
+             

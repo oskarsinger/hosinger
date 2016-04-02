@@ -1,6 +1,6 @@
-from data_server import AbstractDataServer
+from action_reward_server import AbstractActionRewardServer
 
-class DelayedRewardDataServer(AbstractDataServer):
+class DelayedRewardServer(AbstractActionRewardServer):
 
     def __init__(self, reward_func, delay_func, incremental=False):
         

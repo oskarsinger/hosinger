@@ -1,10 +1,18 @@
 from abc import ABCMeta, abstractmethod
 
-class AbstractBanditDataServer:
+class AbstractGramServer:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_rewards(self, action):
+    def get_batch_and_gram(self):
+        pass
+
+    @abstractmethod
+    def rows():
+        pass
+
+    @abstractmethod
+    def cols():
         pass
 
     @abstractmethod

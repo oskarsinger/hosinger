@@ -1,4 +1,4 @@
 import action_maps
-import bandit_data_server
+import action_reward_server
 
-from delayed_reward_server import DelayedRewardDataServer
+from delayed_reward_server import DelayedRewardServer
