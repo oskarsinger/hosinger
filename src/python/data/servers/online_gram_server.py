@@ -3,26 +3,28 @@ import numpy as np
 from gram_server import AbstractGramServer
 from linal.utils import get_lms
 
-class OnlineGramServer(AbstractGramServer):
+class ExpOnlineGramServer(AbstractGramServer):
 
-    def __init__(self, data_loader, batch_size=1, weight_server=None):
+    def __init__(self, data_loader, weight):
 
         self.dl = data_loader
-        self.batch_size = batch_size
-        self.ws = weight_server
-        self.weighted = weight_server is not None
+        self.weight = weight
 
         cols = self.dl.cols()
-        self.grams = [np.zeros((cols, cols))]
-        self.batch = np.zeros((batch_size,cols))
+
+        self.gram = np.zeros((cols, cols))
         self.num_rounds = 0
 
     def get_batch_and_gram(self):
 
         self.num_rounds += 1
 
-        for i in range(self.batch_size):
-            row = self.dl.get_datum()
+        row = self.dl.get_datum()
+        w = (self.weight)**(self.num_rounds)
+
+        self.gram += w * np.dot(row, row.T)
+
+        return (row, np.copy(self.gram))
 
     def rows(self):
 
@@ -34,4 +36,48 @@ class OnlineGramServer(AbstractGramServer):
 
     def get_status(self):
         
-        print "Some stuff"
+        return {
+            'gram': self.gram,
+            'weight': self.weight,
+            'num_rounds': self.num_rounds,
+            'data_loader': self.dl}
+
+class BoxcarOnlineGramServer(AbstractGramServer):
+
+    def __init__(self, data_loader, length):
+
+        self.dl = data_loader
+        self.length = length
+
+        cols = self.dl.cols()
+        
+        self.grams = []
+        self.num_rounds = 0
+
+    def get_batch_and_gram(self):
+
+        self.num_rounds += 1
+
+        row = self.dl.get_datum()
+        gram = np.dot(row, row.T)
+
+        if len(self.grams) >= self.length:
+            self.grams = self.grams[1:] + [gram]
+
+        return (row, sum(self.grams))
+
+    def rows(self):
+
+        return self.num_rounds
+
+    def cols(self):
+
+        return self.dl.cols()
+
+    def get_status(self):
+
+        return {
+            'gram': self.gram,
+            'length': self.length,
+            'num_rounds': self.num_rounds,
+            'data_loader': self.dl}
