@@ -66,9 +66,9 @@ def _plot_basis(basis, name, features, basis_elements):
 
     return plot_matrix_heat(
         np.abs(basis),
-        features,
         basis_elements,
+        features,
         'Percent mass per feature over ' + name + ' basis elements',
-        'feature',
         name + ' basis element',
+        'feature',
         'mass')

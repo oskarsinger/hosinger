@@ -1,4 +1,4 @@
-from action_reward_server import AbstractActionRewardServer
+from action_reward import AbstractActionRewardServer
 
 class DelayedRewardServer(AbstractActionRewardServer):
 

@@ -1,7 +1,6 @@
 import numpy as np
 
 from math import pi
-import os
 
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure, show, output_file
@@ -11,11 +10,11 @@ from utils import get_plot_path
 
 def plot_matrix_heat(
     value_matrix,
-    y_labels, 
     x_labels, 
+    y_labels, 
     title,
-    y_name,
     x_name,
+    y_name,
     val_name,
     norm_axis=0,
     width=900,
@@ -56,10 +55,12 @@ def _initialize_figure(
 
     TOOLS = "resize,hover,save,pan,box_zoom,wheel_zoom"
 
-    p = figure(title=title,
+    p = figure(
+        title=title,
         x_range=x_labels, y_range=list(reversed(y_labels)),
-        x_axis_location="above", plot_width=width, plot_height=height,
-        toolbar_location="left", tools=TOOLS)
+        plot_width=width, plot_height=height,
+        x_axis_location="above", toolbar_location="left", 
+        tools=TOOLS)
 
     p.grid.grid_line_color = None
     p.axis.axis_line_color = None

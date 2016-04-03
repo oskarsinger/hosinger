@@ -415,13 +415,15 @@ Some of the following bodies of literature may be useful to us.
 
 ####Engineering
 * Massive structural overhaul of Python code base.
-    * Separating reusable functionality into self-contained, composable modules and packages. Its fascilitating easy running of lots of different experiments.
+    * Separating reusable functionality into self-contained, composable modules and packages.
+    * Easier to run many different types of experiments and produce plots quickly within the framework I am developing.
     * Emphasizing code structure that can be friendly to streaming/online scenarios and agnostic to data collection methods.
 
 * New functionality.
     * More sub-routines for testing different modifications and augmentations of our algorithms.
     * More utility functions in the linear algebra and optimization toolkits.
-    * More plotting for both bandits and CCA.
+    * General utility functions for file IO.
+    * More plotting for both bandits and CCA. Specifically, matrix heat, bar, and line plots.
     * More composable data processing/serving tools for both bandits and CCA.
         * Data serving is part of the friendliness to streaming/online scenarios. With data servers, a model queries for a minibatch or datapoint instead of receiving the whole data set in advance.
 

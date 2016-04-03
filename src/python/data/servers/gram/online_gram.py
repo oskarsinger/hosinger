@@ -1,7 +1,6 @@
 import numpy as np
 
-from gram_server import AbstractGramServer
-from linal.utils import get_lms
+from gram import AbstractGramServer
 
 class ExpOnlineGramServer(AbstractGramServer):
 

@@ -24,11 +24,11 @@ def plot_arms_vs_time(bandit):
 
     p = plot_matrix_heat(
         counts,
-        actions,
         times,
+        actions,
         'Percent pullage per arm over time',
-        'action',
         'time',
+        'action',
         'pullage') 
     filepath = os.path.join(
         get_plot_path(), 

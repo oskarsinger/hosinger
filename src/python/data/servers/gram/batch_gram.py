@@ -1,4 +1,4 @@
-from gram_server import AbstractGramServer
+from gram import AbstractGramServer
 
 from optimization.utils import get_t_regged_gram
 
