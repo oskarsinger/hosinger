@@ -409,6 +409,8 @@ Some of the following bodies of literature may be useful to us.
 
 * Let's say that we are in the following bandit scenario. Each arm is a source of training data. The outcome is a training example, and the reward is the reduction in our empirical average loss from training on that example. The arms can be real-world data sources, or they can be buckets/tiles of some region in R^d from which we can take arbitrary or randomly-sampled measurements and receive labels for said measurements. Is there a meaningful contextual bandit extension?
 
+* Try a bunch of different weighting functions for online Gram matrix updates including hard-constrained sliding window and decaying weighted sum of outer products. Maybe we choose some (non-linear?) transformation of the Gram matrix and learn its parameters.
+
 ####Experiments
 * Running batch gradient CCA on the principle components of the data rather than the raw data seemed to help.
 * Good news: SciKit-Learn has incremental PCA, so we can easily try that for getting rid of linear dependence online.
@@ -420,12 +422,14 @@ Some of the following bodies of literature may be useful to us.
     * Emphasizing code structure that can be friendly to streaming/online scenarios and agnostic to data collection methods.
 
 * New functionality.
-    * More sub-routines for testing different modifications and augmentations of our algorithms.
+    * More sub-routines for testing different modifications and augmentations of our algorithms, including the various Gram matrix weightings discussed for CCA filtering for the biochronicity work.
     * More utility functions in the linear algebra and optimization toolkits.
     * General utility functions for file IO.
     * More plotting for both bandits and CCA. Specifically, matrix heat, bar, and line plots.
     * More composable data processing/serving tools for both bandits and CCA.
         * Data serving is part of the friendliness to streaming/online scenarios. With data servers, a model queries for a minibatch or datapoint instead of receiving the whole data set in advance.
+
+* Figured out that bokeh does streaming plots, which would be really nice for testing these online algorithms and presenting them to collaborators. Going to invest some serious time in figuring out how to use them sometime in the next month. If it involves too much learning curve or overhead, I may skip it. Also, Thibaut may be interested in implementing something like that, and I can easily provide him with the tools for interfacing with the algorithms.
 
 ####Questions
 * @Both:
