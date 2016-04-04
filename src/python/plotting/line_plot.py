@@ -11,6 +11,7 @@ def plot_lines(
     x_label,
     y_label,
     title,
+    colors=Spectral11
     width=900,
     height=400):
 
@@ -28,7 +29,7 @@ def plot_lines(
         p.line(
             x_data, 
             y_data, 
-            color=Spectral11[count % 11], 
+            color=colors[count % len(colors)], 
             legend=name)
 
         count += 1
