@@ -53,20 +53,20 @@ def get_2way_basis_update(X1, X2, unnormed1, normed2, S1, eta1):
 
     Psi = np.dot(X2, normed2)
 
-    return get_basis_update(X2, unnormed1, Psi, S1, eta1)
+    return get_basis_update(X1, unnormed1, Psi, S1, eta1)
 
-def get_basis_update(X1, unnormed1, Psi, S1, eta1):
+def get_basis_update(X, unnormed, Psi, Sx, eta1):
 
     # Calculate gradient for 2-way CCA
-    gradient = get_gradient(X1, unnormed1, Psi)
+    gradient = get_gradient(X, unnormed, Psi)
 
     # Take a gradient step on unnormed1
-    unnormed1_next = unnormed1 - eta1 * gradient
+    unnormed_next = unnormed - eta1 * gradient
 
     # Normalize unnormed 1 with inversion of matrix quadratic
-    normed1 = get_gram_normed(unnormed1_next, S1)
+    normed = get_gram_normed(unnormed_next, S)
 
-    return (unnormed1_next, normed1)
+    return (unnormed_next, normed)
 
 def get_init_basis_pairs(Sxs, k):
 
