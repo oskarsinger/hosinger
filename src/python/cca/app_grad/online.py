@@ -9,7 +9,7 @@ class OnlineAppGradCCA:
         eta1=0.1, eta2=0.1, 
         eps1=10**(-4), eps2=10**(-4)):
 
-        if agu.is_k_valid(X_ds, Y_ds, k):
+        if not agu.is_k_valid([X_ds, Y_ds], k):
             raise ValueError(
                 'The value of k must be less than or equal to the minimum of the' +
                 ' number of columns of X and Y.')
@@ -28,7 +28,7 @@ class OnlineAppGradCCA:
 
         print "Getting initial minibatches and Sx and Sy"
 
-        # Determine data set
+        # Determine minibatch
         (X, Sx) = self.X_ds.get_batch_and_gram()
         (Y, Sy) = self.Y_ds.get_batch_and_gram()
 
@@ -36,14 +36,16 @@ class OnlineAppGradCCA:
 
         # Randomly initialize normalized and unnormalized canonical bases for
         # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
-        (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = agu.get_init_bases(Sx, Sy, self.k)
+        basis_pairs = agu.get_init_basis_pairs([Sx, Sy], self.k)
+        (Phi_t, unn_Phi_t) = basis_pairs[0]
+        (Psi_t, unn_Psi_t) = basis_pairs[1]
         (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
 
         # Initialize iteration-related variables
-        converged = False
+        converged = [False] * 2
         i = 1
 
-        while not converged:
+        while not all(converged):
 
             # Update step scales for gradient updates
             eta1 = self.eta1 / i**0.5
@@ -63,21 +65,20 @@ class OnlineAppGradCCA:
                 print "\tGetting updated basis estimates"
 
             # Get basis updates for both X and Y's canonical bases, normed and unnormed
-            (unn_Phi_t1, Phi_t1) = agu.get_updated_bases(
+            (unn_Phi_t1, Phi_t1) = agu.get_2way_basis_update(
                 X, Y, unn_Phi_t, Psi_t, Sx, eta1)
-            (unn_Psi_t1, Psi_t1) = agu.get_updated_bases(
+            (unn_Psi_t1, Psi_t1) = agu.get_2way_basis_update(
                 Y, X, unn_Psi_t, Phi_t, Sy, eta2)
 
+            # Need to reconsider how this is evaluated.
+            # Its a bit sketchy to just look at objective for current batch.
             if verbose:
-                print "\tObjective:", agu.get_objective(self.X, Phi_t1, self.Y, Psi_t1)
+                print "\tObjective:", agu.get_2way_objective(
+                    X, Phi_t1, Y, Psi_t1)
 
             converged = agu.is_converged(
-                unn_Phi_t,
-                unn_Phi_t1,
-                unn_Psi_t,
-                unn_Psi_t1
-                self.eps1,
-                self.eps2,
+                [(unn_Phi_t, unn_Phi_t1), (unn_Psi_t, unn_Psi_t1)],
+                [self.eps1, self.eps2],
                 verbose)
 
             # Update state

@@ -30,15 +30,16 @@ class BatchAppGradCCA:
 
         # Randomly initialize normalized and unnormalized canonical bases for
         # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
-        (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t) = agu.get_init_bases(
-            self.Sx, self.Sy, self.k)
+        basis_pairs = agu.get_init_basis_pairs([self.Sx, self.Sy], self.k)
+        (Phi_t, unn_Phi_t) = basis_pairs[0]
+        (Psi_t, unn_Psi_t) = basis_pairs[1]
         (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
 
         # Initialize iteration-related variables
-        converged = False
+        converged = [False] * 2
         i = 1
 
-        while not converged:
+        while not all(converged):
 
             # Update step scales for gradient updates
             eta1 = self.eta1 / i**0.5
@@ -51,21 +52,18 @@ class BatchAppGradCCA:
                 print "\tGetting updated basis estimates"
 
             # Get basis updates for both X and Y's canonical bases, normed and unnormed
-            (unn_Phi_t1, Phi_t1) = agu.get_updated_bases(
+            (unn_Phi_t1, Phi_t1) = agu.get_2way_basis_update(
                 self.X, self.Y, unn_Phi_t, Psi_t, self.Sx, eta1)
-            (unn_Psi_t1, Psi_t1) = agu.get_updated_bases(
+            (unn_Psi_t1, Psi_t1) = agu.get_2way_basis_update(
                 self.Y, self.X, unn_Psi_t, Phi_t, self.Sy, eta2)
 
             if verbose:
-                print "\tObjective:", agu.get_objective(self.X, Phi_t1, self.Y, Psi_t1)
+                print "\tObjective:", agu.get_2way_objective(
+                    self.X, Phi_t1, self.Y, Psi_t1)
 
             converged = agu.is_converged(
-                unn_Phi_t,
-                unn_Phi_t1,
-                unn_Psi_t,
-                unn_Psi_t1
-                self.eps1,
-                self.eps2,
+                [(unn_Phi_t, unn_Phi_t1), (unn_Psi_t, unn_Psi_t1)],
+                [self.eps1, self.eps2],
                 verbose)
 
             # Update state
