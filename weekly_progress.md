@@ -11,7 +11,8 @@ Each week is indexed by the date of Monday.
 * [8 February 2016](#8feb)
 * [15 February 2016](#15feb)
 * [29 February 2016/6 March 2016](#29feb)
-* [13 March 2016](#13mar)
+* [13/20/27 March 2016](#13mar)
+* [3 April 2016](#3apr)
 
 ##Progress Reports
 
@@ -438,3 +439,19 @@ Some of the following bodies of literature may be useful to us.
 * @Al:
     * Where can we expect sparsity in Yaya's data set?
     * Where do we want to induce sparsity?
+
+###<a name='3apr'>3 April 2016</a>
+
+####Our Ideas
+* New _n_-ary CCA-ish objective function on which I am going to try an extension of the projected gradient algorithm from the Zhuang Ma/Dean Foster paper. It may allow for a number of helpful extensions of existing CCA methods
+    * arbitary number of 'views' of the data
+    * different time scales for updates of parameters corresponding to different views
+    * easy distribution of computation of gradients
+
+* The new _n_-ary CCA-ish problem may have some relationship to the delayed feedback scenario given our desire to make gradient updates at different time scales. I'd like to talk about this a bit more.
+
+####Engineering
+* Generalized a bunch of the AppGrad CCA util code to _n_ views.
+* Started implementing AppGrad for _n_-ary CCA-ish objective.
+
+####Questions
