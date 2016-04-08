@@ -30,7 +30,7 @@ class BetaBernoulli(AbstractLearner):
     def get_action(self):
         
         if self._is_waiting:
-            raise_no_reward_error()
+            be.raise_no_reward_error()
 
         self._is_waiting = True
 
@@ -45,7 +45,7 @@ class BetaBernoulli(AbstractLearner):
     def update_rewards(self, value):
 
         if not self._is_waiting:
-            raise_no_action_error()
+            be.raise_no_action_error()
 
         self._is_waiting = False
 
@@ -55,9 +55,9 @@ class BetaBernoulli(AbstractLearner):
         (w, l) = self._wins_losses[action]
 
         if value:
-            w = w+1
+            w += 1
         else:
-            l = l+1
+            l += 1
 
         self._wins_losses[action] = (w,l)
 

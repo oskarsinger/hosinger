@@ -2,7 +2,7 @@ import numpy as np
 
 import utils as agu
 
-from global_utils.data_structures import FixedSizeQueue as FSQ
+from global_utils.data_structures import FixedLengthQueue as FLQ
 
 class OnlineAppGradNViewCCA:
 
@@ -10,6 +10,7 @@ class OnlineAppGradNViewCCA:
         ds_list, k,
         etas=None,
         epsilons=None,
+        min_r=0.1,
         q_length=1):
 
         self.num_ds = len(ds_list)
@@ -45,14 +46,19 @@ class OnlineAppGradNViewCCA:
         else:
             self.epsilons = [10**(-4)] * self.num_ds
 
-        if q_length <= 0:
+        if (q_length <= 0) or (q_length % 1 > 0):
             raise ValueError(
-                'q_length must be at least 1.')
+                'q_length must be an integer of value at least 1.')
         else:
             self.q_length = q_length
 
+        if min_r < 0:
+            raise ValueError(
+                'min_r must be non-negative.')
+        else:
+            self.min_r
+
         self.num_updates = [0] * self.num_ds
-        self.queues = [FSQ(self.q_length)] * self.num_ds
 
     def get_cca(self, verbose=False):
 
@@ -60,7 +66,7 @@ class OnlineAppGradNViewCCA:
 
         # Determine minibatches and grams
         (Xs, Sxs) = self.get_batch_and_gram_lists()
-        
+
         print "Getting intial_basis_estimates"
 
         # Initialization of optimization variables
@@ -84,7 +90,7 @@ class OnlineAppGradNViewCCA:
                 print "\tGetting updated minibatches and grams"
 
             (Xs, Sxs) = self.get_batch_and_gram_lists()
-            Psi = self.get_Psi()
+            Psi = self.get_Psi(Xs, basis_pairs_t)
 
             if verbose:
                 print "\tGetting updated basis estimates"
@@ -121,9 +127,18 @@ class OnlineAppGradNViewCCA:
 
         return (basis_pairs_t, Psi)
 
-    def get_Psi(self):
+    def get_Psi(self, Xs, basis_pairs_t, Psi):
 
-        print "Stuff"
+        X_dot_Phis = [np.dot(data[i], basis_pairs_t[i][1]
+                      for i in range(self.num_ds)]
+        residuals = [np.linalg.norm(X_dot_Phi - Psi)
+                     for X_dot_Phi in X_dot_Phis]
+        truncd_rs = [max(r, self.min_r)
+                     for r in residuals]
+        summands = [r**(-1) * X_dot_Phi
+                    for r, X_dot_Phi in zip(truncd_rs, X_dot_Phis)]
+
+        return sum(summands)
 
     def get_batch_and_gram_lists(self):
 

@@ -33,21 +33,20 @@ def get_objective(Xs, Phis, Psi):
         raise ValueError(
             'Xs and Phis should have the same number of elements.')
 
-    X_transforms = [np.dot(X, Phi)
-                    for X, Phi in zip(Xs, Phis)]
-    distances = [np.linalg.norm(X_trans - Psi)
+    transformed_X = [np.dot(X, Phi)
+                     for X, Phi in zip(Xs, Phis)]
+    residuals = [np.linalg.norm(X_trans - Psi)
                  for X_trans in X_transforms]
 
-    return sum(distances)
+    return sum(residuals)
 
-def get_gradient(X1, unnormed1, Psi):
+def get_gradient(X, unnormed, Psi):
 
-    n = X1.shape[0]
-    transformed_X1 = np.dot(X1, unnormed1)
-    transformed_X2 = np.dot(X2, normed2)
-    diff = transformed_X1 - transformed_X2
+    n = X.shape[0]
+    transformed_X = np.dot(X, unnormed)
+    diff = transformed_X - Psi
 
-    return np.dot(X1.T, diff) / n
+    return np.dot(X.T, diff) / n
 
 def get_2way_basis_update(X1, X2, unnormed1, normed2, S1, eta1):
 

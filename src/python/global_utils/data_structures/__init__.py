@@ -1,2 +1,2 @@
 from suffix_tree import SuffixTree
-from fixed_size_queue import FixedSizeQueue
+from fixed_length_queue import FixedLengthQueue

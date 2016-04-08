@@ -1,16 +1,16 @@
-class FixedSizeQueue:
+class FixedLengthQueue:
 
-    def __init__(self, size):
+    def __init__(self, length):
 
-        self.size = size
+        self.length = length
         self.queue = []
 
     def enqueue(self, item):
         
         if len(self.queue) == self.size:
-            self.queue = self.queue[1:].appen(item)
+            self.queue[1:].append(item)
         else:
-            self.queue = self.queue.append(item)
+            self.queue.append(item)
 
     def dequeue(self):
 
@@ -20,10 +20,14 @@ class FixedSizeQueue:
 
         return item
 
-    def length(self):
+    def get_length(self):
 
         return len(self.queue)
 
-    def items(self):
+    def get_items(self):
 
         return self.queue
+
+    def get_max_length(self):
+
+        return self.length
