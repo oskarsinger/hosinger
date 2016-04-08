@@ -1,8 +1,9 @@
 from learner import AbstractLearner
-from bandit_errors import *
 from numpy.random import choice
 
 import math
+
+import bandit_errors as be
 
 class Exp3(AbstractLearner):
 
@@ -30,7 +31,7 @@ class Exp3(AbstractLearner):
     def get_action(self):
 
         if self._is_waiting:
-            raise_no_reward_error()
+            be.raise_no_reward_error()
 
         self._is_waiting = True
     
@@ -47,7 +48,7 @@ class Exp3(AbstractLearner):
     def update_rewards(self, value):
 
         if not self._is_waiting:
-            raise_no_action_error()
+            be.raise_no_action_error()
 
         self._is_waiting = False
 

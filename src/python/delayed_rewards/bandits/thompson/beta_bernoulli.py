@@ -1,6 +1,7 @@
 from learner import AbstractLearner
-from bandit_errors import *
 from numpy.random import beta
+
+import bandit_errors as be
 
 class BetaBernoulli(AbstractLearner):
 

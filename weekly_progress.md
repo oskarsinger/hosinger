@@ -453,5 +453,6 @@ Some of the following bodies of literature may be useful to us.
 ####Engineering
 * Generalized a bunch of the AppGrad CCA util code to _n_ views.
 * Started implementing AppGrad for _n_-ary CCA-ish objective.
+* Started implementing beta-geometric Thompson sampling bandit.
 
 ####Questions

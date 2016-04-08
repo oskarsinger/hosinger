@@ -1,8 +1,9 @@
 from learner import AbstractLearner
-from bandit_errors import *
 from itertools import izip
 
 import math
+
+import bandit_errors as be
 
 class UCB1(AbstractLearner):
 
@@ -29,7 +30,7 @@ class UCB1(AbstractLearner):
     def get_action(self):
 
         if self._is_waiting:
-            raise_no_reward_error()
+            be.raise_no_reward_error()
 
         self._is_waiting = True
 
@@ -52,7 +53,7 @@ class UCB1(AbstractLearner):
     def update_rewards(self, value):
 
         if not self._is_waiting:
-            raise_no_action_error()
+            be.raise_no_action_error()
 
         self._is_waiting = False
 
