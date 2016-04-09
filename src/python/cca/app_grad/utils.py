@@ -63,7 +63,7 @@ def get_basis_update(X, unnormed, Psi, Sx, eta1):
     unnormed_next = unnormed - eta1 * gradient
 
     # Normalize unnormed 1 with inversion of matrix quadratic
-    normed = get_gram_normed(unnormed_next, S)
+    normed = get_gram_normed(unnormed_next, Sx)
 
     return (unnormed_next, normed)
 

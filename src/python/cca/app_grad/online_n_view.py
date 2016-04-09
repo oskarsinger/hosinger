@@ -71,9 +71,9 @@ class OnlineAppGradNViewCCA:
 
         # Initialization of optimization variables
         basis_pairs_t = agu.get_init_basis_pairs(Sxs, self.k)
-        basis_pairs_t1 = [(None, None) for i in range(self.num_ds)]
+        basis_pairs_t1 = None
 
-        # Iteration info
+        # Iteration variables
         converged = [False] * self.num_ds
         i = 1
 
@@ -100,15 +100,6 @@ class OnlineAppGradNViewCCA:
                                 Xs[i], basis_pairs_t[i], Psi, Sxs[i], etas[i])
                               for i in range(self.num_ds)]
 
-            """TODO
-            I. Implement Psi update
-                A. Implement residual queue
-                    i. Figure out how to store the queue elements. Numpy array? Python list? Probably Python list is okay.
-                    ii. Implement it in global_utils.data_structures? Yeah, sure, why not.
-                B. Implement residual-weighted sum such that small residuals don't cause numerical instability.
-            II. Figure out how to weight gradients proportional to wait time. May have to restructure how gradients are accessed, or I could just modify the eta I give to the basis update function.
-            """
-
             if verbose:
                 Phis = [pair[1] for pair in basis_pairs_t1]
                 print "\tObjective:", agu.get_objective(Xs, Phis, Psi)
@@ -127,14 +118,18 @@ class OnlineAppGradNViewCCA:
 
         return (basis_pairs_t, Psi)
 
-    def get_Psi(self, Xs, basis_pairs_t, Psi):
+    def get_Psi(self, Xs, basis_pairs, Psi):
 
-        X_dot_Phis = [np.dot(data[i], basis_pairs_t[i][1]
+        X_dot_Phis = [np.dot(data[i], basis_pairs[i][1]
                       for i in range(self.num_ds)]
         residuals = [np.linalg.norm(X_dot_Phi - Psi)
                      for X_dot_Phi in X_dot_Phis]
+
+        # Truncate small residuals to prevent numerical instability
         truncd_rs = [max(r, self.min_r)
                      for r in residuals]
+
+        # Weight the sum to prevent noise from dominating the loss
         summands = [r**(-1) * X_dot_Phi
                     for r, X_dot_Phi in zip(truncd_rs, X_dot_Phis)]
 

@@ -4,7 +4,7 @@ from numpy.random import randn
 
 class GaussianLoader(AstractDataLoader):
 
-    def __init__(self, dist, n, p):
+    def __init__(self, n, p):
 
         self.n = n
         self.p = p
@@ -16,6 +16,5 @@ class GaussianLoader(AstractDataLoader):
     def get_status(self):
 
         return {
-            'dist': dist,
             'n': n,
             'p': p}
