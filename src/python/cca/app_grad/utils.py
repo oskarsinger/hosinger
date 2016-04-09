@@ -3,7 +3,7 @@ import numpy as np
 from numpy.random import randn, choice
 from linal.utils import quadratic as quad
 from linal.mp_pinv import get_mp_pinv as get_pinv
-from optimization.utils import is_conv
+from optimization.utils import is_converged as is_conv
 
 def is_k_valid(ds_list, k):
 
@@ -33,8 +33,8 @@ def get_objective(Xs, Phis, Psi):
         raise ValueError(
             'Xs and Phis should have the same number of elements.')
 
-    transformed_X = [np.dot(X, Phi)
-                     for X, Phi in zip(Xs, Phis)]
+    X_transforms = [np.dot(X, Phi)
+                    for X, Phi in zip(Xs, Phis)]
     residuals = [np.linalg.norm(X_trans - Psi)
                  for X_trans in X_transforms]
 

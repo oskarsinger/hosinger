@@ -1,2 +1,1 @@
-import smart_watch_data
 import random_data

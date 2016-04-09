@@ -1,5 +1,5 @@
-from data_loader import AbstractDataLoader
-from errors import EOSError
+from data.loaders.data_loader import AbstractDataLoader
+from data.errors import EOSError
 
 import os
 
@@ -47,3 +47,7 @@ class SensorLoader(AbstractDataLoader):
             'num_samples': self.num_samples,
             'num_rounds': self.num_rounds
         }
+
+    def cols(self):
+
+        return self.window

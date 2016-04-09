@@ -9,3 +9,7 @@ class AbstractDataLoader:
     @abstractmethod
     def get_status(self):
         pass
+
+    @abstractmethod
+    def cols(self):
+        pass

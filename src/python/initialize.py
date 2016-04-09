@@ -10,6 +10,7 @@ def init_path():
     for dir_item in dir_items:
 
         full = os.path.join(cwd, dir_item)
+        print full
 
         if os.path.isdir(full):
             call([

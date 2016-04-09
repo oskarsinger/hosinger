@@ -1,2 +1,4 @@
-import data_loader
+from data_loader import AbstractDataLoader
+
 import e4
+import random

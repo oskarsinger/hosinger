@@ -22,7 +22,6 @@ class OnlineAppGradCCA:
         self.eta2 = eta2
         self.eps1 = eps1
         self.eps2 = eps2
-        self.reg = reg
 
     def get_cca(self, verbose=False):
 
