@@ -2,8 +2,6 @@ import numpy as np
 
 import utils as agu
 
-from global_utils.data_structures import FixedLengthQueue as FLQ
-
 class OnlineAppGradNViewCCA:
 
     def __init__(self,
