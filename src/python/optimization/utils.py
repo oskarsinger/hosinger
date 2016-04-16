@@ -1,5 +1,7 @@
 import numpy as np
 
+from linal.utils import get_thresholded
+
 def get_minibatch(A, batch_size):
 
     indexes = choice(
@@ -26,26 +28,17 @@ def get_t_regged_gram(A, reg_const):
 
     return (gram + reg_matrix) / A.shape[0]
 
-def get_bregman_func(get_obj, get_grad, get_ip=np.dot):
+def get_lp_gradient(x, p):
 
-    def get_bregman(x_t, x):
+    norm = np.linalg.norm(x, p)
+    constant = norm * norm**(-1)
+    vec = np.power(np.absolute(x), -1) * np.sign(x)
 
-        grad = get_grad(x_t)
-        diff = x - x_t
-        ip = get_ip(grad, diff)
+    return constant * vec
 
-        return get_obj(x) - get_obj(x_t) - ip
+def get_shrunk_and_thresholded(x, lower=0):
 
-    return get_bregman
+    sign = np.sign(x)
+    threshed = get_thresholded(np.absolute(x), lower=lower)
 
-def get_bregman_grad_func(get_obj, get_grad, get_ip=np.dot):
-
-    def get_bregman_grad(x_t, x):
-
-        x_t_grad = get_grad(x_t)
-        x_t_ip = get_ip(x_t_grad, x_t)
-        x_grad = get_grad(x)
-
-        return x_grad - x_t_grad - get_obj(x_t) + x_t_ip
-
-    return get_bregman_grad
+    return sign * threshed

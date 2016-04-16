@@ -66,3 +66,54 @@ def matrix_ip(A, B):
     mp = np.dot(A, B)
 
     return np.trace(mp)
+
+def get_largest_entries(s, energy=None, k=None):
+
+    n = s.shape[0]
+
+    if k is not None and energy is not None:
+        raise ValueError(
+            'At most one of the k and energy parameters should be set.')
+
+    if k is not None:
+        if k > n:
+            raise ValueError(
+                'The value of k must not exceed the input vector.')
+
+    if energy is not None and (energy <= 0 or energy >= 1):
+        raise ValueError(
+            'The value of energy must be in the open interval (0,1).')
+
+    s = np.copy(s)
+
+    if k is not None:
+        s[k+1:] = 0
+    elif energy is not None:
+        total = sum(s)
+        current = 0
+        count = 0
+        
+        for i in range(n):
+            if current / total < energy:
+                current = current + s[i]
+                count = count + 1
+
+        s[count+1:] = 0
+
+    return s
+
+def get_thresholded(x, upper=float('Inf'), lower=0):
+
+    if np.isscalar(upper):
+        upper = np.zeros_like(x) + upper
+
+    if np.isscalar(lower):
+        lower = np.zeros_like(x) + lower
+
+    upper_idx = x > upper
+    lower_idx = x < lower
+    new_x = np.copy(x)
+    new_x[upper_idx] = upper[idx]
+    new_x[lower_idx] = lower[idx]
+
+    return new_x
