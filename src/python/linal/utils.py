@@ -60,3 +60,9 @@ def get_lms(weights, matrices):
         total += weight * matrix
 
     return total
+
+def matrix_ip(A, B):
+
+    mp = np.dot(A, B)
+
+    return np.trace(mp)

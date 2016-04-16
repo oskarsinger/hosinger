@@ -4,6 +4,16 @@
 
 ##Core ML
 
+###Bregman Divergence CCA
+
+####Motivation
+* More flexible than normal CCA
+
+####Approach
+* Probably just start by checking out Mahalanobis distance
+
+* * *
+
 ###Adaptive Epoch Length
 Split the learning into epochs and make the epoch length a function of the data (or the data's heterogeneity model).
 
@@ -13,6 +23,8 @@ Split the learning into epochs and make the epoch length a function of the data 
 ####Approach
 * Maybe it could come from some operator norm evaluation on our low-rank matrix factorization?
 
+* * *
+
 ###Adaptive Regularization
 Make the regularization constants a function of the data (or the data's heterogeneity model).
 
@@ -21,6 +33,8 @@ Make the regularization constants a function of the data (or the data's heteroge
 
 ####Approach
 * Maybe it could come from some operator norm evaluation on our low-rank matrix factorization?
+
+* * *
 
 ###Heterogeneous Population Model
 * Attempt to account for different subgroups of the population in a data-dependent manner.
@@ -33,6 +47,8 @@ Make the regularization constants a function of the data (or the data's heteroge
 ####Potential Approaches
 * Heirarchical Bayesian model
 * Low-rank matrix factorization
+
+* * *
 
 ###Low-D State Representations
 Develop a method for compressing state representations.
