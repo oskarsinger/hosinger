@@ -2,7 +2,9 @@ import numpy as np
 
 from linal import utils
 
-class AdaGrad:
+from abstract_comid import AbstractCOMID
+
+class AdaGradCOMID(AbstractCOMID):
 
     def __init__(self, objective, gradient, projection, eta, delta):
 

@@ -1,2 +1,2 @@
 import utils
-import mp_pinv
+import svd_funcs

@@ -1,4 +1,7 @@
-from linal.utils import get_lp_norm_gradient
+from linal.utils import get_lp_norm_gradient, quadratic, multi_dot
+from linal.svd_funcs import get_schatten_p_norm as get_sp, get_svd_power
+
+l2_breg_div, l2_breg_grad = get_lp_bregman_div_and_grad(2)
 
 def get_lp_bregman_div_and_grad(p, ip=np.dot):
 

@@ -2,8 +2,9 @@ import numpy as np
 
 from numpy.random import randn, choice
 from linal.utils import quadratic as quad
-from linal.mp_pinv import get_mp_pinv as get_pinv
+from linal.svd_funcs import get_svd_power
 from optimization.utils import is_converged as is_conv
+from optimization.bregman import get_lp_bregman_div_and_grad as get_lp_breg
 
 def is_k_valid(ds_list, k):
 
@@ -85,7 +86,6 @@ def get_init_basis_pair(Sx, k):
 def get_gram_normed(unnormed, S):
 
     basis_quad = quad(unnormed, S)
-    normalizer = get_pinv(
-        basis_quad, energy=0.95, sqrt=True)
+    normalizer = get_svd_power(basis_quad, -0.5)
 
     return np.dot(unnormed, normalizer)

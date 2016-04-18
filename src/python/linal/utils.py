@@ -117,3 +117,14 @@ def get_thresholded(x, upper=float('Inf'), lower=0):
     new_x[lower_idx] = lower[idx]
 
     return new_x
+
+def get_safe_power(s, power):
+
+    power_vec = np.ones(s.shape)
+
+    if power == 0:
+        power_vec = np.zeros(s.shape)
+    else:
+        power_vec[s != 0] = power
+    
+    return np.power(s, power_vec)
