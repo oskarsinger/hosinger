@@ -28,7 +28,7 @@ def get_t_regged_gram(A, reg_const):
 
     return (gram + reg_matrix) / A.shape[0]
 
-def get_lp_gradient(x, p):
+def get_lp_norm_gradient(x, p):
 
     norm = np.linalg.norm(x, p)
     constant = norm * norm**(-1)

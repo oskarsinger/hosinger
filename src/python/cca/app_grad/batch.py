@@ -2,12 +2,16 @@ import numpy as np
 
 import utils as agu
 
+from optimization.comid import SchattenPCOMID as SPCOMID
+
 class BatchAppGradCCA:
 
     def __init__(self, 
         X_ds, Y_ds, k,
         eta1=0.1, eta2=0.1, 
-        eps1=10**(-4), eps2=10**(-4)):
+        eps1=10**(-4), eps2=10**(-4),
+        comid=True,
+        sparse=False):
      
         if agu.is_k_valid(X_ds, Y_ds, k):
             raise ValueError(
@@ -16,12 +20,18 @@ class BatchAppGradCCA:
         else:
             self.k = k
 
+        if sparse and not comid:
+            raise ValueError(
+                'Sparse estimation without COMID is currently not supported.')
+
         (self.X, self.Sx) = X_ds.get_batch_and_gram()
         (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
         self.eta1 = eta1
         self.eta2 = eta2
         self.eps1 = eps1
         self.eps2 = eps2
+        self.sp_comid1 = SPCOMID(sparse=sparse)
+        self.sp_comid2 = SPCOMID(sparse=sparse)
 
     def get_cca(self, verbose=False):
 
@@ -50,11 +60,24 @@ class BatchAppGradCCA:
                 print "\teta1:", eta1, "\teta2:", eta2
                 print "\tGetting updated basis estimates"
 
-            # Get basis updates for both X and Y's canonical bases, normed and unnormed
-            (unn_Phi_t1, Phi_t1) = agu.get_2way_basis_update(
-                self.X, self.Y, unn_Phi_t, Psi_t, self.Sx, eta1)
-            (unn_Psi_t1, Psi_t1) = agu.get_2way_basis_update(
-                self.Y, self.X, unn_Psi_t, Phi_t, self.Sy, eta2)
+            # Get unconstrained, unnormalized gradients
+            unn_Phi_grad = agu.get_gradient(X, unn_Phi_t, np.dot(Y, Psi_t))
+            unn_Psi_grad = agu.get_gradient(Y, unn_Psi_t, np.dot(X, Phi_t))
+
+            if comid:
+                # Getting (composite with l1 reg) mirror descent updates
+                unn_Phi_t1 = self.sp_comid1.get_comid_update(
+                        unn_Phi_t, unn_Phi_grad, eta1)
+                unn_Phi_t1 = self.sp_comid2.get_comid_update(
+                        unn_Psi_t, unn_Psi_grad, eta2)
+            else:
+                # Making normal gradient updates
+                unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
+                unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad
+
+            # Normalizing updated bases
+            Phi_t1 = agu.get_gram_normed(unn_Phi_t1, Sx)
+            Psi_t1 = agu.get_gram_normed(unn_Psi_t1, Sy)
 
             if verbose:
                 print "\tObjective:", agu.get_2way_objective(

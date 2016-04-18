@@ -49,16 +49,7 @@ def get_gradient(X, unnormed, Psi):
 
     return np.dot(X.T, diff) / n
 
-def get_2way_basis_update(X1, X2, unnormed1, normed2, S1, eta1):
-
-    Psi = np.dot(X2, normed2)
-
-    return get_basis_update(X1, unnormed1, Psi, S1, eta1)
-
-def get_basis_update(X, unnormed, Psi, Sx, eta1):
-
-    # Calculate gradient for 2-way CCA
-    gradient = get_gradient(X, unnormed, Psi)
+def get_basis_update(unnormed, Sx, eta1, gradient):
 
     # Take a gradient step on unnormed1
     unnormed_next = unnormed - eta1 * gradient
