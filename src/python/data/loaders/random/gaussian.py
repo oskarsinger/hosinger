@@ -8,7 +8,7 @@ class GaussianLoader(AbstractDataLoader):
 
         self.n = n
         self.p = p
-        self.t = t
+        self.t = 0
 
     def get_datum(self):
 

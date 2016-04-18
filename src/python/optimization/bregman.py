@@ -2,6 +2,8 @@ from linal.utils import quadratic, multi_dot
 from linal.svd_funcs import get_schatten_p_norm as get_sp, get_svd_power
 from optimization.utils import get_lp_norm_gradient
 
+import numpy as np
+
 def get_lp_bregman_div_and_grad(p, ip=np.dot):
 
     breg_func = lambda x: np.linalg.norm(x, ord=p)

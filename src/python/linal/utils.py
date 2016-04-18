@@ -113,8 +113,8 @@ def get_thresholded(x, upper=float('Inf'), lower=0):
     upper_idx = x > upper
     lower_idx = x < lower
     new_x = np.copy(x)
-    new_x[upper_idx] = upper[idx]
-    new_x[lower_idx] = lower[idx]
+    new_x[upper_idx] = upper[upper_idx]
+    new_x[lower_idx] = lower[lower_idx]
 
     return new_x
 

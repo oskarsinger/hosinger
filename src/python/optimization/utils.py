@@ -1,6 +1,6 @@
 import numpy as np
 
-from linal.utils import get_thresholded
+from linal.utils import get_thresholded, get_safe_power
 
 def get_minibatch(A, batch_size):
 
@@ -21,7 +21,7 @@ def is_converged(previous, current, eps, verbose):
 
     return dist < eps
 
-def get_t_regged_gram(A, reg_const):
+def get_t_regged_gram(A, reg):
 
     gram = np.dot(A.T, A)
     reg_matrix = reg * np.identity(A.shape[1])
@@ -30,9 +30,9 @@ def get_t_regged_gram(A, reg_const):
 
 def get_lp_norm_gradient(x, p):
 
-    norm = np.linalg.norm(x, p)
-    constant = norm * norm**(-1)
-    vec = np.power(np.absolute(x), -1) * np.sign(x)
+    abs_x = np.absolute(x)
+    vec = np.sign(x) * get_safe_power(abs_x, p-1)
+    constant = np.sum(get_safe_power(abs_x, p))
 
     return constant * vec
 

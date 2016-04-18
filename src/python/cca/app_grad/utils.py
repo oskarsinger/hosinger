@@ -4,7 +4,6 @@ from numpy.random import randn, choice
 from linal.utils import quadratic as quad
 from linal.svd_funcs import get_svd_power
 from optimization.utils import is_converged as is_conv
-from optimization.bregman import get_lp_bregman_div_and_grad as get_lp_breg
 
 def is_k_valid(ds_list, k):
 
@@ -43,11 +42,10 @@ def get_objective(Xs, Phis, Psi):
 
 def get_gradient(X, unnormed, Psi):
 
-    n = X.shape[0]
     transformed_X = np.dot(X, unnormed)
     diff = transformed_X - Psi
 
-    return np.dot(X.T, diff) / n
+    return np.dot(X.T, diff) / X.shape[0]
 
 def get_init_basis_pairs(Sxs, k):
 

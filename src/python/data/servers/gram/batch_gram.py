@@ -6,11 +6,12 @@ class BatchGramServer(AbstractGramServer):
 
     def __init__(self, loader, reg):
         self.loader = loader
+        self.reg = reg
 
     def get_batch_and_gram(self):
 
-        X = loader.get_datum()
-        gram = get_t_regged_gram(X.T, X, reg)
+        X = self.loader.get_datum()
+        gram = get_t_regged_gram(X, self.reg)
 
         return (X, gram)
 

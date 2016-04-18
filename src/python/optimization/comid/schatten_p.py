@@ -1,7 +1,10 @@
+from optimization.comid import AbstractCOMID
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from optimization.utils import get_lp_norm_gradient as get_lpn_grad
-
 from linal.utils import multi_dot
+from linal.svd_funcs import get_multiplied_svd
+
+import numpy as np
 
 class SchattenPCOMID(AbstractCOMID):
 
@@ -13,9 +16,10 @@ class SchattenPCOMID(AbstractCOMID):
         
         self.p = p
         self.q = float(p)/(p - 1)
-        self.get_dual = get_lpn_grad(self.p)
-        self.get_primal = get_lpn_grad(self.q)
+        self.get_dual = lambda x: get_lpn_grad(x, self.p)
+        self.get_primal = lambda x: get_lpn_grad(x, self.q)
         self.lam = lam
+        self.sparse = sparse
 
     def get_comid_update(self, parameters, gradient, eta):
 
@@ -23,8 +27,8 @@ class SchattenPCOMID(AbstractCOMID):
             (self.U, self.s, self.V) = np.linalg.svd(parameters)
 
         # Map singular values into dual space
-        dual_s = np.diag(self.get_dual(self.s))
-        dual_params = multi_dot([self.U, dual_s, self.V])
+        dual_s = self.get_dual(self.s)
+        dual_params = get_multiplied_svd(self.U, dual_s, self.V)
 
         # Take gradient step in dual space
         dual_update = dual_params - eta * gradient
@@ -38,7 +42,7 @@ class SchattenPCOMID(AbstractCOMID):
         # Map singular values back into primal space
         self.s = self.get_primal(st)
         
-        return multi_dot([self.U, np.diag(self.s), self.V])
+        return get_multiplied_svd(self.U, self.s, self.V)
 
     def get_status(self):
 
