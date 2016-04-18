@@ -14,7 +14,7 @@ def get_rank_k(m, n, k):
         raise ValueError(
             'The value of k must not exceed the minimum matrix dimension.')
 
-    A = np.zeros(m,n)
+    A = np.zeros((m,n))
 
     for i in range(m):
         u = np.random.randn(m,1)

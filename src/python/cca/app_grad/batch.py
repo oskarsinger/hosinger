@@ -70,17 +70,17 @@ class BatchAppGradCCA:
                 self.Y, unn_Psi_t, np.dot(self.X, Phi_t))
 
             if self.comid:
-                # Getting (composite with l1 reg) mirror descent updates
+                # Get (composite with l1 reg) mirror descent updates
                 unn_Phi_t1 = self.sp_comid1.get_comid_update(
                         unn_Phi_t, unn_Phi_grad, eta1)
                 unn_Psi_t1 = self.sp_comid2.get_comid_update(
                         unn_Psi_t, unn_Psi_grad, eta2)
             else:
-                # Making normal gradient updates
+                # Make normal gradient updates
                 unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
                 unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad
 
-            # Normalizing updated bases
+            # Normalize updated bases
             Phi_t1 = agu.get_gram_normed(unn_Phi_t1, self.Sx)
             Psi_t1 = agu.get_gram_normed(unn_Psi_t1, self.Sy)
 
@@ -88,6 +88,7 @@ class BatchAppGradCCA:
                 print "\tObjective:", agu.get_2way_objective(
                     self.X, Phi_t1, self.Y, Psi_t1)
 
+            # Check for convergence
             converged = agu.is_converged(
                 [(unn_Phi_t, unn_Phi_t1), (unn_Psi_t, unn_Psi_t1)],
                 [self.eps1, self.eps2],
@@ -99,5 +100,7 @@ class BatchAppGradCCA:
                 np.copy(Phi_t1),
                 np.copy(unn_Psi_t1),
                 np.copy(Psi_t1))
+
+        print "Completed in", str(i), "iterations."
 
         return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)

@@ -30,9 +30,8 @@ def get_t_regged_gram(A, reg):
 
 def get_lp_norm_gradient(x, p):
 
-    abs_x = np.absolute(x)
-    vec = np.sign(x) * get_safe_power(abs_x, p-1)
-    constant = np.sum(get_safe_power(abs_x, p))
+    vec = np.sign(x) * get_safe_power(np.absolute(x), p-1)
+    constant = np.linalg.norm(x, p)**(-p+2)
 
     return constant * vec
 
