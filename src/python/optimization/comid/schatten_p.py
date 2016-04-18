@@ -29,10 +29,10 @@ class SchattenPCOMID(AbstractCOMID):
         # Take gradient step in dual space
         dual_update = dual_params - eta * gradient
         
-        # Updating cached SVD
+        # Update cached SVD of dual parameters
         (self.U, self.s, self.V) = np.linalg.svd(dual_update)
 
-        # Shrinkage and thresholding if sparsity is desired
+        # Shrink and threshold if sparsity is desired
         st = get_st(self.s, eta * self.lam) if self.sparse else self.s
 
         # Map singular values back into primal space

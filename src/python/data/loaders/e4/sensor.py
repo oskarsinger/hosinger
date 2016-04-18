@@ -51,3 +51,7 @@ class SensorLoader(AbstractDataLoader):
     def cols(self):
 
         return self.window
+
+    def rows(self):
+
+        return self.num_rounds

@@ -8,8 +8,11 @@ class GaussianLoader(AbstractDataLoader):
 
         self.n = n
         self.p = p
+        self.t = t
 
     def get_datum(self):
+
+        self.t += 1
 
         return randn(self.n, self.p)
 
@@ -22,3 +25,7 @@ class GaussianLoader(AbstractDataLoader):
     def cols(self):
         
         return self.p
+
+    def rows(self):
+        
+        return self.n * self.t

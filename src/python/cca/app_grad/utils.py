@@ -49,16 +49,6 @@ def get_gradient(X, unnormed, Psi):
 
     return np.dot(X.T, diff) / n
 
-def get_basis_update(unnormed, Sx, eta1, gradient):
-
-    # Take a gradient step on unnormed1
-    unnormed_next = unnormed - eta1 * gradient
-
-    # Normalize unnormed 1 with inversion of matrix quadratic
-    normed = get_gram_normed(unnormed_next, Sx)
-
-    return (unnormed_next, normed)
-
 def get_init_basis_pairs(Sxs, k):
 
     return [get_init_basis_pair(Sx, k)

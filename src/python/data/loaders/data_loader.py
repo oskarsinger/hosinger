@@ -13,3 +13,7 @@ class AbstractDataLoader:
     @abstractmethod
     def cols(self):
         pass
+
+    @abstractmethod
+    def rows(self):
+        pass

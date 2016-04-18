@@ -4,22 +4,23 @@ from optimization.utils import get_t_regged_gram
 
 class BatchGramServer(AbstractGramServer):
 
-    def __init__(self, X, reg):
-        self.X = X
-        self.X_gram = get_t_regged_gram(X.T, X, reg)
-        (self.n, self.p) = X.shape
+    def __init__(self, loader, reg):
+        self.loader = loader
 
     def get_batch_and_gram(self):
 
-        return (self.X, self.X_gram)
+        X = loader.get_datum()
+        gram = get_t_regged_gram(X.T, X, reg)
 
-    def rows():
+        return (X, gram)
 
-        return self.n
+    def rows(self):
 
-    def cols():
+        return self.loader.rows()
 
-        return self.p
+    def cols(self):
+
+        return self.loader.cols()
 
     def get_status(self):
 

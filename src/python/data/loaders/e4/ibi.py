@@ -21,3 +21,11 @@ class IBILoader(AbstractDataLoader):
         self.num_rounds += 1
 
         batch = []
+
+    def cols(self):
+
+        return self.window
+
+    def rows(self):
+
+        return self.num_rounds
