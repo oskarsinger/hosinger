@@ -10,22 +10,32 @@ class FixedRateLoader(AbstractDataLoader):
     def __init__(self, filepath, window, process_line):
 
         self.filepath = filepath
-        self.data = []
 
         with open(self.filepath) as f:
-            self.timestamp = float(self.f.readline().split(',')[0])
-            self.hrtz = float(self.f.readline().split(',')[0])
-            self.data = [process_line(line)
-                         for line in f]
+            self.timestamp = float(f.readline().split(',')[0])
+            self.hrtz = float(f.readline().split(',')[0])
 
+        self.pl = process_line
         self.window = window
-        self.num_samples = self.hrtz * self.window
+        self.cols = self.hrtz * self.window
+
         self.num_rounds = 0
+        self.data = None
 
     def get_datum(self):
-       
-        self.num_rounds += 1
 
+        if self.data is None:
+            data_list = []
+           
+            with open(self.filepath) as f:
+                data_list = [self.pl(line) for line in f]
+
+            remainder = len(data_list) % self.cols
+            n = len(data_list) / self.cols
+            data_array = np.array(data_list[:-remainder]) 
+            self.data = np.reshape(data_array, (n, self.cols))
+
+        return self.data
 
     def get_status(self):
 
@@ -39,7 +49,7 @@ class FixedRateLoader(AbstractDataLoader):
 
     def cols(self):
 
-        return self.window
+        return self.cols
 
     def rows(self):
 
