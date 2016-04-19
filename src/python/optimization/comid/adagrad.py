@@ -5,7 +5,7 @@ from linal.svd_funcs import get_multiplied_svd
 
 import numpy as np
 
-class AdaGradCOMID(AbstractCOMID):
+class MatrixAdaGradCOMID(AbstractCOMID):
 
     def __init__(self, delta=0.1):
 

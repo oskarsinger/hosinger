@@ -17,6 +17,11 @@ def list_full_paths(path):
     return [os.path.join(path, sub)
             for sub in os.listdir(path)]
 
+def get_visible_only(paths):
+
+    return [path for path in paths
+            if not path[0] == '.']
+
 def get_ts_filename(filename):
 
     timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')

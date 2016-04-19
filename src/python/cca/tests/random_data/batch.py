@@ -4,7 +4,6 @@ from data.loaders.random import GaussianLoader as GL
 from data.servers.gram import BatchGramServer as BGS
 
 import numpy as np
-import time
 
 def test_batch_appgrad(
     n, p1, p2, cca_k, 
@@ -27,7 +26,7 @@ def test_batch_appgrad(
 
 def run_tests(
     n, p1, p2, k, 
-    comid1_type=None, comid2_type=None,
+    comid1_type, comid2_type,
     skip_low_rank=True):
 
     print "Parameters:\n\t", "\n\t".join([
