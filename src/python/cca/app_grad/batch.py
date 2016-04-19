@@ -1,17 +1,13 @@
 import numpy as np
 import utils as agu
 
-from optimization.comid import SchattenPCOMID as SPCOMID
-from global_utils.debug import print_and_return as pr
-
 class BatchAppGradCCA:
 
-    def __init__(self, 
+    def __init__(self,
         X_ds, Y_ds, k,
-        eta1=0.1, eta2=0.1, 
-        eps1=10**(-4), eps2=10**(-4),
-        comid=True,
-        sparse=False):
+        eta1=0.1, eta2=0.1,
+        eps1=10**(-3), eps2=10**(-3),
+        comid1=None, comid2=None):
      
         if not agu.is_k_valid([X_ds, Y_ds], k):
             raise ValueError(
@@ -20,12 +16,10 @@ class BatchAppGradCCA:
         else:
             self.k = k
 
-        if sparse and not comid:
-            raise ValueError(
-                'Sparse estimation without COMID is currently not supported.')
-        else:
-            self.sparse = sparse
-            self.comid = comid
+        self.do_comid1 = comid1 is not None
+        self.do_comid2 = comid2 is not None
+        self.comid1 = comid1
+        self.comid2 = comid2
 
         (self.X, self.Sx) = X_ds.get_batch_and_gram()
         (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
@@ -33,8 +27,6 @@ class BatchAppGradCCA:
         self.eta2 = eta2
         self.eps1 = eps1
         self.eps2 = eps2
-        self.sp_comid1 = SPCOMID(sparse=sparse)
-        self.sp_comid2 = SPCOMID(sparse=sparse)
 
     def get_cca(self, verbose=False):
 
@@ -69,15 +61,18 @@ class BatchAppGradCCA:
             unn_Psi_grad = agu.get_gradient(
                 self.Y, unn_Psi_t, np.dot(self.X, Phi_t))
 
-            if self.comid:
+            if self.do_comid1:
                 # Get (composite with l1 reg) mirror descent updates
-                unn_Phi_t1 = self.sp_comid1.get_comid_update(
+                unn_Phi_t1 = self.comid1.get_comid_update(
                         unn_Phi_t, unn_Phi_grad, eta1)
-                unn_Psi_t1 = self.sp_comid2.get_comid_update(
-                        unn_Psi_t, unn_Psi_grad, eta2)
             else:
                 # Make normal gradient updates
                 unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
+
+            if self.do_comid2:
+                unn_Psi_t1 = self.comid2.get_comid_update(
+                        unn_Psi_t, unn_Psi_grad, eta2)
+            else:
                 unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad
 
             # Normalize updated bases

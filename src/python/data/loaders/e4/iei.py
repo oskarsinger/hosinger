@@ -1,11 +1,11 @@
-from data_loader import AbstractDataLoader
-from errors import EOSError
+from data.loaders.data_loader import AbstractDataLoader
+from data.errors import EOSError
 
 import os
 
 import numpy as np
 
-class IBILoader(AbstractDataLoader):
+class IEILoader(AbstractDataLoader):
 
     def __init__(self, filepath, window, process_line):
 

@@ -5,16 +5,20 @@ import os
 
 import numpy as np
 
-class SensorLoader(AbstractDataLoader):
+class FixedRateLoader(AbstractDataLoader):
 
     def __init__(self, filepath, window, process_line):
 
         self.filepath = filepath
-        self.f = open(filepath)
-        self.window = window
+        self.data = []
 
-        self.timestamp = float(self.f.readline().split(',')[0])
-        self.hrtz = float(self.f.readline().split(',')[0])
+        with open(self.filepath) as f:
+            self.timestamp = float(self.f.readline().split(',')[0])
+            self.hrtz = float(self.f.readline().split(',')[0])
+            self.data = [process_line(line)
+                         for line in f]
+
+        self.window = window
         self.num_samples = self.hrtz * self.window
         self.num_rounds = 0
 
@@ -22,21 +26,6 @@ class SensorLoader(AbstractDataLoader):
        
         self.num_rounds += 1
 
-        batch = []
-
-        for i in range(self.num_samples):
-
-            val = None
-
-            try:
-                val = process_line(self.f.readline())
-            except EOFError:
-                raise EOSError(
-                    'Reached end of sensor file: ' + filepath + '.')
-
-            batch.extend(val)
-
-        return np.array(batch)
 
     def get_status(self):
 

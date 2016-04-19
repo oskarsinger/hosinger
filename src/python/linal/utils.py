@@ -16,12 +16,10 @@ def get_rank_k(m, n, k):
 
     A = np.zeros((m,n))
 
-    for i in range(m):
-        u = np.random.randn(m,1)
-        v = np.random.randn(1,n)
-        A = A + np.dot(u, v)
+    U = np.random.randn(m, k)
+    V = np.random.randn(k, n)
 
-    return A
+    return np.dot(U, V)
 
 def weighted_sum_of_op(weights, matrix):
 
