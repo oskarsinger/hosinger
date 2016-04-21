@@ -25,6 +25,7 @@ class BatchAppGradCCA:
         (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
         n = min([self.X.shape[0], self.Y.shape[0]])
         
+        # Find a cleaner way to do this
         if self.X.shape[0] > n:
             self.X = self.X[:n,:]
         else:

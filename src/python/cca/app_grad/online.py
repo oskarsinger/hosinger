@@ -7,7 +7,8 @@ class OnlineAppGradCCA:
     def __init__(self, 
         X_ds, Y_ds, k,
         eta1=0.1, eta2=0.1, 
-        eps1=10**(-4), eps2=10**(-4)):
+        eps1=10**(-4), eps2=10**(-4),
+        comid1=None, comid2=None):
 
         if not agu.is_k_valid([X_ds, Y_ds], k):
             raise ValueError(
@@ -16,6 +17,10 @@ class OnlineAppGradCCA:
         else:
             self.k = k
 
+        self.do_comid1 = comid1 is not None
+        self.do_comid2 = comid2 is not None
+        self.comid1 = comid1
+        self.comid2 = comid2
         self.X_ds = X_ds
         self.Y_ds = Y_ds
         self.eta1 = eta1
@@ -63,11 +68,29 @@ class OnlineAppGradCCA:
             if verbose:
                 print "\tGetting updated basis estimates"
 
-            # Get basis updates for both X and Y's canonical bases, normed and unnormed
-            (unn_Phi_t1, Phi_t1) = agu.get_2way_basis_update(
-                X, Y, unn_Phi_t, Psi_t, Sx, eta1)
-            (unn_Psi_t1, Psi_t1) = agu.get_2way_basis_update(
-                Y, X, unn_Psi_t, Phi_t, Sy, eta2)
+            # Get unconstrained, unnormalized gradients
+            unn_Phi_grad = agu.get_gradient(
+                X, unn_Phi_t, np.dot(Y, Psi_t))
+            unn_Psi_grad = agu.get_gradient(
+                Y, unn_Psi_t, np.dot(X, Phi_t))
+
+            if self.do_comid1:
+                # Get (composite with l1 reg) mirror descent updates
+                unn_Phi_t1 = self.comid1.get_comid_update(
+                        unn_Phi_t, unn_Phi_grad, eta1)
+            else:
+                # Make normal gradient updates
+                unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
+
+            if self.do_comid2:
+                unn_Psi_t1 = self.comid2.get_comid_update(
+                        unn_Psi_t, unn_Psi_grad, eta2)
+            else:
+                unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad
+
+            # Normalize updated bases
+            Phi_t1 = agu.get_gram_normed(unn_Phi_t1, Sx)
+            Psi_t1 = agu.get_gram_normed(unn_Psi_t1, Sy)
 
             # Need to reconsider how this is evaluated.
             # Its a bit sketchy to just look at objective for current batch.
