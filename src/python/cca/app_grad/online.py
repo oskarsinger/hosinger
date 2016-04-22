@@ -75,11 +75,11 @@ class OnlineAppGradCCA:
                 Y, unn_Psi_t, np.dot(X, Phi_t))
 
             if self.do_comid1:
-                # Get (composite with l1 reg) mirror descent updates
+                # Get (composite with l1 reg) mirror descent update
                 unn_Phi_t1 = self.comid1.get_comid_update(
                         unn_Phi_t, unn_Phi_grad, eta1)
             else:
-                # Make normal gradient updates
+                # Make normal gradient update
                 unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
 
             if self.do_comid2:

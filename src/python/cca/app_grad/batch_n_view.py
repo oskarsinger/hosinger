@@ -2,7 +2,7 @@ import numpy as np
 
 import utils as agu
 
-class OnlineAppGradNViewCCA:
+class BatchAppGradNViewCCA:
 
     def __init__(self,
         ds_list, k,
@@ -62,13 +62,9 @@ class OnlineAppGradNViewCCA:
             self.min_r
 
         self.num_updates = [0] * self.num_ds
+        (self.Xs, self.Sxs) = self._get_batch_and_gram_lists()
 
     def get_cca(self, verbose=False):
-
-        print "Getting initial minibatches and grams"
-
-        # Determine minibatches and grams
-        (Xs, Sxs) = self._get_batch_and_gram_lists()
 
         print "Getting intial_basis_estimates"
 
@@ -90,10 +86,6 @@ class OnlineAppGradNViewCCA:
                 print "Iteration:", i
                 print "\t".join(["eta" + str(i) + " " + str(eta)
                                  for eta in etas])
-                print "\tGetting updated minibatches and grams"
-
-            # Get new minibatches and Gram matrices
-            (Xs, Sxs) = self._get_batch_and_gram_lists()
 
             # Update Psi
             Psi = self._get_Psi(Xs, basis_pairs_t)
@@ -152,9 +144,9 @@ class OnlineAppGradNViewCCA:
 
         return updated_pairs
 
-    def _get_Psi(self, Xs, basis_pairs, Psi):
+    def _get_Psi(self, basis_pairs, Psi):
 
-        X_dot_Phis = [np.dot(Xs[i], basis_pairs[i][1]
+        X_dot_Phis = [np.dot(self.Xs[i], basis_pairs[i][1]
                       for i in range(self.num_ds)]
         residuals = [np.linalg.norm(X_dot_Phi - Psi)
                      for X_dot_Phi in X_dot_Phis]
