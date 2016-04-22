@@ -64,6 +64,10 @@ class BatchAppGradNViewCCA:
         self.num_updates = [0] * self.num_ds
         (self.Xs, self.Sxs) = self._get_batch_and_gram_lists()
 
+        # Find a better solution to this
+        n = min([X.shape[0] for X in self.Xs])
+        self.Xs = [X[:n,:] for X in self.Xs]
+
     def get_cca(self, verbose=False):
 
         print "Getting intial_basis_estimates"
