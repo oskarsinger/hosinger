@@ -59,21 +59,21 @@ class BatchAppGradNViewCCA:
             raise ValueError(
                 'min_r must be non-negative.')
         else:
-            self.min_r
+            self.min_r = min_r
 
         self.num_updates = [0] * self.num_ds
         (self.Xs, self.Sxs) = self._get_batch_and_gram_lists()
 
         # Find a better solution to this
-        n = min([X.shape[0] for X in self.Xs])
-        self.Xs = [X[:n,:] for X in self.Xs]
+        self.n = min([X.shape[0] for X in self.Xs])
+        self.Xs = [X[:self.n,:] for X in self.Xs]
 
     def get_cca(self, verbose=False):
 
         print "Getting intial_basis_estimates"
 
         # Initialization of optimization variables
-        basis_pairs_t = agu.get_init_basis_pairs(Sxs, self.k)
+        basis_pairs_t = agu.get_init_basis_pairs(self.Sxs, self.k)
         basis_pairs_t1 = None
 
         # Iteration variables
@@ -84,7 +84,6 @@ class BatchAppGradNViewCCA:
 
             # Update step sizes
             etas = [eta / i**0.5 for eta in self.etas]
-            i = i + 1
 
             if verbose:
                 print "Iteration:", i
@@ -92,14 +91,16 @@ class BatchAppGradNViewCCA:
                                  for eta in etas])
 
             # Update Psi
-            Psi = self._get_Psi(Xs, basis_pairs_t)
+            Psi = np.random.randn(self.n, self.k) \
+                if i == 1 else \
+                self._get_Psi(basis_pairs_t, Psi)
 
             if verbose:
                 print "\tGetting updated basis estimates"
 
             # Get updated canonical bases
             basis_pairs_t1 = self._get_basis_updates(
-                basis_pairs_t, Xs, Psi, etas)
+                basis_pairs_t, Psi, etas)
 
             if verbose:
                 Phis = [pair[1] for pair in basis_pairs_t1]
@@ -107,8 +108,8 @@ class BatchAppGradNViewCCA:
 
             # Check for convergence
             converged = agu.is_converged(
-                [(basis_pairs_t[i][0], basis_pairs_t1[i][0])s, 
-                 for i in range(self._num_ds)],
+                [(basis_pairs_t[j][0], basis_pairs_t1[j][0])
+                 for j in range(self.num_ds)],
                 self.epsilons,
                 verbose)
 
@@ -116,13 +117,15 @@ class BatchAppGradNViewCCA:
             basis_pairs_t = [(np.copy(unn_Phi), np.copy(Phi))
                              for unn_Phi, Phi in basis_pairs_t1]
 
+            i += 1
+
         return (basis_pairs_t, Psi)
 
-    def _get_basis_updates(self, basis_pairs, Xs, Psi, etas):
+    def _get_basis_updates(self, basis_pairs, Psi, etas):
 
         # Get gradients
         gradients = [agu.get_gradient(
-                        Xs[i], basis_pairs[i][0], Psi)
+                        self.Xs[i], basis_pairs[i][0], Psi)
                      for i in range(self.num_ds)]
         updated_unn = []
 
@@ -144,13 +147,13 @@ class BatchAppGradNViewCCA:
 
         # Normalize
         updated_pairs = [(unn, agu.get_gram_normed(unn, Sx))
-                         for unn, Sx in zip(updated_unn, Sxs)]
+                         for unn, Sx in zip(updated_unn, self.Sxs)]
 
         return updated_pairs
 
     def _get_Psi(self, basis_pairs, Psi):
 
-        X_dot_Phis = [np.dot(self.Xs[i], basis_pairs[i][1]
+        X_dot_Phis = [np.dot(self.Xs[i], basis_pairs[i][1])
                       for i in range(self.num_ds)]
         residuals = [np.linalg.norm(X_dot_Phi - Psi)
                      for X_dot_Phi in X_dot_Phis]
@@ -168,7 +171,7 @@ class BatchAppGradNViewCCA:
     def _get_batch_and_gram_lists(self):
 
         batch_and_gram_list = [ds.get_batch_and_gram()
-                               for ds in self._ds_list]
+                               for ds in self.ds_list]
         Xs = [X for (X, Sx) in batch_and_gram_list]
         Sxs = [Sx for (X, Sx) in batch_and_gram_list]
 

@@ -26,7 +26,7 @@ def test_batch_n_view_appgrad(
 
     model = BAGNV(
         ds_list, cca_k,
-        comid=comids)
+        comids=comids)
 
     return model.get_cca(verbose=verbose)
 
@@ -62,7 +62,7 @@ def test_n_fixed_rate_scalar(
     regs=None, lpss=None):
 
     if comids is None:
-        comids = [MAG()] * len(files)
+        comids = [MAG() for i in range(len(files))]
 
     if regs is None:
         regs = [0.1] * len(files)
@@ -70,8 +70,8 @@ def test_n_fixed_rate_scalar(
     if lpss is None:
         lpss = [lps.get_scalar] * len(files)
 
-    dls = [FRL(dir_path, file_name, seconds, lps)
-           for file_name, lps in zip(files, lpss)]
+    dls = [FRL(dir_path, file_name, seconds, lp)
+           for file_name, lp in zip(files, lpss)]
     dss = [BGS(dl, reg) for dl, reg in zip(dls, regs)]
 
     (basis_pairs, Psi) = test_batch_n_view_appgrad(

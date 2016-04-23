@@ -96,7 +96,9 @@ class OnlineAppGradNViewCCA:
             (Xs, Sxs) = self._get_batch_and_gram_lists()
 
             # Update Psi
-            Psi = self._get_Psi(Xs, basis_pairs_t)
+            Psi = np.random.randn(Xs[0].shape[0], self.k) \
+                if i == 1 else \
+                self._get_Psi(Xs, basis_pairs_t, Psi)
 
             if verbose:
                 print "\tGetting updated basis estimates"
