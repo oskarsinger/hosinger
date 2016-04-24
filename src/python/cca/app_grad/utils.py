@@ -68,3 +68,10 @@ def get_gram_normed(unnormed, S):
     normalizer = get_svd_power(basis_quad, -0.5)
 
     return np.dot(unnormed, normalizer)
+
+def get_Psi_gradient(Psi, Xs, Phis):
+
+    summands = [Psi - np.dot(X, Phi)
+                for (X, Phi) in zip(Xs, Phis)]
+
+    return np.dot(Psi.T, sum(summands)) / Psi.shape[0]

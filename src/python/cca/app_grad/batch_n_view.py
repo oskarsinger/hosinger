@@ -27,33 +27,33 @@ class BatchAppGradNViewCCA:
             self.k = k
 
         if etas is not None:
-            if not len(etas) == self.num_ds:
+            if not len(etas) == self.num_ds + 1:
                 raise ValueError(
-                    'Length of etas and ds_list must be the same.')
+                    'Length of etas and ds_list + 1 must be the same.')
             else:
                 self.etas = etas
         else:
-            self.etas = [0.1] * self.num_ds
+            self.etas = [0.1] * (self.num_ds + 1)
 
         if epsilons is not None:
-            if not len(epsilons) == self.num_ds:
+            if not len(epsilons) == self.num_ds + 1:
                 raise ValueError(
-                    'Length of epsilons and ds_list must be the same.')
+                    'Length of epsilons and ds_list + 1 must be the same.')
             else:
                 self.epsilons = epsilons
         else:
-            self.epsilons = [10**(-4)] * self.num_ds
+            self.epsilons = [10**(-4)] * (self.num_ds + 1)
 
         if comids is not None:
-            if not len(comids) == self.num_ds:
+            if not len(comids) == self.num_ds + 1:
                 raise ValueError(
-                    'Length of comids and ds_list must be the same.')
+                    'Length of comids and ds_list + 1 must be the same.')
             else:
                 self.comids = comids
                 self.do_comid = [comid is not None 
                                  for comid in comids]
         else:
-            self.comids = [None] * self.num_ds
+            self.comids = [None] * (self.num_ds + 1)
 
         if min_r < 0:
             raise ValueError(
@@ -61,7 +61,7 @@ class BatchAppGradNViewCCA:
         else:
             self.min_r = min_r
 
-        self.num_updates = [0] * self.num_ds
+        self.num_updates = [0] * (self.num_ds + 1)
         (self.Xs, self.Sxs) = self._get_batch_and_gram_lists()
 
         # Find a better solution to this
@@ -75,6 +75,7 @@ class BatchAppGradNViewCCA:
         # Initialization of optimization variables
         basis_pairs_t = agu.get_init_basis_pairs(self.Sxs, self.k)
         basis_pairs_t1 = None
+        Psi = np.random.randn(self.n, self.k)
 
         # Iteration variables
         converged = [False] * self.num_ds
@@ -91,18 +92,13 @@ class BatchAppGradNViewCCA:
                 print "Iteration:", i
                 print "\t".join(["eta" + str(i) + " " + str(eta)
                                  for eta in etas])
-
-            # Update Psi
-            Psi = np.random.randn(self.n, self.k) \
-                if i == 1 else \
-                self._get_Psi(basis_pairs_t, Psi)
-
-            if verbose:
                 print "\tGetting updated basis estimates"
 
             # Get updated canonical bases
             basis_pairs_t1 = self._get_basis_updates(
                 basis_pairs_t, Psi, etas)
+            Psi = self._get_Psi_update(
+                basis_pairs_t1, Psi, etas[-1])
 
             if verbose:
                 Phis = [pair[1] for pair in basis_pairs_t1]
@@ -129,23 +125,11 @@ class BatchAppGradNViewCCA:
         gradients = [agu.get_gradient(
                         self.Xs[i], basis_pairs[i][0], Psi)
                      for i in range(self.num_ds)]
-        updated_unn = []
 
-        for i in range(self.num_ds):
-            unn_t = basis_pairs[i][0]
-            eta = etas[i]
-            grad = gradients[i]
-            unn_t1 = None
-
-            if self.do_comid[i]:
-                # Get (composite with l1 reg) mirror descent update
-                unn_t1 = self.comids[i].get_comid_update(
-                    unn_t, grad, eta)
-            else:
-                # Make normal gradient update
-                unn_t1 = unn_t - eta * grad
-
-            updated_unn.append(unn_t1)
+        # Get unnormalized updates
+        updated_unn = [self._get_parameter_update(
+                        basis_pairs[i][0], gradients[i], etas[i], i)
+                       for i in range(self.num_ds)]
 
         # Normalize
         updated_pairs = [(unn, agu.get_gram_normed(unn, Sx))
@@ -153,22 +137,24 @@ class BatchAppGradNViewCCA:
 
         return updated_pairs
 
-    def _get_Psi(self, basis_pairs, Psi):
+    def _get_Psi_update(self, basis_pairs, Psi, eta):
 
-        X_dot_Phis = [np.dot(self.Xs[i], basis_pairs[i][0])
-                      for i in range(self.num_ds)]
-        residuals = [np.linalg.norm(X_dot_Phi - Psi)
-                     for X_dot_Phi in X_dot_Phis]
+        Phis = [pair[1] for pair in basis_pairs]
+        gradient = agu.get_Psi_gradient(Psi, self.Xs, Phis)
 
-        # Truncate small residuals to prevent numerical instability
-        truncd_rs = [max(r, self.min_r)
-                     for r in residuals]
+        return self._get_parameter_update(Psi, gradient, eta, -1)
 
-        # Weight the sum to prevent noise from dominating the loss
-        summands = [r**(-1) * X_dot_Phi
-                    for r, X_dot_Phi in zip(truncd_rs, X_dot_Phis)]
+    def _get_parameter_update(self, parameter, gradient, eta, i):
 
-        return sum(summands)
+        if self.do_comid[i]:
+            # Get (composite with l1 reg) mirror descent update
+            parameter = self.comids[i].get_comid_update(
+                parameter, gradient, eta)
+        else:
+            # Make normal gradient update
+            parameter = parameter - eta * gradient
+
+        return parameter
 
     def _get_batch_and_gram_lists(self):
 

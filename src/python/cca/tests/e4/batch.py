@@ -63,7 +63,7 @@ def test_n_fixed_rate_scalar(
     verbose=False):
 
     if comids is None:
-        comids = [MAG() for i in range(len(files))]
+        comids = [MAG() for i in range(len(files) + 1)]
 
     if regs is None:
         regs = [0.1] * len(files)
