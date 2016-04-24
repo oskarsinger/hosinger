@@ -97,6 +97,11 @@ class BatchAppGradNViewCCA:
             # Get updated canonical bases
             basis_pairs_t1 = self._get_basis_updates(
                 basis_pairs_t, Psi, etas)
+
+            if verbose:
+                print "\tGetting updated auxiliary variable estimate"
+
+            # Get updated auxiliary variable
             Psi = self._get_Psi_update(
                 basis_pairs_t1, Psi, etas[-1])
 
