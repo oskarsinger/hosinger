@@ -80,6 +80,8 @@ class BatchAppGradNViewCCA:
         converged = [False] * self.num_ds
         i = 1
 
+        print "Starting gradient descent"
+
         while not all(converged):
 
             # Update step sizes
@@ -104,7 +106,7 @@ class BatchAppGradNViewCCA:
 
             if verbose:
                 Phis = [pair[1] for pair in basis_pairs_t1]
-                print "\tObjective:", agu.get_objective(Xs, Phis, Psi)
+                print "\tObjective:", agu.get_objective(self.Xs, Phis, Psi)
 
             # Check for convergence
             converged = agu.is_converged(
@@ -153,7 +155,7 @@ class BatchAppGradNViewCCA:
 
     def _get_Psi(self, basis_pairs, Psi):
 
-        X_dot_Phis = [np.dot(self.Xs[i], basis_pairs[i][1])
+        X_dot_Phis = [np.dot(self.Xs[i], basis_pairs[i][0])
                       for i in range(self.num_ds)]
         residuals = [np.linalg.norm(X_dot_Phi - Psi)
                      for X_dot_Phi in X_dot_Phis]

@@ -59,7 +59,8 @@ def test_n_fixed_rate_scalar(
     dir_path, files, cca_k,
     comids=None,
     seconds=10,
-    regs=None, lpss=None):
+    regs=None, lpss=None,
+    verbose=False):
 
     if comids is None:
         comids = [MAG() for i in range(len(files))]
@@ -75,7 +76,7 @@ def test_n_fixed_rate_scalar(
     dss = [BGS(dl, reg) for dl, reg in zip(dls, regs)]
 
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
-        dss, cca_k, comids=comids)
+        dss, cca_k, comids=comids, verbose=verbose)
 
     I_k = np.identity(cca_k)
     grams = [ds.get_batch_and_gram()[1]

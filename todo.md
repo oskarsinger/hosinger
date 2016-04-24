@@ -94,6 +94,7 @@
 
 ##Documentation
 * Figure out how to use Sphinx or Doxygen.
+* Make notes in code about which papers are being implemented, and what we think might be a new method.
 
 #Publication
 
