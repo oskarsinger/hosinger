@@ -1,6 +1,5 @@
 # In-module internal imports
-from batch import BatchAppGradCCA
-from online import OnlineAppGradCCA
-from batch_n_view import BatchAppGradNViewCCA
+from two_view import AppGradCCA
+from n_view import NViewAppGradCCA
 
 import utils

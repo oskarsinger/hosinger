@@ -2,10 +2,11 @@ import numpy as np
 
 import utils as agu
 
-class BatchAppGradNViewCCA:
+class NViewAppGradCCA:
 
     def __init__(self,
         ds_list, k,
+        online=False
         etas=None,
         epsilons=None,
         min_r=0.1,
@@ -63,12 +64,16 @@ class BatchAppGradNViewCCA:
 
         self.num_updates = [0] * (self.num_ds + 1)
         (self.Xs, self.Sxs) = self._get_batch_and_gram_lists()
+        self.online = online
 
-        # Find a better solution to this
-        self.n = min([X.shape[0] for X in self.Xs])
-        self.Xs = [X[:self.n,:] for X in self.Xs]
+        if not self.online
+            # Find a better solution to this
+            self.n = min([X.shape[0] for X in self.Xs])
+            self.Xs = [X[:self.n,:] for X in self.Xs]
 
     def get_cca(self, verbose=False):
+
+        (Xs, Sxs) = (self.Xs, self.Sxs)
 
         print "Getting intial_basis_estimates"
 
@@ -92,22 +97,41 @@ class BatchAppGradNViewCCA:
                 print "Iteration:", i
                 print "\t".join(["eta" + str(i) + " " + str(eta)
                                  for eta in etas])
+                if self.online:
+                    print "\tGetting updated minibatches and grams"
+
+            if self.online:
+                # Get new minibatches and Gram matrices
+                (Xs, Sxs) = self._get_batch_and_gram_lists()
+
+            if verbose:
                 print "\tGetting updated basis estimates"
 
             # Get updated canonical bases
             basis_pairs_t1 = self._get_basis_updates(
-                basis_pairs_t, Psi, etas)
+                Xs, Sxs, basis_pairs_t, Psi, etas)
 
             if verbose:
                 print "\tGetting updated auxiliary variable estimate"
 
             # Get updated auxiliary variable
             Psi = self._get_Psi_update(
-                basis_pairs_t1, Psi, etas[-1])
+                Xs, basis_pairs_t1, Psi, etas[-1])
 
             if verbose:
-                Phis = [pair[1] for pair in basis_pairs_t1]
-                print "\tObjective:", agu.get_objective(self.Xs, Phis, Psi)
+                unns_t = [pair[0] for pair in basis_pairs_t]
+                unns_t1 = [pair[0] for pair in basis_pairs_t1]
+                dists = [np.linalg.norm(unn_t - unn_t1)
+                         for unn_t, unn_t1 in zip(unns_t, unns_t1)]
+                dist_strings = [str(i) + ": " + str(dist)
+                                for i, dist in enumerate(dists)]
+                dist_string = "\t".join(dist_strings)
+
+                print "\tDistance between unnormed Phi iterates:", dist_string
+                
+                Phis_t1 = [pair[1] for pair in basis_pairs_t1]
+
+                print "\tObjective:", agu.get_objective(self.Xs, Phis_t1, Psi)
 
             # Check for convergence
             converged = agu.is_converged(
@@ -124,11 +148,10 @@ class BatchAppGradNViewCCA:
 
         return (basis_pairs_t, Psi)
 
-    def _get_basis_updates(self, basis_pairs, Psi, etas):
+    def _get_basis_updates(self, Xs, Sxs, basis_pairs, Psi, etas):
 
         # Get gradients
-        gradients = [agu.get_gradient(
-                        self.Xs[i], basis_pairs[i][0], Psi)
+        gradients = [agu.get_gradient(Xs[i], basis_pairs[i][0], Psi)
                      for i in range(self.num_ds)]
 
         # Get unnormalized updates
@@ -138,14 +161,14 @@ class BatchAppGradNViewCCA:
 
         # Normalize
         updated_pairs = [(unn, agu.get_gram_normed(unn, Sx))
-                         for unn, Sx in zip(updated_unn, self.Sxs)]
+                         for unn, Sx in zip(updated_unn, Sxs)]
 
         return updated_pairs
 
-    def _get_Psi_update(self, basis_pairs, Psi, eta):
+    def _get_Psi_update(self, Xs, basis_pairs, Psi, eta):
 
         Phis = [pair[1] for pair in basis_pairs]
-        gradient = agu.get_Psi_gradient(Psi, self.Xs, Phis)
+        gradient = agu.get_Psi_gradient(Psi, Xs, Phis)
 
         return self._get_parameter_update(Psi, gradient, eta, -1)
 

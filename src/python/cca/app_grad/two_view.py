@@ -1,14 +1,19 @@
 import numpy as np
 import utils as agu
 
-class BatchAppGradCCA:
+"""
+Consider keeping a log of the minibatches somewhere for the online version.
+"""
+
+class AppGradCCA:
 
     def __init__(self,
         X_ds, Y_ds, k,
+        online=False,
         eta1=0.1, eta2=0.1,
         eps1=10**(-3), eps2=10**(-3),
         comid1=None, comid2=None):
-     
+
         if not agu.is_k_valid([X_ds, Y_ds], k):
             raise ValueError(
                 'The value of k must be less than or equal to the minimum of the' +
@@ -23,13 +28,15 @@ class BatchAppGradCCA:
 
         (self.X, self.Sx) = X_ds.get_batch_and_gram()
         (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
+        self.online = online
         
-        # Find a better solution to this
-        n = min([self.X.shape[0], self.Y.shape[0]])
-        if self.X.shape[0] > n:
-            self.X = self.X[:n,:]
-        else:
-            self.Y = self.Y[:n,:]
+        if not online:
+            # Find a better solution to this
+            n = min([self.X.shape[0], self.Y.shape[0]])
+            if self.X.shape[0] > n:
+                self.X = self.X[:n,:]
+            else:
+                self.Y = self.Y[:n,:]
 
         self.eta1 = eta1
         self.eta2 = eta2
@@ -38,11 +45,13 @@ class BatchAppGradCCA:
 
     def get_cca(self, verbose=False):
 
+        (X, Sx, Y, Sy) = (self.X, self.Sx, self.Y, self.Sy)
+
         print "Getting initial basis estimates"
 
         # Randomly initialize normalized and unnormalized canonical bases for
         # timesteps t and t+1. Phi corresponds to X, and Psi to Y.
-        basis_pairs = agu.get_init_basis_pairs([self.Sx, self.Sy], self.k)
+        basis_pairs = agu.get_init_basis_pairs([Sx, Sy], self.k)
         (Phi_t, unn_Phi_t) = basis_pairs[0]
         (Psi_t, unn_Psi_t) = basis_pairs[1]
         (Phi_t1, unn_Phi_t1, Psi_t1, unn_Psi_t1) = (None, None, None, None)
@@ -61,13 +70,23 @@ class BatchAppGradCCA:
             if verbose:
                 print "Iteration:", i
                 print "\teta1:", eta1, "\teta2:", eta2
+
+                if self.online:
+                    print "\tGetting updated minibatches and Sx and Sy"
+
+            if self.online:
+                # Update random minibatches if doing SGD
+                (X, Sx) = self.X_ds.get_batch_and_gram()
+                (Y, Sy) = self.Y_ds.get_batch_and_gram()
+
+            if verbose:
                 print "\tGetting updated basis estimates"
 
             # Get unconstrained, unnormalized gradients
             unn_Phi_grad = agu.get_gradient(
-                self.X, unn_Phi_t, np.dot(self.Y, Psi_t))
+                X, unn_Phi_t, np.dot(Y, Psi_t))
             unn_Psi_grad = agu.get_gradient(
-                self.Y, unn_Psi_t, np.dot(self.X, Phi_t))
+                Y, unn_Psi_t, np.dot(X, Phi_t))
 
             if self.do_comid1:
                 # Get (composite with l1 reg) mirror descent updates
@@ -84,12 +103,16 @@ class BatchAppGradCCA:
                 unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad
 
             # Normalize updated bases
-            Phi_t1 = agu.get_gram_normed(unn_Phi_t1, self.Sx)
-            Psi_t1 = agu.get_gram_normed(unn_Psi_t1, self.Sy)
+            Phi_t1 = agu.get_gram_normed(unn_Phi_t1, Sx)
+            Psi_t1 = agu.get_gram_normed(unn_Psi_t1, Sy)
 
             if verbose:
+                Phi_dist = np.linalg.norm(unn_Phi_t1 - unn_Phi_t)
+                Psi_dist = np.linalg.norm(unn_Psi_t1 - unn_Psi_t)
+                print "\tDistance between unnormed Phi iterates:", Phi_dist
+                print "\tDistance between unnormed Psi iterates:", Psi_dist
                 print "\tObjective:", agu.get_2way_objective(
-                    self.X, Phi_t1, self.Y, Psi_t1)
+                    X, Phi_t1, Y, Psi_t1)
 
             # Check for convergence
             converged = agu.is_converged(
