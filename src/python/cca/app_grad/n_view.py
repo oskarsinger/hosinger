@@ -168,7 +168,7 @@ class NViewAppGradCCA:
     def _get_Psi_update(self, Xs, basis_pairs, Psi, eta):
 
         Phis = [pair[1] for pair in basis_pairs]
-        gradient = agu.get_Psi_gradient(Psi, Xs, Phis)
+        gradient = self._get_Psi_gradient(Psi, Xs, Phis)
 
         return self._get_parameter_update(Psi, gradient, eta, -1)
 
@@ -192,3 +192,10 @@ class NViewAppGradCCA:
         Sxs = [Sx for (X, Sx) in batch_and_gram_list]
 
         return (Xs, Sxs)
+
+    def _get_Psi_gradient(self, Psi, Xs, Phis):
+
+        summands = [np.dot(X, Phi)
+                    for (X, Phi) in zip(Xs, Phis)]
+
+        return (n * Phi - 2 * sum(summands)) / Psi.shape[0]
