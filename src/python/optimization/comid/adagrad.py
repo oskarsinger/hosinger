@@ -1,7 +1,5 @@
 from optimization.comid import AbstractCOMID
-from optimization.utils import get_shrunk_and_thresholded as get_st
 from linal.utils import multi_dot, get_safe_power
-from linal.svd_funcs import get_multiplied_svd
 
 import numpy as np
 
@@ -16,33 +14,26 @@ class MatrixAdaGradCOMID(AbstractCOMID):
 
         self.delta = delta
 
-    def get_comid_update(self, parameters, gradient, eta):
+    def _update_state(parameters, gradient, eta):
 
-        if any([x is None for x in [self.U, self.s, self.V, self.scale]]):
-            (self.U, self.s, self.V) = np.linalg.svd(parameters)
-            self.scale = np.zeros_like(self.s)
-
-        # Update proximal function parameters
+        # Get gradient's singular values
         grad_s = np.linalg.svd(gradient, compute_uv=False)
+
+        # Update diagonals of transformation matrix
         self.scale = get_safe_power(
             get_safe_power(self.scale, 2) + get_safe_power(grad_s, 2),
             0.5)
+
+    def _get_dual(self):
+
+        # Get the dual transformation's matrix
         H = self.scale + self.delta
 
-        # Map singular values into dual space
-        dual_s = H * self.s
-        dual_params = get_multiplied_svd(self.U, dual_s, self.V)
+        return H * self.s
 
-        # Take gradient step in dual space
-        dual_update = dual_params - eta * gradient
+    def _get_primal(self):
 
-        # Update cached SVD of dual parameters
-        (self.U, self.s, self.V) = np.linalg.svd(dual_update)
-
-        # Map singular values back into primal space
-        self.s = get_safe_power(H, -1) * self.s
-
-        return get_multiplied_svd(self.U, self.s, self.V)
+        return get_safe_power(H, -1) * self.s
 
     def get_status(self):
 
