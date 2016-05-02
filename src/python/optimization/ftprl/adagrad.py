@@ -1,5 +1,5 @@
 from optimization.ftprl import AbstractFTPRL
-from linal.utils import multi_dot, get_safe_power
+from linal.utils import get_safe_power
 
 import numpy as np
 

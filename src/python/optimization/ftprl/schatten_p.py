@@ -1,12 +1,9 @@
-from optimization.comid import AbstractCOMID
-from optimization.utils import get_shrunk_and_thresholded as get_st
+from optimization.comid import AbstractFTPRL
 from optimization.utils import get_lp_norm_gradient as get_lpn_grad
-from linal.utils import multi_dot
-from linal.svd_funcs import get_multiplied_svd
 
 import numpy as np
 
-class SchattenPCOMID(AbstractCOMID):
+class SchattenPCOMID(AbstractFTPRL):
 
     def __init__(self, lower=None, dual_avg=None, p=2):
 
