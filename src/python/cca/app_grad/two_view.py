@@ -12,7 +12,7 @@ class AppGradCCA:
         online=False,
         eta1=0.1, eta2=0.1,
         eps1=10**(-3), eps2=10**(-3),
-        comid1=None, comid2=None):
+        ftprl1=None, ftprl2=None):
 
         if not agu.is_k_valid([X_ds, Y_ds], k):
             raise ValueError(
@@ -21,10 +21,10 @@ class AppGradCCA:
         else:
             self.k = k
 
-        self.do_comid1 = comid1 is not None
-        self.do_comid2 = comid2 is not None
-        self.comid1 = comid1
-        self.comid2 = comid2
+        self.do_ftprl1 = ftprl1 is not None
+        self.do_ftprl2 = ftprl2 is not None
+        self.ftprl1 = ftprl1
+        self.ftprl2 = ftprl2
 
         (self.X, self.Sx) = X_ds.get_batch_and_gram()
         (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
@@ -88,16 +88,16 @@ class AppGradCCA:
             unn_Psi_grad = agu.get_gradient(
                 Y, unn_Psi_t, np.dot(X, Phi_t))
 
-            if self.do_comid1:
+            if self.do_ftprl1:
                 # Get (composite with l1 reg) mirror descent updates
-                unn_Phi_t1 = self.comid1.get_comid_update(
+                unn_Phi_t1 = self.ftprl1.get_implicit_update(
                         unn_Phi_t, unn_Phi_grad, eta1)
             else:
                 # Make normal gradient updates
                 unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
 
-            if self.do_comid2:
-                unn_Psi_t1 = self.comid2.get_comid_update(
+            if self.do_ftprl2:
+                unn_Psi_t1 = self.ftprl2.get_implicit_update(
                         unn_Psi_t, unn_Psi_grad, eta2)
             else:
                 unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad

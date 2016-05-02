@@ -1,4 +1,4 @@
-from optimization.comid import MatrixAdaGradCOMID as MAG
+from optimization.ftprl import MatrixAdaGrad as MAG
 from cca.app_grad import BatchAppGradCCA as BAG
 from cca.app_grad import BatchAppGradNViewCCA as BAGNV
 from data.loaders.e4 import FixedRateLoader as FRL
@@ -10,29 +10,29 @@ import numpy as np
 
 def test_batch_appgrad(
     ds1, ds2, cca_k,
-    comid1=None, comid2=None,
+    ftprl1=None, ftprl2=None,
     verbose=False):
 
     model = BAG(
         ds1, ds2, cca_k,
-        comid1=comid1,
-        comid2=comid2)
+        ftprl1=ftprl1,
+        ftprl2=ftprl2)
 
     return model.get_cca(verbose=verbose)
 
 def test_batch_n_view_appgrad(
     ds_list, cca_k,
-    comids=None, verbose=False):
+    ftprls=None, verbose=False):
 
     model = BAGNV(
         ds_list, cca_k,
-        comids=comids)
+        ftprls=ftprls)
 
     return model.get_cca(verbose=verbose)
 
 def test_two_fixed_rate_scalar(
     dir_path, file1, file2, cca_k,
-    comid1=MAG(), comid2=MAG(),
+    ftprl1=MAG(), ftprl2=MAG(),
     seconds=1,
     reg1=0.1, reg2=0.1,
     lps1=lps.get_scalar, lps2=lps.get_scalar):
@@ -44,8 +44,8 @@ def test_two_fixed_rate_scalar(
 
     (Phi, unn_Phi, Psi, unn_Psi) = test_batch_appgrad(
         ds1, ds2, cca_k, 
-        comid1=comid1, 
-        comid2=comid2)
+        ftprl1=ftprl1, 
+        ftprl2=ftprl2)
     I_k = np.identity(cca_k)
     gram1 = ds1.get_batch_and_gram()[1]
     gram2 = ds2.get_batch_and_gram()[1]
@@ -57,13 +57,13 @@ def test_two_fixed_rate_scalar(
 
 def test_n_fixed_rate_scalar(
     dir_path, files, cca_k,
-    comids=None,
+    ftprls=None,
     seconds=10,
     regs=None, lpss=None,
     verbose=False):
 
-    if comids is None:
-        comids = [MAG() for i in range(len(files) + 1)]
+    if ftprls is None:
+        ftprls = [MAG() for i in range(len(files) + 1)]
 
     if regs is None:
         regs = [0.1] * len(files)
@@ -76,7 +76,7 @@ def test_n_fixed_rate_scalar(
     dss = [BGS(dl, reg) for dl, reg in zip(dls, regs)]
 
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
-        dss, cca_k, comids=comids, verbose=verbose)
+        dss, cca_k, ftprls=ftprls, verbose=verbose)
 
     I_k = np.identity(cca_k)
     grams = [ds.get_batch_and_gram()[1]

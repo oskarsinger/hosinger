@@ -10,7 +10,7 @@ class NViewAppGradCCA:
         etas=None,
         epsilons=None,
         min_r=0.1,
-        comids=None):
+        ftprls=None):
 
         self.num_ds = len(ds_list)
 
@@ -45,16 +45,16 @@ class NViewAppGradCCA:
         else:
             self.epsilons = [10**(-4)] * (self.num_ds + 1)
 
-        if comids is not None:
-            if not len(comids) == self.num_ds + 1:
+        if ftprls is not None:
+            if not len(ftprls) == self.num_ds + 1:
                 raise ValueError(
-                    'Length of comids and ds_list + 1 must be the same.')
+                    'Length of ftprls and ds_list + 1 must be the same.')
             else:
-                self.comids = comids
-                self.do_comid = [comid is not None 
-                                 for comid in comids]
+                self.ftprls = ftprls
+                self.do_ftprl = [ftprl is not None 
+                                 for ftprl in ftprls]
         else:
-            self.comids = [None] * (self.num_ds + 1)
+            self.ftprls = [None] * (self.num_ds + 1)
 
         if min_r < 0:
             raise ValueError(
@@ -174,9 +174,9 @@ class NViewAppGradCCA:
 
     def _get_parameter_update(self, parameter, gradient, eta, i):
 
-        if self.do_comid[i]:
+        if self.do_ftprl[i]:
             # Get (composite with l1 reg) mirror descent update
-            parameter = self.comids[i].get_comid_update(
+            parameter = self.ftprls[i].get_implicit_update(
                 parameter, gradient, eta)
         else:
             # Make normal gradient update

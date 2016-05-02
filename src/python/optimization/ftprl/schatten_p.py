@@ -1,4 +1,4 @@
-from optimization.comid import AbstractFTPRL
+from optimization.ftprl import AbstractFTPRL
 from optimization.utils import get_lp_norm_gradient as get_lpn_grad
 
 import numpy as np
