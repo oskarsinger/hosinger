@@ -1,5 +1,5 @@
 from data.loaders import AbstractDataLoader
-from linal.utils import get_rank_k
+from linal.random.utils import get_rank_k
 
 from numpy.random import randn
 

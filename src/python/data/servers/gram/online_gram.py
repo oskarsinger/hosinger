@@ -1,82 +1,51 @@
 import numpy as np
 
 from gram import AbstractGramServer
+from optimization.utils import get_t_regged_gram as get_trg
+from global_utils.data_structures import FixedLengthQueue as FLQ
 
-class ExpOnlineGramServer(AbstractGramServer):
+class BoxcarOnlineGramServer(AbstractOnlineGramServer):
 
-    def __init__(self, data_loader, weight):
+    def __init__(self, data_loader, batch_size, reg=0.1):
 
-        self.dl = data_loader
+        super(BoxcarOnlineGramServer, self).__init__(
+            data_loader, batch_size, reg)
+
+    def _get_gram(self):
+
+        minibatch = np.array(self.minibatch.get_items())
+
+        return get_trg(minibatch, self.reg)
+
+class ExpOnlineGramServer(AbstractOnlineGramServer):
+
+    def __init__(self, data_loader, batch_size, weight, reg=0.1):
+
+        super(ExpOnlineGramServer, self).__init__(
+            data_loader, batch_size, reg)
+
         self.weight = weight
 
         cols = self.dl.cols()
 
         self.gram = np.zeros((cols, cols))
-        self.num_rounds = 0
 
-    def get_batch_and_gram(self):
+    def _get_gram(self):
 
-        self.num_rounds += 1
-
-        row = self.dl.get_datum()
         w = (self.weight)**(self.num_rounds)
 
-        self.gram += w * np.dot(row, row.T)
+        minibatch = np.array(self.minibatch.get_items())
+        gram = get_trg(minibatch, self.reg)
 
-        return (row, np.copy(self.gram))
+        self.gram += w * gram
 
-    def rows(self):
-
-        return self.num_rounds
-
-    def cols(self):
-
-        return self.dl.cols()
+        return np.copy(self.gram)
 
     def get_status(self):
+
+        init = super(ExpOnlineGramServer, self).get_status()
         
-        return {
-            'gram': self.gram,
+        return init + {
             'weight': self.weight,
-            'num_rounds': self.num_rounds,
-            'data_loader': self.dl}
+            'gram': self.gram}
 
-class BoxcarOnlineGramServer(AbstractGramServer):
-
-    def __init__(self, data_loader, length):
-
-        self.dl = data_loader
-        self.length = length
-
-        cols = self.dl.cols()
-        
-        self.grams = []
-        self.num_rounds = 0
-
-    def get_batch_and_gram(self):
-
-        self.num_rounds += 1
-
-        row = self.dl.get_datum()
-        gram = np.dot(row, row.T)
-
-        if len(self.grams) >= self.length:
-            self.grams = self.grams[1:] + [gram]
-
-        return (row, sum(self.grams))
-
-    def rows(self):
-
-        return self.num_rounds
-
-    def cols(self):
-
-        return self.dl.cols()
-
-    def get_status(self):
-
-        return {
-            'gram': self.gram,
-            'length': self.length,
-            'num_rounds': self.num_rounds,
-            'data_loader': self.dl}

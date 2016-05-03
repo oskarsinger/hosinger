@@ -8,19 +8,6 @@ def quadratic(X, A):
 
     return multi_dot([X.T, A, X])
 
-def get_rank_k(m, n, k):
-
-    if k > min([m, n]):
-        raise ValueError(
-            'The value of k must not exceed the minimum matrix dimension.')
-
-    A = np.zeros((m,n))
-
-    U = np.random.randn(m, k)
-    V = np.random.randn(k, n)
-
-    return np.dot(U, V)
-
 def weighted_sum_of_op(weights, matrix):
 
     (n, p) = matrix.shape
