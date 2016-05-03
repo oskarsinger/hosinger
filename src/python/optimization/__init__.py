@@ -1,3 +1,3 @@
 import utils
 import bregman
-import ftprl
+import optimizers

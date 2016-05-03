@@ -38,8 +38,10 @@ class GaussianLoader(AbstractDataLoader):
     def get_status(self):
 
         return {
-            'n': n,
-            'p': p}
+            'n': self.n,
+            'p': self.p,
+            't': self.t,
+            'k': self.k}
 
     def cols(self):
         

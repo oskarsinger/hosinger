@@ -1,11 +1,11 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 
-from linal.svd_funcs import get_multiplied_svd
 from optimization.utils import get_shrunk_and_thresholded as get_st
+from optimization.optimizers import AbstractOptimizer
+from linal.svd_funcs import get_multiplied_svd
 from global_utils.arithmetic import get_running_avg as get_ra
 
-class AbstractMatrixFTPRL:
-    __metaclass__=ABCMeta
+class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
     def __init__(self, lower=None, dual_avg=True):
 
@@ -23,7 +23,7 @@ class AbstractMatrixFTPRL:
         self.num_rounds = 0
         (self.U, self.s, self.V) = [None] * 3
 
-    def get_implicit_update(self, parameters, gradient, eta):
+    def get_update(self, parameters, gradient, eta):
 
         if any([x is None for x in [self.U, self.s, self.V]]):
             (self.U, self.s, self.V) = np.linalg.svd(parameters)

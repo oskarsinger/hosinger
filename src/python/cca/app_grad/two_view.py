@@ -8,43 +8,32 @@ Consider keeping a log of the minibatches somewhere for the online version.
 class AppGradCCA:
 
     def __init__(self,
-        X_ds, Y_ds, k,
+        k=1,
         online=False,
         eta1=0.1, eta2=0.1,
         eps1=10**(-3), eps2=10**(-3),
         ftprl1=None, ftprl2=None):
 
-        if not agu.is_k_valid([X_ds, Y_ds], k):
-            raise ValueError(
-                'The value of k must be less than or equal to the minimum of the' +
-                ' number of columns of X and Y.')
-        else:
-            self.k = k
-
+        self.k = k
         self.do_ftprl1 = ftprl1 is not None
         self.do_ftprl2 = ftprl2 is not None
         self.ftprl1 = ftprl1
         self.ftprl2 = ftprl2
-
-        (self.X, self.Sx) = X_ds.get_batch_and_gram()
-        (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
         self.online = online
-        
-        if not online:
-            # Find a better solution to this
-            n = min([self.X.shape[0], self.Y.shape[0]])
-            if self.X.shape[0] > n:
-                self.X = self.X[:n,:]
-            else:
-                self.Y = self.Y[:n,:]
-
         self.eta1 = eta1
         self.eta2 = eta2
         self.eps1 = eps1
         self.eps2 = eps2
 
-    def get_cca(self, verbose=False):
+        self.has_been_fit = False
+        self.Phi = None
+        self.unn_Phi = None
+        self.Psi = None
+        self.unn_Psi = None
 
+    def fit(self, X_ds, Y_ds, verbose=False):
+
+        self._init_data(X_ds, Y_ds)
         (X, Sx, Y, Sy) = (self.X, self.Sx, self.Y, self.Sy)
 
         print "Getting initial basis estimates"
@@ -74,8 +63,8 @@ class AppGradCCA:
                 if self.online:
                     print "\tGetting updated minibatches and Sx and Sy"
 
+            # Update random minibatches if doing SGD
             if self.online:
-                # Update random minibatches if doing SGD
                 (X, Sx) = self.X_ds.get_batch_and_gram()
                 (Y, Sy) = self.Y_ds.get_batch_and_gram()
 
@@ -129,4 +118,35 @@ class AppGradCCA:
 
         print "Completed in", str(i), "iterations."
 
-        return (Phi_t, unn_Phi_t, Psi_t, unn_Psi_t)
+        self.has_been_fit = True
+        self.Phi = Phi_t
+        self.unn_Phi = unn_Phi_t
+        self.Psi = Psi_t
+        self.unn_Psi = unn_Psi_t
+
+    def get_bases(self):
+
+        if not self.has_been_fit:
+            raise Exception(
+                'Model has not yet been fit.')
+
+        return (self.Phi, self.Psi, self.unn_Phi, self.unn_Psi)
+
+    def _init_data(X_ds, Y_ds):
+
+        if not agu.is_k_valid([X_ds, Y_ds], self.k):
+            raise ValueError(
+                'The value of k must be less than or equal to the minimum of the' +
+                ' number of columns of X and Y.')
+
+        (self.X, self.Sx) = X_ds.get_batch_and_gram()
+        (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
+
+        if not self.online:
+            # Find a better solution to this
+            n = min([self.X.shape[0], self.Y.shape[0]])
+            if self.X.shape[0] > n:
+                self.X = self.X[:n,:]
+            else:
+                self.Y = self.Y[:n,:]
+
