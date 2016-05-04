@@ -1,6 +1,6 @@
 from optimization.ftprl import MatrixAdaGrad as MAG
-from cca.app_grad import BatchAppGradCCA as BAG
-from cca.app_grad import BatchAppGradNViewCCA as BAGNV
+from cca.app_grad import AppGradCCA as AGCCA
+from cca.app_grad import NViewAppGradCCA as NVAGCCA
 from data.loaders.e4 import FixedRateLoader as FRL
 from data.loaders.e4 import line_processors as lps
 from data.servers.gram import BatchGramServer as BGS
@@ -10,25 +10,34 @@ import numpy as np
 
 def test_batch_appgrad(
     ds1, ds2, cca_k,
-    ftprl1=None, ftprl2=None,
+    optimizer1=None, optimizer2=None,
     verbose=False):
 
     model = BAG(
-        ds1, ds2, cca_k,
-        ftprl1=ftprl1,
-        ftprl2=ftprl2)
+        cca_k)
 
-    return model.get_cca(verbose=verbose)
+    model.fit(
+        ds1, ds2,
+        optimizer1=optimizer1,
+        optimizer2=optimizer2,
+        verbose=verbose)
+
+    return model.get_bases()
 
 def test_batch_n_view_appgrad(
     ds_list, cca_k,
-    ftprls=None, verbose=False):
+    optimizers=None, verbose=False):
 
     model = BAGNV(
-        ds_list, cca_k,
+        cca_k)
         ftprls=ftprls)
 
-    return model.get_cca(verbose=verbose)
+    model.fit(
+        ds_list,
+        optimizers=optimizers,
+        verbose=verbose)
+
+    return model.get_bases()
 
 def test_two_fixed_rate_scalar(
     dir_path, file1, file2, cca_k,

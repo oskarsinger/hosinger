@@ -1,4 +1,4 @@
-from data.loaders.data_loader import AbstractDataLoader
+from data.loaders import AbstractDataLoader
 from data.errors import EOSError
 
 import os

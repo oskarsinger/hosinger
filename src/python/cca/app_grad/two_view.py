@@ -1,6 +1,8 @@
 import numpy as np
 import utils as agu
 
+from optimization.optimizers import GradientOptimizer
+
 """
 Consider keeping a log of the minibatches somewhere for the online version.
 """
@@ -11,14 +13,9 @@ class AppGradCCA:
         k=1,
         online=False,
         eta1=0.1, eta2=0.1,
-        eps1=10**(-3), eps2=10**(-3),
-        ftprl1=None, ftprl2=None):
+        eps1=10**(-3), eps2=10**(-3)):
 
         self.k = k
-        self.do_ftprl1 = ftprl1 is not None
-        self.do_ftprl2 = ftprl2 is not None
-        self.ftprl1 = ftprl1
-        self.ftprl2 = ftprl2
         self.online = online
         self.eta1 = eta1
         self.eta2 = eta2
@@ -31,10 +28,13 @@ class AppGradCCA:
         self.Psi = None
         self.unn_Psi = None
 
-    def fit(self, X_ds, Y_ds, verbose=False):
+    def fit(self, 
+        X_ds, Y_ds, 
+        optimizer1=GradientOptimizer(), 
+        optimizer2=GradientOptimizer(),
+        verbose=False):
 
-        self._init_data(X_ds, Y_ds)
-        (X, Sx, Y, Sy) = (self.X, self.Sx, self.Y, self.Sy)
+        (X, Sx, Y, Sy) = self._init_data(X_ds, Y_ds)
 
         print "Getting initial basis estimates"
 
@@ -77,19 +77,11 @@ class AppGradCCA:
             unn_Psi_grad = agu.get_gradient(
                 Y, unn_Psi_t, np.dot(X, Phi_t))
 
-            if self.do_ftprl1:
-                # Get (composite with l1 reg) mirror descent updates
-                unn_Phi_t1 = self.ftprl1.get_implicit_update(
-                        unn_Phi_t, unn_Phi_grad, eta1)
-            else:
-                # Make normal gradient updates
-                unn_Phi_t1 = unn_Phi_t - eta1 * unn_Phi_grad
-
-            if self.do_ftprl2:
-                unn_Psi_t1 = self.ftprl2.get_implicit_update(
-                        unn_Psi_t, unn_Psi_grad, eta2)
-            else:
-                unn_Psi_t1 = unn_Psi_t - eta2 * unn_Psi_grad
+            # Make updates to basis parameters
+            unn_Phi_t1 = optimizer1.get_update(
+                    unn_Phi_t, unn_Phi_grad, eta1)
+            unn_Psi_t1 = optimizer2.get_update(
+                    unn_Psi_t, unn_Psi_grad, eta2)
 
             # Normalize updated bases
             Phi_t1 = agu.get_gram_normed(unn_Phi_t1, Sx)
@@ -132,21 +124,23 @@ class AppGradCCA:
 
         return (self.Phi, self.Psi, self.unn_Phi, self.unn_Psi)
 
-    def _init_data(X_ds, Y_ds):
+    def _init_data(self, X_ds, Y_ds):
 
         if not agu.is_k_valid([X_ds, Y_ds], self.k):
             raise ValueError(
                 'The value of k must be less than or equal to the minimum of the' +
                 ' number of columns of X and Y.')
 
-        (self.X, self.Sx) = X_ds.get_batch_and_gram()
-        (self.Y, self.Sy) = Y_ds.get_batch_and_gram()
+        (X, Sx) = X_ds.get_batch_and_gram()
+        (Y, Sy) = Y_ds.get_batch_and_gram()
 
         if not self.online:
             # Find a better solution to this
-            n = min([self.X.shape[0], self.Y.shape[0]])
-            if self.X.shape[0] > n:
-                self.X = self.X[:n,:]
+            n = min([X.shape[0], Y.shape[0]])
+            if X.shape[0] > n:
+                X = X[:n,:]
             else:
-                self.Y = self.Y[:n,:]
+                Y = Y[:n,:]
+
+        return (X, Sx, Y, Sy)
 

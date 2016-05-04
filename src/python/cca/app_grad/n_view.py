@@ -5,56 +5,23 @@ import utils as agu
 class NViewAppGradCCA:
 
     def __init__(self,
-        ds_list, k,
+        k,
         online=False
         etas=None,
         epsilons=None,
-        min_r=0.1,
-        ftprls=None):
+        min_r=0.1):
 
-        self.num_ds = len(ds_list)
-
-        if self.num_ds < 2:
-            raise ValueError(
-                'You must provide at least 2 data servers.')
-
-        self.ds_list = ds_list
-
-        if not agu.is_k_valid(ds_list, k):
-            raise ValueError(
-                'The value of k must be less than or equal to the minimum of the' +
-                ' number of columns over all data servers.')
-        else:
-            self.k = k
+        self.k = k
 
         if etas is not None:
-            if not len(etas) == self.num_ds + 1:
-                raise ValueError(
-                    'Length of etas and ds_list + 1 must be the same.')
-            else:
-                self.etas = etas
+            self.etas = etas
         else:
             self.etas = [0.1] * (self.num_ds + 1)
 
         if epsilons is not None:
-            if not len(epsilons) == self.num_ds + 1:
-                raise ValueError(
-                    'Length of epsilons and ds_list + 1 must be the same.')
-            else:
-                self.epsilons = epsilons
+            self.epsilons = epsilons
         else:
             self.epsilons = [10**(-4)] * (self.num_ds + 1)
-
-        if ftprls is not None:
-            if not len(ftprls) == self.num_ds + 1:
-                raise ValueError(
-                    'Length of ftprls and ds_list + 1 must be the same.')
-            else:
-                self.ftprls = ftprls
-                self.do_ftprl = [ftprl is not None 
-                                 for ftprl in ftprls]
-        else:
-            self.ftprls = [None] * (self.num_ds + 1)
 
         if min_r < 0:
             raise ValueError(
@@ -71,9 +38,20 @@ class NViewAppGradCCA:
             self.n = min([X.shape[0] for X in self.Xs])
             self.Xs = [X[:self.n,:] for X in self.Xs]
 
-    def get_cca(self, verbose=False):
+    def fit(self,
+        ds_list, 
+        optimizers=None,
+        verbose=False):
 
-        (Xs, Sxs) = (self.Xs, self.Sxs)
+        if optimizers is not None:
+            if not len(optimizers) == self.num_ds + 1:
+                raise ValueError(
+                    'Length of optimizers and ds_list + 1 must be the same.')
+        else:
+            optimizers = [GradientOptimizer() 
+                          for i in range(self.num_ds + 1)]
+
+        (Xs, Sxs) = self._init_data(ds_list)
 
         print "Getting intial_basis_estimates"
 
@@ -102,21 +80,21 @@ class NViewAppGradCCA:
 
             if self.online:
                 # Get new minibatches and Gram matrices
-                (Xs, Sxs) = self._get_batch_and_gram_lists()
+                (Xs, Sxs) = self._get_batch_and_gram_lists(ds_list)
 
             if verbose:
                 print "\tGetting updated basis estimates"
 
             # Get updated canonical bases
             basis_pairs_t1 = self._get_basis_updates(
-                Xs, Sxs, basis_pairs_t, Psi, etas)
+                Xs, Sxs, basis_pairs_t, Psi, etas, optimizers)
 
             if verbose:
                 print "\tGetting updated auxiliary variable estimate"
 
             # Get updated auxiliary variable
             Psi = self._get_Psi_update(
-                Xs, basis_pairs_t1, Psi, etas[-1])
+                Xs, basis_pairs_t1, Psi, etas[-1], optimizers[-1])
 
             if verbose:
                 unns_t = [pair[0] for pair in basis_pairs_t]
@@ -148,46 +126,34 @@ class NViewAppGradCCA:
 
         return (basis_pairs_t, Psi)
 
-    def _get_basis_updates(self, Xs, Sxs, basis_pairs, Psi, etas):
+    def _get_basis_updates(self, Xs, Sxs, basis_pairs, Psi, etas, optimizers):
 
         # Get gradients
         gradients = [agu.get_gradient(Xs[i], basis_pairs[i][0], Psi)
                      for i in range(self.num_ds)]
 
         # Get unnormalized updates
-        updated_unn = [self._get_parameter_update(
-                        basis_pairs[i][0], gradients[i], etas[i], i)
-                       for i in range(self.num_ds)]
+        updated_unn = [optimizers[i].get_update(
+                        basis_pairs[i][0], gradients[i], etas[i])
+                       for i in range(len(Xs))]
 
-        # Normalize
-        updated_pairs = [(unn, agu.get_gram_normed(unn, Sx))
-                         for unn, Sx in zip(updated_unn, Sxs)]
+        # Normalize with gram-parameterized Mahalanobis
+        normed_pairs = [(unn, agu.get_gram_normed(unn, Sx))
+                        for unn, Sx in zip(updated_unn, Sxs)]
 
         return updated_pairs
 
-    def _get_Psi_update(self, Xs, basis_pairs, Psi, eta):
+    def _get_Psi_update(self, Xs, basis_pairs, Psi, eta, optimizer):
 
         Phis = [pair[1] for pair in basis_pairs]
         gradient = self._get_Psi_gradient(Psi, Xs, Phis)
 
-        return self._get_parameter_update(Psi, gradient, eta, -1)
+        return optimizer.get_update(Psi, gradient, eta, -1)
 
-    def _get_parameter_update(self, parameter, gradient, eta, i):
-
-        if self.do_ftprl[i]:
-            # Get (composite with l1 reg) mirror descent update
-            parameter = self.ftprls[i].get_implicit_update(
-                parameter, gradient, eta)
-        else:
-            # Make normal gradient update
-            parameter = parameter - eta * gradient
-
-        return parameter
-
-    def _get_batch_and_gram_lists(self):
+    def _get_batch_and_gram_lists(self, ds_list):
 
         batch_and_gram_list = [ds.get_batch_and_gram()
-                               for ds in self.ds_list]
+                               for ds in ds_list]
         Xs = [X for (X, Sx) in batch_and_gram_list]
         Sxs = [Sx for (X, Sx) in batch_and_gram_list]
 
@@ -199,3 +165,33 @@ class NViewAppGradCCA:
                     for (X, Phi) in zip(Xs, Phis)]
 
         return (n * Phi - 2 * sum(summands)) / Psi.shape[0]
+
+    def _init_data(self, ds_list):
+
+        num_ds = len(ds_list)
+
+        if num_ds < 2:
+            raise ValueError(
+                'You must provide at least 2 data servers.')
+
+        if not agu.is_k_valid(ds_list, self.k):
+            raise ValueError(
+                'The value of k must be less than or equal to the minimum of the' +
+                ' number of columns of X and Y.')
+
+        if not len(etas) == num_ds + 1:
+            raise ValueError(
+                'Length of etas and ds_list + 1 must be the same.')
+
+        if not len(epsilons) == num_ds + 1:
+            raise ValueError(
+                'Length of epsilons and ds_list + 1 must be the same.')
+
+        (Xs, Sxs) = self._get_batch_and_gram_lists()
+
+        if not self.online:
+            # Find a better solution to this
+            n = min([X.shape[0] for X in Xs])
+            Xs = [X[:n,:] for X in Xs]
+
+        return (Xs, Sxs)
