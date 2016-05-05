@@ -138,8 +138,16 @@ class AppGradCCA:
             # Find a better solution to this
             n = min([X.shape[0], Y.shape[0]])
             if X.shape[0] > n:
+                # Remove to-be-truncated examples from Gram matrix
+                removed = X[n:,:]
+                Sx -= np.dot(removed.T, removed)
+
+                # Truncate extra examples
                 X = X[:n,:]
             else:
+                # Do the same for Y if Y has the extra examples
+                removed = Y[n:,:]
+                Sy -= np.dot(removed.T, removed)
                 Y = Y[:n,:]
 
         return (X, Sx, Y, Sy)

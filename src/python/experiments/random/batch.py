@@ -8,7 +8,6 @@ import numpy as np
 def test_batch_appgrad(
     n, p1, p2, cca_k, 
     dl_k1=None, dl_k2=None, 
-    ftprl1=None, ftprl2=None,
     verbose=False):
 
     X_loader = GL(n, p1, dl_k1)
@@ -16,17 +15,12 @@ def test_batch_appgrad(
     X_server = BGS(X_loader, 0.01)
     Y_server = BGS(Y_loader, 0.01)
     model = BatchAppGradCCA(
-        X_server, 
-        Y_server, 
-        cca_k, 
-        ftprl1=ftprl1,
-        ftprl2=ftprl2)
+        cca_k)
 
     return model.get_cca(verbose=verbose)
 
 def run_tests(
     n, p1, p2, k, 
-    ftprl1_type, ftprl2_type,
     skip_low_rank=True):
 
     print "Parameters:\n\t", "\n\t".join([

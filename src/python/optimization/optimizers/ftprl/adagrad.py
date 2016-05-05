@@ -5,7 +5,7 @@ import numpy as np
 
 class MatrixAdaGrad(AbstractFTPRL):
 
-    def __init__(self, lower=None, dual_avg=None, delta=0.1):
+    def __init__(self, lower=None, dual_avg=True, delta=0.1):
 
         super(MatrixAdaGrad, self).__init__(lower, dual_avg)
 
@@ -16,16 +16,7 @@ class MatrixAdaGrad(AbstractFTPRL):
     # Overrides super class to update adaptive prox func's parameters
     def _set_gradient(self, gradient):
 
-        if self.grad is None:
-            self.grad = np.zeros_like(gradient)
-
-        if self.dual_avg: 
-            # Get averaged gradient if desired
-            self.grad = get_ra(
-                self.grad, gradient, self.num_rounds)
-        else:
-            # Otherwise, get current gradient
-            self.grad = gradient
+        super(MatrixAdaGrad, self)._set_gradient(gradient)
 
         # Get gradient's singular values
         grad_s = np.linalg.svd(self.grad, compute_uv=False)

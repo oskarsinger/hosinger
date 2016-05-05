@@ -7,7 +7,7 @@ from global_utils.arithmetic import get_running_avg as get_ra
 
 class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
-    def __init__(self, lower=None, dual_avg=True):
+    def __init__(self, lower, dual_avg):
 
         self.sparse = self.lower is not None
 
