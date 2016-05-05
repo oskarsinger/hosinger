@@ -1,4 +1,4 @@
-from cca.app_grad import BatchAppGradCCA
+from cca.app_grad import AppGradCCA, NViewAppGradCCA
 from linal.utils import quadratic as quad
 from data.loaders.random import GaussianLoader as GL
 from data.servers.gram import BatchGramServer as BGS
