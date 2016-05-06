@@ -1,4 +1,4 @@
-from optimization.ftprl import MatrixAdaGrad as MAG
+from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from cca.app_grad import AppGradCCA as AGCCA
 from cca.app_grad import NViewAppGradCCA as NVAGCCA
 from data.loaders.e4 import FixedRateLoader as FRL

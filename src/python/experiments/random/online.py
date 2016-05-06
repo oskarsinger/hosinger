@@ -7,10 +7,11 @@ from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 
 import numpy as np
 
-def test_online_appgrad_with_exp_server(X_weight, Y_weight, p1, p2, k):
+def test_online_appgrad_with_exp_server(
+    batch_size, X_weight, Y_weight, p1, p2, k):
 
-    X_loader = GL(1, p1)
-    Y_loader = GL(1, p2)
+    X_loader = GL(2*p1, p1, batch_size=batch_size)
+    Y_loader = GL(2*p2, p2, batch_size=batch_size)
     X_server = EOGS(X_loader, X_weight, k+log(k))
     Y_server = EOGS(Y_loader, Y_weight, k+log(k))
     model = AppGradCCA(k, online=True)
@@ -22,10 +23,11 @@ def test_online_appgrad_with_exp_server(X_weight, Y_weight, p1, p2, k):
 
     return model.get_bases()
 
-def test_online_appgrad_with_boxcar_server(X_window, Y_window, p1, p2, k):
+def test_online_appgrad_with_boxcar_server(
+    batch_size, X_window, Y_window, p1, p2, k):
 
-    X_loader = GL(1, p1)
-    Y_loader = GL(1, p2)
+    X_loader = GL(2*p1, p1, batch_size=batch_size)
+    Y_loader = GL(2*p2, p2, batch_size=batch_size)
     X_server = BOGS(X_loader, X_weight, k+log(k))
     Y_server = BOGS(Y_loader, Y_weight, k+log(k))
     model = AppGradCCA(k, online=True)
@@ -37,9 +39,10 @@ def test_online_appgrad_with_boxcar_server(X_window, Y_window, p1, p2, k):
 
     return model.get_bases()
 
-def test_online_n_view_appgrad_with_exp_server(weights, ps, k):
+def test_online_n_view_appgrad_with_exp_server(
+    batch_size, weights, ps, k):
 
-    loaders = [GL(1, p) for p in ps]
+    loaders = [GL(2*p, p, batch_size=batch_size) for p in ps]
     servers = [EOGS(loader, weight, k+log(k))
                for (loader, weight) in zip(loaders, weights)]
     optimizers = [MAG() for i in range(len(servers))]
@@ -52,9 +55,10 @@ def test_online_n_view_appgrad_with_exp_server(weights, ps, k):
 
     return model.get_bases()
 
-def test_online_n_view_appgrad_with_boxcar_server(windows, ps, k):
+def test_online_n_view_appgrad_with_boxcar_server(
+    batch_size, windows, ps, k):
 
-    loaders = [GL(1, p) for p in ps]
+    loaders = [GL(2*p, p, batch_size=batch_size) for p in ps]
     servers = [BOGS(loader, window, k+log(k))
                for (loader, window) in zip(loaders, windows)]
     optimizers = [MAG() for i in range(len(servers))]
@@ -67,12 +71,34 @@ def test_online_n_view_appgrad_with_boxcar_server(windows, ps, k):
 
     return model.get_bases()
 
-def run_two_view_tests(k, p1, p2):
+def run_two_view_tests(batch_size, p1, p2, k):
 
-    test_online_appgrad_with_exp_server(0.75, 0.75, p1, p2, k)
-    test_online_appgrad_with_boxcar_server(10, 10, p1, p2, k)
+    print "Parameters:\n\t", "\n\t".join([
+        "batch_size: " + str(batch_size),
+        "p1: " + str(p1),
+        "p2: " + str(p2),
+        "k: " + str(k)])
 
-def run_n_view_tests(k, ps):
+    print "Testing CCA with exp-weighted Gram matrices"
+    exp = test_online_appgrad_with_exp_server(
+        batch_size, 0.75, 0.75, p1, p2, k)
 
-    test_online_n_view_appgrad_with_exp_server([0.75] * len(ps), ps, k)
-    test_online_n_view_appgrad_with_boxcar_server([10] * len(ps), ps, k)
+    print "Testing CCA with boxcar-weighted Gram matrices"
+    boxcar = test_online_appgrad_with_boxcar_server(
+        batch_size, 10, 10, p1, p2, k)
+
+def run_n_view_tests(batch_size, ps, k):
+
+    print "Gaussian random data online AppGrad CCA tests"
+    print "Parameters:\n\t", "\n\t".join([
+        "batch_size: " + str(batch_size),
+        "ps: " + str(ps),
+        "k: " + str(k)])
+
+    print "Testing n-view CCA with exp-weighted Gram matrices"
+    exp = test_online_n_view_appgrad_with_exp_server(
+        batch_size, [0.75] * len(ps), ps, k)
+    
+    print "Testing n-view CCA with boxcar-weighted Gram matrices"
+    boxcar = test_online_n_view_appgrad_with_boxcar_server(
+        batch_size, [10] * len(ps), ps, k)
