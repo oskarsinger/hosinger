@@ -7,6 +7,6 @@ def multi_zip(ls):
     return [tuple([l[i] for l in ls])
             for i in range(len(ls[0]))]
 
-def get_len_range(l):
+def get_lrange(l):
 
     return xrange(len(l))

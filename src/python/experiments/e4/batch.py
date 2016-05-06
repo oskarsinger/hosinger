@@ -5,43 +5,37 @@ from data.loaders.e4 import FixedRateLoader as FRL
 from data.loaders.e4 import line_processors as lps
 from data.servers.gram import BatchGramServer as BGS
 from linal.utils import quadratic as quad
+from global_utils.misc import get_lrange
 
 import numpy as np
 
 def test_batch_appgrad(
-    ds1, ds2, cca_k,
-    optimizer1=None, optimizer2=None,
-    verbose=False):
+    ds1, ds2, cca_k):
 
-    model = BAG(
-        cca_k)
+    model = AGCCA(cca_k)
 
     model.fit(
         ds1, ds2,
-        optimizer1=optimizer1,
-        optimizer2=optimizer2,
-        verbose=verbose)
+        optimizer1=MAG(),
+        optimizer2=MAG(),
+        verbose=True)
 
     return model.get_bases()
 
 def test_batch_n_view_appgrad(
-    ds_list, cca_k,
-    optimizers=None, verbose=False):
+    ds_list, cca_k):
 
-    model = BAGNV(
-        cca_k)
-        ftprls=ftprls)
+    model = NVAGCCA(cca_k, len(ds_list))
 
     model.fit(
         ds_list,
-        optimizers=optimizers,
-        verbose=verbose)
+        optimizers=[MAG() for i in get_lrange(ds_list)],
+        verbose=True)
 
     return model.get_bases()
 
 def test_two_fixed_rate_scalar(
     dir_path, file1, file2, cca_k,
-    ftprl1=MAG(), ftprl2=MAG(),
     seconds=1,
     reg1=0.1, reg2=0.1,
     lps1=lps.get_scalar, lps2=lps.get_scalar):
@@ -52,9 +46,7 @@ def test_two_fixed_rate_scalar(
     ds2 = BGS(dl2, reg2)
 
     (Phi, unn_Phi, Psi, unn_Psi) = test_batch_appgrad(
-        ds1, ds2, cca_k, 
-        ftprl1=ftprl1, 
-        ftprl2=ftprl2)
+        ds1, ds2, cca_k)
     I_k = np.identity(cca_k)
     gram1 = ds1.get_batch_and_gram()[1]
     gram2 = ds2.get_batch_and_gram()[1]
@@ -66,13 +58,8 @@ def test_two_fixed_rate_scalar(
 
 def test_n_fixed_rate_scalar(
     dir_path, files, cca_k,
-    ftprls=None,
     seconds=10,
-    regs=None, lpss=None,
-    verbose=False):
-
-    if ftprls is None:
-        ftprls = [MAG() for i in range(len(files) + 1)]
+    regs=None, lpss=None):
 
     if regs is None:
         regs = [0.1] * len(files)
@@ -85,7 +72,7 @@ def test_n_fixed_rate_scalar(
     dss = [BGS(dl, reg) for dl, reg in zip(dls, regs)]
 
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
-        dss, cca_k, ftprls=ftprls, verbose=verbose)
+        dss, cca_k)
 
     I_k = np.identity(cca_k)
     grams = [ds.get_batch_and_gram()[1]
