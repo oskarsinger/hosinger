@@ -1,9 +1,9 @@
-from optimization.ftprl import AbstractFTPRL
+from optimization.optimizers.ftprl import AbstractMatrixFTPRLOptimizer
 from optimization.utils import get_lp_norm_gradient as get_lpn_grad
 
 import numpy as np
 
-class SchattenPCOMID(AbstractFTPRL):
+class SchattenPCOMID(AbstractMatrixFTPRLOptimizer):
 
     def __init__(self, lower=None, dual_avg=None, p=2):
 

@@ -1,9 +1,9 @@
-from optimization.ftprl import AbstractFTPRL
+from optimization.optimizers.ftprl import AbstractMatrixFTPRLOptimizer
 from linal.utils import get_safe_power
 
 import numpy as np
 
-class MatrixAdaGrad(AbstractFTPRL):
+class MatrixAdaGrad(AbstractMatrixFTPRLOptimizer):
 
     def __init__(self, lower=None, dual_avg=True, delta=0.1):
 

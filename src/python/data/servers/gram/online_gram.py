@@ -1,6 +1,6 @@
 import numpy as np
 
-from gram import AbstractGramServer
+from data.servers.gram import AbstractOnlineGramServer
 from optimization.utils import get_t_regged_gram as get_trg
 from global_utils.data_structures import FixedLengthQueue as FLQ
 

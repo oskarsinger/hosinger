@@ -7,13 +7,19 @@ from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 
 import numpy as np
 
+from math import log, ceil
+
+def cl(x):
+
+    return int(ceil(log(x)))
+
 def test_online_appgrad_with_exp_server(
     batch_size, X_weight, Y_weight, p1, p2, k):
 
-    X_loader = GL(2*p1, p1, batch_size=batch_size)
-    Y_loader = GL(2*p2, p2, batch_size=batch_size)
-    X_server = EOGS(X_loader, X_weight, k+log(k))
-    Y_server = EOGS(Y_loader, Y_weight, k+log(k))
+    X_loader = GL(2*p1, p1, batch_size=1)
+    Y_loader = GL(2*p2, p2, batch_size=1)
+    X_server = EOGS(X_loader, k+cl(k), X_weight)
+    Y_server = EOGS(Y_loader, k+cl(k), Y_weight)
     model = AppGradCCA(k, online=True)
     
     model.fit(
@@ -26,10 +32,10 @@ def test_online_appgrad_with_exp_server(
 def test_online_appgrad_with_boxcar_server(
     batch_size, X_window, Y_window, p1, p2, k):
 
-    X_loader = GL(2*p1, p1, batch_size=batch_size)
-    Y_loader = GL(2*p2, p2, batch_size=batch_size)
-    X_server = BOGS(X_loader, X_weight, k+log(k))
-    Y_server = BOGS(Y_loader, Y_weight, k+log(k))
+    X_loader = GL(2*p1, p1, batch_size=1)
+    Y_loader = GL(2*p2, p2, batch_size=1)
+    X_server = BOGS(X_loader, k+cl(k), X_weight)
+    Y_server = BOGS(Y_loader, k+cl(k), Y_weight)
     model = AppGradCCA(k, online=True)
     
     model.fit(
@@ -42,10 +48,10 @@ def test_online_appgrad_with_boxcar_server(
 def test_online_n_view_appgrad_with_exp_server(
     batch_size, weights, ps, k):
 
-    loaders = [GL(2*p, p, batch_size=batch_size) for p in ps]
-    servers = [EOGS(loader, weight, k+log(k))
+    loaders = [GL(2*p, p, batch_size=1) for p in ps]
+    servers = [EOGS(loader, k+cl(k), weight)
                for (loader, weight) in zip(loaders, weights)]
-    optimizers = [MAG() for i in range(len(servers))]
+    optimizers = [MAG() for i in range(len(servers)+1)]
     model = NViewAppGradCCA(k, len(servers), online=True)
 
     model.fit(
@@ -58,8 +64,8 @@ def test_online_n_view_appgrad_with_exp_server(
 def test_online_n_view_appgrad_with_boxcar_server(
     batch_size, windows, ps, k):
 
-    loaders = [GL(2*p, p, batch_size=batch_size) for p in ps]
-    servers = [BOGS(loader, window, k+log(k))
+    loaders = [GL(2*p, p, batch_size=1) for p in ps]
+    servers = [BOGS(loader, k+cl(k), window)
                for (loader, window) in zip(loaders, windows)]
     optimizers = [MAG() for i in range(len(servers))]
     model = NViewAppGradCCA(k, len(servers), online=True)

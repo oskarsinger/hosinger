@@ -6,7 +6,7 @@ class NViewAppGradCCA:
 
     def __init__(self,
         k, num_views,
-        online=False
+        online=False,
         etas=None,
         epsilons=None,
         min_r=0.1):
@@ -36,7 +36,6 @@ class NViewAppGradCCA:
             self.min_r = min_r
 
         self.num_updates = [0] * (self.num_views + 1)
-        (self.Xs, self.Sxs) = self._get_batch_and_gram_lists()
         self.online = online
         self.has_been_fit = False
         self.basis_pairs = None

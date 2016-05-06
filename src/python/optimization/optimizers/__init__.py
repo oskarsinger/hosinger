@@ -1,4 +1,4 @@
-import ftprl
+from optimizer import AbstractOptimizer
+from gradient import GradientOptimizer
 
-from gradient_step import GradientOptimizer
-from abstract_optimizer.py import AbstractOptimizer
+import ftprl

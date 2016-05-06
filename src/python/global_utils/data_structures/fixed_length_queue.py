@@ -7,7 +7,7 @@ class FixedLengthQueue:
 
     def enqueue(self, item):
         
-        if len(self.queue) == self.size:
+        if len(self.queue) == self.length:
             self.queue[1:].append(item)
         else:
             self.queue.append(item)

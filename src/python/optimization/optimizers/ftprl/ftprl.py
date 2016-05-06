@@ -9,7 +9,7 @@ class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
     def __init__(self, lower, dual_avg):
 
-        self.sparse = self.lower is not None
+        self.sparse = lower is not None
 
         if self.sparse:
             if lower < 0:

@@ -2,7 +2,7 @@ from data.loaders import AbstractDataLoader
 from linal.random.utils import get_rank_k
 from global_utils.misc import get_checklist
 
-from numpy.random import randn, choice
+import numpy as np
 
 class GaussianLoader(AbstractDataLoader):
 
@@ -35,7 +35,7 @@ class GaussianLoader(AbstractDataLoader):
         if self.low_rank:
             self.X = get_rank_k(self.n, self.p, self.k)
         else:
-            self.X = randn(self.n, self.p)
+            self.X = np.random.randn(self.n, self.p)
             
         # Checklist for which rows sampled in current epoch
         self.sampled = get_checklist(xrange(self.n))
@@ -54,13 +54,13 @@ class GaussianLoader(AbstractDataLoader):
         unsampled = [i for (i, s) in self.sampled.items() if not s]
 
         # Refresh if unsampled will not fill a batch
-        if len(unsampled) < batch_size:
+        if len(unsampled) < self.batch_size:
             self.sampled = get_checklist(xrange(self.n))
             self.num_epochs += 1
 
             unsampled = self.sampled.keys()
 
-        sample_indexes = choice(
+        sample_indexes = np.random.choice(
             np.array(unsampled), self.batch_size, replace=False)
         
         for i in sample_indexes.tolist():
