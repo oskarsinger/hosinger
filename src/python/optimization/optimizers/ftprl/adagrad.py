@@ -21,6 +21,9 @@ class MatrixAdaGrad(AbstractMatrixFTPRLOptimizer):
         # Get gradient's singular values
         grad_s = np.linalg.svd(self.grad, compute_uv=False)
 
+        if self.scale is None:
+            self.scale = np.zeros_like(grad_s)
+
         # Update diagonals of transformation matrix
         self.scale = get_safe_power(
             get_safe_power(self.scale, 2) + get_safe_power(grad_s, 2),

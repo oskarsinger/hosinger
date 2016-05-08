@@ -156,14 +156,14 @@ class NViewAppGradCCA:
         normed_pairs = [(unn, agu.get_gram_normed(unn, Sx))
                         for unn, Sx in zip(updated_unn, Sxs)]
 
-        return updated_pairs
+        return normed_pairs
 
     def _get_Psi_update(self, Xs, basis_pairs, Psi, eta, optimizer):
 
         Phis = [pair[1] for pair in basis_pairs]
         gradient = self._get_Psi_gradient(Psi, Xs, Phis)
 
-        return optimizer.get_update(Psi, gradient, eta, -1)
+        return optimizer.get_update(Psi, gradient, eta)
 
     def _get_batch_and_gram_lists(self, ds_list):
 
@@ -174,10 +174,10 @@ class NViewAppGradCCA:
 
     def _get_Psi_gradient(self, Psi, Xs, Phis):
 
-        summands = [np.dot(X, Phi)
-                    for (X, Phi) in zip(Xs, Phis)]
+        s = sum([np.dot(X, Phi)
+                 for (X, Phi) in zip(Xs, Phis)])
 
-        return (n * Phi - 2 * sum(summands)) / Psi.shape[0]
+        return (len(Phis) * Psi - 2 * s) / Psi.shape[0]
 
     def _init_data(self, ds_list):
 

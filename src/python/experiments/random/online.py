@@ -86,7 +86,7 @@ def run_two_view_tests(p1, p2, k):
     boxcar = test_online_appgrad_with_boxcar_server(
         p1, p2, k)
 
-def run_n_view_tests(batch_size, ps, k):
+def run_n_view_tests(ps, k):
 
     print "Gaussian random data online AppGrad CCA tests"
     print "Parameters:\n\t", "\n\t".join([
