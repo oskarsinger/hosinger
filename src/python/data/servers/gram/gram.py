@@ -2,6 +2,8 @@ from abc import ABCMeta, abstractmethod
 
 from global_utils.data_structures import FixedLengthQueue as FLQ
 
+import numpy as np
+
 class AbstractGramServer:
     __metaclass__ = ABCMeta
 
@@ -40,7 +42,7 @@ class AbstractOnlineGramServer(AbstractGramServer):
         self._update_minibatch()
         
         gram = self._get_gram()
-        minibatch = self.minibatch.get_items()
+        minibatch = np.array(self.minibatch.get_items())
 
         output = None if self.no_more_data else (minibatch, gram)
 
@@ -50,13 +52,14 @@ class AbstractOnlineGramServer(AbstractGramServer):
 
         candidates = [self.dl.get_datum()
                       for i in xrange(self.batch_size)]
-        non_null = [datum for datum in candidates
+        non_null = [datum
+                    for datum in candidates
                     if datum is not None]
 
         for datum in non_null:
-            self.minibatch.enqueue(datum)
+            self.minibatch.enqueue(datum.flatten())
 
-        self.no_more_data = len(non_null) > 0
+        self.no_more_data = len(non_null) == 0
 
     def rows(self):
 

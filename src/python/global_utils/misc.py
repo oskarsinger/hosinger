@@ -10,3 +10,10 @@ def multi_zip(ls):
 def get_lrange(l):
 
     return xrange(len(l))
+
+def unzip(l):
+
+    first = [f for (f, s) in l]
+    second = [s for (f, s) in l]
+
+    return (first, second)

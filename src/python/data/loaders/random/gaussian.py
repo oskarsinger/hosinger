@@ -60,9 +60,11 @@ class GaussianLoader(AbstractDataLoader):
 
             unsampled = self.sampled.keys()
 
+        # Sample indexes corresponding to rows in data matrix
         sample_indexes = np.random.choice(
             np.array(unsampled), self.batch_size, replace=False)
         
+        # Update checklist with sampled rows
         for i in sample_indexes.tolist():
             self.sampled[i] = True
 

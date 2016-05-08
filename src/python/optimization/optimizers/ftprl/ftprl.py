@@ -5,6 +5,8 @@ from optimization.optimizers import AbstractOptimizer
 from linal.svd_funcs import get_multiplied_svd
 from global_utils.arithmetic import get_running_avg as get_ra
 
+import numpy as np
+
 class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
     def __init__(self, lower, dual_avg):

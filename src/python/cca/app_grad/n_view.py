@@ -2,6 +2,8 @@ import numpy as np
 
 import utils as agu
 
+from global_utils.misc import unzip
+
 class NViewAppGradCCA:
 
     def __init__(self,
@@ -59,12 +61,12 @@ class NViewAppGradCCA:
         print "Getting intial_basis_estimates"
 
         # Initialization of optimization variables
-        basis_pairs_t = agu.get_init_basis_pairs(self.Sxs, self.k)
+        basis_pairs_t = agu.get_init_basis_pairs(Sxs, self.k)
         basis_pairs_t1 = None
-        Psi = np.random.randn(self.n, self.k)
+        Psi = np.random.randn(ds_list[0].batch_size, self.k)
 
         # Iteration variables
-        converged = [False] * self.num_ds
+        converged = [False] * self.num_views
         i = 1
 
         print "Starting gradient descent"
@@ -117,7 +119,7 @@ class NViewAppGradCCA:
             # Check for convergence
             converged = agu.is_converged(
                 [(basis_pairs_t[j][0], basis_pairs_t1[j][0])
-                 for j in range(self.num_ds)],
+                 for j in range(self.num_views)],
                 self.epsilons,
                 verbose)
 
@@ -167,10 +169,8 @@ class NViewAppGradCCA:
 
         batch_and_gram_list = [ds.get_batch_and_gram()
                                for ds in ds_list]
-        Xs = [X for (X, Sx) in batch_and_gram_list]
-        Sxs = [Sx for (X, Sx) in batch_and_gram_list]
 
-        return (Xs, Sxs)
+        return unzip(batch_and_gram_list)
 
     def _get_Psi_gradient(self, Psi, Xs, Phis):
 

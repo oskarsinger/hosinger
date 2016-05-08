@@ -13,9 +13,9 @@ class BoxcarOnlineGramServer(AbstractOnlineGramServer):
 
     def _get_gram(self):
 
-        minibatch = np.array(self.minibatch.get_items())
+        batch = np.array(self.minibatch.get_items())
 
-        return get_trg(minibatch, self.reg)
+        return get_trg(batch, self.reg)
 
 class ExpOnlineGramServer(AbstractOnlineGramServer):
 
