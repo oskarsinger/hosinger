@@ -5,6 +5,7 @@ from data.servers.gram import ExpOnlineGramServer as EOGS
 from data.servers.gram import BoxcarOnlineGramServer as BOGS
 from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from global_utils.arithmetic import int_ceil_log as cl
+from global_utils.misc import get_lrange
 
 import numpy as np
 
@@ -58,9 +59,8 @@ def test_online_n_view_appgrad_with_exp_server(
 def test_online_n_view_appgrad_with_boxcar_server(ps, k):
 
     loaders = [GL(2*p, p, batch_size=1) for p in ps]
-    servers = [BOGS(loader, k+cl(k))
-               for (loader, window) in zip(loaders, windows)]
-    optimizers = [MAG() for i in range(len(servers))]
+    servers = [BOGS(loader, k+cl(k)) for loader in loaders]
+    optimizers = [MAG() for i in range(len(servers)+1)]
     model = NViewAppGradCCA(k, len(servers), online=True)
 
     model.fit(

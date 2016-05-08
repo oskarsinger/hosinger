@@ -69,7 +69,7 @@ class NViewAppGradCCA:
         converged = [False] * self.num_views
         i = 1
 
-        print "Starting gradient descent"
+        print "Starting optimization"
 
         while not all(converged):
 
@@ -102,19 +102,8 @@ class NViewAppGradCCA:
                 Xs, basis_pairs_t1, Psi, etas[-1], optimizers[-1])
 
             if verbose:
-                unns_t = [pair[0] for pair in basis_pairs_t]
-                unns_t1 = [pair[0] for pair in basis_pairs_t1]
-                dists = [np.linalg.norm(unn_t - unn_t1)
-                         for unn_t, unn_t1 in zip(unns_t, unns_t1)]
-                dist_strings = [str(i) + ": " + str(dist)
-                                for i, dist in enumerate(dists)]
-                dist_string = "\t".join(dist_strings)
-
-                print "\tDistance between unnormed Phi iterates:", dist_string
-                
-                Phis_t1 = [pair[1] for pair in basis_pairs_t1]
-
-                print "\tObjective:", agu.get_objective(Xs, Phis_t1, Psi)
+                (unn, normed) = unzip(basis_pairs_t1)
+                print "\tObjective:", agu.get_objective(Xs, unn, Psi)
 
             # Check for convergence
             converged = agu.is_converged(
