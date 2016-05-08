@@ -5,7 +5,6 @@ from data.loaders.e4 import FixedRateLoader as FRL
 from data.loaders.e4 import line_processors as lps
 from data.servers.gram import BatchGramServer as BGS
 from linal.utils import quadratic as quad
-from global_utils.misc import get_lrange
 
 import numpy as np
 
@@ -29,7 +28,7 @@ def test_batch_n_view_appgrad(
 
     model.fit(
         ds_list,
-        optimizers=[MAG() for i in get_lrange(ds_list)],
+        optimizers=[MAG() for i in range(len(ds_list)+1)],
         verbose=True)
 
     return model.get_bases()
