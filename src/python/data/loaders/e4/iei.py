@@ -1,5 +1,4 @@
 from data.loaders import AbstractDataLoader
-from data.errors import EOSError
 
 import os
 
@@ -7,14 +6,29 @@ import numpy as np
 
 class IEILoader(AbstractDataLoader):
 
-    def __init__(self, filepath, window, process_line):
+    def __init__(self, dir_path, filename, seconds, process_line):
 
-        self.filepath = filepath
-        self.f = open(filepath)
-        self.window = window
+        self.dir_path = dir_path
+        self.filename = filename
+        self.timestamps = []
 
-        self.timestamp = float(self.f.readline().split(',')[0])
+        subdirs = fio.list_dirs_only(dir_path)
+
+        for subdir in subdirs:
+            filepath = os.path.join(subdir, self.filename)
+
+            with open(filepath) as f:
+                self.timestamps.append((
+                    filepath, 
+                    float(f.readline().split(',')[0])))
+
+        self.timestamps = sorted(
+            self.timestamps, key=lambda x: x[1])
+        self.pl = process_line
+        self.seconds = seconds
+        self.window = self.hertz * self.seconds
         self.num_rounds = 0
+        self.data = None
 
     def get_datum(self):
 
