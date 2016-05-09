@@ -11,6 +11,9 @@ class FixedRateLoader(AbstractDataLoader):
 
         self.dir_path = dir_path
         self.filename = filename
+        self.pl = process_line
+        self.seconds = seconds
+
         self.timestamps = []
 
         subdirs = fio.list_dirs_only(dir_path)
@@ -22,16 +25,16 @@ class FixedRateLoader(AbstractDataLoader):
                 self.timestamps.append((
                     filepath, 
                     float(f.readline().split(',')[0])))
+
+                # This line assumes all files have same sample frequency
                 self.hertz = float(f.readline().split(',')[0])
 
         self.timestamps = sorted(
             self.timestamps, key=lambda x: x[1])
-        self.pl = process_line
-        self.seconds = seconds
         self.window = self.hertz * self.seconds
         self.num_rounds = 0
+        self.num_used_files = 0
         self.data = self._get_file_data()
-        self.num_used_files = 1
 
     def get_datum(self):
 
@@ -40,7 +43,6 @@ class FixedRateLoader(AbstractDataLoader):
         # Is enough data in current file to fill a window?
         if len(self.data) < self.window:
             self.data = self._get_file_data()
-            self.num_used_files += 1
 
         # Get the next full window
         datum = self.data[:self.window]
@@ -57,11 +59,13 @@ class FixedRateLoader(AbstractDataLoader):
                 f.readline() # timestamp
                 f.readline() # frequency
 
+            self.num_used_files += 1
+
             new_data = [self.pl(line) or line in f]
 
             if len(new_data) < self.window:
                 raise ValueError(
-                    'File must have at least as many lines and hertz * seconds.')
+                    'File must have at least hertz * seconds lines.')
 
             yield new_data
 

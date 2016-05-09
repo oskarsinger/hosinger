@@ -29,23 +29,14 @@ class IBILoader(AbstractDataLoader):
             self.timestamps, key=lambda x: x[1])
         self.cumulative_seconds = 0
         self.num_rounds = 0
-        self.rounds_per_file = [0]
+        self.num_used_files = 0
         self.data = get._get_file_data()
 
     def get_datum(self):
 
         self.num_rounds += 1
-        self.rounds_per_file[-1] += 1
-        
-        # The current time window of interest
-        # This is relative to current file's start time
-        threshold = self.rounds_per_file[-1] * self.seconds
 
-        i = 0
-
-        while self.cumulative_seconds < threshold:
-            self.cumulative_seconds += self.data[i]
-            i += 1
+        if 
 
     def _get_file_data(self):
 
@@ -55,7 +46,6 @@ class IBILoader(AbstractDataLoader):
                 f.readline() # frequency
 
             self.num_used_files += 1
-            self.rounds_per_file.append(0)
 
             new_data = [self.pl(line) or line in f]
 

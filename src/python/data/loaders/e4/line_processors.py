@@ -8,3 +8,9 @@ def get_magnitude(line):
 def get_scalar(line):
 
     return float(line.strip())
+
+def get_vector(line):
+
+    strings = line.split(',')
+
+    return
