@@ -57,10 +57,6 @@ def test_n_fixed_rate_scalar(
     regs=None):
 
     batch_size = cca_k + icl(cca_k)
-
-    if regs is None:
-        regs = [0.1] * len(files)
-
     file_info = {
         ('ACC.csv', lps.get_magnitude, FRL),
         ('IBI.csv', lps.get_vector, IBI),
@@ -68,6 +64,10 @@ def test_n_fixed_rate_scalar(
         ('TEMP.csv', lps.get_scalar, FRL),
         ('HR.csv', lps.get_scalar, FRL),
         ('EDA.csv', lps.get_scalar, FRL)}
+
+    if regs is None:
+        regs = [0.1] * len(file_info)
+
     dls = [LT(dir_path, name, seconds, lp)
            for name, lp, LT in file_info]
     if weights is not None:
