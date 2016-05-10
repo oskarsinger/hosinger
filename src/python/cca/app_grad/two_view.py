@@ -3,10 +3,6 @@ import utils as agu
 
 from optimization.optimizers import GradientOptimizer
 
-"""
-Consider keeping a log of the minibatches somewhere for the online version.
-"""
-
 class AppGradCCA:
 
     def __init__(self,

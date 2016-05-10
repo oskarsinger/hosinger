@@ -31,3 +31,7 @@ class FixedLengthQueue:
     def get_max_length(self):
 
         return self.length
+
+    def is_full(self):
+
+        return len(self.queue) == self.length

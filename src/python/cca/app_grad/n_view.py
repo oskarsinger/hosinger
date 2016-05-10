@@ -51,14 +51,14 @@ class NViewAppGradCCA:
         if optimizers is not None:
             if not len(optimizers) == self.num_views + 1:
                 raise ValueError(
-                    'Length of optimizers and ds_list + 1 must be the same.')
+                    'Length of optimizers and num_views + 1 must be the same.')
         else:
             optimizers = [GradientOptimizer() 
                           for i in range(self.num_views + 1)]
 
         (Xs, Sxs) = self._init_data(ds_list)
 
-        print "Getting intial_basis_estimates"
+        print "Getting intial basis estimates"
 
         # Initialization of optimization variables
         basis_pairs_t = agu.get_init_basis_pairs(Sxs, self.k)
@@ -130,7 +130,8 @@ class NViewAppGradCCA:
 
         return (self.basis_pairs, self.Psi)
 
-    def _get_basis_updates(self, Xs, Sxs, basis_pairs, Psi, etas, optimizers):
+    def _get_basis_updates(self, 
+        Xs, Sxs, basis_pairs, Psi, etas, optimizers):
 
         # Get gradients
         gradients = [agu.get_gradient(Xs[i], basis_pairs[i][0], Psi)

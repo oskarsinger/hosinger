@@ -32,7 +32,7 @@ class AbstractOnlineGramServer(AbstractGramServer):
         self.reg = reg
 
         self.minibatch = FLQ(self.batch_size)
-        self.no_more_data = False
+        self.no_update = True
         self.num_rounds = 0
 
     def get_batch_and_gram(self):
@@ -44,7 +44,7 @@ class AbstractOnlineGramServer(AbstractGramServer):
         gram = self._get_gram()
         minibatch = np.array(self.minibatch.get_items())
 
-        output = None if self.no_more_data else (minibatch, gram)
+        output = None if self.no_update else (minibatch, gram)
 
         return output
 
@@ -59,7 +59,7 @@ class AbstractOnlineGramServer(AbstractGramServer):
         for datum in non_null:
             self.minibatch.enqueue(datum.flatten())
 
-        self.no_more_data = len(non_null) == 0
+        self.no_update = len(non_null) == 0
 
     def rows(self):
 

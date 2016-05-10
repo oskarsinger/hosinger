@@ -35,9 +35,9 @@ class ExpOnlineGramServer(AbstractOnlineGramServer):
         w = (self.weight)**(self.num_rounds)
 
         minibatch = np.array(self.minibatch.get_items())
-        gram = get_trg(minibatch, self.reg)
+        new_gram = get_trg(minibatch, self.reg)
 
-        self.gram += w * gram
+        self.gram += w * new_gram
 
         return np.copy(self.gram)
 

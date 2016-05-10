@@ -13,7 +13,7 @@ def get_lrange(l):
 
 def unzip(l):
 
-    first = [f for (f, s) in l]
-    second = [s for (f, s) in l]
+    ls = [[item[i] for item in l]
+          for i in get_lrange(l[0])]
 
-    return (first, second)
+    return tuple(ls)
