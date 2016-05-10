@@ -91,6 +91,7 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 * **Composite-Objective Mirror Descent** ([pdf](http://www.cs.utexas.edu/users/ambuj/research/duchi10composite.pdf))
 * **A Unified View of Regularized Dual Averaging and Mirror Descent with Implicit Updates** ([pdf](http://arxiv.org/pdf/1009.3240.pdf))
 * **Stochastic Methods for l1-regulared Loss Minimization** ([pdf](http://www.jmlr.org/papers/volume12/shalev-shwartz11a/shalev-shwartz11a.pdf))
+* **Mirror descent and nonlinear projected subgradient methods for convex optimization** ([pdf](https://web.iem.technion.ac.il/images/user-files/becka/papers/3.pdf))
 
 * * *
 
