@@ -1,4 +1,5 @@
 from data.loaders import AbstractDataLoader
+from global_utils import file_io as fio
 
 import os
 
@@ -29,7 +30,7 @@ class IBILoader(AbstractDataLoader):
             self.timestamps, key=lambda x: x[1])
         self.num_rounds = 0
         self.rounds_per_file = [0]
-        self.data = get._get_file_data()
+        self.data = self._get_file_data()
 
     def get_datum(self):
 
@@ -50,7 +51,7 @@ class IBILoader(AbstractDataLoader):
             
             ibis.append(ibi)
 
-        self.data = [len(ibis):]
+        self.data = self.data[len(ibis):]
 
         return ibis
 

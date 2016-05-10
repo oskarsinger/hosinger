@@ -2,10 +2,12 @@ from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from cca.app_grad import AppGradCCA as AGCCA
 from cca.app_grad import NViewAppGradCCA as NVAGCCA
 from data.loaders.e4 import FixedRateLoader as FRL
+from data.loaders.e4 import IBILoader as IBI
 from data.loaders.e4 import line_processors as lps
 from data.servers.gram import BoxcarOnlineGramServer as BOGS
 from data.servers.gram import ExpOnlineGramServer as EOGS
 from global_utils.arithmetic import int_ceil_log as icl
+from global_utils.misc import multi_zip
 
 def test_online_appgrad(
     ds1, ds2, cca_k):
@@ -27,7 +29,7 @@ def test_online_n_view_appgrad(
 
     model.fit(
         ds_list,
-        optimizers=[MAG() for in range(len(ds_list)+1)],
+        optimizers=[MAG() for i in range(len(ds_list)+1)],
         verbose=True)
 
     return model.get_bases()
@@ -48,22 +50,31 @@ def test_two_fixed_rate_scalar(
 
     return (Phi, Psi)
 
-def test_n_fixed_rate_scalar_boxcar_server(
-    dir_path, files, cca_k,
+def test_n_fixed_rate_scalar(
+    dir_path, cca_k,
     seconds=10,
-    regs=None, lpss=None):
+    weights=None,
+    regs=None):
 
     batch_size = cca_k + icl(cca_k)
 
     if regs is None:
         regs = [0.1] * len(files)
 
-    if lpss is None:
-        lpss = [lps.get_scalar] * len(files)
-
-    dls = [FRL(dir_path, file_name, seconds, lp)
-           for file_name, lp in zip(files, lpss)]
-    dss = [BOGS(dl, batch_size) for dl, reg in zip(dls, regs)]
+    file_info = {
+        ('ACC.csv', lps.get_magnitude, FRL),
+        ('IBI.csv', lps.get_vector, IBI),
+        ('BVP.csv', lps.get_scalar, FRL),
+        ('TEMP.csv', lps.get_scalar, FRL),
+        ('HR.csv', lps.get_scalar, FRL),
+        ('EDA.csv', lps.get_scalar, FRL)}
+    dls = [LT(dir_path, name, seconds, lp)
+           for name, lp, LT in file_info]
+    if weights is not None:
+        dss = [EOGS(dl, batch_size, w, reg) 
+               for dl, reg, w in multi_zip(dls, regs, weights)]
+    else:
+        dss = [BOGS(dl, batch_size) for dl, reg in zip(dls, regs)]
 
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
         dss, cca_k)

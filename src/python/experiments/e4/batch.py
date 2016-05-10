@@ -2,6 +2,7 @@ from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from cca.app_grad import AppGradCCA as AGCCA
 from cca.app_grad import NViewAppGradCCA as NVAGCCA
 from data.loaders.e4 import FixedRateLoader as FRL
+from data.loaders.e4 import IBILoader as IBI
 from data.loaders.e4 import line_processors as lps
 from data.servers.gram import BatchGramServer as BGS
 from linal.utils import quadratic as quad
@@ -56,18 +57,23 @@ def test_two_fixed_rate_scalar(
     return (Phi, Psi)
 
 def test_n_fixed_rate_scalar(
-    dir_path, files, cca_k,
+    dir_path, cca_k,
     seconds=10,
-    regs=None, lpss=None):
+    regs=None):
+
+    file_info = {
+        ('ACC.csv', lps.get_magnitude, FRL),
+        ('IBI.csv', lps.get_vector, IBI),
+        ('BVP.csv', lps.get_scalar, FRL),
+        ('TEMP.csv', lps.get_scalar, FRL),
+        ('HR.csv', lps.get_scalar, FRL),
+        ('EDA.csv', lps.get_scalar, FRL)}
 
     if regs is None:
-        regs = [0.1] * len(files)
+        regs = [0.1] * len(file_info)
 
-    if lpss is None:
-        lpss = [lps.get_scalar] * len(files)
-
-    dls = [FRL(dir_path, file_name, seconds, lp)
-           for file_name, lp in zip(files, lpss)]
+    dls = [LT(dir_path, name, seconds, lp)
+           for name, lp, LT in file_info]
     dss = [BGS(dl, reg) for dl, reg in zip(dls, regs)]
 
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
