@@ -80,7 +80,7 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 * * *
 
-###Second Order Information in Stochastic Gradient Methods.
+###Proximal Methods, Mirror Descent, FTPRL, etc.
 
 ####Practical now.
 * **On the importance of initialization and momentum in deep learning** ([pdf](http://www.cs.toronto.edu/~jmartens/docs/Momentum_Deep.pdf))
@@ -88,6 +88,9 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 * **New insights and perspectives on the natural gradient method** ([arXiv](http://arxiv.org/abs/1412.1193))
     * This one comes from the deep learning community, and its quite recent. It has a nice theoretical interpretation (related to approximate Hessians and the conditioning of the problem), it is efficient, and hopefully it is empirically effective.
 * **Adaptive Subgradient Methods for Online Learning and Stochastic Optimization** ([pdf](http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf))
+* **Composite-Objective Mirror Descent** ([pdf](http://www.cs.utexas.edu/users/ambuj/research/duchi10composite.pdf))
+* **A Unified View of Regularized Dual Averaging and Mirror Descent with Implicit Updates** ([pdf](http://arxiv.org/pdf/1009.3240.pdf))
+* **Stochastic Methods for l1-regulared Loss Minimization** ([pdf](http://www.jmlr.org/papers/volume12/shalev-shwartz11a/shalev-shwartz11a.pdf))
 
 * * *
 
@@ -111,10 +114,13 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 
 ###Distributed.
 
-####Practical later.
-* **DimWitted: A Study of Main Memory Statistical Analysis** ([arXiv](http://arxiv.org/pdf/1403.7550))
+####Practical now.
 * **Taming the Wild: A Unified Analysis of Hogwild!-Style Algorithms** ([arXiv](http://arxiv.org/abs/1506.06438))
 * **Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent** ([pdf](https://www.eecs.berkeley.edu/~brecht/papers/hogwildTR.pdf))
+* **Delay-Tolerant Algorithms for Asynchronous Distributed Online Learning** ([pdf](http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/43138.pdf))
+
+####Practical later.
+* **DimWitted: A Study of Main Memory Statistical Analysis** ([arXiv](http://arxiv.org/pdf/1403.7550))
 * **Exponential Stochastic Cellular Automata for Massively Parallel Inference** ([pdf](http://www.manzil.ml/res/Papers/2015_NIPSW_sca.pdf))
 
 * * *
@@ -159,18 +165,17 @@ This is mostly from Deep Mind. There are at least 10 deep RL pubs from them in t
 * **Finding Linear Structure in Large Datasets with Scalable Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1506.08170))
     * Offers efficient approximate algorithms for both batch and online CCA, both with nice theoretical guarantees.
     * Give experiments showing similar performance to un-approximated CCA on the same datasets.
-
 * **On Measure Transformed Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1111.6308))
     * Extends CCA to non-linear relationships between variables with an easily-implementable modification to the join distribution.
     * Home team!
 * **A greedy approach to sparse canonical correlation analysis** ([arXiv](http://arxiv.org/pdf/0801.2748v1))
+* **Efficient Algorithms for Large-scale Generalized Eigenvector Computation and Canonical Correlation Analysis** ([arXiv](http://arxiv.org/abs/1604.03930))
 
 ###Bayesian models.
 
 ####Practical now.
 * **Model Selection Using Database Characteristics: Developing a Classification Tree for Longitudinal Incidence Data** ([pdf](http://pubsonline.informs.org/doi/pdf/10.1287/mksc.2013.0825))
     * Home team!
-
 * **Customer-Base Valuation in a Contractual Setting: The Perils of Ignoring Heterogeneity** ([pdf](http://www.brucehardie.com/papers/022/fader_hardie_mksc_10.pdf))
 
 ####Theoretical.
