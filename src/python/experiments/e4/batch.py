@@ -63,7 +63,7 @@ def test_n_fixed_rate_scalar(
 
     file_info = {
         ('ACC.csv', lps.get_magnitude, FRL),
-        ('IBI.csv', lps.get_vector, IBI),
+        #('IBI.csv', lps.get_vector, IBI),
         ('BVP.csv', lps.get_scalar, FRL),
         ('TEMP.csv', lps.get_scalar, FRL),
         ('HR.csv', lps.get_scalar, FRL),

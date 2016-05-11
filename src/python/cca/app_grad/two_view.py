@@ -2,6 +2,7 @@ import numpy as np
 import utils as agu
 
 from optimization.optimizers import GradientOptimizer
+from optimization.utils import get_gram
 
 class AppGradCCA:
 
@@ -135,15 +136,13 @@ class AppGradCCA:
             n = min([X.shape[0], Y.shape[0]])
             if X.shape[0] > n:
                 # Remove to-be-truncated examples from Gram matrix
-                removed = X[n:,:]
-                Sx -= np.dot(removed.T, removed)
+                Sx -= get_gram(X[n:,:])
 
                 # Truncate extra examples
                 X = X[:n,:]
-            else:
+            elif Y.shap[0] > n:
                 # Do the same for Y if Y has the extra examples
-                removed = Y[n:,:]
-                Sy -= np.dot(removed.T, removed)
+                Sy -= get_gram(Y[n:,:])
                 Y = Y[:n,:]
 
         return (X, Sx, Y, Sy)

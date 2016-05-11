@@ -29,7 +29,7 @@ class IBILoader(AbstractDataLoader):
         self.timestamps = sorted(
             self.timestamps, key=lambda x: x[1])
         self.num_rounds = 0
-        self.rounds_per_file = [0]
+        self.rounds_per_file = []
         self.data = self._get_file_data()
 
     def get_datum(self):
@@ -53,29 +53,43 @@ class IBILoader(AbstractDataLoader):
 
         self.data = self.data[len(ibis):]
 
-        return ibis
+        return len(ibis)
 
     def _get_file_data(self):
 
-        for (fp, ts) in self.timestamps:
-            with open(fp) as f:
-                f.readline() # timestamp
-                f.readline() # frequency
+        fp = self.timestamps[len(self.rounds_per_file)][0]
+        new_data = None
 
-            self.num_used_files += 1
-            self.rounds_per_file.append(0)
+        with open(fp) as f:
+            # Clear out timestamp on first line
+            f.readline()
 
-            new_data = [self.pl(line) or line in f]
+            # Populate data list with remaining lines
+            new_data = [self.pl(line) for line in f]
 
-            if len(new_data) < self.window:
-                raise ValueError(
-                    'File must have at least as many lines and hertz * seconds.')
+        self.rounds_per_file.append(0)
 
-            yield new_data
+        if len(new_data) < self.window:
+            raise ValueError(
+                'File must have at least hertz * seconds lines.')
+
+        return new_data
+
+    def get_status(self):
+
+        return {
+            'dir_path': self.dir_path,
+            'filename': self.filename,
+            'seconds': self.seconds,
+            'timestamps': self.filepaths,
+            'num_rounds': self.num_rounds,
+            'rounds_per_file': self.rounds_per_file,
+            'process_line': self.pl,
+            'data': self.data}
 
     def cols(self):
 
-        return self.window
+        return 1
 
     def rows(self):
 

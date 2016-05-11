@@ -21,12 +21,17 @@ def is_converged(previous, current, eps, verbose):
 
     return dist < eps
 
-def get_t_regged_gram(A, reg):
+def get_gram(A, reg=None):
 
     gram = np.dot(A.T, A)
-    reg_matrix = reg * np.identity(A.shape[1])
 
-    return (gram + reg_matrix) / A.shape[0]
+    if reg is not None:
+        reg_matrix = reg \
+            if np.isscalar(gram) else \
+            reg * np.identity(gram.shape[0])
+        gram = gram + reg_matrix
+
+    return gram
 
 def get_lp_norm_gradient(x, p):
 

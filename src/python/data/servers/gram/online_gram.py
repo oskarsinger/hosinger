@@ -1,7 +1,7 @@
 import numpy as np
 
 from data.servers.gram import AbstractOnlineGramServer
-from optimization.utils import get_t_regged_gram as get_trg
+from optimization.utils import get_gram
 from global_utils.data_structures import FixedLengthQueue as FLQ
 
 class BoxcarOnlineGramServer(AbstractOnlineGramServer):
@@ -15,7 +15,7 @@ class BoxcarOnlineGramServer(AbstractOnlineGramServer):
 
         batch = np.array(self.minibatch.get_items())
 
-        return get_trg(batch, self.reg)
+        return get_gram(batch, reg=self.reg) / batch_size
 
 class ExpOnlineGramServer(AbstractOnlineGramServer):
 
@@ -35,7 +35,7 @@ class ExpOnlineGramServer(AbstractOnlineGramServer):
         w = (self.weight)**(self.num_rounds)
 
         minibatch = np.array(self.minibatch.get_items())
-        new_gram = get_trg(minibatch, self.reg)
+        new_gram = get_gram(minibatch, reg=self.reg)
 
         self.gram += w * new_gram
 

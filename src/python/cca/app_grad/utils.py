@@ -9,7 +9,7 @@ def is_k_valid(ds_list, k):
 
     p = min([ds.cols() for ds in ds_list])
 
-    return k < p
+    return k <= p
 
 def is_converged(
     unn_Phi_pairs,

@@ -3,6 +3,7 @@ import numpy as np
 import utils as agu
 
 from global_utils.misc import unzip
+from optimization.utils import get_gram
 
 class NViewAppGradCCA:
 
@@ -187,11 +188,10 @@ class NViewAppGradCCA:
             n = min([X.shape[0] for X in Xs])
 
             # Remove to-be-truncated examples from Gram matrices
-            removed = [X[n:,:] for X in Xs]
-            Sxs = [Sx - np.dot(r.T, r) 
-                   for (Sx, r) in zip(Sxs, removed)]
+            removed = [X[n:] if X.ndim == 1 else X[n:,:] for X in Xs]
+            Sxs = [Sx - get_gram(r) for r, Sx in zip(removed, Sxs)]
 
             # Truncate extra examples
-            Xs = [X[:n,:] for X in Xs]
+            Xs = [X[:n] if X.ndim == 1 else X[:n,:] for X in Xs]
 
         return (Xs, Sxs)
