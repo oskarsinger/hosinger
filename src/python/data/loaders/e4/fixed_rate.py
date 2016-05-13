@@ -1,5 +1,5 @@
 from data.loaders import AbstractDataLoader
-from global_utils import file_io as fio
+from global_utils import file_io as fio, get_list_mod as get_lm
 
 import os
 
@@ -32,22 +32,13 @@ class FixedRateLoader(AbstractDataLoader):
         self.timestamps = sorted(
             self.timestamps, key=lambda x: x[1])
         self.window = int(self.hertz * self.seconds)
-        self.num_rounds = 0
-        self.rounds_per_file = []
-        self.data = self._get_file_data()
+        self.data = None
 
     def get_datum(self):
 
-        self.num_rounds += 1
-        self.rounds_per_file[-1] += 1
-
-        # Is enough data in current file to fill a window?
-        if len(self.data) < self.window:
+        if self.data is None:
             self.data = self._get_file_data()
 
-        # Get the next full window
-        datum = self.data[:self.window]
-        
         # Remove that window from data queue
         self.data = self.data[self.window:]
 
@@ -55,23 +46,19 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _get_file_data(self):
 
-        fp =  self.timestamps[len(self.rounds_per_file)][0]
-        new_data = None
+        data = []
 
-        with open(fp) as f:
-            # Clear out timestamp on first line
-            f.readline()
-            # Clear out frequency on second line
-            f.readline()
+        for (fp, ts) in timestamps:
 
-            # Populate data list with remaining lines
-            new_data = [self.pl(line) for line in f]
+            with open(fp) as f:
+                # Clear out timestamp on first line
+                f.readline()
+                # Clear out frequency on second line
+                f.readline()
 
-        self.rounds_per_file.append(0)
-
-        if len(new_data) < self.window:
-            raise ValueError(
-                'File must have at least hertz * seconds lines.')
+                # Populate data list with remaining lines
+                file_data = [self.pl(line) for line in f]
+                data.append(get_lm(file_data))
 
         return new_data
 

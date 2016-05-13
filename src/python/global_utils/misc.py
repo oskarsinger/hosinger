@@ -17,3 +17,13 @@ def unzip(l):
           for i in get_lrange(l[0])]
 
     return tuple(ls)
+
+def get_list_mod(l, n):
+
+    if len(l) < n:
+        raise ValueError(
+            'Argument l must have at least n elements.')
+     
+    new_length = (len(l) / n) * n
+
+    return l[:new_length]
