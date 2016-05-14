@@ -7,11 +7,11 @@ import numpy as np
 
 class FixedRateLoader(AbstractDataLoader):
 
-    def __init__(self, dir_path, filename, seconds, process_line):
+    def __init__(self, dir_path, filename, seconds, reader):
 
         self.dir_path = dir_path
         self.filename = filename
-        self.pl = process_line
+        self.reader = reader
         self.seconds = seconds
 
         self.timestamps = []
@@ -37,14 +37,11 @@ class FixedRateLoader(AbstractDataLoader):
     def get_datum(self):
 
         if self.data is None:
-            self.data = self._get_file_data()
+            self._set_data()
 
-        # Remove that window from data queue
-        self.data = self.data[self.window:]
+        return np.copy(self.data)
 
-        return np.array(datum)
-
-    def _get_file_data(self):
+    def _set_data(self):
 
         data = []
 
@@ -57,10 +54,28 @@ class FixedRateLoader(AbstractDataLoader):
                 f.readline()
 
                 # Populate data list with remaining lines
-                file_data = [self.pl(line) for line in f]
-                data.append(get_lm(file_data))
+                file_data = [self.reader(line) for line in f]
 
-        return new_data
+                # Attach modded list to full data set
+                data.extend(self._get_rows(file_data))
+
+        self.data = np.array(data)
+
+    def _get_rows(self, data):
+
+        rows = None
+
+        # If there are enough measurements for desired window
+        if len(data) >= self.window:
+            # Prepare data to be merged into full list
+            modded = get_lm(data, self.window)
+            rows = [modded[i*self.window:(i+1)*self.window]
+                    for i in xrange(len(modded)/self.window)]
+        else:
+            raise ValueError(
+                'File ' + fp + ' has less than hertz * seconds lines.')
+
+        return rows
 
     def get_status(self):
 

@@ -1,5 +1,7 @@
 from data.loaders import AbstractDataLoader
+from data.loaders import readers
 from global_utils import file_io as fio
+from math import ceil, floor
 
 import os
 
@@ -7,11 +9,11 @@ import numpy as np
 
 class IBILoader(AbstractDataLoader):
 
-    def __init__(self, dir_path, filename, seconds, process_line):
+    def __init__(self, dir_path, filename, seconds):
 
         self.dir_path = dir_path
         self.filename = filename
-        self.pl = process_line
+        self.reader = readers.get_vector
         self.seconds = seconds
 
         self.timestamps = []
@@ -28,52 +30,81 @@ class IBILoader(AbstractDataLoader):
 
         self.timestamps = sorted(
             self.timestamps, key=lambda x: x[1])
-        self.num_rounds = 0
-        self.rounds_per_file = []
-        self.data = self._get_file_data()
+        self.data = None
 
     def get_datum(self):
 
-        self.num_rounds += 1
-        self.rounds_per_file[-1] += 1
+        if self.data is None:
+            self._set_data()
+
+        return np.copy(self.data)
+
+    def _set_data(self):
+
+        data = []
+
+        for (fp, ts) in timestamps:
+            with open(fp) as f:
+                # Clear out timestamp on first line
+                f.readline()
+
+                # Populate data list with remaining lines
+                file_data = [self.reader(line) for line in f]
+
+                # Extract event-based representation
+                data.extend(self._get_rows(file_data))
+
+        self.data = np.array(data)
+
+    def _get_rows(self, data):
         
-        # The current time window of interest
-        # This is relative to current file's start time
-        threshold = self.rounds_per_file[-1] * self.seconds
+        # Last second in which an event occurs
+        end = int(ceil(data[-1][0]))
 
-        # Inter-beat intervals to return
-        ibis = []
-    
-        for (time, ibi) in self.data:
+        # Initialize iteration variables
+        rows = []
+        i = 1
+        
+        # Iterate until entire window is after all recorded events
+        while (i - 1) * self.seconds < end:
 
-            if time > threshold:
+            (row, data) = self._get_row(data, i)
+
+            # Update iteration variables
+            rows.append(row)
+            i += 1
+
+        return rows
+
+    def _get_row(self, data, i):
+
+        events = {}
+
+        for j, (time, value) in enumerate(data):
+
+            # If time of measurement is outside window
+            if time >= i * self.seconds:
+                # Truncate measurements already seen
+                data = data[j:]
+
                 break
-            
-            ibis.append(ibi)
 
-        self.data = self.data[len(ibis):]
+            # The second in which event occurred
+            second = int(floor(time))
 
-        return len(ibis)
+            if second in events:
+                events[second].append(value)
+            else:
+                events[second] = [value]
 
-    def _get_file_data(self):
+        # Enumerate the seconds of interest
+        window = [i * k for k in range(self.seconds)]
 
-        fp = self.timestamps[len(self.rounds_per_file)][0]
-        new_data = None
+        # Give statistic of events occuring in these seconds
+        row = [0 if s not in events else len(events[s])
+               for s in window]
 
-        with open(fp) as f:
-            # Clear out timestamp on first line
-            f.readline()
-
-            # Populate data list with remaining lines
-            new_data = [self.pl(line) for line in f]
-
-        self.rounds_per_file.append(0)
-
-        if len(new_data) < self.window:
-            raise ValueError(
-                'File must have at least hertz * seconds lines.')
-
-        return new_data
+        return (row, data)
 
     def get_status(self):
 
