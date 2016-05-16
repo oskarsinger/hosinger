@@ -7,12 +7,13 @@ import numpy as np
 
 class FixedRateLoader(AbstractDataLoader):
 
-    def __init__(self, dir_path, filename, seconds, reader):
+    def __init__(self, dir_path, filename, seconds, reader, hertz):
 
         self.dir_path = dir_path
         self.filename = filename
         self.reader = reader
         self.seconds = seconds
+        self.hertz = hertz
 
         self.timestamps = []
 
@@ -26,15 +27,12 @@ class FixedRateLoader(AbstractDataLoader):
                     filepath, 
                     float(f.readline().split(',')[0])))
 
-                # This line assumes all files have same sample frequency
-                self.hertz = float(f.readline().split(',')[0])
-
         self.timestamps = sorted(
             self.timestamps, key=lambda x: x[1])
         self.window = int(self.hertz * self.seconds)
         self.data = None
 
-    def get_datum(self):
+    def get_data(self):
 
         if self.data is None:
             self._set_data()

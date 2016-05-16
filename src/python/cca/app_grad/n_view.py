@@ -4,6 +4,8 @@ import utils as agu
 
 from global_utils.misc import unzip
 from optimization.utils import get_gram
+from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
+from data.servers.gram import BoxCarGramServer as BCGS
 
 class NViewAppGradCCA:
 
@@ -46,6 +48,7 @@ class NViewAppGradCCA:
 
     def fit(self,
         ds_list, 
+        gs_list=None,
         optimizers=None,
         verbose=False):
 
@@ -54,10 +57,16 @@ class NViewAppGradCCA:
                 raise ValueError(
                     'Length of optimizers and num_views + 1 must be the same.')
         else:
-            optimizers = [GradientOptimizer() 
-                          for i in range(self.num_views + 1)]
+            optimizers = [MAG() for i in range(self.num_views + 1)]
 
-        (Xs, Sxs) = self._init_data(ds_list)
+        if gs_list is not None:
+            if not len(gs_list) == self.num_views:
+                raise ValueError(
+                    'Length of gs_list and num_views must be the same.')
+        else:
+            gs_list = [BCGS() for i in range(self.num_views)]
+
+        (Xs, Sxs) = self._init_data(ds_list, gs_list)
 
         print "Getting intial basis estimates"
 
@@ -86,7 +95,7 @@ class NViewAppGradCCA:
 
             if self.online:
                 # Get new minibatches and Gram matrices
-                (Xs, Sxs) = self._get_batch_and_gram_lists(ds_list)
+                (Xs, Sxs) = self._get_batch_and_gram_lists(ds_list, gs_list)
 
             if verbose:
                 print "\tGetting updated basis estimates"
@@ -156,12 +165,14 @@ class NViewAppGradCCA:
 
         return optimizer.get_update(Psi, gradient, eta)
 
-    def _get_batch_and_gram_lists(self, ds_list):
+    def _get_batch_and_gram_lists(self, ds_list, gs_list):
 
-        batch_and_gram_list = [ds.get_batch_and_gram()
-                               for ds in ds_list]
+        batch_list = [ds.get_data()
+                      for ds in ds_list]
+        gram_list = [gs.get_gram(batch)
+                     for (gs, batch) in zip(gs_list, batch_list)]
 
-        return unzip(batch_and_gram_list)
+        return (batch_list, gram_list)
 
     def _get_Psi_gradient(self, Psi, Xs, Phis):
 
@@ -170,7 +181,7 @@ class NViewAppGradCCA:
 
         return (len(Phis) * Psi - 2 * s) / Psi.shape[0]
 
-    def _init_data(self, ds_list):
+    def _init_data(self, ds_list, gs_list):
 
         if not len(ds_list) == self.num_views:
             raise ValueError(
@@ -181,7 +192,7 @@ class NViewAppGradCCA:
                 'The value of k must be less than or equal to the minimum of the' +
                 ' number of columns of X and Y.')
 
-        (Xs, Sxs) = self._get_batch_and_gram_lists(ds_list)
+        (Xs, Sxs) = self._get_batch_and_gram_lists(ds_list, gs_list)
 
         if not self.online:
             # Find a better solution to this

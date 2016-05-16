@@ -1,8 +1,9 @@
 import numpy as np
 import utils as agu
 
-from optimization.optimizers import GradientOptimizer
+from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from optimization.utils import get_gram
+from data.servers.gram import BoxCarGramServer as BCGS
 
 class AppGradCCA:
 
@@ -27,11 +28,11 @@ class AppGradCCA:
 
     def fit(self, 
         X_ds, Y_ds, 
-        optimizer1=GradientOptimizer(), 
-        optimizer2=GradientOptimizer(),
+        X_gs=BCGS(), Y_gs=BCGS(),
+        optimizer1=MAG(), optimizer2=MAG(),
         verbose=False):
 
-        (X, Sx, Y, Sy) = self._init_data(X_ds, Y_ds)
+        (X, Sx, Y, Sy) = self._init_data(X_ds, Y_ds, X_gs, Y_gs)
 
         print "Getting initial basis estimates"
 
@@ -62,8 +63,10 @@ class AppGradCCA:
 
             # Update random minibatches if doing SGD
             if self.online:
-                (X, Sx) = self.X_ds.get_batch_and_gram()
-                (Y, Sy) = self.Y_ds.get_batch_and_gram()
+                X = X_ds.get_data()
+                Sx = X_gs.get_gram(X)
+                Y = Y_ds.get_data()
+                Sy = Y_gs.get_gram(Y)
 
             if verbose:
                 print "\tGetting updated basis estimates"
@@ -121,15 +124,17 @@ class AppGradCCA:
 
         return (self.Phi, self.Psi, self.unn_Phi, self.unn_Psi)
 
-    def _init_data(self, X_ds, Y_ds):
+    def _init_data(self, X_ds, Y_ds, X_gs, Y_gs):
 
         if not agu.is_k_valid([X_ds, Y_ds], self.k):
             raise ValueError(
                 'The value of k must be less than or equal to the minimum of the' +
                 ' number of columns of X and Y.')
 
-        (X, Sx) = X_ds.get_batch_and_gram()
-        (Y, Sy) = Y_ds.get_batch_and_gram()
+        X = X_ds.get_data()
+        Sx = X_gs.get_gram(X)
+        Y = Y_ds.get_data()
+        Sy = Y_gs.get_gram(Y)
 
         if not self.online:
             # Find a better solution to this

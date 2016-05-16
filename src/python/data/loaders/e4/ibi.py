@@ -32,7 +32,7 @@ class IBILoader(AbstractDataLoader):
             self.timestamps, key=lambda x: x[1])
         self.data = None
 
-    def get_datum(self):
+    def get_data(self):
 
         if self.data is None:
             self._set_data()

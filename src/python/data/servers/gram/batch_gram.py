@@ -1,32 +1,20 @@
 from gram import AbstractGramServer
-from optimization.utils import get_gram
+from optimization.utils import get_gram as gg
 
 import numpy as np
 
 class BatchGramServer(AbstractGramServer):
 
-    def __init__(self, loader, reg):
-        self.loader = loader
+    def __init__(self, reg):
         self.reg = reg
 
-    def get_batch_and_gram(self):
+    def get_gram(self, batch):
 
-        X = self.loader.get_datum()
-        gram = get_gram(X, reg=self.reg)
+        n = batch.shape[0]
 
-        if not np.isscalar(X):
-            gram = gram / X.shape[0]
-
-        return (X, gram)
-
-    def rows(self):
-
-        return self.loader.rows()
-
-    def cols(self):
-
-        return self.loader.cols()
+        return gg(batch, reg=self.reg) / n
 
     def get_status(self):
 
-        return "Stuff"
+        return {
+            'reg': self.reg}

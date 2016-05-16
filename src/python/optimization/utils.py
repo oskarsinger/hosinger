@@ -25,6 +25,8 @@ def get_gram(A, reg=None):
 
     gram = np.dot(A.T, A)
 
+    reg_matrix = None
+
     if reg is not None:
         reg_matrix = reg \
             if np.isscalar(gram) else \
