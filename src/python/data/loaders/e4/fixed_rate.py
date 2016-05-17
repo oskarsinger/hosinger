@@ -1,6 +1,7 @@
 from data.loaders import AbstractDataLoader
 from global_utils import file_io as fio
 from global_utils.misc import get_list_mod as get_lm
+from random import choice
 
 import os
 
@@ -10,7 +11,7 @@ class FixedRateLoader(AbstractDataLoader):
 
     def __init__(self,
         dir_path, filename, seconds, reader, hertz,
-        online=False):
+        online=False, random=True):
 
         self.dir_path = dir_path
         self.filename = filename
@@ -18,6 +19,7 @@ class FixedRateLoader(AbstractDataLoader):
         self.seconds = seconds
         self.hertz = hertz
         self.online = online
+        self.random = random
 
         self.timestamps = []
 
@@ -50,10 +52,20 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _refill_data(self):
 
-        index = self.num_rounds % len(self.timestamps)
-        fp = self.timestamps[index][0]
+        fp = None
 
-        self.data = self._get_file_rows(fp)
+        if self.random:
+            fp = choice(self.timestamps)[0]
+        else:
+            index = self.num_rounds % len(self.timestamps)
+            fp = self.timestamps[index][0]
+
+        data = np.array(self._get_file_rows(fp))
+        
+        if self.random:
+            data = np.random.permutation(data)
+
+        self.data = data
 
     def _set_data(self):
 

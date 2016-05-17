@@ -1,6 +1,7 @@
 from data.loaders import AbstractDataLoader
 from global_utils import file_io as fio
 from math import ceil, floor
+from random import choice
 
 import os
 
@@ -10,13 +11,14 @@ class IBILoader(AbstractDataLoader):
 
     def __init__(self,
         dir_path, filename, seconds, reader,
-        online=False):
+        online=False, random=True):
 
         self.dir_path = dir_path
         self.filename = filename
         self.reader = reader
         self.seconds = seconds
         self.online = online
+        self.random = random
 
         self.timestamps = []
 
@@ -48,10 +50,20 @@ class IBILoader(AbstractDataLoader):
 
     def _refill_data(self):
 
-        index = self.num_rounds % len(self.timestamps)
-        fp = self.timestamps[index][0]
+        fp = None
 
-        self.data = self._get_file_rows(fp)
+        if self.random:
+            fp = choice(self.timestamps)[0]
+        else:
+            index = self.num_rounds % len(self.timestamps)
+            fp = self.timestamps[index][0]
+
+        data = np.array(self._get_file_rows(fp))
+        
+        if self.random:
+            data = np.random.permutation(data)
+
+        self.data = data
 
     def _set_data(self):
 
