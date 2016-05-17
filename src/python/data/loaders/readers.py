@@ -9,8 +9,8 @@ def get_scalar(line):
 
     return float(line.strip())
 
-def get_vector(line):
+def get_vector(line, delimiter=','):
 
-    strings = line.split(',')
+    strings = line.split(delimiter)
 
-    return
+    return [float(item) for item in strings]

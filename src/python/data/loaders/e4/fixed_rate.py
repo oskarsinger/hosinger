@@ -1,5 +1,6 @@
 from data.loaders import AbstractDataLoader
-from global_utils import file_io as fio, get_list_mod as get_lm
+from global_utils import file_io as fio
+from global_utils.misc import get_list_mod as get_lm
 
 import os
 
@@ -43,8 +44,8 @@ class FixedRateLoader(AbstractDataLoader):
 
         data = []
 
-        for (fp, ts) in timestamps:
-
+        for (fp, ts) in self.timestamps:
+            print fp
             with open(fp) as f:
                 # Clear out timestamp on first line
                 f.readline()
@@ -53,6 +54,7 @@ class FixedRateLoader(AbstractDataLoader):
 
                 # Populate data list with remaining lines
                 file_data = [self.reader(line) for line in f]
+                print len(file_data)
 
                 # Attach modded list to full data set
                 data.extend(self._get_rows(file_data))

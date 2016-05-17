@@ -4,7 +4,7 @@ import numpy as np
 
 class BatchGramServer:
 
-    def __init__(self, reg):
+    def __init__(self, reg=0.1):
         self.reg = reg
 
     def get_gram(self, batch):

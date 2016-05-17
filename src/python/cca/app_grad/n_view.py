@@ -64,7 +64,7 @@ class NViewAppGradCCA:
                 raise ValueError(
                     'Length of gs_list and num_views must be the same.')
         else:
-            gs_list = [BCGS() if online else BGS()
+            gs_list = [BCGS() if self.online else BGS()
                        for i in range(self.num_views)]
 
         (Xs, Sxs) = self._init_data(ds_list, gs_list)

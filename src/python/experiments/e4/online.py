@@ -51,16 +51,16 @@ def test_n_fixed_rate_scalar(
     weights=None):
 
     bs = cca_k + icl(cca_k)
-    file_info = {
-        ('ACC.csv', reader.get_magnitude, FRL),
-        ('IBI.csv', reader.get_vector, IBI),
-        ('BVP.csv', reader.get_scalar, FRL),
-        ('TEMP.csv', reader.get_scalar, FRL),
-        ('HR.csv', reader.get_scalar, FRL),
-        ('EDA.csv', reader.get_scalar, FRL)}
-
-    dls = [LT(dir_path, name, seconds, reader)
-           for name, reader, LT in file_info]
+    mag = readers.get_magnitude
+    vec = readers.get_vector
+    sca = readers.get_scalar 
+    dls = [
+        FRL(dir_path, 'ACC.csv', seconds, mag, 32.0),
+        IBI(dir_path, 'IBI.csv', seconds, vec),
+        FRL(dir_path, 'BVP.csv', seconds, sca, 64.0),
+        FRL(dir_path, 'TEMP.csv', seconds, sca, 4.0),
+        FRL(dir_path, 'HR.csv', seconds, sca, 1.0),
+        FRL(dir_path, 'EDA.csv', seconds, sca, 4.0)]
     dss = [B2M(dl, bs, random=False) for dl in dls]
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
         dss, cca_k)

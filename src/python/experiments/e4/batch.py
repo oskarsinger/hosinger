@@ -15,8 +15,6 @@ def test_batch_appgrad(
 
     model.fit(
         ds1, ds2,
-        optimizer1=MAG(),
-        optimizer2=MAG(),
         verbose=True)
 
     return model.get_bases()
@@ -28,7 +26,6 @@ def test_batch_n_view_appgrad(
 
     model.fit(
         ds_list,
-        optimizers=[MAG() for i in range(len(ds_list)+1)],
         verbose=True)
 
     return model.get_bases()
@@ -37,7 +34,8 @@ def test_two_fixed_rate_scalar(
     dir_path, file1, file2, cca_k,
     seconds=1,
     reg1=0.1, reg2=0.1,
-    reader1=readers.get_scalar, reader2=readers.get_scalar):
+    reader1=readers.get_scalar, 
+    reader2=readers.get_scalar):
 
     dl1 = FRL(dir_path, file1, seconds, reader1)
     dl2 = FRL(dir_path, file2, seconds, reader2)
@@ -58,25 +56,18 @@ def test_n_fixed_rate_scalar(
     dir_path, cca_k,
     seconds=10):
 
-    file_info = {
-        ('ACC.csv', readers.get_magnitude, FRL),
-        ('IBI.csv', readers.get_vector, IBI),
-        ('BVP.csv', readers.get_scalar, FRL),
-        ('TEMP.csv', readers.get_scalar, FRL),
-        ('HR.csv', readers.get_scalar, FRL),
-        ('EDA.csv', readers.get_scalar, FRL)}
-
-    dls = [LT(dir_path, name, seconds, reader)
-           for name, reader, LT in file_info]
+    mag = readers.get_magnitude
+    vec = readers.get_vector
+    sca = readers.get_scalar 
+    dls = [
+        FRL(dir_path, 'ACC.csv', seconds, mag, 32.0),
+        IBI(dir_path, 'IBI.csv', seconds, vec),
+        FRL(dir_path, 'BVP.csv', seconds, sca, 64.0),
+        FRL(dir_path, 'TEMP.csv', seconds, sca, 4.0),
+        FRL(dir_path, 'HR.csv', seconds, sca, 1.0),
+        FRL(dir_path, 'EDA.csv', seconds, sca, 4.0)]
     dss = [BS(dl) for dl in dls]
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
         dss, cca_k)
-
-    I_k = np.identity(cca_k)
-    grams = [ds.get_batch_and_gram()[1]
-             for ds in dss]
-
-    for (Phi, unn), gram in zip(basis_pairs, grams):
-        print np.linalg.norm(quad(Phi, gram) - I_k)
 
     return (basis_pairs, Psi)

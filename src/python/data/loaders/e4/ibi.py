@@ -1,5 +1,4 @@
 from data.loaders import AbstractDataLoader
-from data.loaders import readers
 from global_utils import file_io as fio
 from math import ceil, floor
 
@@ -9,11 +8,11 @@ import numpy as np
 
 class IBILoader(AbstractDataLoader):
 
-    def __init__(self, dir_path, filename, seconds):
+    def __init__(self, dir_path, filename, seconds, reader):
 
         self.dir_path = dir_path
         self.filename = filename
-        self.reader = readers.get_vector
+        self.reader = reader
         self.seconds = seconds
 
         self.timestamps = []
@@ -43,13 +42,15 @@ class IBILoader(AbstractDataLoader):
 
         data = []
 
-        for (fp, ts) in timestamps:
+        for (fp, ts) in self.timestamps:
+            print fp
             with open(fp) as f:
                 # Clear out timestamp on first line
                 f.readline()
 
                 # Populate data list with remaining lines
                 file_data = [self.reader(line) for line in f]
+                print len(file_data)
 
                 # Extract event-based representation
                 data.extend(self._get_rows(file_data))
