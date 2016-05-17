@@ -43,14 +43,12 @@ class IBILoader(AbstractDataLoader):
         data = []
 
         for (fp, ts) in self.timestamps:
-            print fp
             with open(fp) as f:
                 # Clear out timestamp on first line
                 f.readline()
 
                 # Populate data list with remaining lines
                 file_data = [self.reader(line) for line in f]
-                print len(file_data)
 
                 # Extract event-based representation
                 data.extend(self._get_rows(file_data))

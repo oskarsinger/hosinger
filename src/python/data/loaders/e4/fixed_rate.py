@@ -45,7 +45,6 @@ class FixedRateLoader(AbstractDataLoader):
         data = []
 
         for (fp, ts) in self.timestamps:
-            print fp
             with open(fp) as f:
                 # Clear out timestamp on first line
                 f.readline()
@@ -54,7 +53,6 @@ class FixedRateLoader(AbstractDataLoader):
 
                 # Populate data list with remaining lines
                 file_data = [self.reader(line) for line in f]
-                print len(file_data)
 
                 # Attach modded list to full data set
                 data.extend(self._get_rows(file_data))
