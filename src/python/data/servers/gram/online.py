@@ -12,6 +12,7 @@ class BoxcarGramServer:
 
         self.q = FLQ(self.window)
         self.gram = None
+        self.num_rounds = 0
 
     def get_gram(self, batch):
 
@@ -23,9 +24,10 @@ class BoxcarGramServer:
             self.gram += update
             self.gram -= self.q.get_items()[0]
 
+        self.num_rounds += 1
         self.q.enqueue(update)
 
-        return np.copy(sum(grams))
+        return np.copy(self.gram)
 
     def _get_gram(self, batch):
 
@@ -58,12 +60,18 @@ class ExpGramServer:
             self.gram = np.zeros((cols, cols))
 
         w = (self.weight)**(self.num_rounds)
-        new_gram = get_gram(batch, reg=self.reg)
+        new_gram = self._get_gram(batch)
 
         self.gram += w * new_gram
         self.num_rounds += 1
 
         return np.copy(self.gram)
+
+    def _get_gram(self, batch):
+
+        n = batch.shape[0]
+
+        return gg(batch, reg=self.reg) / n
 
     def get_status(self):
 

@@ -8,13 +8,16 @@ import numpy as np
 
 class FixedRateLoader(AbstractDataLoader):
 
-    def __init__(self, dir_path, filename, seconds, reader, hertz):
+    def __init__(self,
+        dir_path, filename, seconds, reader, hertz,
+        online=False):
 
         self.dir_path = dir_path
         self.filename = filename
         self.reader = reader
         self.seconds = seconds
         self.hertz = hertz
+        self.online = online
 
         self.timestamps = []
 
@@ -32,34 +35,54 @@ class FixedRateLoader(AbstractDataLoader):
             self.timestamps, key=lambda x: x[1])
         self.window = int(self.hertz * self.seconds)
         self.data = None
+        self.num_rounds = 0
 
     def get_data(self):
 
-        if self.data is None:
+        if self.online:
+            self._refill_data()
+
+            self.num_rounds += 1
+        elif self.data is None:
             self._set_data()
 
         return np.copy(self.data)
+
+    def _refill_data(self):
+
+        index = self.num_rounds % len(self.timestamps)
+        fp = self.timestamps[index][0]
+
+        self.data = self._get_file_rows(fp)
 
     def _set_data(self):
 
         data = []
 
         for (fp, ts) in self.timestamps:
-            with open(fp) as f:
-                # Clear out timestamp on first line
-                f.readline()
-                # Clear out frequency on second line
-                f.readline()
-
-                # Populate data list with remaining lines
-                file_data = [self.reader(line) for line in f]
-
-                # Attach modded list to full data set
-                data.extend(self._get_rows(file_data))
+            data.extend(self._get_file_rows(fp))
 
         self.data = np.array(data)
 
-    def _get_rows(self, data):
+    def _get_file_rows(self, fp):
+
+        data = []
+
+        with open(fp) as f:
+            # Clear out timestamp on first line
+            f.readline()
+            # Clear out frequency on second line
+            f.readline()
+
+            # Populate data list with remaining lines
+            file_data = [self.reader(line) for line in f]
+
+            # Attach modded list to full data set
+            data = self._get_windows(file_data)
+
+        return data
+
+    def _get_windows(self, data):
 
         rows = None
 
@@ -85,9 +108,9 @@ class FixedRateLoader(AbstractDataLoader):
             'window': self.window,
             'timestamps': self.filepaths,
             'num_rounds': self.num_rounds,
-            'rounds_per_file': self.rounds_per_file,
-            'process_line': self.pl,
-            'data': self.data}
+            'reader': self.reader,
+            'data': self.data,
+            'online': self.online}
 
     def cols(self):
 
@@ -95,4 +118,11 @@ class FixedRateLoader(AbstractDataLoader):
 
     def rows(self):
 
-        return self.data.shape[0] if data is not None else 0
+        rows = 0
+
+        if self.online:
+            rows = self.num_rounds
+        elif self.data is not None:
+            rows = self.data.shape[0]
+
+        return rows

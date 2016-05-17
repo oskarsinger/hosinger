@@ -74,7 +74,8 @@ class NViewAppGradCCA:
         # Initialization of optimization variables
         basis_pairs_t = agu.get_init_basis_pairs(Sxs, self.k)
         basis_pairs_t1 = None
-        Psi = np.random.randn(ds_list[0].batch_size, self.k)
+        bs = ds_list[0].get_status()['batch_size']
+        Psi = np.random.randn(bs, self.k)
 
         # Iteration variables
         converged = [False] * self.num_views

@@ -1,5 +1,7 @@
 import numpy as np
 
+from global_utils.data_structures import FixedLengthQueue as FLQ
+
 class Minibatch2Minibatch:
 
     def __init__(self, data_loader, batch_size):
