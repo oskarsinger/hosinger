@@ -13,7 +13,7 @@ link_args = [
     "-lgomp"
 ]
 
-eigen_dir = "../eigen/"
+eigen_dir = "../../eigen/"
 linal_dir = "../linal/"
 linal_include_dirs = [
     eigen_dir,
