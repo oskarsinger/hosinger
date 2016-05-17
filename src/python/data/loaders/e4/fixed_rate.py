@@ -11,7 +11,7 @@ class FixedRateLoader(AbstractDataLoader):
 
     def __init__(self,
         dir_path, filename, seconds, reader, hertz,
-        online=False, random=True):
+        online=False):
 
         self.dir_path = dir_path
         self.filename = filename
@@ -52,20 +52,11 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _refill_data(self):
 
-        fp = None
+        index = self.num_rounds % len(self.timestamps)
+        fp = self.timestamps[index][0]
 
-        if self.random:
-            fp = choice(self.timestamps)[0]
-        else:
-            index = self.num_rounds % len(self.timestamps)
-            fp = self.timestamps[index][0]
-
-        data = np.array(self._get_file_rows(fp))
+        self.data = np.array(self._get_file_rows(fp))
         
-        if self.random:
-            data = np.random.permutation(data)
-
-        self.data = data
 
     def _set_data(self):
 

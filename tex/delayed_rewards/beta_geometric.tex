@@ -16,9 +16,26 @@
 \section{Intro} \label{sec:intro}
 \section{Model} \label{sec:model}
 
-To keep it simple, we will start with an integer-valued reward that increases by 1 at each round in which a reward is not observed. So the outcome $y \in \mcY$ conditioned on the action $a \in \mcA$ is distributed $y | a \sim geometric(p_a)$ for some unobserved $p_a \in [0,1]$. We would like to find $a^* = \argmax{a \in \mcA} \mbbE \fitsb{r(y)|a}$, where we start by considering $r(y) = y$ for simplicity. In the Bayesian scenario, we need to put a prior on each $p_a$, and we choose $p_a \sim beta(\alpha_a, \beta_a)$ prior for conjugacy.
+To keep it simple, we will start with an integer-valued reward that increases by 1 at each round in which a reward is not observed. So the outcome $y \in \mcY$ conditioned on the action $a \in \mcA$ is distributed $y | a \sim geometric(p_a)$ for some unobserved $p_a \in [0,1]$. We would like to find $a^* = \argmax{a \in \mcA} \mbbE \fitsb{r(y) | a}$, where we start by considering $r(y) = y$ for simplicity. In the Bayesian scenario, we need to put a prior on each $p_a$, and we choose $p_a \sim f_{p_a}(p_a) = beta(\alpha_a, \beta_a)$ prior for conjugacy.
+
+\section{Notation} \label{subsec:notation}
+We denote the full history for $N$ rounds by $\mcZ = \fitcb{(a_i, y_i)}_{i=1}^N$, where $a_i$ is the chosen arm pull and $y_i$ is the outcome as well as the length of the delay before the outcome is revealed to us. We denote the subsequence of rounds at which arm $a$ was pulled by $I_a = \fitcb{i}_{i=1, \ldots, N: a_i = a} = \fitcb{i_j^{(a)}}_{j=1}^{|I_a|}$ (this notation could use some work).
 
 \section{Algorithm} \label{sec:alg}
-To get an algorithm, we need to derive the posterior distribution for the Bayesian model described in the prequel and look at it as a function of some sufficient statistic that we can calculate from the rewards we observe or do not observe at each round. We must be cautious when considering the contribution to the likelihood of arm pulls for which rewards have not been observed. Suppose that, on the first round, we have pulled arm $a$, and we do not immediately receive a reward. Then, after that round, the contribution of the first arm pull to the likelihood of arm $a$ is the probability $P(y > 1 | a) = 1 - P(y \leq 1| a)$ that the reward will manifest after the first round.
+To get an algorithm, we need to derive the posterior distribution for the Bayesian model described in the prequel and look at it as a function of some sufficient statistic that we can calculate from the rewards we observe or do not observe at each round. 
+
+We must be cautious when considering the contribution to the likelihood of arm pulls for which rewards have not been observed. Suppose that, on the first round, we have pulled arm $a$, and we do not immediately receive a reward. Then, after that round, the contribution of the first arm pull to the likelihood of arm $a$ is the probability that the reward will manifest after the first round, $P(y > 1 | a) = 1 - P(y \leq 1 | a)$, i.e. one minus the cdf of $geometric(p_a)$. For a pull of arm $a$ at round $j$ with reward still unobserved after round $k > j$, the contribution is $P(y > k - j | a)$.
+
+For a sequence of $N$ arm pulls on arm $a$, $\mcZ_a = \fitcb{(a_i, y_i) : a_i = a}_{i=1}^N$ where $a_i$ is the arm that is pulled at time $i$, and $y_i$ is the resulting reward, and the length of the delay before the reward is revealed, we denote $U = \fitcb{(a_i, y_i) : y_i + i > N, i \in [N]} \subset \mcZ$, the set of arm pulls for which a reward have not been observed. Overall, the posterior at round $N$ is given by
+
+\begin{align*}
+    P(p_a | \mcZ_a )\ &=\ \frac{L \fitp{\mcZ_a | p_a} \times f_{p_a}(p_a)}{\int_{[0,1]} L \fitp{\mcZ_a | p_a} \times f_{p_a}(p_a)} \tn{.}
+\end{align*}
+
+\noindent where $L \fitp{\mcZ_a | p_a}$ is the geometric likelihood of the sequence of observed and unobserved rewards resulting from pulls to arm $a$, and $f_{p_a}(p_a) = beta(\alpha_a, \beta_a)$ is the prior distribution on $p_a$. This likelihood has the form
+
+\begin{align*}
+	L \fitp{\mcZ_a | p_a}\ &=\ \fitp{\prod_{(a', y) \in \mcZ \setminus U} (1 - p_a)^y p} \fitp{\prod_{(a',y) \in U} \fitp{1-(1-p_a)^{y+1}}}
+\end{align*}
 
 \end{document}
