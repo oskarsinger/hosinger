@@ -3,7 +3,7 @@ import numpy as np
 from global_utils.data_structures import FixedLengthQueue as FLQ
 from optimization.utils import get_gram as gg
 
-class BoxCarGramServer:
+class BoxcarGramServer:
 
     def __init__(self, window=1, reg=0.1):
 

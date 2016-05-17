@@ -1,9 +1,8 @@
-from gram import AbstractGramServer
 from optimization.utils import get_gram as gg
 
 import numpy as np
 
-class BatchGramServer(AbstractGramServer):
+class BatchGramServer:
 
     def __init__(self, reg):
         self.reg = reg

@@ -2,7 +2,7 @@ import numpy as np
 
 from optimization.utils import get_minibatch
 
-class Batch2Minibatch(AbstractFromBatch):
+class Batch2Minibatch:
 
     def __init__(self, data_loader, batch_size, random=True, lazy=True):
 

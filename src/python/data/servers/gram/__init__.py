@@ -1,4 +1,2 @@
-from gram import AbstractGramServer, AbstractOnlineGramServer
-
 from batch_gram import BatchGramServer
-from online_gram import BoxcarOnlineGramServer, ExpOnlineGramServer
+from online_gram import BoxcarGramServer, ExpGramServer

@@ -3,7 +3,7 @@ import utils as agu
 
 from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from optimization.utils import get_gram
-from data.servers.gram import BoxCarGramServer as BCGS
+from data.servers.gram import BoxcarGramServer as BCGS, BatchGramServer as BGS
 
 class AppGradCCA:
 
@@ -28,9 +28,15 @@ class AppGradCCA:
 
     def fit(self, 
         X_ds, Y_ds, 
-        X_gs=BCGS(), Y_gs=BCGS(),
+        X_gs=None, Y_gs=None,
         optimizer1=MAG(), optimizer2=MAG(),
         verbose=False):
+
+        if X_gs is None:
+            X_gs = BCGS() if self.online else BGS()
+
+        if Y_gs is None:
+            Y_gs = BCGS() if self.online else BGS()
 
         (X, Sx, Y, Sy) = self._init_data(X_ds, Y_ds, X_gs, Y_gs)
 

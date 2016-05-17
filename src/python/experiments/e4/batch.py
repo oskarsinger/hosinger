@@ -1,10 +1,9 @@
-from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 from cca.app_grad import AppGradCCA as AGCCA
 from cca.app_grad import NViewAppGradCCA as NVAGCCA
 from data.loaders.e4 import FixedRateLoader as FRL
 from data.loaders.e4 import IBILoader as IBI
 from data.loaders import readers
-from data.servers.gram import BatchGramServer as BGS
+from data.servers.batch import BatchServer as BS
 from linal.utils import quadratic as quad
 
 import numpy as np
@@ -42,9 +41,8 @@ def test_two_fixed_rate_scalar(
 
     dl1 = FRL(dir_path, file1, seconds, reader1)
     dl2 = FRL(dir_path, file2, seconds, reader2)
-    ds1 = BGS(dl1, reg1)
-    ds2 = BGS(dl2, reg2)
-
+    ds1 = BS(dl1)
+    ds2 = BS(dl2)
     (Phi, unn_Phi, Psi, unn_Psi) = test_batch_appgrad(
         ds1, ds2, cca_k)
     I_k = np.identity(cca_k)
@@ -58,24 +56,19 @@ def test_two_fixed_rate_scalar(
 
 def test_n_fixed_rate_scalar(
     dir_path, cca_k,
-    seconds=10,
-    regs=None):
+    seconds=10):
 
     file_info = {
         ('ACC.csv', readers.get_magnitude, FRL),
-        #('IBI.csv', readers.get_vector, IBI),
+        ('IBI.csv', readers.get_vector, IBI),
         ('BVP.csv', readers.get_scalar, FRL),
         ('TEMP.csv', readers.get_scalar, FRL),
         ('HR.csv', readers.get_scalar, FRL),
         ('EDA.csv', readers.get_scalar, FRL)}
 
-    if regs is None:
-        regs = [0.1] * len(file_info)
-
     dls = [LT(dir_path, name, seconds, reader)
            for name, reader, LT in file_info]
-    dss = [BGS(dl, reg) for dl, reg in zip(dls, regs)]
-
+    dss = [BS(dl) for dl in dls]
     (basis_pairs, Psi) = test_batch_n_view_appgrad(
         dss, cca_k)
 

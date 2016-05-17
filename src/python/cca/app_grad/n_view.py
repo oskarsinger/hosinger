@@ -5,7 +5,7 @@ import utils as agu
 from global_utils.misc import unzip
 from optimization.utils import get_gram
 from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
-from data.servers.gram import BoxCarGramServer as BCGS
+from data.servers.gram import BoxcarGramServer as BCGS, BatchGramServer as BGS
 
 class NViewAppGradCCA:
 
@@ -64,7 +64,8 @@ class NViewAppGradCCA:
                 raise ValueError(
                     'Length of gs_list and num_views must be the same.')
         else:
-            gs_list = [BCGS() for i in range(self.num_views)]
+            gs_list = [BCGS() if online else BGS()
+                       for i in range(self.num_views)]
 
         (Xs, Sxs) = self._init_data(ds_list, gs_list)
 
