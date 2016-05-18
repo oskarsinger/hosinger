@@ -19,31 +19,44 @@
 To keep it simple, we will start with an integer-valued reward that increases by 1 at each round in which a reward is not observed. So the outcome $y \in \mcY$ conditioned on the action $a \in \mcA$ is distributed $y | a \sim geometric(p_a)$ for some unobserved $p_a \in [0,1]$. We would like to find $a^* = \argmax{a \in \mcA} \expec{}{r(y) | a}$, where we start by considering $r(y) = y$ for simplicity. In the Bayesian scenario, we need to put a prior on each $p_a$, and we choose $p_a \sim f_{p_a}(p_a) = beta(\alpha_a, \beta_a)$ prior for conjugacy.
 
 \section{Notation} \label{subsec:notation}
-We denote the full history for $N$ rounds by $\mcZ = \fitcb{(a_i, y_i)}_{i=1}^N$, where $a_i$ is the chosen arm pull and $y_i$ is the outcome as well as the length of the delay before the outcome is revealed to us. We denote the subset of rounds at which arm $a$ was pulled by $I_a = \fitcb{i: i \in [N], a_i = a}$, and we denote the subset of rounds at which arm $a$ was pulled and an outcome has yet to be observed as $U_a = \fitcb{i : i \in I_a, i + y_i > N}$.
+We denote the full history for $N$ rounds by $\mcZ^{(N)} = \fitcb{(a_i, y_i)}_{i=1}^N$, where $a_i$ is the chosen arm pull and $y_i$ is the outcome as well as the length of the delay before the outcome is revealed to us. We denote the subset of rounds at which arm $a$ was pulled by $I_a^{(N)} = \fitcb{i: i \in [N], a_i = a}$, and we denote the subset of rounds at which arm $a$ was pulled and an outcome has yet to be observed as $U_a^{(N)} = \fitcb{i : i \in I_a^{(N)}, i + y_i > N}$.
 
 \section{Algorithm} \label{sec:alg}
-To get an algorithm, we need to derive the posterior distribution for the Bayesian model described in the prequel and look at it as a function of some sufficient statistic that we can calculate from the rewards we observe or do not observe at each round. 
+We want to derive a Thompson sampling algorithm for the model described in the prequel. To get the algorithm, we need to derive the posterior distribution for this model and look at it as a function of some sufficient statistic that we can calculate from the rewards we observe or do not observe at each round. 
 
-We must be cautious when considering the contribution to the likelihood of arm pulls for which rewards have not been observed. Suppose that, on the first round, we have pulled arm $a$, and we do not immediately receive a reward. Then, after that round, the contribution of the first arm pull to the likelihood of arm $a$ is the probability that the reward will manifest after the first round, $P(y > 1 | a) = 1 - P(y \leq 1 | a)$, i.e. one minus the cdf of $geometric(p_a)$. For a pull of arm $a$ at round $j$ with reward still unobserved after round $k > j$, the contribution is $P(y > k - j | a)$.
-
-For a sequence of $N$ arm pulls on arm $a$, $\mcZ_a = \fitcb{(a_i, y_i) : a_i = a}_{i=1}^N$ where $a_i$ is the arm that is pulled at time $i$, and $y_i$ is the resulting reward, and the length of the delay before the reward is revealed, we denote $U_a = \fitcb{ : y_i + i > N, i \in [N]} \subset \mcZ$, the set of arm pulls for which a reward have not been observed. Overall, the posterior at round $N$ is given by
+We must be cautious when considering the contribution to the likelihood of arm pulls for which rewards have not been observed. Suppose that, on the first round, we have pulled arm $a$, and we do not immediately receive a reward. Then, after that round, the contribution of the first arm pull to the likelihood of arm $a$ is the probability that the reward will manifest after the first round, $P(y > 1 | a) = 1 - P(y \leq 1 | a)$, i.e. one minus the cdf of $geometric(p_a)$. For a pull of arm $a$ at round $j$ with reward still unobserved after round $k > j$, the contribution is $P(y > k - j | a)$. Overall, the posterior at round $N$ is given by
 
 \begin{align*}
-    P( p_a | \mcZ_a )\ &=\ \frac{L \fitp{\mcZ_a | p_a} \times f_{p_a}(p_a)}{\int_{[0,1]} L \fitp{\mcZ_a | p_a} \times f_{p_a}(p_a) dp_a} \tn{.}
+    P( p_a | U_a^{(N)}, I_a^{(N)}, \mcZ_a^{(N)} )\ &=\ \frac{L \fitp{ U_a^{(N)}, I_a^{(N)}, \mcZ^{(N)} | p_a} \times f_{p_a}(p_a)}{\int_{[0,1]} L \fitp{ U_a^{(N)}, I_a^{(N)}, \mcZ_a^{(N)} | p_a} \times f_{p_a}(p_a) dp_a} \tn{.}
 \end{align*}
 
 \noindent where $L \fitp{\mcZ_a | p_a}$ is the geometric likelihood of the sequence of observed and unobserved rewards resulting from pulls to arm $a$, and $f_{p_a}(p_a) = beta(\alpha_a, \beta_a)$ is the prior distribution on $p_a$. This likelihood has the form
 
 \begin{align*}
-	L \fitp{U_a, I_a, Z_a | p_a}\ &=\ \fitp{\prod_{i \in I_a \setminus U_a} (1 - p_a)^{y_i} p_a} \fitp{\prod_{i \in U_a} (1-p_a)^{(N-i)+1}}\\
-	&=\ \fitp{\fitp{1 - p_a}^{\sum_{i \in I_a \setminus U_a}y_i} p_a^{|I_a \setminus U_a|}} \fitp{\fitp{1 - p_a}^{|U_a| \times (N + 1) - \sum_{i \in U_a} i}}\\
-	&=\ \fitp{1 - p_a}^{|U_a| \times (N + 1) + \sum_{i \in I_a \setminus U_a} y_i - \sum_{j \in U_a} j} p_a^{|I_a \setminus U_a|} \tn{,}
+	L \fitp{ U_a^{(N)}, I_a^{(N)}, \mcZ^{(N)} | p_a }\ &=\ \fitp{\prod_{i \in I_a \setminus U_a} (1 - p_a)^{y_i - 1} p_a} \fitp{\prod_{i \in U_a} (1-p_a)^{N-i}}\\
+	&=\ \fitp{\fitp{1 - p_a}^{\fitp{\sum_{i \in I_a^{(N)} \setminus U_a^{(N)}}y_i} - |I_a^{(N)} \setminus U_a^{(N)}|} p_a^{|I_a^{(N)} \setminus U_a^{(N)}|}} \fitp{\fitp{1 - p_a}^{|U_a| \times N - \sum_{i \in U_a} i}}\\
+	&=\ \fitp{1 - p_a}^{|U_a^{(N)}| \times N + \fitp{\sum_{i \in I_a^{(N)} \setminus U_a^{(N)}} y_i} - \fitp{\sum_{j \in U_a^{(N)}} j} - |I_a^{(N)} \setminus U_a^{(N)}|} p_a^{|I_a^{(N)} \setminus U_a^{(N)}|} \tn{,}
 \end{align*}
 
 \noindent and the prior is a $beta(\alpha_a, \beta_a)$ distribution, which has the form
 
 \begin{align*}
-	f_{p_a}(p_a)\ &=\ \betapdf{\alpha_a}{\beta_a}{p_a}
+	f_{p_a}(p_a)\ &=\ \betapdf{\alpha_a}{\beta_a}{p_a} \tn{.}
 \end{align*}
+
+\noindent Then, removing the constant multiplicative factors to examine the kernel of the posterior
+
+\begin{align*}
+	P( p_a | U_a^{(N)}, I_a^{(N)}, \mcZ^{(N)} )\ &\propto\ \fitp{1 - p_a}^{|U_a^{(N)}| \times N + \fitp{\sum_{i \in I_a^{(N)} \setminus U_a^{(N)}} y_i} - \fitp{\sum_{j \in U_a^{(N)}} j} - |I_a^{(N)} \setminus U_a^{(N)}|} p_a^{|I_a^{(N)} \setminus U_a| + \alpha_a - 1} \tn{,}
+\end{align*}
+
+\noindent we find that this is the kernel of a $beta \fitp{\alpha_a^{(N)}, \beta_a^{(N)}}$, where
+
+\begin{align*}
+	\alpha_a^{(N)}\ &=\ |I_a^{(N)} \setminus U_a^{(N)}| + \alpha_a\\
+	\beta_a^{(N)}\ &=\ |U_a^{(N)}| \times N + \fitp{\sum_{i \in I_a^{(N)} \setminus U_a^{(N)}} y_i} - \fitp{\sum_{j \in U_a^{(N)}} j} - |I_a^{(N)} \setminus U_a^{(N)}| + \beta_a \tn{.}
+\end{align*}
+
+From this observation, we can conclude that, since we are integrating over the domain of the $beta$ distribution, the integral must evaluate to the reciprocal of $\frac{\Gamma\fitp{\alpha_a^{(N)}}\Gamma\fitp{\beta_a^{(N)}}}{\Gamma\fitp{\alpha_a^{(N)} + \beta_a^{(N)}}}$. After some further cancelations and reciprocations, we get that the posterior at time $N$ has the form $beta\fitp{\alpha_a^{(N)}, \beta_a^{(N)}}$, which gives the parameter update for the posterior from which our Thompson sampling scheme takes samples.
 
 \end{document}
