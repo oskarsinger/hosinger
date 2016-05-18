@@ -2,7 +2,6 @@ from cca.app_grad import AppGradCCA, NViewAppGradCCA
 from data.loaders.random import GaussianLoader as GL
 from data.servers.minibatch import Batch2Minibatch as B2M
 from global_utils.arithmetic import int_ceil_log as icl
-from global_utils.misc import get_lrange
 
 import numpy as np
 

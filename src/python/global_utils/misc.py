@@ -7,9 +7,13 @@ def multi_zip(ls):
     return [tuple([l[i] for l in ls])
             for i in range(len(ls[0]))]
 
-def get_lrange(l):
+def get_range_len(l):
 
     return xrange(len(l))
+
+def get_list_range(n):
+
+    return list(range(n))
 
 def unzip(l):
 

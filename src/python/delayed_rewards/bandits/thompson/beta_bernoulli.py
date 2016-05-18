@@ -5,66 +5,79 @@ import bandit_errors as be
 
 class BetaBernoulli(AbstractLearner):
 
-    def __init__(self, num_actions, alpha, beta):
+    def __init__(self, alphas, betas):
 
-        self._num_actions = num_actions
-        self._alpha = alpha
-        self._beta = beta
+        if not len(alphas) == len(betas):
+            raise ValueError(
+                'Parameters alphas and betas must have same length.')
 
-        self._actions = list(range(num_actions))
-        self._wins_losses = [(0,0)] * num_actions
-        self._is_waiting = False
-        self._history = []
+        if not all([a > 0 for a in alphas]):
+            raise ValueError(
+                'All elements of parameter alphas must be > 0.')
+
+        if not all([b > 0 for b in betas]):
+            raise ValueError(
+                'All elements of parameter betas must be > 0.')
+
+        self.alphas = alphas
+        self.betas = betas
+
+        self.num_actions = len(alphas)
+        self.actions = list(range(num_actions))
+        self.wins_losses = [(0,0)] * num_actions
+        self.is_waiting = False
+        self.history = []
 
     def get_status(self):
 
         return {
-            'alpha': self._alpha,
-            'beta': self._beta,
-            'posteriors': self._wins_losses,
-            'waiting': self._is_waiting,
-            'actions': self._actions,
-            'history': self._history
+            'num_actions': self.num_actions,
+            'alphas': self.alphas,
+            'beta': self.beta,
+            'wins_losses': self.wins_losses,
+            'waiting': self.is_waiting,
+            'actions': self.actions,
+            'history': self.history
         }
 
     def get_action(self):
         
-        if self._is_waiting:
+        if self.is_waiting:
             be.raise_no_reward_error()
 
-        self._is_waiting = True
+        self.is_waiting = True
 
-        bernoulli_ps = [self._beta_sample(i)
-                        for i in self._actions]
-        action = max(self._actions, key=lambda i: bernoulli_ps[i])
+        bernoulli_ps = [self._get_beta_sample(i)
+                        for i in self.actions]
+        action = max(self.actions, key=lambda i: bernoulli_ps[i])
 
-        self._history.append((action, None, bernoulli_ps[action]))
+        self.history.append((action, None, bernoulli_ps))
 
         return action
 
     def update_rewards(self, value):
 
-        if not self._is_waiting:
+        if not self.is_waiting:
             be.raise_no_action_error()
 
-        self._is_waiting = False
+        self.is_waiting = False
 
-        (action, blank, bernoulli_p) = self._history[-1]
-        self._history[-1] = (action, value, bernoulli_p)
+        (action, blank, bernoulli_ps) = self.history[-1]
+        self.history[-1] = (action, value, bernoulli_ps)
 
-        (w, l) = self._wins_losses[action]
+        (w, l) = self.wins_losses[action]
 
         if value:
             w += 1
         else:
             l += 1
 
-        self._wins_losses[action] = (w,l)
+        self.wins_losses[action] = (w,l)
 
-    def _beta_sample(self, action):
+    def _get_beta_sample(self, action):
         
-        (w, l) = self._wins_losses[action]
-        post_alpha = self._alpha + w
-        post_beta = self._beta + l
+        (w, l) = self.wins_losses[action]
+        post_alpha = self.alphas[action] + w
+        post_beta = self.betas[action] + l
 
         return beta(post_alpha, post_beta)
