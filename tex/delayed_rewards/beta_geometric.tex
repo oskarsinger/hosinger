@@ -14,6 +14,7 @@
 \begin{document}
 
 \section{Intro} \label{sec:intro}
+
 \section{Model} \label{sec:model}
 
 To keep it simple, we will start with an integer-valued reward that increases by 1 at each round in which a reward is not observed. So the outcome $y \in \mcY$ conditioned on the action $a \in \mcA$ is distributed $y | a \sim geometric(p_a)$ for some unobserved $p_a \in [0,1]$. We would like to find $a^* = \argmax{a \in \mcA} \expec{}{r(y) | a}$, where we start by considering $r(y) = y$ for simplicity. In the Bayesian scenario, we need to put a prior on each $p_a$, and we choose $p_a \sim f_{p_a}(p_a) = beta(\alpha_a, \beta_a)$ prior for conjugacy.
@@ -58,5 +59,22 @@ We must be cautious when considering the contribution to the likelihood of arm p
 \end{align*}
 
 From this observation, we can conclude that, since we are integrating over the domain of the $beta$ distribution, the integral must evaluate to the reciprocal of $\frac{\Gamma\fitp{\alpha_a^{(N)}}\Gamma\fitp{\beta_a^{(N)}}}{\Gamma\fitp{\alpha_a^{(N)} + \beta_a^{(N)}}}$. After some further cancelations and reciprocations, we get that the posterior at time $N$ has the form $beta\fitp{\alpha_a^{(N)}, \beta_a^{(N)}}$, which gives the parameter update for the posterior from which our Thompson sampling scheme takes samples.
+
+\section{Extensions} \label{sec:extensions}
+
+\subsection{Reward as a Function of Delay} \label{subsec:reward}
+An important aspect of this problem that has come up through working on the Python implementation has been the \textit{ownership of the reward function}. Who determines the reward function? Who has knowledge of it? Nature or the decision maker? Under the basic beta-geometric model that we are currently considering, the decision maker owns the reward function by assuming that it is equal to the delay. Can we consider other scenarios as well?
+
+When I was writing the reward simulator, I happened upon an issue. Where as my action-reward data servers typically serve up the timestamp of the arm pull along with a reward, in the beta-geometric bandit, because of the tight coupling of the reward and delay, we can only serve up the timestamp, and the policy interprets the reward from the delay internally. This means that if we want to consider other reward functions, we might have to significantly augment our probabilistic model. 
+
+The arms could all have the same parameter for the geometric r.v. determining the delay and have vastly different utility depending on their respective reward functions. We could think about a couple different scenarios:
+    * The reward function is a random function of the length of the delay, possibly with additional randomness aside from the random delay length.
+    * The reward function produces a random reward at each round until the delay is over. Within this scenario, there are two obvious variations, but I am not certain that they provide significantly different algorithmic or modeling challenges.
+        * We reveal the random reward at each round.
+        * We only reveal the cumulative reward once the delay is over.
+In these scenarios, the problem turns into a balance of maximizing expected delay and cumulative expected rewardi, i.e. one arm may have much shorter expected delay, but the reward may be a much more favorable function of the delay length, so it is not necessarily favorable to take the arm with the longest expected delay.
+
+Could we take a less constructive approach and model the delay+reward as an arbitrary Markov chain, starting from favorable characteristics of the Markov chain instead of specific distributions?
+
 
 \end{document}
