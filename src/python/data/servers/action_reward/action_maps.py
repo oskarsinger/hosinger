@@ -20,7 +20,7 @@ def get_geometric_func(p):
 
     def func():
 
-        return geomtetric(p=p)
+        return geometric(p=p)
 
     return func
 
