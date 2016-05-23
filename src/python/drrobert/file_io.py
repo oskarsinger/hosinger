@@ -22,8 +22,8 @@ def get_visible_only(paths):
     return [path for path in paths
             if not path[0] == '.']
 
-def get_ts_filename(filename):
+def get_timestamped(name):
 
     timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 
-    return timestamp + '-' + filename
+    return timestamp + '-' + name
