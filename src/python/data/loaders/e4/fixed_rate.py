@@ -1,6 +1,6 @@
 from data.loaders import AbstractDataLoader
-from global_utils import file_io as fio
-from global_utils.misc import get_list_mod as get_lm
+from drrobert import file_io as fio
+from drrobert.misc import get_list_mod as get_lm
 from random import choice
 
 import os

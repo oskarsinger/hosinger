@@ -2,7 +2,7 @@ import numpy as np
 
 from scipy.linalg import hadamard
 
-from global_utils.random import rademacher
+from drrobert.random import rademacher
 from linal.random.utils import get_rand_I_rows as get_rir
 from linal.utils import multi_dot
 from linal.structured import get_normed_hadamard

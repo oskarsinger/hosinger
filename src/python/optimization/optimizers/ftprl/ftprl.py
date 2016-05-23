@@ -3,7 +3,7 @@ from abc import abstractmethod
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from optimization.optimizers import AbstractOptimizer
 from linal.svd_funcs import get_multiplied_svd
-from global_utils.arithmetic import get_running_avg as get_ra
+from drrobert.arithmetic import get_running_avg as get_ra
 
 import numpy as np
 

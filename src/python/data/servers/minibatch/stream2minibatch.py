@@ -1,6 +1,6 @@
 import numpy as np
 
-from global_utils.data_structures import FixedLengthQueue as FLQ
+from drrobert.data_structures import FixedLengthQueue as FLQ
 
 class Minibatch2Minibatch:
 

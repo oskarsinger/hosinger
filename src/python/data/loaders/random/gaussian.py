@@ -1,6 +1,6 @@
 from data.loaders import AbstractDataLoader
 from linal.random.utils import get_rank_k
-from global_utils.misc import get_checklist
+from drrobert.misc import get_checklist
 
 import numpy as np
 

@@ -11,7 +11,7 @@ def plot_lines(
     x_label,
     y_label,
     title,
-    colors=Spectral11
+    colors=Spectral11,
     width=900,
     height=400):
 
