@@ -18,7 +18,7 @@ def get_list_range(n):
 def unzip(l):
 
     ls = [[item[i] for item in l]
-          for i in get_lrange(l[0])]
+          for i in get_range_len(l[0])]
 
     return tuple(ls)
 

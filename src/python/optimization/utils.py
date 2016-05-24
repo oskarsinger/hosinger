@@ -4,7 +4,7 @@ from linal.utils import get_thresholded, get_safe_power
 
 def get_minibatch(A, batch_size):
 
-    indexes = choice(
+    indexes = np.random.choice(
         np.arange(A.shape[0]), 
         replace=False, 
         size=batch_size)

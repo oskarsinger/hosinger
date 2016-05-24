@@ -46,7 +46,7 @@ class GaussianLoader(AbstractDataLoader):
         # Number of times through the full data set
         self.num_epochs = 0
 
-    def get_datum(self):
+    def get_data(self):
 
         self.num_rounds += 1
 
