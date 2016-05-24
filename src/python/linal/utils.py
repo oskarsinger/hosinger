@@ -63,7 +63,7 @@ def get_largest_entries(s, energy=None, k=None):
     if k is not None:
         if k > n:
             raise ValueError(
-                'The value of k must not exceed the input vector.')
+                'The value of k must not exceed length of the input vector.')
 
     if energy is not None and (energy <= 0 or energy >= 1):
         raise ValueError(
@@ -71,19 +71,20 @@ def get_largest_entries(s, energy=None, k=None):
 
     s = np.copy(s)
 
-    if k is not None:
-        s[k+1:] = 0
-    elif energy is not None:
-        total = sum(s)
-        current = 0
-        count = 0
-        
-        for i in range(n):
-            if current / total < energy:
-                current = current + s[i]
-                count = count + 1
+    if not (s == np.zeros_like(s)).all():
+        if k is not None:
+            s[k+1:] = 0
+        elif energy is not None:
+            total = sum(s)
+            current = 0
+            count = 0
+            
+            for i in range(n):
+                if current / total < energy:
+                    current = current + s[i]
+                    count = count + 1
 
-        s[count+1:] = 0
+            s[count+1:] = 0
 
     return s
 
