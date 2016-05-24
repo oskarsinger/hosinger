@@ -13,8 +13,6 @@ class MatrixAdaGrad(AbstractMatrixFTPRLOptimizer):
 
         self.scale = None
 
-        print "New MatrixAdaGrad"
-
     # Overrides super class to update adaptive prox func's parameters
     def _set_gradient(self, gradient):
 

@@ -19,10 +19,15 @@ class BoxcarGramServer:
         update = self._get_gram(batch)
 
         if self.gram is None:
-            self.gram = update
-        else:
+            self.gram = np.copy(update)
+        elif self.q.is_full():
             self.gram += update
             self.gram -= self.q.get_items()[0]
+        else:
+            self.gram += update
+
+        if (self.gram == 0).all():
+            raise Exception('This should never be zero.')
 
         self.num_rounds += 1
         self.q.enqueue(update)
