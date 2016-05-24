@@ -45,7 +45,7 @@ class BoxcarGramServer:
 
 class ExpGramServer:
 
-    def __init__(self, weight, reg=0.1):
+    def __init__(self, weight=0.7, reg=0.1):
 
         self.weight = weight
         self.reg = reg
