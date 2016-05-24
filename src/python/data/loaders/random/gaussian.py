@@ -6,7 +6,7 @@ import numpy as np
 
 class GaussianLoader(AbstractDataLoader):
 
-    def __init__(self, n, p, batch_size=None, k=None):
+    def __init__(self, n, p, batch_size=None, k=None, means=None):
 
         # Check validity of k parameter
         if k is None:
@@ -32,10 +32,22 @@ class GaussianLoader(AbstractDataLoader):
         self.p = p
         self.k = k
 
+        # Choose low-rank or full-rank random matrix
         if self.low_rank:
             self.X = get_rank_k(self.n, self.p, self.k)
         else:
             self.X = np.random.randn(self.n, self.p)
+
+        # Set mean of each column by input constants
+        if means is not None:
+            if not len(means) == self.p:
+                raise ValueError(
+                    'Length of means parameter must be equal to p.')
+            else:
+                for i in xrange(p):
+                    self.X[:,i] += means[i]
+
+        self.means = means
             
         # Checklist for which rows sampled in current epoch
         self.sampled = get_checklist(xrange(self.n))
@@ -79,7 +91,8 @@ class GaussianLoader(AbstractDataLoader):
             'k': self.k,
             'batch_size': self.batch_size,
             'sampled': self.sampled,
-            'low_rank': self.low_rank}
+            'low_rank': self.low_rank,
+            'means': self.means}
 
     def cols(self):
         
