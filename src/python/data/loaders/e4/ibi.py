@@ -18,7 +18,6 @@ class IBILoader(AbstractDataLoader):
         self.reader = reader
         self.seconds = seconds
         self.online = online
-        self.random = random
 
         self.timestamps = []
 

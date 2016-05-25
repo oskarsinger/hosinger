@@ -19,7 +19,6 @@ class FixedRateLoader(AbstractDataLoader):
         self.seconds = seconds
         self.hertz = hertz
         self.online = online
-        self.random = random
 
         self.timestamps = []
 
