@@ -30,7 +30,7 @@
         * Is there a 'smooth' function for tuning difficulty of an adversary?
     * Online adversarial with varying levels of difficulty.
         * Is there a 'smooth' function for tuning difficulty of an adversary?
-    * Subroutines without BOLD, just one learner with cumulative rewards, where reward's causal action is visible to learner.
+    * Subroutines without BOLD, just one learner with cumulative rewards, where action corresponding to reward is visible to learner.
     * Warm start within BOLD.
     * Updating as we are waiting (censored observations).
 
@@ -71,10 +71,8 @@
 
 ###CCA
 * Implement measure-transformed CCA.
-    * Try the classical approach to CCA calculation.
     * Extend Zhuang Ma's gradient-based version to do the measure-transformed version.
         * For now, will still need to calculate the MT functions ahead of time.
-* I wonder if the proof for convergence of the gradient-based CCA will be different for the measure-transformed version?
 * Do PCA dimensionality reduction of the data matrices before putting them into CCA. How does this interact with the data matrix whitening step? Equivalent?
     * Need to figure out how to do incremental PCA for the online setting. Does it maintain the PCA properties at every update?
         *Can use incremental PCA implementation from SciKitLearn.
@@ -83,7 +81,6 @@
     * RDA
     * AdaGrad
     * Natural gradient
-* Try my idea for N-ary CCA.
 
 ###Bandits
 * Implement the second meta-algorithm from Joulani's paper.
