@@ -16,6 +16,7 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
+    color_scheme=Spectral10
     norm_axis=0,
     width=900,
     height=400):
@@ -28,7 +29,8 @@ def plot_matrix_heat(
         value_matrix, 
         x_labels, 
         y_labels,
-        norm_axis)
+        norm_axis,
+        color_scheme)
     p = _initialize_figure(
         source,
         width,
@@ -81,14 +83,20 @@ def _initialize_figure(
     return p
 
 
-def _populate_data_source(value_matrix, x_labels, y_labels, norm_axis):
+def _populate_data_source(
+    value_matrix, 
+    x_labels, 
+    y_labels, 
+    norm_axis,
+    color_scheme):
 
     (n, p) = value_matrix.shape
     normalizer = np.sum(value_matrix, axis=norm_axis)
     normed = value_matrix / normalizer \
         if norm_axis == 0 else \
-        (value_matrix.T / normalizer).T
-    get_index = lambda v: int(10*(v - (v % 0.1)))
+        ((value_matrix.T / normalizer).T
+    color_mat = (normed * len(color_scheme)).astype(int)
+    get_index = lambda v: int(len(colors)*(v - (v % 0.1)))
     x_element = []
     y_element = []
     value = []
@@ -99,7 +107,7 @@ def _populate_data_source(value_matrix, x_labels, y_labels, norm_axis):
             x_element.append(x_labels[j])
             y_element.append(y_labels[i])
             value.append(value_matrix[i,j])
-            color.append(Spectral10[get_index(normed[i,j])])
+            color.append(color_scheme[color_mat[i,j]])
 
     return ColumnDataSource(
         data=dict(
