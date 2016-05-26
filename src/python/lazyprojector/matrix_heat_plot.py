@@ -94,8 +94,8 @@ def _populate_data_source(
     normalizer = np.sum(value_matrix, axis=norm_axis)
     normed = value_matrix / normalizer \
         if norm_axis == 0 else \
-        ((value_matrix.T / normalizer).T
-    color_mat = (normed * len(color_scheme)).astype(int)
+        (value_matrix.T / normalizer).T
+    color_mat = (normed * (len(color_scheme) - 1)).astype(int)
     get_index = lambda v: int(len(colors)*(v - (v % 0.1)))
     x_element = []
     y_element = []
