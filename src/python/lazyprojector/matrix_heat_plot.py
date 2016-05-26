@@ -16,7 +16,7 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
-    color_scheme=Spectral10
+    color_scheme=Spectral10,
     norm_axis=0,
     width=900,
     height=400):

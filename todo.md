@@ -33,6 +33,9 @@
     * Subroutines without BOLD, just one learner with cumulative rewards, where action corresponding to reward is visible to learner.
     * Warm start within BOLD.
     * Updating as we are waiting (censored observations).
+    * Different decay rates in the geometric parameters.
+    * Different scales of geoemtric parameters.
+    * Draw ps from a beta. Different alpha and beta parameters would result in different decay rates.
 
 ###Efficiency
 * Start doing stress tests on the scale that can be handled by the Python code.
@@ -101,13 +104,7 @@
 #Plots
 
 ##Delayed Rewards
-* Arm counts vs time
-    * either by n-length period or by individual time step (cumulative percentage of arm usage at each time step or period).
-* Reward vs time.
-    * Percentage of optimal. Should be increasing.
-* Or regret vs time.
-    * Difference from optimal regret. Should be decreasing.
-    * I thought the regret is not explicitly calculatable. Maybe this is not possible?
+* Cumulative reward over all plays, not just by action.
 
 ##CCA
 * What kind of plots would be useful for CCA?
