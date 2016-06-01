@@ -75,7 +75,7 @@ class BoxcarGramServer:
             'reg': self.reg,
             'queue': self.q,
             'gram': self.gram,
-            'num_rounds', self.num_rounds}
+            'num_rounds': self.num_rounds}
 
 class ExpGramServer:
 
