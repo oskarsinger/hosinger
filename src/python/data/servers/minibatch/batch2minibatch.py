@@ -1,15 +1,19 @@
 import numpy as np
 
 from optimization.utils import get_minibatch
+from drrobert.ml import get_whitened
 
 class Batch2Minibatch:
 
-    def __init__(self, data_loader, batch_size, random=True, lazy=True):
+    def __init__(self, 
+        data_loader, batch_size, 
+        random=True, lazy=True, whiten=False):
 
         self.dl = data_loader
         self.bs = batch_size
         self.random = random
         self.lazy = lazy
+        self.whiten = whiten
 
         self.data = None if self.lazy else self._init_data()
         self.num_rounds = 0
@@ -32,6 +36,9 @@ class Batch2Minibatch:
                 None
 
         self.num_rounds += 1
+
+        if self.whiten:
+            current = get_whitened(current)
 
         return current
 
