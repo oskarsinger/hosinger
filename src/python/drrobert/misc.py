@@ -1,3 +1,5 @@
+from operator import mul
+
 def get_checklist(keys):
 
     return {k : False for k in keys}
@@ -31,3 +33,7 @@ def get_list_mod(l, n):
     new_length = (len(l) / n) * n
 
     return l[:new_length]
+
+def prod(l):
+
+    return reduce(mul, l, 1)
