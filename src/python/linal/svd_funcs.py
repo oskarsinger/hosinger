@@ -28,16 +28,16 @@ def get_transformed_svd(A, get_trans, energy=0.95, k=None):
     s = get_largest_entries(s, energy=energy, k=k)
     transformed_s = get_trans(s)
 
-    return get_multiplied_svd(U, transformed_s, V)
+    return _get_multiplied_svd(U, transformed_s, V)
 
-def get_multiplied_svd(U, s, V):
+def _get_multiplied_svd(U, s, V):
 
     (n, p) = (U.shape[0], V.shape[0])
-    sigma = get_sigma(n, p, s)
+    sigma = _get_sigma(n, p, s)
 
     return multi_dot([U, sigma, V])
 
-def get_sigma(n, p, s):
+def _get_sigma(n, p, s):
 
     sigma = np.zeros((n,p))
 
