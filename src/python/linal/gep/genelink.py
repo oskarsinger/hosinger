@@ -1,9 +1,9 @@
 import numpy as np
 
-from linal import get_q
+from linal.qr import get_q
 from linal.utils import multi_dot
 from linal.utils import quadratic as quad
-from svd_funcs import get_svd_power
+from linal.svd_funcs import get_svd_power
 from optimization.utils import is_converged
 from optimization.optimizers.ftprl import MatrixAdaGrad as MAG
 
