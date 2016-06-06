@@ -40,7 +40,6 @@ class IBILoader(AbstractDataLoader):
         session = sessions.values()[index]
 
         self.data = np.array(self._get_rows(session))
-        print "From loader", self.sensor, str(self.data.shape)
 
     def _set_data(self):
 
