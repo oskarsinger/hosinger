@@ -37,35 +37,38 @@ class FixedRateLoader(AbstractDataLoader):
         elif self.data is None:
             self._set_data()
 
-        return np.copy(self.data)
+        return np.copy(self.data).astype(float)
 
     def _refill_data(self):
 
         sessions = self._get_hdf5_repo()
         index = self.num_rounds % len(sessions)
-        hdf5_dataset = sessions.values()[index]
+        session = sessions.values()[index]
 
-        self.data = np.array(self._get_file_rows(hdf5_dataset))
+        self.data = np.array(self._get_rows(session))
+        print "From loader", self.sensor, str(self.data.shape)
 
     def _set_data(self):
 
         data = []
         repo = self._get_hdf5_repo()
 
-        for (ts, sensors) in repo.items():
-            hdf5_dataset = sensors[self.sensor]
-            data.extend(self._get_rows(hdf5_dataset))
+        for (ts, session) in repo.items():
+            data.extend(self._get_rows(session))
 
         self.data = np.array(data)
 
-    def _get_rows(self, hdf5_dataset):
+    def _get_rows(self, session):
+
+        # Get dataset associated with relevant sensor
+        hdf5_dataset = session[self.sensor]
 
         # Populate entry list with entries of hdf5 dataset
         entries = [self.reader(entry) 
                    for entry in hdf5_dataset]
 
         # Return the extracted windows of the data
-        return self._get_windows(file_data)
+        return self._get_windows(entries)
 
     def _get_windows(self, data):
 

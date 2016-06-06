@@ -1,9 +1,9 @@
-def get_magnitude(line):
+def get_magnitude(line, delimiter=','):
 
-    vals = [float(axis.strip())**2
-            for axis in line.split(',')]
+    squares = [axis**2
+               for axis in get_vector(line, delimiter)]
 
-    return (sum(vals))**(0.5)
+    return (sum(squares))**(0.5)
 
 def get_scalar(line):
 
