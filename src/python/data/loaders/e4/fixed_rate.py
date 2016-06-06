@@ -9,7 +9,7 @@ import numpy as np
 class FixedRateLoader(AbstractDataLoader):
 
     def __init__(self,
-        hdf5_path, subject, sensor, seconds, reader, hertz,
+        hdf5_path, subject, sensor, seconds, reader,
         online=False):
 
         self.hdf5_path = hdf5_path
@@ -17,8 +17,12 @@ class FixedRateLoader(AbstractDataLoader):
         self.sensor = sensor
         self.reader = reader
         self.seconds = seconds
-        self.hertz = hertz
         self.online = online
+
+        # Set the sampling frequency
+        dataset = self._get_hdf5_repo().values()[0][self.sensor]
+        key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
+        self.hertz = dataset.attrs[key]
 
         self.window = int(self.hertz * self.seconds)
         self.data = None
