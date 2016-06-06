@@ -1,38 +1,24 @@
 from data.loaders import AbstractDataLoader
-from drrobert import file_io as fio
 from math import ceil, floor
-from random import choice
 
 import os
+import h5py
 
 import numpy as np
 
 class IBILoader(AbstractDataLoader):
 
     def __init__(self,
-        dir_path, filename, seconds, reader,
+        hdf5_path, subject, sensor, seconds, reader,
         online=False):
 
-        self.dir_path = dir_path
-        self.filename = filename
+        self.hdf5_path = hdf5_path
+        self.subject = subject
+        self.sensor = sensor
         self.reader = reader
         self.seconds = seconds
         self.online = online
 
-        self.timestamps = []
-
-        subdirs = fio.list_dirs_only(dir_path)
-
-        for subdir in subdirs:
-            filepath = os.path.join(subdir, self.filename)
-
-            with open(filepath) as f:
-                self.timestamps.append((
-                    filepath, 
-                    float(f.readline().split(',')[0])))
-
-        self.timestamps = sorted(
-            self.timestamps, key=lambda x: x[1])
         self.data = None
         self.num_rounds = 0
 
@@ -49,35 +35,31 @@ class IBILoader(AbstractDataLoader):
 
     def _refill_data(self):
 
-        index = self.num_rounds % len(self.timestamps)
-        fp = self.timestamps[index][0]
+        sessions = self._get_hdf5_repo()
+        index = self.num_rounds % len(sessions)
+        hdf5_dataset = sessions.values()[index]
 
-        self.data = np.array(self._get_file_rows(fp))
+        self.data = np.array(self._get_file_rows(hdf5_dataset))
 
     def _set_data(self):
 
         data = []
+        repo = self._get_hdf5_repo()
 
-        for (fp, ts) in self.timestamps:
-            data.extend(self._get_file_rows(fp))
+        for (ts, sensors) in repo.items():
+            hdf5_dataset = sensors[self.sensor]
+            data.extend(self._get_rows(hdf5_dataset))
 
         self.data = np.array(data)
 
-    def _get_file_rows(self, fp):
+    def _get_rows(self, hdf5_dataset):
 
-        data = []
+        # Populate entry list with entries of hdf5 dataset
+        entries = [self.reader(entry) 
+                   for entry in hdf5_dataset]
 
-        with open(fp) as f:
-            # Clear out timestamp on first line
-            f.readline()
-
-            # Populate data list with remaining lines
-            file_data = [self.reader(line) for line in f]
-
-            # Extract event-based representation
-            data = self._get_event_windows(file_data)
-
-        return data
+        # Return the extracted windows of the data
+        return self._get_event_windows(entries)
 
     def _get_event_windows(self, data):
         
@@ -129,13 +111,17 @@ class IBILoader(AbstractDataLoader):
 
         return (row, data)
 
+    def _get_hdf5_repo(self):
+
+        return h5py.File(self.hdf5_path, 'r')[self.subject]
+
     def get_status(self):
 
         return {
-            'dir_path': self.dir_path,
-            'filename': self.filename,
+            'hdf5_path': self.hdf5_path,
+            'subject': self.subject,
+            'sensor': self.sensor,
             'seconds': self.seconds,
-            'timestamps': self.filepaths,
             'num_rounds': self.num_rounds,
             'reader': self.reader,
             'data': self.data,
