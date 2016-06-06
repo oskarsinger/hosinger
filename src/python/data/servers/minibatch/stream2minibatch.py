@@ -46,7 +46,6 @@ class Minibatch2Minibatch:
             if self.whiten:
                 batch = get_whitened(batch)
 
-            print "From server", str(batch.shape)
             return batch
 
     def rows(self):
