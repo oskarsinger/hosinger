@@ -1,8 +1,8 @@
 from sklearn.decomposition import PCA
 
-def get_whitened(data):
+def get_pca(data, n_components=None, whiten=False):
 
-    pca = PCA(n_components=0.99999, whiten=True)
+    pca = PCA(n_components=n_components, whiten=whiten)
 
     return pca.fit_transform(data)
 

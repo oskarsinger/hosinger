@@ -1,15 +1,17 @@
 import numpy as np
 
 from drrobert.data_structures import FixedLengthQueue as FLQ
-from drrobert.ml import get_whitened
+from drrobert.ml import get_pca
 
 class Minibatch2Minibatch:
 
-    def __init__(self, data_loader, batch_size, whiten=False):
+    def __init__(self, 
+        data_loader, batch_size, 
+        n_components=None):
 
         self.dl = data_loader
         self.bs = batch_size
-        self.whiten = whiten
+        self.n_components = n_components
 
         self.num_rounds = 0
         self.data = None
@@ -43,8 +45,9 @@ class Minibatch2Minibatch:
             items = self.minibatch.get_items()
             batch = np.array(items)
 
-            if self.whiten:
-                batch = get_whitened(batch)
+            if self.n_components is not None:
+                batch = get_pca(
+                    batch, n_components=self.n_components)
 
             return batch
 
@@ -61,6 +64,7 @@ class Minibatch2Minibatch:
         return {
             'data_loader': self.dl,
             'batch_size': self.bs,
+            'n_components': self.n_components,
             'minibatch': self.minibatch,
             'data': self.data,
             'num_rounds': self.num_rounds}
