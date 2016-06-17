@@ -3,7 +3,7 @@ import numpy as np
 from math import pi
 
 from bokeh.models import HoverTool
-from bokeh.plotting import ColumnDataSource, figure, show, output_file
+from bokeh.plotting import ColumnDataSource, figure
 from bokeh.palettes import Spectral10
 
 from utils import get_plot_path

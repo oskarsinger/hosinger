@@ -1,7 +1,7 @@
 import numpy as np
 
 from bokeh.models import HoverTool
-from bokeh.plotting import figure, show, output_file
+from bokeh.plotting import figure
 from bokeh.palettes import Spectral11
 
 from utils import get_plot_path
