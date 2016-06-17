@@ -28,8 +28,7 @@ def plot_e4_hdf5_session(
     f_session = f_subject[session]
 
     # Prepare plotting input
-    data_map = {k : (np.array(xrange(v.shape[0])), v[:])
-                for (k, v) in f_session.items()}
+    data_map = _get_data_map(f_session)
     title = ' '.join([
         'Value vs. Sample for session',
         session,
@@ -48,3 +47,7 @@ def plot_e4_hdf5_session(
     output_file(file_path, 'value_vs_sample_e4_all_views') 
 
     show(p)
+
+def _get_data_map(hdf5_session):
+
+    print "Stuff"
