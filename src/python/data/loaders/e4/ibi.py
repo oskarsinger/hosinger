@@ -105,7 +105,7 @@ class IBILoader(AbstractDataLoader):
                 events[second] = [value]
 
         # Enumerate the seconds of interest
-        window = [i * k for k in range(self.seconds)]
+        window = [(i * self.seconds) + k for k in range(self.seconds)]
 
         # Give statistic of events occuring in these seconds
         row = [0 if s not in events else len(events[s])
