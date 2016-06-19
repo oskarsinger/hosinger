@@ -1,4 +1,5 @@
 import h5py
+import os
 
 import numpy as np
 
@@ -10,6 +11,7 @@ from bokeh.plotting import show, output_file
 from data.loaders.readers import from_num as fn
 
 from math import ceil
+from bokeh.palettes import Spectral11
 
 def plot_e4_hdf5_session(
     hdf5_path, 
@@ -42,7 +44,12 @@ def plot_e4_hdf5_session(
         subject])
 
     # Create plot
-    p = plot_lines(data_map, 'Sample', 'Value', title)
+    p = plot_lines(
+        data_map, 
+        'Sample', 
+        'Value', 
+        title,
+        colors=Spectral11[:4]+Spectral11[-4:])
 
     # Preparing filepath
     prefix = subject + '_' + session + '_'
@@ -50,7 +57,7 @@ def plot_e4_hdf5_session(
         'value_vs_sample_e4_all_views') + '.html'
     filepath = os.path.join(plot_path, filename)
 
-    output_file(file_path, 'value_vs_sample_e4_all_views') 
+    output_file(filepath, 'value_vs_sample_e4_all_views') 
 
     show(p)
 
@@ -72,7 +79,7 @@ def _get_data_map(session):
     ibi = _get_ibi_values(session['IBI'])
 
     # All other streams can be treated the same
-    data_map = {k : v[:]
+    data_map = {k : v[k.lower()]
                 for (k, v) in session.items()
                 if k not in {'ACC', 'IBI', 'tags'}}
 
@@ -97,12 +104,16 @@ def _get_normed_streams(data_map):
     # New width and cutoff for each stream
     avging_info = {k : (v / l, v % l)
                    for (k, v) in lengths.items()}
-    truncated = {k : data_map[k][:-c]
+
+    # Execute cutoff
+    truncated = {k : data_map[k][:-c] if c > 0 else data_map[k]
                  for (k, (w, c)) in avging_info.items()}
-    print [(truncated[k].shape(0), w * l)
-           for (k, (w, c)) in avging_info.items()]
-    reshaped = {k : data_map[k][:-c].reshape((l,w))
+
+    # Normalize length of data streams
+    reshaped = {k : truncated[k].reshape((l,w))
                 for (k, (w, c)) in avging_info.items()}
+
+    # Average over rows or normed data streams
     return {k : np.mean(v, axis=1)
             for (k, v) in reshaped.items()}
     
