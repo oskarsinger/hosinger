@@ -1,10 +1,15 @@
 import h5py
 
+import numpy as np
+
 from random import choice
 from lazyprojector import plot_lines
 from drrobert.file_io import get_timestamped as get_ts
+from drrobert.misc import unzip
 from bokeh.plotting import show, output_file
 from data.loaders.readers import from_num as fn
+
+from math import ceil
 
 def plot_e4_hdf5_session(
     hdf5_path, 
@@ -51,7 +56,9 @@ def plot_e4_hdf5_session(
 
 def _get_data_map(session):
 
-    num_samples = [ds.shape[0] for ds in session.values()]
+    num_samples = [v.shape[0] 
+                   for (k,v) in session.items()
+                   if not 'tags' == k]
     width = min(num_samples)
     window_sizes = [ns / width for ns in num_samples]
 
@@ -67,7 +74,7 @@ def _get_data_map(session):
     # All other streams can be treated the same
     data_map = {k : v[:]
                 for (k, v) in session.items()
-                if k not in {'ACC', 'IBI'}}
+                if k not in {'ACC', 'IBI', 'tags'}}
 
     # Reintroduce the two special guys
     data_map['ACC'] = np.array(acc)
@@ -81,23 +88,28 @@ def _get_data_map(session):
 
 def _get_normed_streams(data_map):
 
-    lengths = {k : v[0].shape[0]
+    lengths = {k : v.shape[0]
                for (k, v) in data_map.items()}
+
     # New length to fit all streams to
     l = min(lengths.values())
 
     # New width and cutoff for each stream
-    avging_info = {k : (v / fixed_window, v % fixed_window)
+    avging_info = {k : (v / l, v % l)
                    for (k, v) in lengths.items()}
+    truncated = {k : data_map[k][:-c]
+                 for (k, (w, c)) in avging_info.items()}
+    print [(truncated[k].shape(0), w * l)
+           for (k, (w, c)) in avging_info.items()]
     reshaped = {k : data_map[k][:-c].reshape((l,w))
                 for (k, (w, c)) in avging_info.items()}
     return {k : np.mean(v, axis=1)
             for (k, v) in reshaped.items()}
     
-def _get_ibi_values(ibi_msrmnts):
+def _get_ibi_values(ibi_data):
     
     # Last second in which an event occurs
-    end = int(ceil(ibi_msrmnts[-1][0]))
+    end = int(ceil(ibi_data[-1][0]))
 
     # Initialize iteration variables
     seconds = []
@@ -105,13 +117,13 @@ def _get_ibi_values(ibi_msrmnts):
     
     # Iterate until entire window is after all recorded events
     while i - 1 < end:
-        (event_count, data) = _get_event_count(data, i)
+        (event_count, ibi_data) = _get_event_count(ibi_data, i)
         seconds.append(event_count)
         i += 1
 
     return seconds
 
-def _get_event_count(self, data, i):
+def _get_event_count(data, i):
 
     events = []
 
