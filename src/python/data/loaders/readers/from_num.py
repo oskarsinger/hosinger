@@ -1,13 +1,19 @@
-def get_magnitude(num_list):
+from linal.utils import get_safe_power
 
-    squares = [axis**2 for axis in num_list]
+def get_row_magnitude(a):
 
-    return (sum(squares))**(0.5)
+    squares = get_safe_power(a, 2)
+    sums = np.sum(squares, axis=1)
 
-def get_scalar_as_is(num):
+    return get_safe_power(sums, 0.5)
 
-    return num
+def get_array_as_is(a):
 
-def get_vec_as_list(nums):
+    return a
 
-    return [num for num in nums]
+def get_fields_as_columns(a):
+
+    fields = [a[name][:,np.newaxis] 
+              for name in a.dtype.names]
+
+    return np.hstack(fields)

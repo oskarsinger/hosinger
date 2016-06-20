@@ -1,5 +1,5 @@
 from data.loaders import AbstractDataLoader
-from drrobert.misc import get_list_mod as get_lm
+from linal.utils import get_array_mod
 
 import os
 import h5py
@@ -45,29 +45,32 @@ class FixedRateLoader(AbstractDataLoader):
         index = self.num_rounds % len(sessions)
         session = sessions.values()[index]
 
-        self.data = np.array(self._get_rows(session))
+        self.data = np.copy(self._get_rows(session))
 
     def _set_data(self):
 
-        data = []
+        data = None
         repo = self._get_hdf5_repo()
 
         for (ts, session) in repo.items():
-            data.extend(self._get_rows(session))
+            if data is None:
+                data = self._get_rows(session)
+            else:
+                data = np.concatenate(
+                    (data,self._get_rows(session)))
 
-        self.data = np.array(data)
+        self.data = np.copy(data)
 
     def _get_rows(self, session):
 
         # Get dataset associated with relevant sensor
-        hdf5_dataset = session[self.sensor]
+        hdf5_dataset = session[self.sensor][self.sensor.lower()]
 
         # Populate entry list with entries of hdf5 dataset
-        entries = [self.reader(entry) 
-                   for entry in hdf5_dataset]
+        read_data = self.reader(hdf5_dataset)
 
         # Return the extracted windows of the data
-        return self._get_windows(entries)
+        return self._get_windows(read_data)
 
     def _get_windows(self, data):
 
@@ -76,9 +79,9 @@ class FixedRateLoader(AbstractDataLoader):
         # If there are enough measurements for desired window
         if len(data) >= self.window:
             # Prepare data to be merged into full list
-            modded = get_lm(data, self.window)
-            rows = [modded[i*self.window:(i+1)*self.window]
-                    for i in xrange(len(modded)/self.window)]
+            modded = get_array_mod(data, self.window)
+            length = modded.shape[0] / self.window
+            rows = modded.reshape((length, self.window))
         else:
             raise ValueError(
                 'File has less than hertz * seconds lines.')

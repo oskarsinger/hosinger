@@ -62,11 +62,11 @@ class Minibatch2Minibatch:
         new_batch = np.zeros((self.bs, self.num_coords))
         sample_size = self.cols() / self.num_coords
 
-        for i in xrange(sample_size):
-            begin = i * self.num_coords
-            end = begin + self.num_coords
+        for i in xrange(self.num_coords):
+            begin = i * sample_size
+            end = begin + sample_size
 
-            if end + self.num_coords > batch.shape[1]+1:
+            if end + sample_size > batch.shape[1]+1:
                 new_batch[:,i] = np.mean(batch[:,begin:], axis=1)
             else:
                 new_batch[:,i] = np.mean(batch[:,begin:end], axis=1)

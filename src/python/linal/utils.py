@@ -114,3 +114,11 @@ def get_safe_power(s, power):
         power_vec[s != 0] = power
     
     return np.power(s, power_vec)
+
+def get_array_mod(a, divisor, axis=0):
+
+    length = a.shape[axis]
+    remainder = length % divisor
+    end = length - remainder
+
+    return a[:end,:]

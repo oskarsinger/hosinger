@@ -39,29 +39,31 @@ class IBILoader(AbstractDataLoader):
         index = self.num_rounds % len(sessions)
         session = sessions.values()[index]
 
-        self.data = np.array(self._get_rows(session))
+        self.data = np.copy(self._get_rows(session))
 
     def _set_data(self):
 
-        data = []
+        data = None
         repo = self._get_hdf5_repo()
 
         for (ts, session) in repo.items():
-            data.extend(self._get_rows(session))
+            if data is None:
+                data = self._get_rows(session)
+            else:
+                data = np.vstack([data,self._get_rows(session)])
 
-        self.data = np.array(data)
+        self.data = np.copy(data)
 
     def _get_rows(self, session):
 
         # Get dataset associated with relevant sensor
-        hdf5_dataset = session[self.sensor]
+        hdf5_dataset = session[self.sensor][self.sensor.lower()]
 
         # Populate entry list with entries of hdf5 dataset
-        entries = [self.reader(entry) 
-                   for entry in hdf5_dataset]
+        read_data = self.reader(hdf5_dataset)
 
         # Return the extracted windows of the data
-        return self._get_event_windows(entries)
+        return self._get_event_windows(read_data)
 
     def _get_event_windows(self, data):
         
