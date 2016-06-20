@@ -7,10 +7,12 @@ class Minibatch2Minibatch:
 
     def __init__(self, 
         data_loader, batch_size, 
+        num_coords=None,
         n_components=None):
 
         self.dl = data_loader
         self.bs = batch_size
+        self.num_coords = num_coords
         self.n_components = n_components
 
         self.num_rounds = 0
@@ -44,12 +46,32 @@ class Minibatch2Minibatch:
         else:
             items = self.minibatch.get_items()
             batch = np.array(items)
-
+            
             if self.n_components is not None:
                 batch = get_pca(
                     batch, n_components=self.n_components)
 
+            if self.num_coords is not None:
+                batch = self._get_avgd(batch)
+
+
             return batch
+
+    def _get_avgd(self, batch):
+
+        new_batch = np.zeros((self.bs, self.num_coords))
+        sample_size = self.cols() / self.num_coords
+
+        for i in xrange(sample_size):
+            begin = i * self.num_coords
+            end = begin + self.num_coords
+
+            if end + self.num_coords > batch.shape[1]+1:
+                new_batch[:,i] = np.mean(batch[:,begin:], axis=1)
+            else:
+                new_batch[:,i] = np.mean(batch[:,begin:end], axis=1)
+
+        return new_batch
 
     def rows(self):
         
