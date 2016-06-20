@@ -18,7 +18,7 @@ def plot_lines(
     p = figure(
         title=title,
         plot_width=width, plot_height=height,
-        tools="resize,hover,save")
+        tools="resize,hover,save,box_zoom")
     p.grid.grid_line_alpha=0.3
     p.xaxis.axis_label = x_label
     p.yaxis.axis_label = y_label
