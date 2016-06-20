@@ -1,8 +1,11 @@
+import numpy as np
+
 from linal.utils import get_safe_power
 
 def get_row_magnitude(a):
 
-    squares = get_safe_power(a, 2)
+    fac = get_fields_as_columns(a)
+    squares = get_safe_power(fac, 2)
     sums = np.sum(squares, axis=1)
 
     return get_safe_power(sums, 0.5)

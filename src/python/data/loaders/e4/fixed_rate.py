@@ -56,15 +56,15 @@ class FixedRateLoader(AbstractDataLoader):
             if data is None:
                 data = self._get_rows(session)
             else:
-                data = np.concatenate(
-                    (data,self._get_rows(session)))
+                data = np.vstack(
+                    [data, self._get_rows(session)])
 
         self.data = np.copy(data)
 
     def _get_rows(self, session):
 
         # Get dataset associated with relevant sensor
-        hdf5_dataset = session[self.sensor][self.sensor.lower()]
+        hdf5_dataset = session[self.sensor]
 
         # Populate entry list with entries of hdf5 dataset
         read_data = self.reader(hdf5_dataset)

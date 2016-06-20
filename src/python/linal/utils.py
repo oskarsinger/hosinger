@@ -117,8 +117,10 @@ def get_safe_power(s, power):
 
 def get_array_mod(a, divisor, axis=0):
 
-    length = a.shape[axis]
+    shape = a.shape
+    length = shape[axis]
     remainder = length % divisor
     end = length - remainder
+    r_value = a[:end] if len(shape) == 1 else a[:end,:]
 
-    return a[:end,:]
+    return r_value
