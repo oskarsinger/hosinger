@@ -37,3 +37,7 @@ def get_list_mod(l, n):
 def prod(l):
 
     return reduce(mul, l, 1)
+
+def get_nums_as_strings(l):
+
+    return [str(n) for n in l]
