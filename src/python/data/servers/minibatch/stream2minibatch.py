@@ -33,7 +33,7 @@ class Minibatch2Minibatch:
         need = max([self.bs - self.minibatch.get_length(), 1])
 
         for i in xrange(min([n,need])):
-            self.minibatch.enqueue(self.data[i,:])
+            self.minibatch.enqueue(np.copy(self.data[i,:]))
 
         if n <= need:
             self.data = None
@@ -53,8 +53,7 @@ class Minibatch2Minibatch:
             if self.num_coords is not None:
                 batch = self._get_avgd(batch)
 
-
-            return batch
+            return np.copy(batch)
 
     def _get_avgd(self, batch):
 
