@@ -107,18 +107,6 @@ class IBILoader(AbstractDataLoader):
 
         return h5py.File(self.hdf5_path, 'r')[self.subject]
 
-    def get_status(self):
-
-        return {
-            'hdf5_path': self.hdf5_path,
-            'subject': self.subject,
-            'sensor': self.sensor,
-            'seconds': self.seconds,
-            'num_rounds': self.num_rounds,
-            'reader': self.reader,
-            'data': self.data,
-            'online': self.online}
-
     def cols(self):
 
         return self.seconds
@@ -133,3 +121,20 @@ class IBILoader(AbstractDataLoader):
             rows = self.data.shape[0]
 
         return rows
+
+    def refresh(self):
+
+        self.data = None
+        self.num_rounds = 0
+
+    def get_status(self):
+
+        return {
+            'hdf5_path': self.hdf5_path,
+            'subject': self.subject,
+            'sensor': self.sensor,
+            'seconds': self.seconds,
+            'num_rounds': self.num_rounds,
+            'reader': self.reader,
+            'data': self.data,
+            'online': self.online}

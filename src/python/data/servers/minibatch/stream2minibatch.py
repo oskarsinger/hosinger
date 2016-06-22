@@ -7,8 +7,7 @@ class Minibatch2Minibatch:
 
     def __init__(self, 
         data_loader, batch_size, 
-        num_coords=None,
-        n_components=None):
+        num_coords=None, n_components=None):
 
         self.dl = data_loader
         self.bs = batch_size
@@ -80,6 +79,13 @@ class Minibatch2Minibatch:
     def cols(self):
 
         return self.dl.cols()
+
+    def refresh(self):
+
+        self.dl.refresh()
+        self.minibatch = FLQ(self.bs)
+        self.data = None
+        self.num_rounds = 0
 
     def get_status(self):
 

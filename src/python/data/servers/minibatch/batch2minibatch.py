@@ -54,6 +54,12 @@ class Batch2Minibatch:
 
         return self.dl.cols()
 
+    def refresh(self):
+
+        self.dl.refresh()
+        self.data = None
+        self.num_rounds = 0
+
     def get_status(self):
 
         return {
