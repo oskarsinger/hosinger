@@ -9,6 +9,7 @@ setup(
         'optimization.optimizers.ftprl',
         'linal',
         'linal.random',
+        'linal.utils',
         'lazyprojector',
         'drrobert',
         'drrobert.data_structures',

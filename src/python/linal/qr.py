@@ -12,8 +12,8 @@ def get_q(A, inner_prod=np.dot):
 
     for j in xrange(1,p):
         x_j = A[:,j]
-        r_j = get_safe_power(inner_prod(Q, x_j), 0.5)
-        y_j = x_j - np.dot(Q, r)
+        r_j = inner_prod(Q,x_j)
+        y_j = (x_j - np.dot(Q, r_j))[:,np.newaxis]
         Q = np.concatenate((Q, y_j), axis=1)
 
     return np.copy(Q)
