@@ -9,7 +9,7 @@ import numpy as np
 
 class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
-    def __init__(self, lower, dual_avg):
+    def __init__(self, lower, dual_avg, verbose=False):
 
         self.sparse = lower is not None
 
@@ -20,6 +20,7 @@ class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
         self.lower = lower
         self.dual_avg = dual_avg
+        self.verbose = verbose
 
         self.grad = None
         self.num_rounds = 0
@@ -28,6 +29,8 @@ class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
     def get_update(self, parameters, gradient, eta):
 
         if any([x is None for x in [self.U, self.s, self.V]]):
+            if self.verbose:
+                print 'MatrixFTPRLOptimizer initializing SVD state.'
             (self.U, self.s, self.V) = np.linalg.svd(parameters)
             
         self.num_rounds += 1

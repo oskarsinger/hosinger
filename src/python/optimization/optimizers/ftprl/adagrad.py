@@ -5,7 +5,7 @@ import numpy as np
 
 class MatrixAdaGrad(AbstractMatrixFTPRLOptimizer):
 
-    def __init__(self, lower=None, dual_avg=True, delta=0.1):
+    def __init__(self, lower=None, dual_avg=True, verbose=False, delta=0.1):
 
         super(MatrixAdaGrad, self).__init__(lower, dual_avg)
 
