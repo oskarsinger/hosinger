@@ -25,7 +25,7 @@ class BatchServer:
 
         return np.copy(self.data)
 
-    def _get_avgd(self):
+    def _avg_data(self):
 
         new_batch = np.zeros((self.data.shape[0], self.num_coords))
         sample_size = self.cols() / self.num_coords
@@ -34,12 +34,12 @@ class BatchServer:
             begin = i * sample_size
             end = begin + sample_size
 
-            if end + sample_size > batch.shape[1]+1:
+            if end + sample_size > self.data.shape[1]+1:
                 new_batch[:,i] = np.mean(self.data[:,begin:], axis=1)
             else:
                 new_batch[:,i] = np.mean(self.data[:,begin:end], axis=1)
 
-        return new_batch
+        self.data = new_batch 
 
     def cols(self):
 
