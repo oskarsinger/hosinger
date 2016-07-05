@@ -93,4 +93,5 @@ class Minibatch2Minibatch:
             'batch_size': self.bs,
             'minibatch': self.minibatch,
             'data': self.data,
+            'online': True,
             'num_rounds': self.num_rounds}
