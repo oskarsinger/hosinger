@@ -43,7 +43,12 @@ class BatchServer:
 
     def cols(self):
 
-        return self.dl.cols()
+        cols = self.dl.cols()
+
+        if self.num_coords is not None:
+            cols = self.num_coords
+
+        return cols
 
     def rows(self):
 
@@ -55,4 +60,5 @@ class BatchServer:
             'data_loader': self.dl,
             'reg': self.reg,
             'lazy': self.lazy,
+            'online': False,
             'data': self.data}
