@@ -1,6 +1,7 @@
 from data.loaders import AbstractDataLoader
 from linal.random.utils import get_rank_k
 from drrobert.misc import get_checklist
+from drrobert.random import normal
 
 import numpy as np
 
@@ -32,22 +33,16 @@ class GaussianLoader(AbstractDataLoader):
         self.p = p
         self.k = k
 
-        # Choose low-rank or full-rank random matrix
-        if self.low_rank:
-            self.X = get_rank_k(self.n, self.p, self.k)
-        else:
-            self.X = np.random.randn(self.n, self.p)
-
         # Set mean of each column by input constants
         if means is not None:
             if not len(means) == self.p:
                 raise ValueError(
                     'Length of means parameter must be equal to p.')
-            else:
-                for i in xrange(p):
-                    self.X[:,i] += means[i]
 
         self.means = means
+
+        # Generate data
+        self.X = _get_batch(self.n, self.p, self.k, self.means)
             
         # Checklist for which rows sampled in current epoch
         self.sampled = get_checklist(xrange(self.n))
@@ -101,3 +96,79 @@ class GaussianLoader(AbstractDataLoader):
     def rows(self):
         
         return self.n
+
+class ShiftingMeanGaussianLoader(AbstractDataLoader):
+
+    def __init__(self, p, means, rate, batch_size=1, k=None):
+
+        # Check validity of k parameter
+        if k is None:
+            self.low_rank = False
+        else:
+            if k > min([n, p]):
+                raise ValueError(
+                    'Parameter k must not exceed the minimum matrix dimension.')
+            else:
+                self.low_rank = True
+
+        self.p = p
+        self.k = k
+        self.bs = batch_size
+        self.rate = rate
+
+        # Set mean of each column by input constants
+        if not len(means) == self.p:
+            raise ValueError(
+                'Length of means parameter must be equal to p.')
+
+        self.means = means
+
+        # Number of requests made for data
+        self.num_rounds = 0
+
+    def get_data(self):
+
+        # Calculate current means
+        scale = (self.rate)**(self.num_rounds)
+        current_means = [scale * mu for mu in means]
+
+        # Get batch
+        batch = _get_batch(self.bs, self.p, self.k, current_means)
+
+        # Update global state variable
+        self.num_rounds += 1
+
+        return batch
+
+    def get_status(self):
+
+        return {
+            'p': self.p,
+            'num_rounds': self.num_rounds,
+            'means': self.means,
+            'rate': self.rate,
+            'k': self.k,
+            'batch_size': self.bs}
+
+    def cols(self):
+
+        return self.p
+
+    def rows(self):
+
+        return self.num_rounds
+
+def _get_batch(bs, p, k, means):
+
+    batch = None
+
+    if k is not None:
+        batch = get_rank_k(bs, p, k)
+    else:
+        batch = np.random.randn(bs, p)
+
+    if means is not None:
+        for i in range(p):
+            batch[:,i] += means[i]
+
+    return batch

@@ -4,7 +4,7 @@ class Data2Percentiles:
 
     def __init__(self, 
         ds, 
-        percentiles=np.linspace(0,1,num=10),
+        percentiles,
         unfold=False):
 
         self.ds = ds
@@ -30,8 +30,10 @@ class Data2Percentiles:
 
     def get_status(self):
 
-        return {
+        percentile_items = {
             'data_server': self.ds,
             'percentiles': self.quantiles,
-            'unfold': self.unfold,
-            'num_rounds': self.num_rounds}
+            'unfold': self.unfold}.items()
+        ds_items = self.ds.get_status().items()
+
+        return dict(percentile_items + ds_items)
