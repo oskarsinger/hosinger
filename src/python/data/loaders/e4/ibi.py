@@ -122,6 +122,10 @@ class IBILoader(AbstractDataLoader):
 
         return rows
 
+    def name(self):
+
+        return sensor
+
     def refresh(self):
 
         self.data = None

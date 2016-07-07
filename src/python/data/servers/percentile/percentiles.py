@@ -15,7 +15,7 @@ class Data2Percentiles:
 
     def get_data(self):
 
-        batch = ds.get_data()       
+        batch = self.ds.get_data()       
 
         if self.unfold:
             (n, p) = batch.shape
@@ -32,8 +32,16 @@ class Data2Percentiles:
 
         percentile_items = {
             'data_server': self.ds,
-            'percentiles': self.quantiles,
+            'percentiles': self.percentiles,
             'unfold': self.unfold}.items()
         ds_items = self.ds.get_status().items()
 
         return dict(percentile_items + ds_items)
+
+    def cols(self):
+        
+        return len(self.percentiles)
+
+    def rows(self):
+
+        return self.ds.rows()
