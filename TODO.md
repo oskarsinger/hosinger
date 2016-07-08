@@ -18,9 +18,9 @@
     * In general, consider interesting ways to maintain the data queue.
 
 * Probably need to rework the Gaussian data server.
-    * Need to work with vector-valued means a bit more naturally in the implementation.
-    * Would be nice to have matrix-valued dynamics for the shifting mean implementation instead of just scalar valued.
     * Can probably merge the original and shifting-mean implementations if I can figure out how to reconcile the minibatch subsampling and pure streaming approaches.
+
+* Make a data server to serve up periodic data.
 
 ##Step Size
 * Generalize my code to allow for an arbitrary step-size scheduler.

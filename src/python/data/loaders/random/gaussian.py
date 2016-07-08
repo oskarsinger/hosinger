@@ -92,6 +92,10 @@ class GaussianLoader(AbstractDataLoader):
             'low_rank': self.low_rank,
             'mean': self.mean}
 
+    def name(self):
+
+        return 'GaussianData'
+
     def cols(self):
         
         return self.p
@@ -135,7 +139,7 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
 
         # Calculate current means
         scale = get_safe_power(self.rate, self.num_rounds)
-        current_mean = np.dot(mean, scale)
+        current_mean = np.dot(self.mean, scale)
 
         # Get batch
         batch = _get_batch(self.bs, self.p, self.k, current_mean)
@@ -145,15 +149,23 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
 
         return batch
 
+    def refresh(self):
+
+        self.num_rounds = 0
+
     def get_status(self):
 
         return {
             'p': self.p,
             'num_rounds': self.num_rounds,
-            'means': self.means,
+            'mean': self.mean,
             'rate': self.rate,
             'k': self.k,
             'batch_size': self.bs}
+
+    def name(self):
+
+        return 'ShiftedMeanGaussianData'
 
     def cols(self):
 

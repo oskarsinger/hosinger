@@ -1,1 +1,2 @@
 from gaussian import GaussianLoader
+from gaussian import ShiftingMeanGaussianLoader

@@ -28,6 +28,10 @@ class Data2Percentiles:
             self.percentiles,
             axis=1).T
 
+    def refresh(self):
+
+        self.ds.refresh()
+
     def get_status(self):
 
         percentile_items = {
