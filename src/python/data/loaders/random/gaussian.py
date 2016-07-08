@@ -1,13 +1,16 @@
 from data.loaders import AbstractDataLoader
+from linal.utils import get_safe_power
 from linal.random.utils import get_rank_k
 from drrobert.misc import get_checklist
 from drrobert.random import normal
 
 import numpy as np
 
+from numbers import Number
+
 class GaussianLoader(AbstractDataLoader):
 
-    def __init__(self, n, p, batch_size=None, k=None, means=None):
+    def __init__(self, n, p, batch_size=None, k=None, mean=None):
 
         # Check validity of k parameter
         if k is None:
@@ -35,14 +38,14 @@ class GaussianLoader(AbstractDataLoader):
 
         # Set mean of each column by input constants
         if means is not None:
-            if not len(means) == self.p:
+            if not mean.shape[1] == self.p:
                 raise ValueError(
                     'Length of means parameter must be equal to p.')
 
-        self.means = means
+        self.mean = mean
 
         # Generate data
-        self.X = _get_batch(self.n, self.p, self.k, self.means)
+        self.X = _get_batch(self.n, self.p, self.k, self.mean)
             
         # Checklist for which rows sampled in current epoch
         self.sampled = get_checklist(xrange(self.n))
@@ -87,7 +90,7 @@ class GaussianLoader(AbstractDataLoader):
             'batch_size': self.batch_size,
             'sampled': self.sampled,
             'low_rank': self.low_rank,
-            'means': self.means}
+            'mean': self.mean}
 
     def cols(self):
         
@@ -99,7 +102,7 @@ class GaussianLoader(AbstractDataLoader):
 
 class ShiftingMeanGaussianLoader(AbstractDataLoader):
 
-    def __init__(self, p, means, rate, batch_size=1, k=None):
+    def __init__(self, p, mean, rate, batch_size=1, k=None):
 
         # Check validity of k parameter
         if k is None:
@@ -114,14 +117,16 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
         self.p = p
         self.k = k
         self.bs = batch_size
+
+        # Figure out clean way to verify dimensional validity
         self.rate = rate
 
         # Set mean of each column by input constants
-        if not len(means) == self.p:
+        if not mean.shape[1] == self.p:
             raise ValueError(
                 'Length of means parameter must be equal to p.')
 
-        self.means = means
+        self.mean = mean
 
         # Number of requests made for data
         self.num_rounds = 0
@@ -129,11 +134,11 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
     def get_data(self):
 
         # Calculate current means
-        scale = (self.rate)**(self.num_rounds)
-        current_means = [scale * mu for mu in means]
+        scale = get_safe_power(self.rate, self.num_rounds)
+        current_mean = np.dot(mean, scale)
 
         # Get batch
-        batch = _get_batch(self.bs, self.p, self.k, current_means)
+        batch = _get_batch(self.bs, self.p, self.k, current_mean)
 
         # Update global state variable
         self.num_rounds += 1
@@ -158,7 +163,7 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
 
         return self.num_rounds
 
-def _get_batch(bs, p, k, means):
+def _get_batch(bs, p, k=None, mean=None):
 
     batch = None
 
@@ -167,8 +172,7 @@ def _get_batch(bs, p, k, means):
     else:
         batch = np.random.randn(bs, p)
 
-    if means is not None:
-        for i in range(p):
-            batch[:,i] += means[i]
+    if mean is not None:
+        batch += mean
 
     return batch
