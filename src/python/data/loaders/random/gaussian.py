@@ -1,5 +1,5 @@
 from data.loaders import AbstractDataLoader
-from linal.utils import get_safe_power
+from linal.svd_funcs import get_svd_power
 from linal.random.utils import get_rank_k
 from drrobert.misc import get_checklist
 from drrobert.random import normal
@@ -106,7 +106,11 @@ class GaussianLoader(AbstractDataLoader):
 
 class ShiftingMeanGaussianLoader(AbstractDataLoader):
 
-    def __init__(self, p, mean, rate, batch_size=1, k=None):
+    def __init__(self, 
+        p, mean, rate, 
+        batch_size=1, 
+        k=None, 
+        variance=None):
 
         # Check validity of k parameter
         if k is None:
@@ -125,6 +129,11 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
         # Figure out clean way to verify dimensional validity
         self.rate = rate
 
+        if variance is None:
+            variance = np.identity(self.p)
+
+        self.variance = variance
+
         # Set mean of each column by input constants
         if not mean.shape[1] == self.p:
             raise ValueError(
@@ -138,7 +147,7 @@ class ShiftingMeanGaussianLoader(AbstractDataLoader):
     def get_data(self):
 
         # Calculate current means
-        scale = get_safe_power(self.rate, self.num_rounds)
+        scale = get_svd_power(self.rate, self.num_rounds)
         current_mean = np.dot(self.mean, scale)
 
         # Get batch
