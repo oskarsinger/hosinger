@@ -18,6 +18,7 @@ class IBILoader(AbstractDataLoader):
         self.reader = reader
         self.seconds = seconds
         self.online = online
+        self.num_sessions = len(self._get_hdf5_repo())
 
         self.data = None
         self.num_rounds = 0
@@ -26,10 +27,10 @@ class IBILoader(AbstractDataLoader):
 
         if self.online:
             self._refill_data()
-
-            self.num_rounds += 1
         elif self.data is None:
             self._set_data()
+
+        self.num_rounds += 1
 
         return np.copy(self.data).astype(float)
 
@@ -122,9 +123,20 @@ class IBILoader(AbstractDataLoader):
 
         return rows
 
+    def finished(self):
+
+        finished = None
+
+        if self.online:
+            finished = self.num_rounds > self.num_sessions
+        else:
+            finished = self.num_rounds > 1
+
+        return finished
+
     def name(self):
 
-        return sensor
+        return self.sensor
 
     def refresh(self):
 
@@ -139,6 +151,7 @@ class IBILoader(AbstractDataLoader):
             'sensor': self.sensor,
             'seconds': self.seconds,
             'num_rounds': self.num_rounds,
+            'num_sessions': self.num_sessions,
             'reader': self.reader,
             'data': self.data,
             'online': self.online}

@@ -22,4 +22,6 @@ setup(
         'data.servers.action_reward',
         'data.servers.batch',
         'data.servers.minibatch',
+        'data.servers.percentile',
+        'data.servers.periodic',
         'data.servers.gram'])

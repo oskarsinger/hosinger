@@ -44,21 +44,13 @@ class Minibatch2Periodic:
             for i in xrange(num_skips):
                 self.ds.get_data()
 
+        self.num_rounds += 1
+
         return self.ds.get_data()
 
     def rows(self):
 
-        num_epochs = self.num_rounds / self.el
-        current_rounds = 0
-        remainder = self.num_rounds % self.el
-
-        if remainder > self.hl:
-            if remainder >= self.hl + self.pl:
-                current_rounds = self.pl
-            else:
-                current_rounds = remainder - self.hl
-
-        return self.pl * num_epochs + current_rounds
+        return self.num_rounds
 
     def cols(self):
 

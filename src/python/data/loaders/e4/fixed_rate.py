@@ -18,6 +18,7 @@ class FixedRateLoader(AbstractDataLoader):
         self.reader = reader
         self.seconds = seconds
         self.online = online
+        self.num_sessions = len(self._get_hdf5_repo())
 
         # Set the sampling frequency
         dataset = self._get_hdf5_repo().values()[0][self.sensor]
@@ -32,10 +33,10 @@ class FixedRateLoader(AbstractDataLoader):
 
         if self.online:
             self._refill_data()
-
-            self.num_rounds += 1
         elif self.data is None:
             self._set_data()
+
+        self.num_rounds += 1
 
         return np.copy(self.data).astype(float)
 
@@ -107,9 +108,20 @@ class FixedRateLoader(AbstractDataLoader):
 
         return rows
 
+    def finished(self):
+
+        finished = None
+
+        if self.online:
+            finished = self.num_rounds > self.num_sessions
+        else:
+            finished = self.num_rounds > 1
+
+        return finished
+
     def name(self):
 
-        return sensor
+        return self.sensor
 
     def refresh(self):
 
@@ -126,6 +138,7 @@ class FixedRateLoader(AbstractDataLoader):
             'seconds': self.seconds,
             'window': self.window,
             'num_rounds': self.num_rounds,
+            'num_sessions': self.num_sessions,
             'reader': self.reader,
             'data': self.data,
             'online': self.online}
