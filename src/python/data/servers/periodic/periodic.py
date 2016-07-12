@@ -26,25 +26,32 @@ class Minibatch2Periodic:
         self.tl = (self.num_periods - self.wp) * self.pl
 
         self.num_rounds = 0
+        self.num_requests = 0
 
     def get_data(self):
 
-        remainder = self.num_rounds % self.el
+        remainder = self.num_requests % self.el
 
         if remainder < self.hl:
             num_skips = self.hl - remainder
 
             for i in xrange(num_skips):
-                self.ds.get_data()
+                self._update_data_server()
 
         elif remainder > self.hl + self.pl:
             num_overflow = remainder - (self.hl + self.pl)
             num_skips = self.tl - num_overflow
 
             for i in xrange(num_skips):
-                self.ds.get_data()
+                self._update_data_server()
 
         self.num_rounds += 1
+
+        return self._update_data_server()
+
+    def _update_data_server(self):
+
+        self.num_requests += 1
 
         return self.ds.get_data()
 
@@ -59,6 +66,8 @@ class Minibatch2Periodic:
     def refresh(self):
 
         self.ds.refresh()
+
+        self.num_rounds = 0
 
     def get_status(self):
 
