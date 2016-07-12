@@ -17,16 +17,19 @@ class Data2Percentiles:
 
         batch = self.ds.get_data()       
 
-        if self.unfold:
-            (n, p) = batch.shape
-            batch = batch.reshape(n*p,1)
+        if type(batch) is not MissingData:
+            if self.unfold:
+                (n, p) = batch.shape
+                batch = batch.reshape(n*p,1)
 
-        self.num_rounds += 1
+            self.num_rounds += 1
 
-        return np.percentile(
-            batch, 
-            self.percentiles,
-            axis=1).T
+            batch = np.percentile(
+                batch, 
+                self.percentiles,
+                axis=1).T
+
+        return batch
 
     def refresh(self):
 

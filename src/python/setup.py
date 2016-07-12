@@ -13,6 +13,7 @@ setup(
         'lazyprojector',
         'drrobert',
         'drrobert.data_structures',
+        'drrobert.fp',
         'data',
         'data.errors',
         'data.loaders',

@@ -22,6 +22,7 @@ class IBILoader(AbstractDataLoader):
 
         self.data = None
         self.num_rounds = 0
+        self.current_time = None
 
     def get_data(self):
 
