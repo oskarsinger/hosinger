@@ -1,4 +1,5 @@
 from data.loaders import AbstractDataLoader
+from data.missing import MissingData
 from math import ceil, floor
 
 import os
@@ -33,15 +34,17 @@ class IBILoader(AbstractDataLoader):
 
         self.num_rounds += 1
 
-        return np.copy(self.data).astype(float)
+        return self.data.astype(float)
 
     def _refill_data(self):
 
         sessions = self._get_hdf5_repo()
         index = self.num_rounds % len(sessions)
-        session = sessions.values()[index]
+        sorted_sessions = sorted(
+                sessions.items(), key=lambda x: x[0])
+        (key, session) = sorted_sessions[index]
 
-        self.data = np.copy(self._get_rows(session))
+        self.data = np.copy(self._get_rows(key, session))
 
     def _set_data(self):
 
@@ -57,7 +60,12 @@ class IBILoader(AbstractDataLoader):
 
         self.data = np.copy(data)
 
-    def _get_rows(self, session):
+    def _get_rows(self, key, session):
+
+        # Use key to check if there is a significant gap between measurements
+        # If so, serve a MissingData object with number of MissingData rounds
+        # Otherwise, server the data itself
+        # Either way, update current_time accordingly
 
         # Get dataset associated with relevant sensor
         hdf5_dataset = session[self.sensor]
