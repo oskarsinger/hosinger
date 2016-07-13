@@ -68,19 +68,42 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _get_rows(self, key, session):
 
-        # Use key to check if there is a significant gap between measurements
-        # If so, serve a MissingData object with number of MissingData rounds
-        # Otherwise, server the data itself
-        # Either way, update current_time accordingly
+        time_diff = self._get_time_difference(key)
+        data = None
 
-        # Get dataset associated with relevant sensor
-        hdf5_dataset = session[self.sensor]
+        if time_diff >= 1:
+            num_missing_rows = int(ceil(time_diff/self.seconds))
+            data = MissingData(num_missing_rows) 
+        else:
+            # Get dataset associated with relevant sensor
+            hdf5_dataset = session[self.sensor]
 
-        # Populate entry list with entries of hdf5 dataset
-        read_data = self.reader(hdf5_dataset)
+            # Populate entry list with entries of hdf5 dataset
+            read_data = self.reader(hdf5_dataset)
 
-        # Return the extracted windows of the data
-        return self._get_windows(read_data)
+            # Get the extracted windows of the data
+            data = self._get_windows(read_data)
+
+        return data
+
+    def _get_time_difference(self, key):
+
+        (date_str, time_str) = key.split('_')[1].split('-')
+        (year, month, day) = [int(date_str[2*i:2*(i+1)])
+                              for i in range(3)]
+        (hour, minute, second) = [int(time_str[2*i:2*(i+1)])
+                                  for i in range(3)]
+        dt = DT(year, month, day, hour, minute, second)
+        uts = (dt - DT.utcfromtimestamp(0)).total_seconds()
+        time_diff = 0
+
+        if self.current_time is None:
+            self.current_time = uts
+        else:
+            time_diff = uts - self.current_time
+            self.current_time += time_diff
+
+        return time_diff
 
     def _get_windows(self, data):
 

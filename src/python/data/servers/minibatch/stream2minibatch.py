@@ -17,6 +17,7 @@ class Minibatch2Minibatch:
         self.num_rounds = 0
         self.data = None
         self.minibatch = FLQ(self.bs)
+        self.num_missing_rows = 0
 
     def get_data(self):
 
@@ -28,6 +29,11 @@ class Minibatch2Minibatch:
 
         if self.data is None:
             self.data = self.dl.get_data()
+
+            if type(self.data) is MissingData:
+                self.num_missing_rows = self.data.get_status()['num_missing_rows']
+
+        batch = None
 
         if type(self.data) is not MissingData:
             n = self.data.shape[0]
@@ -49,8 +55,12 @@ class Minibatch2Minibatch:
                 
                 if self.num_coords is not None:
                     batch = self._get_avgd(batch)
-        else:
+        elif self.num_missing_rows > 0:
             batch = self.data
+            self.num_missing_rows -= 1 
+        else:
+            self.data = None
+            batch = self._get_minibatch()
 
         return batch
 
