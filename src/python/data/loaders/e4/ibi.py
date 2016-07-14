@@ -164,9 +164,9 @@ class IBILoader(AbstractDataLoader):
         finished = None
 
         if self.online:
-            finished = self.num_rounds > self.num_sessions
+            finished = self.num_rounds >= self.num_sessions
         else:
-            finished = self.num_rounds > 1
+            finished = self.num_rounds >= 1
 
         return finished
 
