@@ -31,7 +31,7 @@ class FixedRateLoader(AbstractDataLoader):
         self.window = int(self.hertz * self.seconds)
         self.data = None
         self.num_rounds = 0
-        self.current_time = None
+        self.current_time = 0
 
     def get_data(self):
 
@@ -75,7 +75,12 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _get_rows(self, key, session):
 
+        # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
+
+        # Increment the current time with said difference
+        self._inc_current_time(time_diff)
+
         data = None
 
         if time_diff >= 1:
@@ -91,6 +96,9 @@ class FixedRateLoader(AbstractDataLoader):
             # Get the extracted windows of the data
             data = self._get_windows(read_data)
 
+            # Increment self.current_time with time-length of session
+            self._inc_current_time(self.seconds * data.shape[0])
+
         return data
 
     def _get_time_difference(self, key):
@@ -103,15 +111,13 @@ class FixedRateLoader(AbstractDataLoader):
                                   for i in range(3)]
         dt = DT(year, month, day, hour, minute, second)
         uts = (dt - DT.utcfromtimestamp(0)).total_seconds()
-        time_diff = 0
-
-        if self.current_time is None:
-            self.current_time = uts
-        else:
-            time_diff = uts - self.current_time
-            self.current_time += time_diff
+        time_diff = uts - self.current_time
 
         return time_diff
+
+    def _inc_current_time(self, seconds):
+
+        self.current_time += seconds
 
     def _get_windows(self, data):
 

@@ -79,6 +79,9 @@ def _get_data_map(hdf5_path, subject):
 
         print 'Populating x and y axes for server', dl.name()
         while not dl.finished():
+
+            if i % 1000 == 0:
+                print 'Iteration', i
             
             update = ds.get_data()
 
@@ -92,7 +95,7 @@ def _get_data_map(hdf5_path, subject):
             i += 1
 
         print 'Scaling x axis to days'
-        scaled_indexes = np.arange(len(values)).astype(float) / (24.0 * 3600.0)
+        scaled_indexes = np.arange(len(values)).astype(float) #/ (24.0 * 3600.0)
         data_map[dl.name()] = (scaled_indexes, np.array(values))
 
     return data_map
