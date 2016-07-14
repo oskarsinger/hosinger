@@ -30,11 +30,13 @@ def plot_e4_hdf5_subject(
         subject = f.keys()[index]
 
     # Prepare plotting input
+    print 'Getting data map'
     data_map = _get_data_map(hdf5_path, subject)
     title = ' '.join([
         'Value vs. Time (days) for subject',
         subject])
 
+    print 'Creating plot'
     # Create plot
     p = plot_lines(
         data_map, 
@@ -43,8 +45,9 @@ def plot_e4_hdf5_subject(
         title,
         colors=Spectral11[:4]+Spectral11[-4:])
 
+    print 'Creating filepath'
     # Preparing filepath
-    prefix = subject + '_' + session + '_'
+    prefix = subject + '_'
     filename = get_ts(prefix + 
         'value_vs_time_e4_all_views') + '.html'
     filepath = os.path.join(plot_path, filename)
@@ -57,35 +60,39 @@ def _get_data_map(hdf5_path, subject):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
+    print 'Making loaders'
     loaders = [
         FRL(hdf5_path, subject, 'EDA', 1, fac, online=True),
         FRL(hdf5_path, subject, 'TEMP', 1, fac, online=True),
         FRL(hdf5_path, subject, 'ACC', 1, mag, online=True),
-        IBI(hdf5_path, subject, 'IBI', 1, fac, online=True),
+        #IBI(hdf5_path, subject, 'IBI', 1, fac, online=True),
         FRL(hdf5_path, subject, 'BVP', 1, fac, online=True),
         FRL(hdf5_path, subject, 'HR', 1, fac, online=True)]
+    print 'Making servers'
     servers = [M2M(dl, 1) for dl in loaders]
     data_map = {}
     
     for ds in servers:
         dl = ds.get_status()['data_loader']
         values = []
-        indexes = []
         i = 0
 
+        print 'Populating x and y axes for server', dl.name()
         while not dl.finished():
             
             update = ds.get_data()
 
-            if type(update) is not MissingData:
+            if not isinstance(update, MissingData):
                 avg = np.mean(update)
 
                 values.append(avg)
-                indexes.append(i)
+            else:
+                values.append(0)
 
             i += 1
 
-        scaled_indexes = np.array(indexes).astype(float) / (24 * 3600)
+        print 'Scaling x axis to days'
+        scaled_indexes = np.arange(len(values)).astype(float) / (24.0 * 3600.0)
         data_map[dl.name()] = (scaled_indexes, np.array(values))
 
     return data_map

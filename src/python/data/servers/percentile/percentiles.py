@@ -17,7 +17,7 @@ class Data2Percentiles:
 
         batch = self.ds.get_data()       
 
-        if type(batch) is not MissingData:
+        if not isinstance(batch, MissingData):
             if self.unfold:
                 (n, p) = batch.shape
                 batch = batch.reshape(n*p,1)

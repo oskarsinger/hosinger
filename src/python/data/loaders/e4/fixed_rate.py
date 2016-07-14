@@ -44,9 +44,7 @@ class FixedRateLoader(AbstractDataLoader):
 
         batch = self.data
 
-        print type(self.data)
-        if type(self.data) is not MissingData:
-            print self.data
+        if not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
 
         return batch
@@ -59,7 +57,7 @@ class FixedRateLoader(AbstractDataLoader):
                 sessions.items(), key=lambda x: x[0])
         (key, session) = sorted_sessions[index]
 
-        self.data = np.copy(self._get_rows(key, session))
+        self.data = self._get_rows(key, session)
 
     def _set_data(self):
 
@@ -100,6 +98,7 @@ class FixedRateLoader(AbstractDataLoader):
         (date_str, time_str) = key.split('_')[1].split('-')
         (year, month, day) = [int(date_str[2*i:2*(i+1)])
                               for i in range(3)]
+        year += 2000
         (hour, minute, second) = [int(time_str[2*i:2*(i+1)])
                                   for i in range(3)]
         dt = DT(year, month, day, hour, minute, second)
@@ -154,9 +153,9 @@ class FixedRateLoader(AbstractDataLoader):
         finished = None
 
         if self.online:
-            finished = self.num_rounds > self.num_sessions
+            finished = self.num_rounds >= self.num_sessions
         else:
-            finished = self.num_rounds > 1
+            finished = self.num_rounds >= 1
 
         return finished
 

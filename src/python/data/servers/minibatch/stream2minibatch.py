@@ -30,13 +30,13 @@ class Minibatch2Minibatch:
         if self.data is None:
             self.data = self.dl.get_data()
 
-            if type(self.data) is MissingData:
+            if isinstance(self.data, MissingData):
                 self.num_missing_rows = self.data.get_status()['num_missing_rows']
 
         batch = None
 
         # TODO: would be great if this could be cleaned up a bit
-        if type(self.data) is not MissingData:
+        if not isinstance(self.data, MissingData):
             n = self.data.shape[0]
             need = max([self.bs - self.minibatch.get_length(), 1])
 
@@ -49,10 +49,10 @@ class Minibatch2Minibatch:
                 batch = self._get_minibatch()
             else:
                 items = self.minibatch.get_items()
-                batch = np.array(items)
-                
-                if self.num_coords is not None:
-                    batch = self._get_avgd(batch)
+                data_array = np.array(items)
+                batch = data_array \
+                    if self.num_coords is None else \
+                    self._get_avgd(data_array)
         elif self.num_missing_rows > 0:
             batch = self.data
             self.num_missing_rows -= 1 

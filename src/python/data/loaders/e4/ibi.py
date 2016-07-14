@@ -35,9 +35,7 @@ class IBILoader(AbstractDataLoader):
 
         batch = self.data
 
-        print type(self.data)
-        if type(self.data) is not MissingData:
-            print self.data
+        if not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
 
         return batch
@@ -50,7 +48,7 @@ class IBILoader(AbstractDataLoader):
                 sessions.items(), key=lambda x: x[0])
         (key, session) = sorted_sessions[index]
 
-        self.data = np.copy(self._get_rows(key, session))
+        self.data = self._get_rows(key, session)
 
     def _set_data(self):
 
