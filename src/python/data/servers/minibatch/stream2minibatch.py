@@ -35,6 +35,7 @@ class Minibatch2Minibatch:
 
         batch = None
 
+        # TODO: would be great if this could be cleaned up a bit
         if type(self.data) is not MissingData:
             n = self.data.shape[0]
             need = max([self.bs - self.minibatch.get_length(), 1])
@@ -42,10 +43,7 @@ class Minibatch2Minibatch:
             for i in xrange(min([n,need])):
                 self.minibatch.enqueue(np.copy(self.data[i,:]))
 
-            if n <= need:
-                self.data = None
-            else:
-                self.data = self.data[need:,:]
+            self.data = None if n <= need else self.data[need:,:]
 
             if not self.minibatch.is_full():
                 batch = self._get_minibatch()
@@ -64,6 +62,7 @@ class Minibatch2Minibatch:
 
         return batch
 
+    # TODO: consider moving this to drrobert
     def _get_avgd(self, batch):
 
         new_batch = np.zeros((self.bs, self.num_coords))

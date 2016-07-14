@@ -37,7 +37,6 @@ class Minibatch2Periodic:
 
             for i in xrange(num_skips):
                 self._update_data_server()
-
         elif remainder > self.hl + self.pl:
             num_overflow = remainder - (self.hl + self.pl)
             num_skips = self.tl - num_overflow

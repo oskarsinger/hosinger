@@ -33,9 +33,14 @@ class IBILoader(AbstractDataLoader):
         elif self.data is None:
             self._set_data()
 
-        self.num_rounds += 1
+        batch = self.data
 
-        return self.data.astype(float)
+        print type(self.data)
+        if type(self.data) is not MissingData:
+            print self.data
+            batch = np.copy(self.data.astype(float))
+
+        return batch
 
     def _refill_data(self):
 

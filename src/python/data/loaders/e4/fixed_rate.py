@@ -1,6 +1,8 @@
 from data.loaders import AbstractDataLoader
 from data.missing import MissingData
 from linal.utils import get_array_mod
+from math import ceil
+from datetime import datetime as DT
 
 import os
 import h5py
@@ -40,7 +42,14 @@ class FixedRateLoader(AbstractDataLoader):
 
         self.num_rounds += 1
 
-        return self.data.astype(float)
+        batch = self.data
+
+        print type(self.data)
+        if type(self.data) is not MissingData:
+            print self.data
+            batch = np.copy(self.data.astype(float))
+
+        return batch
 
     def _refill_data(self):
 
