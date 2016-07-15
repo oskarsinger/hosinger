@@ -31,7 +31,7 @@ class FixedRateLoader(AbstractDataLoader):
         self.window = int(self.hertz * self.seconds)
         self.data = None
         self.num_rounds = 0
-        self.current_time = 0
+        self.current_time = None
 
     def get_data(self):
 
@@ -111,6 +111,10 @@ class FixedRateLoader(AbstractDataLoader):
                                   for i in range(3)]
         dt = DT(year, month, day, hour, minute, second)
         uts = (dt - DT.utcfromtimestamp(0)).total_seconds()
+
+        if self.current_time is None:
+            self.current_time = uts
+
         time_diff = uts - self.current_time
 
         return time_diff
