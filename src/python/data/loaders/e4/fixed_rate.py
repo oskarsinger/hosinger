@@ -22,6 +22,7 @@ class FixedRateLoader(AbstractDataLoader):
         self.seconds = seconds
         self.online = online
         self.num_sessions = len(self._get_hdf5_repo())
+        print 'Num sessions', self.num_sessions
 
         # Set the sampling frequency
         dataset = self._get_hdf5_repo().values()[0][self.sensor]
@@ -75,8 +76,18 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _get_rows(self, key, session):
 
+        """
+        The issue is that I am forgetting to ever serve the actual
+        data if there is any time gap between measurement sessions.
+        
+        This might be fixed by setting up an 'on-deck' dataset. Feels a 
+        little sloppy/inelegant/heavy-handed, so try to think of something 
+        else if you can.
+        """
+
         # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
+        print 'Time diff', time_diff
 
         # Increment the current time with said difference
         self._inc_current_time(time_diff)
@@ -85,6 +96,7 @@ class FixedRateLoader(AbstractDataLoader):
 
         if time_diff >= 1:
             num_missing_rows = int(ceil(time_diff/self.seconds))
+            print 'Num missing rows', num_missing_rows
             data = MissingData(num_missing_rows) 
         else:
             # Get dataset associated with relevant sensor
@@ -95,6 +107,7 @@ class FixedRateLoader(AbstractDataLoader):
 
             # Get the extracted windows of the data
             data = self._get_windows(read_data)
+            print 'Data shape', data.shape
 
             # Increment self.current_time with time-length of session
             self._inc_current_time(self.seconds * data.shape[0])
