@@ -31,6 +31,7 @@ class FixedRateLoader(AbstractDataLoader):
 
         self.window = int(self.hertz * self.seconds)
         self.data = None
+        self.on_deck_data = None
         self.num_rounds = 0
         self.current_time = None
 
@@ -48,6 +49,8 @@ class FixedRateLoader(AbstractDataLoader):
         if not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
 
+            self.current_time += self.seconds * batch.shape[0]
+
         return batch
 
     def _refill_data(self):
@@ -58,7 +61,11 @@ class FixedRateLoader(AbstractDataLoader):
                 sessions.items(), key=lambda x: x[0])
         (key, session) = sorted_sessions[index]
 
-        self.data = self._get_rows(key, session)
+        if self.on_deck_data is not None:
+            self.data = self.on_deck_data
+            self.on_deck_data = None
+        else:
+            self.data = self._get_rows(key, session)
 
     def _set_data(self):
 
@@ -76,41 +83,22 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _get_rows(self, key, session):
 
-        """
-        The issue is that I am forgetting to ever serve the actual
-        data if there is any time gap between measurement sessions.
-        
-        This might be fixed by setting up an 'on-deck' dataset. Feels a 
-        little sloppy/inelegant/heavy-handed, so try to think of something 
-        else if you can.
-        """
+        # Get dataset associated with relevant sensor
+        hdf5_dataset = session[self.sensor]
+
+        # Populate entry list with entries of hdf5 dataset
+        read_data = self.reader(hdf5_dataset)
+
+        # Get the extracted windows of the data
+        data = self._get_windows(read_data)
 
         # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
-        print 'Time diff', time_diff
-
-        # Increment the current time with said difference
-        self._inc_current_time(time_diff)
-
-        data = None
 
         if time_diff >= 1:
+            self.on_deck_data = data
             num_missing_rows = int(ceil(time_diff/self.seconds))
-            print 'Num missing rows', num_missing_rows
             data = MissingData(num_missing_rows) 
-        else:
-            # Get dataset associated with relevant sensor
-            hdf5_dataset = session[self.sensor]
-
-            # Populate entry list with entries of hdf5 dataset
-            read_data = self.reader(hdf5_dataset)
-
-            # Get the extracted windows of the data
-            data = self._get_windows(read_data)
-            print 'Data shape', data.shape
-
-            # Increment self.current_time with time-length of session
-            self._inc_current_time(self.seconds * data.shape[0])
 
         return data
 
@@ -131,10 +119,6 @@ class FixedRateLoader(AbstractDataLoader):
         time_diff = uts - self.current_time
 
         return time_diff
-
-    def _inc_current_time(self, seconds):
-
-        self.current_time += seconds
 
     def _get_windows(self, data):
 
