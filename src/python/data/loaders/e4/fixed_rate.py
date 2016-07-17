@@ -174,7 +174,7 @@ class FixedRateLoader(AbstractDataLoader):
         if self.online:
             finished = self.num_real_data >= self.num_sessions
         else:
-            finished = self.num_reat_data >= 1
+            finished = self.num_real_data >= 1
 
         return finished
 
@@ -186,6 +186,7 @@ class FixedRateLoader(AbstractDataLoader):
 
         self.data = None
         self.num_rounds = 0
+        self.num_real_data = 0
 
     def get_status(self):
 
