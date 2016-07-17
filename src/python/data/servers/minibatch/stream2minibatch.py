@@ -36,7 +36,6 @@ class Minibatch2Minibatch:
 
         batch = None
 
-        # TODO: would be great if this could be cleaned up a bit
         if not isinstance(self.data, MissingData):
             n = self.data.shape[0]
             need = max([self.bs - self.minibatch.get_length(), 1])
