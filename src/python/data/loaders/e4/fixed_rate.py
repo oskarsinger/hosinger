@@ -22,7 +22,6 @@ class FixedRateLoader(AbstractDataLoader):
         self.reader = reader
         self.seconds = seconds
         self.online = online
-        self.session = self.
 
         # Set the sampling frequency
         repo = self._get_hdf5_repo()
