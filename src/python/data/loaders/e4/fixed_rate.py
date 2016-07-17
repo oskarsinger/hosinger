@@ -22,10 +22,14 @@ class FixedRateLoader(AbstractDataLoader):
         self.reader = reader
         self.seconds = seconds
         self.online = online
-        self.num_sessions = len(self._get_hdf5_repo())
+        self.session = self.
 
         # Set the sampling frequency
-        dataset = self._get_hdf5_repo().values()[0][self.sensor]
+        repo = self._get_hdf5_repo()
+        self.start_times = [self._get_datetime_from_key(k)
+                            for k in sorted(repo.keys())]
+        self.num_sessions = len(self.start_times)
+        dataset = repo.values()[0][self.sensor]
         key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
         self.hertz = dataset.attrs[key]
 
@@ -55,10 +59,9 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _refill_data(self):
 
-        sessions = self._get_hdf5_repo()
+        sessions = self._get_hdf5_repo().items()
         index = self.num_real_data % len(sessions)
-        sorted_sessions = sorted(
-                sessions.items(), key=lambda x: x[0])
+        sorted_sessions = sorted(sessions, key=lambda x: x[0])
         (key, session) = sorted_sessions[index]
 
         if self.on_deck_data is not None:
@@ -107,13 +110,7 @@ class FixedRateLoader(AbstractDataLoader):
 
     def _get_time_difference(self, key):
 
-        (date_str, time_str) = key.split('_')[1].split('-')
-        (year, month, day) = [int(date_str[2*i:2*(i+1)])
-                              for i in range(3)]
-        year += 2000
-        (hour, minute, second) = [int(time_str[2*i:2*(i+1)])
-                                  for i in range(3)]
-        dt = DT(year, month, day, hour, minute, second)
+        dt = self._get_datetime_from_key(key)
         uts = mktime(dt.timetuple())
 
         if self.current_time is None:
@@ -122,6 +119,18 @@ class FixedRateLoader(AbstractDataLoader):
         time_diff = uts - self.current_time
 
         return time_diff
+
+    def _get_datetime_from_key(self, key):
+
+        (date_str, time_str) = key.split('_')[1].split('-')
+        (year, month, day) = [int(date_str[2*i:2*(i+1)])
+                              for i in range(3)]
+        year += 2000
+        (hour, minute, second) = [int(time_str[2*i:2*(i+1)])
+                                  for i in range(3)]
+        dt = DT(year, month, day, hour, minute, second)
+
+        return dt
 
     def _get_windows(self, data):
 
