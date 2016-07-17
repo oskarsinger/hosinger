@@ -85,13 +85,9 @@ def _get_data_map(hdf5_path, subject):
             if not isinstance(update, MissingData):
                 avg = np.mean(update)
 
-                #print 'Avg', avg
-
                 values.append(avg)
             else:
                 values.append(0)
-
-                #print 'Missing data'
 
             i += 1
 

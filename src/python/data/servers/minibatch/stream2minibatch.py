@@ -31,7 +31,8 @@ class Minibatch2Minibatch:
             self.data = self.dl.get_data()
 
             if isinstance(self.data, MissingData):
-                self.num_missing_rows = self.data.get_status()['num_missing_rows']
+                info = self.data.get_status()
+                self.num_missing_rows = info['num_missing_rows']
 
         batch = None
 

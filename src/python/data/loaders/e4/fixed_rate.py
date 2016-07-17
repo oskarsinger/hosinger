@@ -3,6 +3,7 @@ from data.missing import MissingData
 from linal.utils import get_array_mod
 from math import ceil
 from datetime import datetime as DT
+from time import mktime
 
 import os
 import h5py
@@ -22,7 +23,6 @@ class FixedRateLoader(AbstractDataLoader):
         self.seconds = seconds
         self.online = online
         self.num_sessions = len(self._get_hdf5_repo())
-        print 'Num sessions', self.num_sessions
 
         # Set the sampling frequency
         dataset = self._get_hdf5_repo().values()[0][self.sensor]
@@ -33,6 +33,7 @@ class FixedRateLoader(AbstractDataLoader):
         self.data = None
         self.on_deck_data = None
         self.num_rounds = 0
+        self.num_real_data = 0
         self.current_time = None
 
     def get_data(self):
@@ -42,21 +43,20 @@ class FixedRateLoader(AbstractDataLoader):
         elif self.data is None:
             self._set_data()
 
-        self.num_rounds += 1
-
         batch = self.data
 
         if not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
+            self.num_real_data += 1
 
-            self.current_time += self.seconds * batch.shape[0]
+        self.num_rounds += 1
 
         return batch
 
     def _refill_data(self):
 
         sessions = self._get_hdf5_repo()
-        index = self.num_rounds % len(sessions)
+        index = self.num_real_data % len(sessions)
         sorted_sessions = sorted(
                 sessions.items(), key=lambda x: x[0])
         (key, session) = sorted_sessions[index]
@@ -95,7 +95,10 @@ class FixedRateLoader(AbstractDataLoader):
         # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
 
-        if time_diff >= 1:
+        self.current_time += time_diff
+        self.current_time += data.shape[0] * self.seconds
+
+        if time_diff > 0:
             self.on_deck_data = data
             num_missing_rows = int(ceil(time_diff/self.seconds))
             data = MissingData(num_missing_rows) 
@@ -111,7 +114,7 @@ class FixedRateLoader(AbstractDataLoader):
         (hour, minute, second) = [int(time_str[2*i:2*(i+1)])
                                   for i in range(3)]
         dt = DT(year, month, day, hour, minute, second)
-        uts = (dt - DT.utcfromtimestamp(0)).total_seconds()
+        uts = mktime(dt.timetuple())
 
         if self.current_time is None:
             self.current_time = uts
@@ -146,6 +149,7 @@ class FixedRateLoader(AbstractDataLoader):
 
     def rows(self):
 
+        # TODO: rewrite this; its wrong
         rows = 0
 
         if self.online:
@@ -160,9 +164,9 @@ class FixedRateLoader(AbstractDataLoader):
         finished = None
 
         if self.online:
-            finished = self.num_rounds >= self.num_sessions
+            finished = self.num_real_data >= self.num_sessions
         else:
-            finished = self.num_rounds >= 1
+            finished = self.num_reat_data >= 1
 
         return finished
 
@@ -185,6 +189,7 @@ class FixedRateLoader(AbstractDataLoader):
             'seconds': self.seconds,
             'window': self.window,
             'num_rounds': self.num_rounds,
+            'num_real_data': self.num_real_data,
             'num_sessions': self.num_sessions,
             'reader': self.reader,
             'data': self.data,
