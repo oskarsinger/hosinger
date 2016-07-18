@@ -1,6 +1,6 @@
 import numpy as np
 
-class Data2Percentiles:
+class PercentileMask:
 
     def __init__(self, 
         ds, 

@@ -11,7 +11,7 @@ from bokeh.plotting import show, output_file
 from data.loaders.readers import from_num as fn
 from data.loaders.e4 import IBILoader as IBI, FixedRateLoader as FRL
 from data.servers.minibatch import Minibatch2Minibatch as M2M
-from data.missing import MissingData
+from data.pseudodata import MissingData
 
 from math import ceil
 from bokeh.palettes import Spectral11

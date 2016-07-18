@@ -1,1 +1,0 @@
-from periodic import Minibatch2Periodic

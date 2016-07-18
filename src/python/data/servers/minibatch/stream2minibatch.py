@@ -2,7 +2,7 @@ import numpy as np
 
 from drrobert.data_structures import FixedLengthQueue as FLQ
 from drrobert.ml import get_pca
-from data.missing import MissingData
+from data.pseudodata import MissingData
 
 class Minibatch2Minibatch:
 

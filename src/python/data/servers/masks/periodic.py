@@ -1,4 +1,4 @@
-class Minibatch2Periodic:
+class PeriodicMask:
 
     def __init__(self, 
         data_server, 
