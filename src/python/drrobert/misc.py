@@ -36,3 +36,8 @@ def prod(l):
 def get_nums_as_strings(l):
 
     return [str(n) for n in l]
+
+def get_nested_list_transpose(nl):
+
+    return [[l[i] for l in nl]
+            for i in xrange(len(nl[0]))]

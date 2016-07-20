@@ -24,7 +24,16 @@
 
 * Consider introducing monads into the data preparation/scrubbing pipeline.
 
+* Improve the bandit data server.
+
 #Optimization
+
+##Non-Stationary
+* Try recomputing AdaGrad parameters on sliding window of data at each round. See if it keeps up with non-stationary simulated data.
+
+* Think about data-dependent, adpative reweightings of gradients, but more time-sensitive, e.g. some sort of decaying exponential weight in addition to the AdaGrad parameters.
+
+* In general, think about more sophisticated approaches to online optimization inspired by sliding-window regret.
 
 ##Step Size
 * Generalize my code to allow for an arbitrary step-size scheduler.
