@@ -12,6 +12,7 @@
 * Choose either servers or loaders to give option to average over certain coordinates. Probably servers so I don't have to implement the same thing multiple times.
 
 ##Missing
+* Clean up the current missing data solution. Its a bit hacky and heavy-handed. I am not certain that there is a good single solution that integrates neatly into the data serving framework, but maybe we should have an entire subpackage that deals with missing data in different ways. That would be pretty awesome.
 
 ##Servers
 * Make a special data server for asynch-ish stochastic gradient where its necessary to have a minimum batch size, e.g. because we need to do a rank _k_ update like in CCA.
@@ -25,6 +26,12 @@
 * Consider introducing monads into the data preparation/scrubbing pipeline.
 
 * Improve the bandit data server.
+
+#Models
+
+##Data Consumption
+* It would be nice if there were a mechanism by which to externally invoke a specific number of model updates on a specific server instead of having to build the servers around the constraint that once they go into the model, we lose control of them. This would also fit our impending need to work within a filtering scenario much better.
+    * One issue I see with this is that we would have to disentagle some of the interation logic from the models themselves, which seems undesirable and painful. Should think carefully about whether its worth the effort or whether this detriment actually exists.
 
 #Optimization
 
