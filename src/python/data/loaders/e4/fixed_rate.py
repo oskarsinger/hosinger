@@ -200,6 +200,7 @@ class FixedRateLoader(AbstractDataLoader):
             'num_rounds': self.num_rounds,
             'num_real_data': self.num_real_data,
             'num_sessions': self.num_sessions,
+            'start_times': self.start_times,
             'reader': self.reader,
             'data': self.data,
             'online': self.online}
