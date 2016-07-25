@@ -36,7 +36,13 @@ def get_largest_entries(s, energy=None, k=None):
 
     return s
 
-def get_thresholded(x, upper=float('Inf'), lower=0):
+def get_thresholded(x, upper=None, lower=None):
+
+    if upper is None:
+        upper = float('Inf')
+
+    if lower is None:
+        lower = -float('Inf')
 
     if np.isscalar(upper):
         upper = np.zeros_like(x) + upper

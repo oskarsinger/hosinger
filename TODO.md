@@ -27,6 +27,9 @@
 
 * Improve the bandit data server.
 
+##Conversions
+* Should maybe think about some pandas conversions for the data from the data servers. I seem to be writing these from scratch a bunch, especially for plotting. Is there a standard enough configuration so that I won't have to do that?
+
 #Models
 
 ##Data Consumption
