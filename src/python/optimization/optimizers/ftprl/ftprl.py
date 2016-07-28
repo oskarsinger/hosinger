@@ -63,7 +63,7 @@ class AbstractMatrixFTPRLOptimizer(AbstractOptimizer):
 
         # Shrink and threshold if sparsity desired
         if self.sparse:
-            dual_s = get_st(dual_s, self.lower)
+            dual_s = get_st(dual_s, lower=self.lower)
 
         # Re-multiply with dual singular values
         return get_multiplied_svd(self.U, dual_s, self.V)

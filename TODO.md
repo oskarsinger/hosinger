@@ -9,10 +9,14 @@
     * Should start by feeding in some compact representation of block locations and calling current function as subroutine on each block.
 
 #Data
-* Choose either servers or loaders to give option to average over certain coordinates. Probably servers so I don't have to implement the same thing multiple times.
 
 ##Missing
 * Clean up the current missing data solution. Its a bit hacky and heavy-handed. I am not certain that there is a good single solution that integrates neatly into the data serving framework, but maybe we should have an entire subpackage that deals with missing data in different ways. That would be pretty awesome.
+
+* Consider introducing monads into the data preparation/scrubbing pipeline.
+
+##Loaders
+* Synthetic periodic data loader.
 
 ##Servers
 * Make a special data server for asynch-ish stochastic gradient where its necessary to have a minimum batch size, e.g. because we need to do a rank _k_ update like in CCA.
@@ -22,8 +26,6 @@
 
 * Probably need to rework the Gaussian data server.
     * Can probably merge the original and shifting-mean implementations if I can figure out how to reconcile the minibatch subsampling and pure streaming approaches.
-
-* Consider introducing monads into the data preparation/scrubbing pipeline.
 
 * Improve the bandit data server.
 
@@ -37,6 +39,12 @@
     * One issue I see with this is that we would have to disentagle some of the interation logic from the models themselves, which seems undesirable and painful. Should think carefully about whether its worth the effort or whether this detriment actually exists.
 
 #Optimization
+
+##Distributed/Asynch
+* (Online?) ADMM with Newton Sketch. Reread the 'Dual Averaging and Proximal Gradient Descent for Online ADMM' paper for implementation help. Need to read Newton Sketch too.
+
+##Matrix-Valued FTPRL
+* Should I be applying operations like accumulation of AdaGrad parameters and shrinkage-and-thresholding to just eigen/singular values or to the full parameter matrix? I think it depends on the situation. Should probably offer both options.
 
 ##Non-Stationary
 * Try recomputing AdaGrad parameters on sliding window of data at each round. See if it keeps up with non-stationary simulated data.
@@ -52,5 +60,3 @@
 * Implement that one from Yann LeCun's student.
 
 * Implement the probabilistic one.
-
-* Implement the one that was mentioned in the optimization-online update.
