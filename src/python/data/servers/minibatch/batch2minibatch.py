@@ -7,10 +7,14 @@ class Batch2Minibatch:
 
     def __init__(self, 
         data_loader, batch_size, 
-        random=True, lazy=True, n_components=None):
+        center=False,
+        random=True, 
+        lazy=True, 
+        n_components=None):
 
         self.dl = data_loader
         self.bs = batch_size
+        self.center = center
         self.random = random
         self.lazy = lazy
         self.n_components = n_components
@@ -22,6 +26,9 @@ class Batch2Minibatch:
 
         if self.data is None:
             self._init_data()
+
+            if self.center:
+                self.data -= np.mean(self.data, axis=0)
 
         current = None
 

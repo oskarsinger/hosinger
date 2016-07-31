@@ -8,14 +8,18 @@ class Minibatch2Minibatch:
 
     def __init__(self, 
         data_loader, batch_size, 
+        center=False,
         num_coords=None):
 
         self.dl = data_loader
         self.bs = batch_size
+        self.center = center
         self.num_coords = num_coords
 
         self.num_rounds = 0
+        self.num_stored_data = 0
         self.data = None
+        self.unnormed_mean = np.zeros((1, self.dl.cols()))
         self.minibatch = FLQ(self.bs)
         self.num_missing_rows = 0
 
@@ -33,6 +37,10 @@ class Minibatch2Minibatch:
             if isinstance(self.data, MissingData):
                 info = self.data.get_status()
                 self.num_missing_rows = info['num_missing_rows']
+            elif self.center:
+                self.unnormed_mean += np.sum(self.data, axis=0)
+                self.num_stored_data += self.data.shape[0]
+                self.data -= self.unnormed_mean / self.num_stored_data
 
         batch = None
 
@@ -97,6 +105,7 @@ class Minibatch2Minibatch:
         self.dl.refresh()
         self.minibatch = FLQ(self.bs)
         self.data = None
+        self.mean = np.zeros((1, self.dl.cols()))
         self.num_rounds = 0
 
     def get_status(self):
@@ -107,4 +116,5 @@ class Minibatch2Minibatch:
             'minibatch': self.minibatch,
             'data': self.data,
             'online': True,
+            'num_stored_data': self.num_stored_data,
             'num_rounds': self.num_rounds}
