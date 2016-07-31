@@ -35,12 +35,15 @@ class Batch2Minibatch:
         if self.random:
             current = np.copy(get_minibatch(self.data, self.bs))
         else:
-            begin = self.num_rounds * self.bs
+            n = self.data.shape[0]
+            begin = self.num_rounds * self.bs % n
             end = begin + self.bs
-            (n, p) = self.data.shape
-            current = np.copy(self.data[begin:end,:]) \
-                if end <= n else \
-                None
+            
+            if end > n:
+                begin = 0
+                end = self.bs
+
+            current = np.copy(self.data[begin:end,:])
 
         self.num_rounds += 1
 
@@ -52,6 +55,17 @@ class Batch2Minibatch:
     def _init_data(self):
 
         self.data = self.dl.get_data()
+
+    def finished(self):
+
+        finished = False
+
+        if self.data is not None:
+            next_num_samples = (self.num_rounds + 1) * self.bs
+            n = self.data.shape[0]
+            finished = next_num_samples > n
+
+        return finished
 
     def rows(self):
 

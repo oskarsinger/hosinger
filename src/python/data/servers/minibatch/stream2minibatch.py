@@ -100,6 +100,10 @@ class Minibatch2Minibatch:
 
         return cols
 
+    def finished(self):
+
+        return self.dl.finished()
+
     def refresh(self):
 
         self.dl.refresh()
