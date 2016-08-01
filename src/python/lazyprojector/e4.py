@@ -2,19 +2,19 @@ import h5py
 import os
 
 import numpy as np
+import data.loaders.e4.shortcuts as dles
 
+from math import ceil
 from random import choice
+
 from lazyprojector import plot_lines
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.misc import unzip
-from bokeh.plotting import show, output_file
-from data.loaders.readers import from_num as fn
-from data.loaders.e4 import IBILoader as IBI, FixedRateLoader as FRL
-from data.servers.minibatch import Minibatch2Minibatch as M2M
 from data.pseudodata import MissingData
+from data.servers.minibatch import Minibatch2Minibatch as M2M
 
-from math import ceil
 from bokeh.palettes import Spectral11
+from bokeh.plotting import show, output_file, vplot
 
 def plot_e4_hdf5_subject(
     hdf5_path, 
@@ -31,19 +31,16 @@ def plot_e4_hdf5_subject(
 
     # Prepare plotting input
     print 'Getting data map'
-    data_map = _get_data_map(hdf5_path, subject)
-    title = ' '.join([
-        'Value vs. Time (days) for subject',
-        subject])
+    data_maps = _get_data_maps(hdf5_path, subject)
+    names = [m.keys()[0] for m in data_maps]
+    titles = [n + ' vs. Time (days) for subject ' + subject
+              for n in names]
 
     print 'Creating plot'
     # Create plot
-    p = plot_lines(
-        data_map, 
-        'Times (days)', 
-        'Value', 
-        title,
-        colors=Spectral11[:4]+Spectral11[-4:])
+    plots = [plot_lines(dm, 'Times (days)', 'Value', t)
+             for (t, dm) in zip(titles, data_maps)]
+    plot = vplot(*plots)
 
     print 'Creating filepath'
     # Preparing filepath
@@ -54,31 +51,23 @@ def plot_e4_hdf5_subject(
 
     output_file(filepath, 'value_vs_time_e4_all_views') 
 
-    show(p)
+    return plot
 
-def _get_data_map(hdf5_path, subject):
+def _get_data_maps(hdf5_path, subject):
 
-    mag = fn.get_row_magnitude
-    fac = fn.get_fields_as_columns
     print 'Making loaders'
-    loaders = [
-        FRL(hdf5_path, subject, 'EDA', 1, fac, online=True),
-        FRL(hdf5_path, subject, 'TEMP', 1, fac, online=True),
-        FRL(hdf5_path, subject, 'ACC', 1, mag, online=True),
-        #IBI(hdf5_path, subject, 'IBI', 1, fac, online=True),
-        FRL(hdf5_path, subject, 'BVP', 1, fac, online=True),
-        FRL(hdf5_path, subject, 'HR', 1, fac, online=True)]
+    loaders = dles.get_e4_loaders(hdf5_path, subject, 1, True)
     print 'Making servers'
     servers = [M2M(dl, 1) for dl in loaders]
-    data_map = {}
+    data_maps = []
     
     for ds in servers:
-        dl = ds.get_status()['data_loader']
+        name = ds.get_status()['data_loader'].name()
+        print 'Making data map for ' + name
         values = []
         i = 0
 
-        print 'Populating x and y axes for server', dl.name()
-        while not dl.finished():
+        while not ds.finished():
 
             update = ds.get_data()
 
@@ -91,8 +80,11 @@ def _get_data_map(hdf5_path, subject):
 
             i += 1
 
-        print 'Scaling x axis to days'
         scaled_indexes = np.arange(len(values)).astype(float) / (24.0 * 3600.0)
-        data_map[dl.name()] = (scaled_indexes, np.array(values))
 
-    return data_map
+        data_map = {}
+        data_map[name] = (scaled_indexes, np.array(values))
+        
+        data_maps.append(data_map)
+
+    return data_maps
