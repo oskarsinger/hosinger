@@ -16,7 +16,7 @@
 * Consider introducing monads into the data preparation/scrubbing pipeline.
 
 ##Loaders
-* Synthetic periodic data loader. This might be accomplished by either producing a deterministic periodic signal or putting a periodic transformation matrix (e.g. rotation matrix) into the shifting mean Gaussian loader. Should probably have both options.
+* Think of a way to make reasonable, useful multi-dimensional periodic data loader.
 
 ##Servers
 * Make a special data server for asynch-ish stochastic gradient where its necessary to have a minimum batch size, e.g. because we need to do a rank _k_ update like in CCA.
