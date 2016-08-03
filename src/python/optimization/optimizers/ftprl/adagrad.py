@@ -5,12 +5,15 @@ import numpy as np
 
 class MatrixAdaGrad(AbstractMatrixFTPRLOptimizer):
 
-    def __init__(self, lower=None, dual_avg=True, verbose=False, delta=0.1):
+    def __init__(self, 
+        lower=None, 
+        dual_avg=True, 
+        verbose=False, 
+        delta=0.1):
 
         super(MatrixAdaGrad, self).__init__(lower, dual_avg)
 
         self.delta = delta
-
         self.scale = None
 
     # Overrides super class to update adaptive prox func's parameters
@@ -45,8 +48,9 @@ class MatrixAdaGrad(AbstractMatrixFTPRLOptimizer):
 
     def get_status(self):
 
-        return init + {
-            'delta': self.delta,
-            'scale': self.scale}
+        status = super(MatrixAdaGrad, self).get_status()
 
+        status['delta'] = self.delta
+        status['scale'] = self.scale
 
+        return status

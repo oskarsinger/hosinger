@@ -1,0 +1,39 @@
+\input{oskar_macros.tex}
+
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{natbib}
+\usepackage{bbm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\newtheorem{thm}{Theorem}
+
+\begin{document}
+
+	\section{Intro}
+	In this document, we will be discussing a stateful version of mirror descent used to encourage periodicity in a sequence of parameter estimates and/or data transformations. This method is intended for scenarios in which a signal is known to be approximately periodic with some drift across periods. 
+
+	\section{Notation}
+	The parameter estimate for time step $t$ within period $n$ will be denoted $\mbPhi_t^{(n)} \in \mbbR^{p \times k}$. The minibatch of data received at time step $t$ of period $n$ will be denoted $\mbX_t^{(n)} \in \mbbR^{m \times p}$ where $m$ is the batch size and $p$ is the ambient dimension of the data.
+
+	\section{Stateful Link/Bregman/Proximal Functions for Periodicity}
+	Our proximal function at time step $t+1$ during the $n$-th period will be the sum of a strongly convex penalty for stability and an additional convex penalty to encourage periodicity. The obvious choice for the strongly convex penalty is the typical squared Frobenius proximal function $\norm{\mbPhi - \mbPhi_t^{(n)}}_F^2$. 
+	
+	There are two immediately clear options for the second term depending on whether we want filtered data values or the parameters themselves to be approximately periodic. To encourage periodicity of the filtered data, we will add a term $\norm{\mbX_{t+1}^{(n)}\mbPhi - \mbX_{t+1}^{(n-1)}\mbPhi_{t+1}^{(n-1)}}_F^2$. To encourage periodicity in the parameter estimates themselves, we replace that term with a similar term sans the data, $\norm{\mbPhi - \mbPhi_{t+1}^{(n-1)}}_F^2$. Our two potential proximal functions are then
+	
+	\begin{align}
+		\Psi_{t+1}^{(n)} \fitp{\mbPhi}\ &=\ \norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbX_{t+1}^{(n)}\mbPhi - \mbX_{t+1}^{(n-1)}\mbPhi_{t+1}^{(n-1)}}_F^2\\
+		\Psi_{t+1}^{(n)} \fitp{\mbPhi}\ &=\ \norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbPhi - \mbPhi_{t+1}^{(n-1)}}_F^2
+	\end{align}
+	
+	\noindent where $c_1$ is a constant chosen to weight the importance of one term against the other. It is indexed with $1$ because we will later introduce other constants in the full proximal operator expression.
+    
+	\bibliographystyle{apalike}
+	\bibliography{citations.bib}
+\end{document}
