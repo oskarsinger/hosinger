@@ -17,7 +17,7 @@
 \begin{document}
 
 	\section{Intro}
-	In this document, we will be discussing a stateful version of mirror descent used to encourage periodicity in a sequence of parameter estimates and/or data transformations. This method is intended for scenarios in which a signal is known to be approximately periodic with some drift across periods. 
+	In this document, we will be discussing a stateful version of mirror descent used to encourage periodicity in a sequence of parameter estimates and/or data transformations. This method is intended for scenarios in which a signal is known to be approximately periodic with some drift across periods. Currently, I am applying this method to a model that is everywhere differentiable, so we will assume the existence of a gradient at all points.
 
 	\section{Notation}
 	The parameter estimate for time step $t$ within period $n$ will be denoted $\mbPhi_t^{(n)} \in \mbbR^{p \times k}$. The minibatch of data received at time step $t$ of period $n$ will be denoted $\mbX_t^{(n)} \in \mbbR^{m \times p}$ where $m$ is the batch size and $p$ is the ambient dimension of the data.
@@ -29,11 +29,53 @@
 	
 	\begin{align}
 		\Psi_{t+1}^{(n)} \fitp{\mbPhi}\ &=\ \norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbX_{t+1}^{(n)}\mbPhi - \mbX_{t+1}^{(n-1)}\mbPhi_{t+1}^{(n-1)}}_F^2\\
-		\Psi_{t+1}^{(n)} \fitp{\mbPhi}\ &=\ \norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbPhi - \mbPhi_{t+1}^{(n-1)}}_F^2
+		\Psi_{t+1}^{(n)} \fitp{\mbPhi}\ &=\ \norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbPhi - \mbPhi_{t+1}^{(n-1)}}_F^2 \tn{,}
 	\end{align}
 	
-	\noindent where $c_1$ is a constant chosen to weight the importance of one term against the other. It is indexed with $1$ because we will later introduce other constants in the full proximal operator expression.
+	\noindent where $c_1 > 0$ is a constant chosen to weight the importance of one term against the other. It is indexed with $1$ because we will later introduce other constants in the full proximal operator expression.
+	
+	Our unregularized proximal operators with no dual averaging then take the form
+	
+	\begin{align}
+		\mbPhi_{t+1}^{(n)}\ &=\ \argmin{\mbPhi} \fitab{\mbPhi, \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}}} + \frac{c_2}{2} \fitp{\norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbX_{t+1}^{(n)}\mbPhi - \mbX_{t+1}^{(n-1)}\mbPhi_{t+1}^{(n-1)}}_F^2}\\ 
+		\mbPhi_{t+1}^{(n)}\ &=\ \argmin{\mbPhi} \fitab{\mbPhi, \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}}} + \frac{c_2}{2} \fitp{\norm{\mbPhi - \mbPhi_t^{(n)}}_F^2 + c_1 \norm{\mbPhi - \mbPhi_{t+1}^{(n-1)}}_F^2} \tn{,}
+	\end{align}
+	
+	\noindent where $c_2 > 0$ is a constant chosen to weigh the importance of the proximal function, and $f_t^{(n)}$ is the loss function at time step $t$ in the $n$-th period. To find a minimizer, we take the gradient of the expressions inside each $\argmin{\mbPhi}$ and set to $0$, then solve for $\mbPhi$. For the first proximal operator, the gradient of hte proximal expression is equal to
+	
+	\begin{align}
+		0\ &=\ \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}} + c_2 \fitp{\mbPhi - \mbPhi_t^{(n)} + c_1 \fitp{\mbX_{t+1}^{(n)}}^{\top} \fitp{\mbX_{t+1}^{(n)} \mbPhi - \mbX_{t+1}^{(n-1)}\mbPhi_{t+1}^{(n-1)}}} \tn{.}
+	\end{align}
+
+	\noindent Sending all of the terms that include $\mbPhi$ to one side, we have
+	
+	\begin{align}
+		\fitp{c_2 \mbI_p + c_2 \cdot c_1 \fitp{\mbX_{t+1}^{(n)}}^{\top} \fitp{\mbX_{t+1}^{(n)}}} \mbPhi\ &=\ c_2 \mbPhi_t^{(n)} + c_2 \cdot c_1\fitp{\mbX_{t+1}^{(n)}}^{\top} \mbX_{t+1}^{(n-1)} \mbPhi_{t+1}^{(n-1)} - \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}} \tn{.}
+	\end{align}
+	
+	\noindent Finally, we get the following expression for the optimal $\mbPhi_{t+1}^{(n)}$.
+	
+	\begin{align}
+		\mbPhi_{t+1}^{(n)}\ &=\ \fitp{c_2 \mbI_p + c_2 \cdot c_1 \fitp{\mbX_{t+1}^{(n)}}^{\top} \fitp{\mbX_{t+1}^{(n)}}}^{-1} \fitp{c_2 \mbPhi_t^{(n)} + c_2 \cdot c_1 \fitp{\mbX_{t+1}^{(n)}}^{\top} \mbX_{t+1}^{(n-1)} \mbPhi_{t+1}^{(n-1)} - \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}}} \tn{.}
+	\end{align}
+	
+	For the second proximal expression, we follow similar steps to get, first, the gradient set to zero.
+	
+	\begin{align}
+		0\ &=\ \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}} + c_2 \fitp{\mbPhi - \mbPhi_t^{(n)} + c_1 \fitp{\mbPhi - \mbPhi_{t+1}^{(n-1)}} } \tn{.}
+	\end{align}
     
+    \noindent Moving every term with $\mbPhi$ to one side, we get
+    
+    \begin{align}
+    		\fitp{\fitp{c_2 + c_2 \cdot c_1} \mbI_p} \mbPhi\ &=\ c_2 \mbPhi_t^{(n)} + c_2 \cdot c_1 \mbPhi_{t+1}^{(n-1)} - \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}} \tn{.}
+    \end{align}
+    
+    \noindent Finally, we have the following expression for the optimal $\mbPhi_{t+1}^{(n)}$.
+    
+    \begin{align}
+    		\mbPhi_{t+1}^{(n)}\ &=\ \fitp{\fitp{c_2 + c_2 \cdot c_1} \mbI_p}^{-1} \fitp{c_2 \mbPhi_t^{(n)} + c_2 \cdot c_1 \mbPhi_{t+1}^{(n-1)} - \nabla f_t^{(n)} \fitp{\mbPhi_t^{(n)}}} \tn{.}
+    \end{align}
 	\bibliographystyle{apalike}
 	\bibliography{citations.bib}
 \end{document}
