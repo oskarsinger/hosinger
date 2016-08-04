@@ -1,3 +1,4 @@
 from ftprl import AbstractMatrixFTPRLOptimizer
 from adagrad import MatrixAdaGrad
 from schatten_p import SchattenPCOMID
+from periodic import PeriodicParameterMirrorDescent

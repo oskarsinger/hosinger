@@ -7,40 +7,40 @@ class PeriodicParameterMirrorDescent:
 
     def __init__(self,
         period, c,
-        lower=None,
         verbose=False):
 
-        super(PeriodicMirrorDescent, self).__init__(lower, dual_avg)
-
         self.period = period
+        self.weight = period - int(period)
         self.c = c
-        self.window = FLQ(self.period)
+        self.verbose = verbose
+
+        q_length = int(self.period) + 1
+        self.window = FLQ(q_length)
+        self.num_rounds = 0
 
     def get_update(self, parameters, gradient, eta):
 
+        unscaled = parameters - eta * gradient
+
+        if self.window.get_length() == int(self.period) + 1:
+            last = self.weight * self.window.dequeue()
+            second_last = self.window.get_items()[-1]
+            last_period = last + second_last
+            unscaled += self.c * last_period
+
         self.window.enqueue(np.copy(parameters))
-
-        unscaled = parameters
-
-        if self.window.get_length() == self.period:
-            unscaled += self.c * self.window.dequeue()
-        elif self.window.get_length() > self.period:
-            raise Exception(
-                'PeriodicParameterMirrorDescent queue too long.')
-
-        unscaled -= eta * gradient
+        self.num_rounds += 1
 
         return (eta + eta * self.c)**(-1) * unscaled
 
     def get_status(self):
 
-        status = super(MatrixAdaGrad, self).get_status()
-
-        status['period'] = self.period
-        status['c'] = self.c
-        status['window'] = self.window
-
-        return status
+        return {
+            'period': self.period,
+            'c': self.c,
+            'verbose': self.verbose,
+            'window': self.window,
+            'num_rounds': self.num_rounds}
 
 class PeriodicSignalMirrorDescent:
 
