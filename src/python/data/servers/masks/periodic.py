@@ -62,6 +62,10 @@ class PeriodicMask:
 
         return self.ds.cols()
 
+    def finished(self):
+
+        return self.ds.finished()
+
     def refresh(self):
 
         self.ds.refresh()
