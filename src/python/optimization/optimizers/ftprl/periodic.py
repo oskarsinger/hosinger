@@ -14,7 +14,11 @@ class PeriodicParameterMirrorDescent:
         self.c = c
         self.verbose = verbose
 
-        q_length = int(self.period) + 1
+        q_length = int(self.period)
+
+        if self.weight > 0:
+            q_length += 1
+
         self.window = FLQ(q_length)
         self.num_rounds = 0
 
@@ -22,16 +26,23 @@ class PeriodicParameterMirrorDescent:
 
         unscaled = parameters - eta * gradient
 
-        if self.window.get_length() == int(self.period) + 1:
-            last = self.weight * self.window.dequeue()
-            second_last = self.window.get_items()[-1]
-            last_period = last + second_last
+        if self.window.is_full():
+            last_period = None
+
+            if self.weight > 0:
+                last = self.weight * self.window.dequeue()
+                second_last = self.window.get_items()[-1]
+                last_period = last + second_last
+            else:
+                last_period = self.window.dequeue()
+            
             unscaled += self.c * last_period
 
         self.window.enqueue(np.copy(parameters))
         self.num_rounds += 1
+        other_c = eta**(-1)
 
-        return (eta + eta * self.c)**(-1) * unscaled
+        return (other_c + other_c * self.c)**(-1) * unscaled
 
     def get_status(self):
 
