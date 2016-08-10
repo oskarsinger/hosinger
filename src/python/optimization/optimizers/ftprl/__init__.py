@@ -1,4 +1,3 @@
-from ftprl import AbstractMatrixFTPRLOptimizer
-from adagrad import MatrixAdaGrad
-from schatten_p import SchattenPCOMID
-from periodic import PeriodicParameterMirrorDescent
+from adagrad import AdaGradOptimizer
+from matrix_mirror import SchattenPCOMIDOptimizer
+from periodic import PeriodicParameterProximalGradientOptimizer

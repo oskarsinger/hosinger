@@ -1,17 +1,19 @@
-from optimization.optimizers.ftprl import AbstractMatrixFTPRLOptimizer
+from optimization.utils import get_shrunk_and_thresholded as get_st
 from drrobert.data_structures import FixedLengthQueue as FLQ
 
 import numpy as np
 
-class PeriodicParameterMirrorDescent:
+class PeriodicParameterProximalGradientOptimizer:
 
     def __init__(self,
         period, c,
+        lower=None,
         verbose=False):
 
         self.period = period
         self.weight = period - int(period)
         self.c = c
+        self.lower = lower
         self.verbose = verbose
 
         q_length = int(self.period)
@@ -25,6 +27,9 @@ class PeriodicParameterMirrorDescent:
     def get_update(self, parameters, gradient, eta):
 
         unscaled = parameters - eta * gradient
+
+        if self.lower is not None:
+            unscaled = get_st(unscaled, lower=self.lower)
 
         if self.window.is_full():
             last_period = None
@@ -53,7 +58,7 @@ class PeriodicParameterMirrorDescent:
             'window': self.window,
             'num_rounds': self.num_rounds}
 
-class PeriodicSignalMirrorDescent:
+class PeriodicSignalProximalGradientOptimizer:
 
     def __init__(self,
         period, c,

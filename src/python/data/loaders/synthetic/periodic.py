@@ -10,7 +10,10 @@ class CosineLoader(AbstractDataLoader):
         phase=0,
         amplitude=1.0,
         period=2*np.pi,
-        index=0):
+        index=0,
+        period_noise=False,
+        phase_noise=False,
+        amplitude_noise=False):
 
         self.p = p
         self.max_rounds = max_rounds
@@ -18,15 +21,30 @@ class CosineLoader(AbstractDataLoader):
         self.amplitude = amplitude
         self.period = period
         self.index = index
+        self.period_noise = period_noise
+        self.phase_noise = phase_noise
+        self.amplitude_noise = amplitude_noise
 
-        self.transform = lambda x: x / period + phase
         self.num_rounds = 0
 
     def get_data(self):
 
-        inside = self.transform(self.num_rounds)
+        period = self.period
+        phase = self.phase
+        amplitude = self.amplitude
+
+        if self.period_noise:
+            period += np.random.randn(1)[0]
+
+        if self.phase_noise:
+            phase += np.random.randn(1)[0]
+
+        if self.amplitude_noise:
+            amplitude += np.random.randn(1)[0]
+
+        inside = self.num_rounds / period - phase
         unscaled = np.cos(inside)
-        scaled = self.amplitude * unscaled
+        scaled = amplitude * unscaled
         noise = np.random.randn(1, self.p)
 
         noise[0,self.index] = scaled
@@ -63,5 +81,4 @@ class CosineLoader(AbstractDataLoader):
             'amplitude': self.amplitude,
             'period': self.period,
             'index': self.index,
-            'transform': self.transform,
             'num_rounds': self.num_rounds}
