@@ -1,5 +1,0 @@
-data
-drrobert
-lazyprojector
-linal
-optimization
