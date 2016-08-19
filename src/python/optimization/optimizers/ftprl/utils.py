@@ -15,3 +15,10 @@ def set_gradient(old_gradient, new_gradient, dual_avg, num_rounds):
         cumulative_gradient = np.copy(new_gradient)
 
     return cumulative_gradient
+
+def get_update(parameters, eta, gradient, get_dual, get_primal):
+
+    dual_parameters = get_dual(parameters)
+    dual_update = dual_parameters - eta * gradient
+
+    return get_primal(dual_update)
