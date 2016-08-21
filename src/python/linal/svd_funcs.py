@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils import multi_dot, get_largest_entries, get_safe_power
+from utils import get_multi_dot, get_largest_entries, get_safe_power
 
 def get_schatten_p_norm(A, p, energy=0.95, k=None):
 
@@ -35,7 +35,7 @@ def get_multiplied_svd(U, s, V):
     (n, p) = (U.shape[0], V.shape[0])
     sigma = _get_sigma(n, p, s)
 
-    return multi_dot([U, sigma, V])
+    return get_multi_dot([U, sigma, V])
 
 def _get_sigma(n, p, s):
 
