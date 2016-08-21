@@ -22,5 +22,4 @@ def get_multi_dot(As):
 
 def get_quadratic(X, A):
 
-    return multi_dot([X.T, A, X])
-
+    return get_multi_dot([X.T, A, X])
