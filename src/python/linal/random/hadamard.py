@@ -4,7 +4,7 @@ from scipy.linalg import hadamard
 
 from drrobert.random import rademacher
 from linal.random.utils import get_rand_I_rows as get_rir
-from linal.utils import multi_dot
+from linal.utils import get_multi_dot
 from linal.structured import get_normed_hadamard
 
 def get_hadamard_sketching_matrix(n, r, p=None):
@@ -18,4 +18,4 @@ def get_hadamard_sketching_matrix(n, r, p=None):
     R = get_rir(n, r, p=p)
     constant = (n * 1.0 / r)**(0.5)
 
-    return constant * multi_dot([R,H,D])
+    return constant * get_multi_dot([R,H,D])
