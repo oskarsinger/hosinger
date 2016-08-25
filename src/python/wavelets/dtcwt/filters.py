@@ -107,7 +107,7 @@ def get_column_d_filtered(X, ha, hb):
     t = np.arange(6, n+2*m-2, 4)
 
     n2 = n/2
-    Y = np.zeros(n2, p)
+    Y = np.zeros((n2, p))
     s2 = np.arange(1, r2, 2)
     s1 = s2 + 1
 
