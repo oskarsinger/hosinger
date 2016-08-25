@@ -1,8 +1,9 @@
 import numpy as np
 
 from scipy.signal import convolve2 as conv2
+import utils as dtcwtu
 
-def get_column_filter(X, h):
+def get_column_filtered(X, h):
 
     (n, p) = X.shape
     m = h.shape[0]
@@ -10,17 +11,15 @@ def get_column_filter(X, h):
     Y = None
     
     if np.count_nonzero(X) > 0:
-        # TODO: figure out what the 0.5 and r+0.5 in the matlab reflect call are
-        # TODO: translate those to probably padding length and maybe other args
-        xe = np.pad(np.arange(1-m2, n+m2), something, 'reflect')
+        xe = dtcwtu.reflect(np.arange(1-m2, n+m2), 0.5, n+0.5)
 
         Y = conv2(X[xe,:], h, mode='valid')
     else:
-        Y = np.zeros(n+1-(m % 2), p)
+        Y = np.zeros((n+1-(m % 2), p))
 
     return np.copy(Y)
 
-def get_column_i_filter(X, ha, hb):
+def get_column_i_filtered(X, ha, hb):
 
     (n, p) = X.shape
 
@@ -39,11 +38,9 @@ def get_column_i_filter(X, ha, hb):
             'Lengths of ha and hb must be even!')
 
     m2 = int(m/2)
-    Y = np.zeros(n*2, p)
+    Y = np.zeros((n*2, p))
 
-    # TODO: figure out what the 0.5 and r+0.5 in the matlab reflect call are
-    # TODO: translate those to probably padding length and maybe other args
-    xe = np.pad(np.arange(1-m2, n+m2), something, 'reflect')
+    xe = dtcwtu.reflect(np.arange(1-m2, n+m2), 0.5, n+0.5)
     hao = ha[1:m:2]
     hae = ha[2:m:2]
     hbo = hb[1:m:2]
@@ -80,3 +77,47 @@ def get_column_i_filter(X, ha, hb):
         Y[s+3,:] = conv2(X[xe[ta],:], hbe, 'valid')
 
     return np.copy(Y)
+
+def get_column_d_filtered(X, ha, hb):
+
+    (n, p) = X.shape
+
+    if r % 4 > 0:
+        raise ValueError(
+            'No. of rows in X must be a multiple of 4!')
+
+    m = ha.shape[0]
+
+    if not m == hb.shape[0]:
+        raise ValueError(
+            'Lengths of ha and hb must be the same!')
+
+    if m % 2 > 0:
+        raise ValueError(
+            'Lengths of ha and hb must be even!')
+
+    m2 = int(m/2)
+
+    xe = dtcwtu.reflect(np.arange(1-m,n+m), 0.5, r+0.5)
+
+    hao = ha[1:m:2]
+    hae = ha[2:m:2]
+    hbo = hb[1:m:2]
+    hbe = hb[2:m:2]
+    t = np.arange(6, n+2*m-2, 4)
+
+    n2 = n/2
+    Y = np.zeros(n2, p)
+    s2 = np.arange(1, r2, 2)
+    s1 = s2 + 1
+
+    if np.sum(ha * hb) > 0:
+        s1 = np.arange(1, n2, 2)
+        s2 = s1 + 1
+
+    Y[s1,:] = conv2(X[xe[t-1],:], hao, 'valid') + \
+        conv2(X[xe[t-3],:], hae, 'valid')
+    Y[s2,:] = conv2(X[xe[t],:], hbo, 'valid') + \
+        conv2(X[xe[t-2],:], hbe, 'valid')
+
+    return Y

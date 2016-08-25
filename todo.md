@@ -47,6 +47,9 @@
 
 ##Code Structure
 
+###Optimization
+* Figure out how to elegantly have my optimization algs deal with both Stiefel/Grassman and Rn. Do I need to make separate objects for the matrix ones, or can I cleanly introduce the logical split in the existing ones? Probably separate objects will be much easier, especially since their is extra state to maintain for the matrix versions.
+
 ###Bandit Framework
 
 ###CCA
@@ -58,6 +61,9 @@
 ###C++/Python Interaction
 
 ##Algorithms
+
+###Optimization
+* Read that Edelman paper to hopefully figure out how to do quasi-Newton methods on matrices without a four-mode tensor.
 
 ###Randomized Linear Algebra
 * Look into using multithreading and GPUs for these algorithms. They don't necessarily have advantage otherwise.
