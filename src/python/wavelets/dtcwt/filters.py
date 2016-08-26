@@ -3,6 +3,8 @@ import numpy as np
 from scipy.signal import convolve2 as conv2
 import utils as dtcwtu
 
+# TODO: double check indexing to translate from Matlab to numpy
+
 def get_column_filtered(X, h):
 
     (n, p) = X.shape

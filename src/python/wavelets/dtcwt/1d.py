@@ -59,7 +59,8 @@ def dtwaveifm(
         gain_mask = np.ones((1,a))
 
     # TODO: make the proper calls to get_biort and get_qshift 
-    (g0a, g0b, g1a, g1b, g0o, g1o) = (None, None, None, None, None, None)
+    (g0a, g0b, g1a, g1b, g0o, g1o) = (
+        None, None, None, None, None, None)
     level = a - 1
     Lo = Yl
 
@@ -72,7 +73,7 @@ def dtwaveifm(
         (Yh_n, Yh_p) = Yh[level-1].shape
 
         if not Lo_n == 2 * Yh_n:
-            Lo = Lo[1:Lo.shape[0]-2,:]
+            Lo = Lo[1:Lo.shape[0]-1,:]
 
         if not (Lo_n == 2 * Yh_n and Lo_p == Yh_p):
             raise ValueError(
