@@ -13,7 +13,7 @@ def get_column_filtered(X, h):
     Y = None
     
     if np.count_nonzero(X) > 0:
-        xe = dtcwtu.reflect(np.arange(1-m2, n+m2), 0.5, n+0.5)
+        xe = dtcwtu.reflect(np.arange(-m2, n+m2), 0.5, n+0.5)
 
         Y = conv2(X[xe,:], h, mode='valid')
     else:
@@ -42,16 +42,16 @@ def get_column_i_filtered(X, ha, hb):
     m2 = int(m/2)
     Y = np.zeros((n*2, p))
 
-    xe = dtcwtu.reflect(np.arange(1-m2, n+m2), 0.5, n+0.5)
-    hao = ha[1:m:2]
-    hae = ha[2:m:2]
-    hbo = hb[1:m:2]
-    hbe = hb[2:m:2]
-    s = np.arange(1, n*2, 4)
+    xe = dtcwtu.reflect(np.arange(-m2, n+m2), 0.5, n+0.5)
+    hao = ha[0:m:2]
+    hae = ha[1:m:2]
+    hbo = hb[0:m:2]
+    hbe = hb[1:m:2]
+    s = np.arange(0, n*2, 4)
 
     if m2 % 2 == 0:
 
-        t = np.arange(4, n+m, 2)
+        t = np.arange(3, n+m, 2)
         ta = t - 1
         tb = t
 
@@ -65,7 +65,7 @@ def get_column_i_filtered(X, ha, hb):
         Y[s+3,:] = conv2(X[xe[ta],:], hbo, 'valid')
     else:
 
-        t = np.arange(3, n+m-1, 2)
+        t = np.arange(2, n+m-1, 2)
         ta = t - 1
         tb = t
 
@@ -100,21 +100,21 @@ def get_column_d_filtered(X, ha, hb):
 
     m2 = int(m/2)
 
-    xe = dtcwtu.reflect(np.arange(1-m,n+m), 0.5, r+0.5)
+    xe = dtcwtu.reflect(np.arange(m,n+m), 0.5, r+0.5)
 
-    hao = ha[1:m:2]
-    hae = ha[2:m:2]
-    hbo = hb[1:m:2]
-    hbe = hb[2:m:2]
-    t = np.arange(6, n+2*m-2, 4)
+    hao = ha[0:m:2]
+    hae = ha[1:m:2]
+    hbo = hb[0:m:2]
+    hbe = hb[1:m:2]
+    t = np.arange(5, n+2*m-2, 4)
 
     n2 = n/2
     Y = np.zeros((n2, p))
-    s2 = np.arange(1, r2, 2)
+    s2 = np.arange(0, r2, 2)
     s1 = s2 + 1
 
     if np.sum(ha * hb) > 0:
-        s1 = np.arange(1, n2, 2)
+        s1 = np.arange(0, n2, 2)
         s2 = s1 + 1
 
     Y[s1,:] = conv2(X[xe[t-1],:], hao, 'valid') + \

@@ -1,4 +1,4 @@
-import numpY as np
+import numpy as np
 
 def reflect(X, minx, maxx):
 
@@ -10,7 +10,6 @@ def reflect(X, minx, maxx):
 
     while not np.all(t==0):
         Y[t] = 2 * minx - Y[t]
-
         t = np.nonzero(Y > maxx)
 
         if not np.all(t==0):

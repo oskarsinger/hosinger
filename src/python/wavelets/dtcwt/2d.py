@@ -22,7 +22,6 @@ def dtwaveifm2(
 
     while current_level >= 1:
 
-
         lh = get_c2q(np.array([0,5]), current_level)
         hl = get_c2q(np.array([2,3]), current_level)
         hh = get_c2q(np.array([1,4]), current_level)
@@ -40,13 +39,35 @@ def dtwaveifm2(
 
         # Check size of Z and crop as required
         (n, p) = Z.shape
+        S = [2 * i for i in Yh[current_level-].shape]
 
-        # TODO: fill this in
+        if not n == S[0]:
+            Z = Z[1:n-1,:]
+
+        if not p == S[1]:
+            Z = Z[:,1:p-1]
+
+        not_equal = [not i == j
+                     for (i,j) in zip(Z.shape, S[0:3])]
+
+        if any(not_equal):
+            raise ValueError(
+                'Sizes of subbands are not valid for DTWAVEIFM2!')
 
         current_level -= 1
 
     lh = get_c2q(np.array([0,5]), 0)
     hl = get_c2q(np.array([2,3]), 0)
+    hh = get_c2q(np.array([1,4]), 0)
+
+    y1 = filters.get_column_filtered(Z, g0o) + \
+        filters.get_column_filtered(lh, g1o)
+    y2 = filters.get_column_filtered(hl, g0o) + \
+        filters.get_column_filtered(hh, g1o)
+    ZT = filters.get_column_filtered(y1.T, g0o) + \
+        filters.get_column_filtered(y2.T, g1o)
+
+    return ZT.T
 
 def c2q(Yh, gain_mask, indexes, level):
 
