@@ -2,6 +2,10 @@ import numpy as np
 
 import filters
 
+def dtwavexfm2(X, nlevels, get_biort, get_qshift):
+
+    return (Yl, Yh, Y_scale)
+
 def dtwaveifm2(
     Yl, Yh, biort, qshift, 
     gain_mask=None):
@@ -33,9 +37,8 @@ def dtwaveifm2(
             filters.get_column_i_filtered(hh, g1b, g1a)
 
         # Do even Qshift filters on rows.
-        ZT = filters.get_column_i_filtered(y1.T, g0b, g0a) + \
-            filters.get_column_i_filtered(y2.T, g1b, g1a)
-        Z = ZT.T
+        Z = (filters.get_column_i_filtered(y1.T, g0b, g0a) +
+            filters.get_column_i_filtered(y2.T, g1b, g1a)).T
 
         # Check size of Z and crop as required
         (n, p) = Z.shape
@@ -64,10 +67,10 @@ def dtwaveifm2(
         filters.get_column_filtered(lh, g1o)
     y2 = filters.get_column_filtered(hl, g0o) + \
         filters.get_column_filtered(hh, g1o)
-    ZT = filters.get_column_filtered(y1.T, g0o) + \
-        filters.get_column_filtered(y2.T, g1o)
+    Z = (filters.get_column_filtered(y1.T, g0o) +
+        filters.get_column_filtered(y2.T, g1o)).T
 
-    return ZT.T
+    return Z
 
 def c2q(Yh, gain_mask, indexes, level):
 
