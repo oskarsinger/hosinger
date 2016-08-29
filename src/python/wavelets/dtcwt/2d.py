@@ -4,6 +4,79 @@ import filters
 
 def dtwavexfm2(X, nlevels, get_biort, get_qshift):
 
+    (Yl, Yh, Y_scale) = [None]*3
+
+    # TODO: make the proper calls to get_biort and get_qshift 
+    (h0a, h0b, h1a, h1b, h0o, h1o) = [None]*6
+
+    original_size = X.shape
+
+    if X.ndim >= 3:
+        raise ValueError(
+            'Input must have at most 2 modes.')
+
+    initial_row_extend = 0
+    initial_col_extend = 0
+
+    if original_size[0] % 2 > 0:
+        X = np.vstack([X, X[:,-1]]).T
+        initial_col_extend = 1
+
+    extended_size = X.shape
+
+    if nlevels == 0:
+        return (Yl, Yh, Y_scale)
+
+    Yh = [None] * nlevels
+    Y_scale = [None] * nlevels
+    S = None
+
+    if nlevels >= 1:
+
+        # Do odd top-level filters on cols
+        Lo = filters.get_column_filtered(X, h0o).T
+        Hi = filters.get_column_filtered(X, h1o).T
+
+        # Do odd top-level filters on rows
+        LoLo = filters.get_column_filtered(Lo, h0o).T
+        Yh[0] = np.zeros([i/2 for i in LoLo.shape]+[6])
+        Yh[0][:,:,[0,5]] = q2c(get_column_filtered(Hi, h0o).T)
+        Yh[0][:,:,[2,3]] = q2c(get_column_filtered(Lo, h1o).T)
+        Yh[0][:,:,[1,4]] = q2c(get_column_filtered(Hi, h1o).T)
+        S = np.hstack([np.array(LoLo.shape), S])
+        Y_scale[0] = np.copy(LoLo)
+
+    if nlevels >= 2:
+        for level in xrange(2, nlevels+1):
+            (n, p) = LoLo.shape
+
+            # Extend by 2 rows if no. of rows of LoLo are divisable by 4
+            if n % 4 > 0:
+                LoLo = np.hstack([LoLo[:,0], LoLo, LoLo[-1,:]])
+
+            # Extend by 2 cols of no. of cols of LoLo are divisable by 4
+            if p % 4 > 0:
+                LoLo = np.vstack([LoLo[:,0], LoLo, LoLo[:,-1]]).T
+
+            # Do even Qshift filters on rows
+            Lo = filters.get_column_d_filtered(LoLo, h0b, h0a)
+            Hi = filters.get_column_d_filtered(LoLo, h1b, h1a)
+
+            # Do even Qshift filters on columns
+            LoLo = filters.get_column_d_filtered(Lo, h0b, h0a)
+            Yh[level][:,:,[0,5]] = q2c(
+                filters.get_column_d_filtered(Hi,h0b,h0a))
+            Yh[level][:,:,[2,3]] = q2c(
+                filters.get_column_d_filtered(Lo,h1b,h1a))
+            Yh[level][:,:,[1,4]] = q2c(
+                filters.get_column_d_filtered(Hi,h1b,h1a))
+            S = np.hstack([np.array(LoLo.shape), S])
+            Y_scale[level] = np.copy(LoLo)
+
+    Yl = np.copy(LoLo)
+
+    # TODO: Implement the warnings from the Matlab code
+
     return (Yl, Yh, Y_scale)
 
 def dtwaveifm2(
@@ -16,8 +89,7 @@ def dtwaveifm2(
         gain_mask = np.ones(6, a)
 
     # TODO: make the proper calls to get_biort and get_qshift 
-    (g0a, g0b, g1a, g1b, g0o, g1o) = (
-        None, None, None, None, None, None)
+    (g0a, g0b, g1a, g1b, g0o, g1o) = [None]*6
         
     current_level = a - 1;
 
@@ -71,6 +143,17 @@ def dtwaveifm2(
         filters.get_column_filtered(y2.T, g1o)).T
 
     return Z
+
+def q2c(y):
+
+    sy = y.shape
+    t1 = np.arange(0, sy[0], 2)
+    t2 = np.arange(0, sy[1], 2)
+    j2 = np.array([0.5**(0.5), 1j*0.5**(0.5)])
+    p = (y[t1,t2]*j2[0] + y[t1,t2+1]*j2[1])[:,:,np.newaxis]
+    q = (y[t1+1,t2+1]*j2[0] - y[t1+1,t2]*j2[1])[:,:,np.newaxis]
+
+    return np.concatenate([p-q,p+q], axis=2)
 
 def c2q(Yh, gain_mask, indexes, level):
 
