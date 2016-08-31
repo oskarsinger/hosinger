@@ -14,11 +14,13 @@ class DiagonalAdaGradOptimizer:
         dual_avg=True, 
         verbose=False):
 
+        # TODO: try to enforce correct step-size sequence for RDA
         self.lower = lower
         self.dual_avg = dual_avg
         self.delta = delta
-        self.scale = None
         self.verbose = verbose
+
+        self.scale = None
         self.alpha = 1
         self.beta = 1
 
@@ -98,16 +100,15 @@ class FullAdaGradOptimizer:
         forget_factor=None,
         lower=None,
         dual_avg=True,
-        sketch=False,
         verbose=False):
 
         self.lower = lower
         self.dual_avg = dual_avg
         self.delta = delta
-        self.sketch = sketch
+        self.verbose = verbose
+
         self.G = None
         self.scale = None
-        self.verbose = verbose
         self.alpha = 1
         self.beta = 1
 
@@ -152,9 +153,9 @@ class FullAdaGradOptimizer:
 
     def _get_primal(self, dual_update):
 
-        if self.lower is not None:
-            dus = dual_update.shape
+        dus = dual_update.shape
 
+        if self.lower is not None:
             if len(dus) == 2 and not 1 in set(dus):
                 (U, s, V) = np.linalg.svd(dual_update)
                 sparse_s = get_st(s, lower=self.lower)
@@ -164,7 +165,8 @@ class FullAdaGradOptimizer:
                     dual_update, lower=self.lower) 
 
         # Get the primal transformation
-        H_inv = get_svd_power(self.scale + self.delta, -1)
+        pd_help = self.delta * np.identity(self.scale.shape[0])
+        H_inv = get_svd_power(self.scale + pd_help, -1)
 
         return np.dot(H_inv, dual_update)
 
@@ -173,8 +175,8 @@ class FullAdaGradOptimizer:
         return {
             'delta': self.delta,
             'lower': self.lower,
+            'G': self.G,
             'scale': self.scale,
-            'sketch': self.sketch,
             'forget_factor': self.forget_factor,
             'alpha': self.alpha,
             'beta': self.beta,
