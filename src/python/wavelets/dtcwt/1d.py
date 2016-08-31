@@ -3,13 +3,12 @@ import numpy as np
 import filters
 
 def dtwavexfm(
-        X, nlevels, get_biort, get_qshift):
+    X, nlevels, biort, q_shift):
 
-    (Yl, Yh, Y_scale) = (None, None, None)
+    (Yl, Yh, Y_scale) = [None] * 3
 
     # TODO: make the proper calls to get_biort and get_qshift 
-    (h0a, h0b, h1a, h1b, h0o, h1o) = (
-        None, None, None, None, None, None)
+    (h0a, h0b, h1a, h1b, h0o, h1o) = [None] * 6
 
     L = X.shape
 
@@ -50,7 +49,7 @@ def dtwavexfm(
     return (Yl, Yh, Y_scale)
 
 def dtwaveifm(
-    Yl, Yh, get_biort, get_qshift, 
+    Yl, Yh, biort, qshift, 
     gain_mask=None):
 
     a = Yh.shape[0]
@@ -59,8 +58,8 @@ def dtwaveifm(
         gain_mask = np.ones((1,a))
 
     # TODO: make the proper calls to get_biort and get_qshift 
-    (g0a, g0b, g1a, g1b, g0o, g1o) = (
-        None, None, None, None, None, None)
+    (g0a, g0b, g1a, g1b, g0o, g1o) = [None] * 6
+        
     level = a - 1
     Lo = Yl
 
