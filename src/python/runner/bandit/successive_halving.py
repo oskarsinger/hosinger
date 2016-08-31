@@ -32,6 +32,7 @@ class FiniteSuccessiveHalvingRunner:
         self.num_pulls = [0] * self.num_arms
         self.num_rounds = 0
         self.winner = None
+        self.winning_loss = None
 
     def run(self):
 
@@ -51,6 +52,8 @@ class FiniteSuccessiveHalvingRunner:
                     # TODO: should I be accumulating or just taking last one?
                     losses[j] += self.arm[j].update(data)[1]
 
+                    self.num_pulls[j] += 1
+
             sigma = sorted(
                 losses.items(), 
                 key=lambda x: x[1]) 
@@ -61,8 +64,21 @@ class FiniteSuccessiveHalvingRunner:
                 self.still_pull[j] = False
 
             self.winner = sigma[0][0]
+            self.winning_loss = sigma[0][1]
 
     def get_status(self):
 
         return {
-            }
+            'winner': self.winner,
+            'winning_loss': self.winning_loss,
+            'arms': self.arms,
+            'servers': self.servers,
+            'budget': self.budget,
+            'max_size': self.max_size,
+            'min_size': self.min_size,
+            'eta': self.eta,
+            'max_rounds': self.max_rounds,
+            'still_pull': self.still_pull,
+            'num_pulls': self.num_pulls, 
+            'num_rounds': self.num_rounds,
+            'num_arms': self.num_arms}
