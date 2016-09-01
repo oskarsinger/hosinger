@@ -82,3 +82,13 @@ class FiniteSuccessiveHalvingRunner:
             'num_pulls': self.num_pulls, 
             'num_rounds': self.num_rounds,
             'num_arms': self.num_arms}
+
+class InfiniteSuccessiveHalvingRunner:
+
+    def __init__(self):
+
+        'poop'
+
+    def run(self):
+
+        'poop'

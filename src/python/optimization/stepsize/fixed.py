@@ -4,6 +4,6 @@ class FixedStepSize:
 
         self.stepsize = stepsize
 
-    def get_stepsize(self):
+    def get_stepsize(self, num_rounds):
 
         return stepsize

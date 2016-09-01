@@ -70,3 +70,13 @@ class FiniteHyperBandRunner:
             'num_rounds': self.num_rounds,
             'arms': self.arms,
             'num_pulls': self.num_pulls}
+
+class InfiniteHyperBandRunner:
+
+    def __init__(self):
+
+        'poop'
+
+    def run(self):
+
+        'poop'

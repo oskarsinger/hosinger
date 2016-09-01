@@ -1,2 +1,2 @@
-from pls import ProbabilisticLineSearcher
-from fixed import FixedStepSize
+from fixed import FixedScheduler
+from irs import InverseSquareRootScheduler
