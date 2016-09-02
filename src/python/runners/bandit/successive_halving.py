@@ -50,6 +50,8 @@ class FiniteSuccessiveHalvingRunner:
 
                 for j in losses.keys():
                     # TODO: should I be accumulating or just taking last one?
+                    # TODO: probably also should do validation loss instead;
+                    # may have to allow loss function evaluator to be fed in
                     losses[j] += self.arm[j].update(data)[1]
 
                     self.num_pulls[j] += 1

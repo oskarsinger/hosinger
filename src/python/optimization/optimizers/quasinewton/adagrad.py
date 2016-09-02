@@ -4,12 +4,14 @@ import utils as ftprlu
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from linal.utils import get_safe_power
 from linal.svd_funcs import get_multiplied_svd
+from drrobert.arithmetic import get_moving_avg as get_ma
 
-class DiagonalAdaGradOptimizer:
+class DiagonalAdamOptimizer:
 
     def __init__(self, 
         delta=0.1,
-        forget_factor=None,
+        beta1=None,
+        beta2=None,
         lower=None, 
         dual_avg=True, 
         verbose=False):
@@ -21,14 +23,28 @@ class DiagonalAdaGradOptimizer:
         self.verbose = verbose
 
         self.scale = None
-        self.alpha = 1
-        self.beta = 1
 
-        if forget_factor is not None:
-            self.alpha = forget_factor
-            self.beta = 1 - self.alpha
+        if dual_avg and beta1 is not None:
+            raise ValueError(
+                'You must choose either dual averaging or moving average for the initial search direction.')
+        
+        if beta1 is None:
+            beta1 = 1
+            self.alpha1 = 1
+        else:
+            self.alpha1 = 1 - beta1
 
-        self.grad = None
+        self.beta1 = beta1
+
+        if beta2 is None:
+            beta2 = 1
+            self.alpha2 = 1
+        else:
+            self.alpha2 = 1 - beta2
+
+        self.beta2 = beta2
+
+        self.search_direction = None
         self.num_rounds = 0
 
     def get_update(self, parameters, gradient, eta):
@@ -39,18 +55,28 @@ class DiagonalAdaGradOptimizer:
         if self.scale is None:
             self.scale = np.absolute(gradient)
         else:
-            previous = self.alpha * get_safe_power(self.scale, 2)
-            new = self.beta * get_safe_power(gradient, 2)
-            self.scale = get_safe_power(previous + new, 0.5)
+            old = get_safe_power(self.scale, 2)
+            new = get_safe_power(gradient, 2)
+            total = get_ma(
+                old, 
+                new, 
+                self.alpha2, 
+                self.beta2) / self.alpha2
+            self.scale = get_safe_power(total, 0.5)
 
         # Update gradient
-        self.grad = ftprlu.set_gradient(
-            self.grad, gradient, self.dual_avg, self.num_rounds)
+        self.search_direction = np.copy(ftprlu.get_search_direction(
+            self.search_direction, 
+            gradient, 
+            self.dual_avg, 
+            self.num_rounds,
+            self.alpha1,
+            self.beta1)) / self.alpha1
         
         return ftprlu.get_update(
             parameters, 
             eta, 
-            gradient, 
+            self.search_direction, 
             self._get_dual, 
             self._get_primal)
 
@@ -85,19 +111,21 @@ class DiagonalAdaGradOptimizer:
             'delta': self.delta,
             'lower': self.lower,
             'scale': self.scale,
-            'forget_factor': self.forget_factor,
-            'alpha': self.alpha,
-            'beta': self.beta,
+            'alpha1': self.alpha1,
+            'beta1': self.beta1
+            'alpha2': self.alpha2,
+            'beta2': self.beta2,
             'dual_avg': self.dual_avg,
-            'grad': self.grad,
+            'grad': self.search_direction,
             'verbose': self.verbose,
             'num_rounds': self.num_rounds}
 
-class FullAdaGradOptimizer:
+class FullAdamOptimizer:
 
     def __init__(self,
         delta=0.1,
-        forget_factor=None,
+        beta1=None,
+        beta2=None,
         lower=None,
         dual_avg=True,
         verbose=False):
@@ -109,14 +137,32 @@ class FullAdaGradOptimizer:
 
         self.G = None
         self.scale = None
-        self.alpha = 1
-        self.beta = 1
+
+        if dual_avg and beta1 is not None:
+            raise ValueError(
+                'You must choose either dual averaging or moving average for the initial search direction.')
+        
+        if beta1 is None:
+            beta1 = 1
+            self.alpha1 = 1
+        else:
+            self.alpha1 = 1 - beta1
+
+        self.beta1 = beta1
+
+        if beta2 is None:
+            beta2 = 1
+            self.alpha2 = 1
+        else:
+            self.alpha2 = 1 - beta2
+
+        self.beta2 = beta2
 
         if forget_factor is not None:
             self.alpha = forget_factor
             self.beta = 1 - self.alpha
 
-        self.grad = None
+        self.search_direction = None
         self.num_rounds = 0
 
     def get_update(self, parameters, gradient, eta):
@@ -128,18 +174,27 @@ class FullAdaGradOptimizer:
             self.G = np.dot(gradient, gradient.T)
         else:
             new_G = np.dot(gradient, gradient.T)
-            self.G = self.alpha * self.G + self.beta * new_G
+            self.G = get_ma(
+                self.G, 
+                new_G, 
+                self.alpha2, 
+                self.beta2) / self.alpha2
 
         self.scale = get_svd_power(self.G, 0.5)
 
         # Update gradient
-        self.grad = ftprlu.set_gradient(
-            self.grad, gradient, self.dual_avg, self.num_rounds)
+        self.search_direction = np.copy(ftprlu.get_search_direction(
+            self.search_direction, 
+            gradient, 
+            self.dual_avg, 
+            self.num_rounds,
+            self.alpha1,
+            self.beta1)) / self.alpha1
         
         return ftprlu.get_update(
             parameters, 
             eta, 
-            gradient, 
+            self.search_direction, 
             self._get_dual, 
             self._get_primal)
 
@@ -177,10 +232,11 @@ class FullAdaGradOptimizer:
             'lower': self.lower,
             'G': self.G,
             'scale': self.scale,
-            'forget_factor': self.forget_factor,
-            'alpha': self.alpha,
-            'beta': self.beta,
+            'alpha1': self.alpha1,
+            'beta1': self.beta1,
+            'alpha2': self.alpha2,
+            'beta2': self.beta2,
             'dual_avg': self.dual_avg,
-            'grad': self.grad,
+            'search_direction': self.search_direction,
             'verbose': self.verbose,
             'num_rounds': self.num_rounds}

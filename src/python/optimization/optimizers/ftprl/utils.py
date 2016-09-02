@@ -1,24 +1,34 @@
 import numpy as np
+import drrobert.arithmetic as da
 
-from drrobert.arithmetic import get_running_avg as get_ra
+def get_search_direction(
+    old, 
+    new, 
+    dual_avg, 
+    num_rounds, 
+    alpha, 
+    beta):
 
-def set_gradient(old_gradient, new_gradient, dual_avg, num_rounds):
+    search_direction = new
 
-    cumulative_gradient = None
+    if old_gradient is not None:
+        if dual_avg:
+            search_direction = da.get_running_avg(
+                old, new, num_rounds)
+        elif:
+            search_direction = da.get_moving_avg(
+                old, new, alpha, beta)
 
-    if dual_avg and old_gradient is not None:
-        # Get averaged gradient if desired
-        cumulative_gradient = get_ra(
-            old_gradient, new_gradient, num_rounds)
-    else:
-        # Otherwise, get current gradient
-        cumulative_gradient = np.copy(new_gradient)
+    return search_direction
 
-    return cumulative_gradient
-
-def get_update(parameters, eta, gradient, get_dual, get_primal):
+def get_update(
+    parameters, 
+    eta, 
+    search_direction, 
+    get_dual, 
+    get_primal):
 
     dual_parameters = get_dual(parameters)
-    dual_update = dual_parameters - eta * gradient
+    dual_update = dual_parameters - eta * search_direction
 
     return get_primal(dual_update)
