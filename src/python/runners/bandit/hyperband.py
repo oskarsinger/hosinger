@@ -5,14 +5,14 @@ class FiniteHyperBandRunner:
 
     def __init__(self,
         get_arms,
-        servers,
+        ds_list,
         max_rounds,
         max_size,
         min_size,
         eta=3):
 
         self.get_arms = get_arms
-        self.servers = servers
+        self.ds_list = ds_list
         self.max_rounds = max_rounds
         self.max_size = max_size
         self.min_size = min_size
@@ -40,7 +40,7 @@ class FiniteHyperBandRunner:
                 arms = self.get_arms(n)
                 sh = FSHR(
                     arms, 
-                    servers, 
+                    ds_list, 
                     B, 
                     self.max_size, 
                     self.min_size,
@@ -64,7 +64,7 @@ class FiniteHyperBandRunner:
 
         return {
             'get_arms': self.get_arms,
-            'servers': self.servers,
+            'ds_list': self.ds_list,
             'arg_names': self.arg_names,
             'arg_ranges': self.arg_ranges,
             'num_rounds': self.num_rounds,
