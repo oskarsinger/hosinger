@@ -1,5 +1,5 @@
 import numpy as np
-import optimization.optimizers.ftprl.utils as ftprlu
+import ftprl.utils as ftprlu
 
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from linal.utils import get_safe_power
