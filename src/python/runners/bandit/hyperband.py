@@ -1,4 +1,5 @@
 from successive_halving import FiniteSuccessiveHalvingRunner as FSHR
+from drrobert.misc import unzip
 from math import floor, log
 
 # TODO: so far this is specialized to AppGrad a bit; fix that later
@@ -39,8 +40,10 @@ class FiniteHyperBandRunner:
                 ratio1 = B/self.max_size
                 ratio2 = float(self.eta**(l)) / (l+1)
                 num_arms = int(floor(ratio1 * ratio2))
-                arms = [self.get_arm(self.num_views)
-                        for i in xrange(num_arms)]
+                # Should have 
+                (arms, parameters) = unzip(
+                    [self.get_arm(self.num_views)
+                     for i in xrange(num_arms)])
                 sh = FSHR(
                     arms, 
                     ds_list, 
@@ -52,11 +55,14 @@ class FiniteHyperBandRunner:
                 sh.run()
 
                 sh_info = sh.get_status()
-                winner = arms[sh_info['winner']]
+                windex = sh_info['winner']
+                winner = arms[windex]
+                winning_parameters = parameters[windex]
                 loss = sh_info['winner_loss']
                 num_pulls = sh_info['num_pulls']
                 
-                self.history.append((winner,loss))
+                self.history.append(
+                    (winner,winning_parameters, loss))
 
                 # TODO: figure out how to update num_pulls
                 # TODO: in general make sure this is ready
