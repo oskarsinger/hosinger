@@ -68,11 +68,10 @@ class FiniteHyperBandRunner:
         return {
             'get_arms': self.get_arms,
             'ds_list': self.ds_list,
-            'arg_names': self.arg_names,
-            'arg_ranges': self.arg_ranges,
             'num_rounds': self.num_rounds,
             'arms': self.arms,
-            'num_pulls': self.num_pulls}
+            'num_pulls': self.num_pulls,
+            'history': self.history}
 
 class InfiniteHyperBandRunner:
 

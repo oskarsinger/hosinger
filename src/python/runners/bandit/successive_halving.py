@@ -94,3 +94,7 @@ class InfiniteSuccessiveHalvingRunner:
     def run(self):
 
         'poop'
+
+def _get_validation_loss(ds_list, arms, num_points):
+
+    return 'poop'
