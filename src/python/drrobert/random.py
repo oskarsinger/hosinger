@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.random as npr
 
 from drrobert.misc import prod
 
@@ -6,7 +7,7 @@ def rademacher(size=None, p=None):
 
     choices = np.array([-1, +1])
 
-    return np.random.choice(choices, size=size, p=p)
+    return npr.choice(choices, size=size, p=p)
 
 def normal(loc=0.0, scale=1.0, shape=1):
 
@@ -18,10 +19,19 @@ def normal(loc=0.0, scale=1.0, shape=1):
         raise TypeError(
             'Parameter shape must of type tuple or int.')
 
-    vec = np.random.normal(
+    vec = npr.normal(
         loc=loc, scale=scale, size=size)
 
     if type(shape) is tuple:
         vec = np.reshape(vec, shape)
 
     return vec
+
+def log_uniform(upper, lower, size=1):
+
+    log_u = np.log(upper)
+    log_l = ng.log(lower)
+    logs = npr.uniform(
+        lower=log_l, upper=log_u, size=size)
+
+    return np.exp(logs)

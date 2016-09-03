@@ -1,18 +1,20 @@
 from successive_halving import FiniteSuccessiveHalvingRunner as FSHR
 from math import floor, log
 
+# TODO: so far this is specialized to AppGrad a bit; fix that later
 class FiniteHyperBandRunner:
 
     def __init__(self,
-        get_arms,
+        get_arm,
         ds_list,
         max_rounds,
         max_size,
         min_size,
         eta=3):
 
-        self.get_arms = get_arms
+        self.get_arm = get_arm
         self.ds_list = ds_list
+        self.num_views = len(ds_list)
         self.max_rounds = max_rounds
         self.max_size = max_size
         self.min_size = min_size
@@ -36,8 +38,9 @@ class FiniteHyperBandRunner:
             for l in xrange(num_rounds):
                 ratio1 = B/self.max_size
                 ratio2 = float(self.eta**(l)) / (l+1)
-                n = int(floor(ratio1 * ratio2))
-                arms = self.get_arms(n)
+                num_arms = int(floor(ratio1 * ratio2))
+                arms = [self.get_arm(self.num_views)
+                        for i in xrange(num_arms)]
                 sh = FSHR(
                     arms, 
                     ds_list, 

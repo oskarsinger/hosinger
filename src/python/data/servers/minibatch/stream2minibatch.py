@@ -4,6 +4,7 @@ from drrobert.data_structures import FixedLengthQueue as FLQ
 from drrobert.ml import get_pca
 from data.pseudodata import MissingData
 
+# TODO: change centering to take moving average parameter
 class Minibatch2Minibatch:
 
     def __init__(self, 
