@@ -7,6 +7,7 @@ setup(
         'optimization',
         'optimization.optimizers',
         'optimization.optimizers.ftprl',
+        'optimization.optimizers.quasinewton',
         'linal',
         'linal.random',
         'linal.utils',
@@ -18,10 +19,12 @@ setup(
         'data.errors',
         'data.loaders',
         'data.loaders.e4',
-        'data.loaders.random',
+        'data.loaders.synthetic',
         'data.servers',
         'data.servers.action_reward',
         'data.servers.batch',
         'data.servers.minibatch',
         'data.servers.masks',
-        'data.servers.gram'])
+        'data.servers.gram',
+        'runners',
+        'runners.bandit'])

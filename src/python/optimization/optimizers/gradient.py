@@ -1,33 +1,36 @@
-from drrobert.arithmetic import get_moving_avg as get_ma
+import ftprl.utils as ftprlu
 
 class GradientOptimizer:
 
-    def __init__(self, forget_factor=None):
+    def __init__(self, beta=None, dual_avg=False):
 
-        self.forget_factor = forget_factor
-        self.alpha = 1
-        self.beta = 1
-        self.moving_avg = None
+        if beta is None:
+            beta = 0
+            self.alpha = 1
+        else:
+            self.alpha = 1 - beta
 
-        if forget_factor is not None:
-            self.alpha = forget_factor
-            self.beta = 1 - self.alpha
+        self.beta = beta
+        self.dual_avg = dual_avg
+        self.search_direction = None
+        self.num_rounds = 0
 
     def get_update(self, parameters, gradient, eta):
 
-        if self.moving_avg is None:
-            self.moving_avg = gradient
-        else:
-            old = self.alpha * self.moving_avg
-            new = self.beta * gradient
-            self.moving_avg = old + new
+        self.search_direction = ftprl.get_search_direction(
+            self.search_direction, 
+            gradient, 
+            self.dual_avg,
+            self.alpha, 
+            self.beta)
 
-        return parameters - eta * self.moving_avg
+        return parameters - eta * self.search_direction
 
     def get_status(self):
 
         return {
-            'forget_factor': self.forget_factor,
             'alpha': self.alpha,
             'beta': self.beta,
-            'moving_avg': self.moving_avg}
+            'dual_avg': self.dual_avg,
+            'search_direction': self.search_direction,
+            'num_rounds': self.num_rounds}

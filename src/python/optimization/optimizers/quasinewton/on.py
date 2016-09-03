@@ -94,7 +94,7 @@ class SketchedOnlineNewtonOptimizer:
 
     def __init__(self,
         C, alpha, m,
-        verbose=False)
+        verbose=False):
 
         self.C = C
         self.alpha = alpha
@@ -107,7 +107,7 @@ class SketchedOnlineNewtonOptimizer:
     def get_update(self, parameters, hessian, gradient, eta):
 
         if self.S is None:
-
+            'poop'
 
 def _fd_sketch_init(alpha, m):
 

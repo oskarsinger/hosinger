@@ -1,5 +1,5 @@
 import numpy as np
-import utils as ftprlu
+import optimization.optimizers.ftprl.utils as ftprlu
 
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from linal.utils import get_safe_power
@@ -29,7 +29,7 @@ class DiagonalAdamOptimizer:
                 'You must choose either dual averaging or moving average for the initial search direction.')
         
         if beta1 is None:
-            beta1 = 1
+            beta1 = 0
             self.alpha1 = 1
         else:
             self.alpha1 = 1 - beta1
@@ -37,7 +37,7 @@ class DiagonalAdamOptimizer:
         self.beta1 = beta1
 
         if beta2 is None:
-            beta2 = 1
+            beta2 = 0
             self.alpha2 = 1
         else:
             self.alpha2 = 1 - beta2
@@ -112,7 +112,7 @@ class DiagonalAdamOptimizer:
             'lower': self.lower,
             'scale': self.scale,
             'alpha1': self.alpha1,
-            'beta1': self.beta1
+            'beta1': self.beta1,
             'alpha2': self.alpha2,
             'beta2': self.beta2,
             'dual_avg': self.dual_avg,
@@ -143,7 +143,7 @@ class FullAdamOptimizer:
                 'You must choose either dual averaging or moving average for the initial search direction.')
         
         if beta1 is None:
-            beta1 = 1
+            beta1 = 0
             self.alpha1 = 1
         else:
             self.alpha1 = 1 - beta1
@@ -151,7 +151,7 @@ class FullAdamOptimizer:
         self.beta1 = beta1
 
         if beta2 is None:
-            beta2 = 1
+            beta2 = 0
             self.alpha2 = 1
         else:
             self.alpha2 = 1 - beta2

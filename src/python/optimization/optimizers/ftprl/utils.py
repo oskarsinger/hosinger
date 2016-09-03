@@ -11,11 +11,11 @@ def get_search_direction(
 
     search_direction = new
 
-    if old_gradient is not None:
+    if old is not None:
         if dual_avg:
             search_direction = da.get_running_avg(
                 old, new, num_rounds)
-        elif:
+        else:
             search_direction = da.get_moving_avg(
                 old, new, alpha, beta)
 
