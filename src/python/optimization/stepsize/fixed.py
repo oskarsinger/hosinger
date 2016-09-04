@@ -1,4 +1,4 @@
-class FixedStepSize:
+class FixedScheduler:
 
     def __init__(self, stepsize):
 

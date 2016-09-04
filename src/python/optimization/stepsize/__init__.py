@@ -1,2 +1,2 @@
 from fixed import FixedScheduler
-from irs import InverseSquareRootScheduler
+from isr import InverseSquareRootScheduler

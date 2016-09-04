@@ -1,6 +1,5 @@
-import data.loaders.synthetic as dlsynth
-
 from data.loaders.readers import from_num as fn
+from periodic import CosineLoader as CL
 
 def get_cosine_loaders(
     ps,
