@@ -42,7 +42,7 @@ class FiniteHyperBandRunner:
                 num_arms = int(floor(ratio1 * ratio2))
                 # Should have 
                 (arms, parameters) = unzip(
-                    [self.get_arm(self.num_views)
+                    [self.get_arm()
                      for i in xrange(num_arms)])
                 sh = FSHR(
                     arms, 

@@ -30,8 +30,8 @@ def normal(loc=0.0, scale=1.0, shape=1):
 def log_uniform(upper, lower, size=1):
 
     log_u = np.log(upper)
-    log_l = ng.log(lower)
+    log_l = np.log(lower)
     logs = npr.uniform(
-        lower=log_l, upper=log_u, size=size)
+        low=log_l, high=log_u, size=size)
 
     return np.exp(logs)
