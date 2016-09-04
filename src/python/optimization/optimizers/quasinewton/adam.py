@@ -1,6 +1,6 @@
 import numpy as np
-import ftprl.utils as ftprlu
 
+from .. import utils as ou
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from linal.utils import get_safe_power
 from linal.svd_funcs import get_multiplied_svd
@@ -65,15 +65,15 @@ class DiagonalAdamOptimizer:
             self.scale = get_safe_power(total, 0.5)
 
         # Update gradient
-        self.search_direction = np.copy(ftprlu.get_search_direction(
+        self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
-            self.alpha1,
-            self.beta1)) / self.alpha1
+            alpha=self.alpha1,
+            beta=self.beta1)) / self.alpha1
         
-        return ftprlu.get_update(
+        return ou.get_mirror_update(
             parameters, 
             eta, 
             self.search_direction, 
@@ -183,15 +183,15 @@ class FullAdamOptimizer:
         self.scale = get_svd_power(self.G, 0.5)
 
         # Update gradient
-        self.search_direction = np.copy(ftprlu.get_search_direction(
+        self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
-            self.alpha1,
-            self.beta1)) / self.alpha1
+            alpha=self.alpha1,
+            beta=self.beta1)) / self.alpha1
         
-        return ftprlu.get_update(
+        return ou.get_mirror_update(
             parameters, 
             eta, 
             self.search_direction, 

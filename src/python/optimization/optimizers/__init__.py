@@ -1,5 +1,5 @@
-from optimizer import AbstractOptimizer
-from gradient import GradientOptimizer
-
+import utils
 import ftprl
 import quasinewton
+
+from gradient import GradientOptimizer

@@ -1,13 +1,12 @@
-import numpy as np
 import drrobert.arithmetic as da
 
-def get_search_direction(
+def get_avg_search_direction(
     old, 
     new, 
     dual_avg, 
     num_rounds, 
-    alpha, 
-    beta):
+    alpha=1,
+    beta=0):
 
     search_direction = new
 
@@ -21,7 +20,7 @@ def get_search_direction(
 
     return search_direction
 
-def get_update(
+def get_mirror_update(
     parameters, 
     eta, 
     search_direction, 

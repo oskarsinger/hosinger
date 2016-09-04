@@ -1,7 +1,7 @@
+import numpy as np
+
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from drrobert.data_structures import FixedLengthQueue as FLQ
-
-import numpy as np
 
 class PeriodicParameterProximalGradientOptimizer:
 

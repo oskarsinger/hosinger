@@ -1,4 +1,4 @@
-import ftprl.utils as ftprlu
+import utils as ftprlu
 
 class GradientOptimizer:
 

@@ -1,5 +1,5 @@
 import numpy as np
-import utils as ftprlu
+from .. import utils as ou
 
 from optimization.utils import get_lp_norm_gradient as get_lpn_grad
 from optimization.utils import get_shrunk_and_thresholded as get_st
@@ -29,13 +29,18 @@ class SchattenPCOMIDOptimizer:
             (self.U, self.s, self.V) = np.linalg.svd(parameters)
 
         self.num_rounds += 1
-        self.grad = ftprlu.set_gradient(
-            self.grad, gradient, self.dual_avg, self.num_rounds)
+        self.grad = ou.get_avg_search_direction(
+            self.grad, 
+            gradient, 
+            self.dual_avg, 
+            self.num_rounds)
 
-        dual_parameters = self._get_dual(parameters)
-        dual_update = dual_parameters - eta * self.grad
-
-        return self._get_primal(dual_update)
+        return ou.get_mirror_update(
+            parameters,
+            eta,
+            self.grad,
+            self._get_dual,
+            self._get_primal)
 
     def _get_dual(self, parameters):
 

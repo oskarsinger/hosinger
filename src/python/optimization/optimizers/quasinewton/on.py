@@ -1,6 +1,6 @@
 import numpy as np
-import ftprl.utils as ftprlu
 
+from .. import utils as ou
 from linal.utils import get_safe_power
 from linal.svd_funcs import get_svd_power
 
@@ -41,10 +41,13 @@ class OnlineNewtonOptimizer:
             new_G = np.dot(gradient, gradient.T)
             self.G = self.alpha * self.G + self.beta * new_G
 
-        self.grad = ftprlu.set_gradient(
-            self.grad, gradient, self.dual_avg, self.num_rounds)
+        self.grad = ou.get_avg_search_direction(
+            self.grad, 
+            gradient, 
+            self.dual_avg, 
+            self.num_rounds)
 
-        return ftprlu.get_update(
+        return ou.get_mirror_update(
             parameters,
             eta,
             gradient,
