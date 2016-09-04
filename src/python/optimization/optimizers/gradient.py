@@ -1,4 +1,4 @@
-import utils as ftprlu
+import utils as ou
 
 class GradientOptimizer:
 
@@ -17,12 +17,12 @@ class GradientOptimizer:
 
     def get_update(self, parameters, gradient, eta):
 
-        self.search_direction = ftprl.get_search_direction(
+        self.search_direction = ou.get_search_direction(
             self.search_direction, 
             gradient, 
             self.dual_avg,
-            self.alpha, 
-            self.beta)
+            alpha=self.alpha, 
+            beta=self.beta)
 
         return parameters - eta * self.search_direction
 
