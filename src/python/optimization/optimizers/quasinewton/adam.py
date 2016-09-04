@@ -24,7 +24,7 @@ class DiagonalAdamOptimizer:
 
         self.scale = None
 
-        if dual_avg and beta1 is not None:
+        if dual_avg and (beta1 is not None or beta2 is not None):
             raise ValueError(
                 'You must choose either dual averaging or moving average for the initial search direction.')
         
@@ -157,11 +157,6 @@ class FullAdamOptimizer:
             self.alpha2 = 1 - beta2
 
         self.beta2 = beta2
-
-        if forget_factor is not None:
-            self.alpha = forget_factor
-            self.beta = 1 - self.alpha
-
         self.search_direction = None
         self.num_rounds = 0
 

@@ -81,12 +81,7 @@ class ExpGramServer:
 
     def __init__(self, weight=0.9, reg=0.1):
 
-        if weight <= 0.5:
-            raise ValueError(
-                'Parameter weight must be in interval (0.5, 1].')
-        else:
-            self.weight = weight
-
+        self.weight = weight
         self.reg = reg
 
         self.gram = None

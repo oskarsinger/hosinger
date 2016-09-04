@@ -46,7 +46,7 @@ class FiniteHyperBandRunner:
                      for i in xrange(num_arms)])
                 sh = FSHR(
                     arms, 
-                    ds_list, 
+                    self.ds_list, 
                     B, 
                     self.max_size, 
                     self.min_size,
@@ -65,7 +65,10 @@ class FiniteHyperBandRunner:
                     (winner,winning_parameters, loss))
 
                 # TODO: figure out how to update num_pulls
-                # TODO: in general make sure this is ready
+
+                # TODO: should I be doing this?
+                for ds in self.ds_list:
+                    ds.refresh()
 
             self.num_rounds += 1
 
