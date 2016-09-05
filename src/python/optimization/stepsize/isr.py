@@ -7,7 +7,7 @@ class InverseSquareRootScheduler:
 
     def get_stepsize(self):
 
-        denom = float(self.num_rounds)**(-0.5)
+        denom = float(self.num_rounds+1)**(-0.5)
 
         return denom * self.initial
 
