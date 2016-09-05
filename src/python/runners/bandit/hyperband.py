@@ -80,10 +80,11 @@ class FiniteHyperBandRunner:
                     (winner,winning_parameters, loss))
 
                 # TODO: figure out how to update num_pulls
-
-                # TODO: should I be doing this?
+                # The indexing is weird
 
                 print 'Refreshing data servers'
+
+                # TODO: should I be doing this?
                 for ds in self.ds_list:
                     ds.refresh()
 

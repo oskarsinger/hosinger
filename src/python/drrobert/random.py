@@ -34,4 +34,7 @@ def log_uniform(upper, lower, size=1):
     logs = npr.uniform(
         low=log_l, high=log_u, size=size)
 
+    if size == 1:
+        logs = logs[0]
+
     return np.exp(logs)
