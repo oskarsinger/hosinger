@@ -1,18 +1,18 @@
-from math import floor
-
 class FiniteSuccessiveHalvingRunner:
 
     def __init__(self,
         arms, 
         servers,
-        num_rounds, 
+        outer_num_rounds, 
+        inner_num_rounds,
         max_size, 
         min_size,
         eta=3):
 
         self.arms = arms
         self.servers = servers
-        self.num_rounds = num_rounds
+        self.outer_num_rounds = outer_num_rounds
+        self.inner_num_rounds = inner_num_rounds
         self.max_size = max_size
         self.min_size = min_size
         self.eta = eta
@@ -20,17 +20,16 @@ class FiniteSuccessiveHalvingRunner:
         self.num_arms = len(self.arms)
         self.still_pull = [True] * self.num_arms
         self.num_pulls = [0] * self.num_arms
-        self.num_rounds = 0
         self.winner = None
         self.winning_loss = None
 
     def run(self):
 
-        print 'Running SuccessiveHalving for', self.num_rounds, 'rounds'
+        print 'Running SuccessiveHalving for', self.outer_num_rounds, 'rounds'
 
-        print_interval = self.num_rounds / 10
+        print_interval = self.outer_num_rounds / 10
 
-        for i in xrange(self.num_rounds):
+        for i in xrange(self.outer_num_rounds):
 
             if i % print_interval == 0:
                 print 'SuccessiveHalving round', i
@@ -39,7 +38,7 @@ class FiniteSuccessiveHalvingRunner:
                       for i in xrange(self.num_arms)
                       if self.still_pull[i]}
             n = self.num_arms * self.eta**(-i)
-            r = self.num_rounds * self.eta**(-i)
+            r = self.inner_num_rounds * self.eta**(-i)
 
             for j in xrange(r):
 

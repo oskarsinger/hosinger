@@ -58,6 +58,7 @@ class FiniteHyperBandRunner:
                 arms, 
                 self.ds_list, 
                 s+1,
+                num_rounds,
                 self.max_size, 
                 self.min_size,
                 eta=self.eta)
