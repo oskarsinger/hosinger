@@ -36,13 +36,13 @@ class FiniteHyperBandRunner:
 
             print ' '.join([
                 'B',
-                self.B, 
+                str(self.B), 
                 'max_size',
-                self.max_size, 
+                str(self.max_size), 
                 's',
-                s, 
+                str(s), 
                 'eta**s', 
-                self.eta**s])
+                str(self.eta**s)])
             num_arms = int(ceil(
                 self.B/self.max_size/s*self.eta**s))
             num_rounds = self.max_size*self.eta**(-s)
