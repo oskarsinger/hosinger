@@ -1,6 +1,6 @@
 from successive_halving import FiniteSuccessiveHalvingRunner as FSHR
 from drrobert.misc import unzip
-from math import floor, log
+from math import floor, log, ceil
 
 # TODO: so far this is specialized to AppGrad a bit; fix that later
 class FiniteHyperBandRunner:
@@ -16,79 +16,70 @@ class FiniteHyperBandRunner:
         self.get_arm = get_arm
         self.ds_list = ds_list
         self.num_views = len(ds_list)
-        self.max_rounds = max_rounds
         self.max_size = max_size
         self.min_size = min_size
         self.eta = eta
 
-        self.num_rounds = 0
+        self.s_max = int(log(self.max_size, self.eta))
+        self.B = (self.s_max + 1)**self.max_size
         self.num_pulls = []
         self.arms = []
         self.history = []
 
     def run(self):
 
-        while self.num_rounds <= self.max_rounds:
+        for s in reversed(range(self.s_max+1)):
 
-            print 'HyperBand Round', self.num_rounds
+            i = self.s_max + 1 - s
+            print 'HyperBand Round', i
 
-            B = self.max_size * 2**(self.num_rounds)
-            get_second = lambda x,b: int(floor(log(x,b)))
-            size_ratio = float(self.max_size)/self.min_size
-            inner_num_rounds = min([
-                B/self.max_size - 1,
-                get_second(size_ratio, self.eta)])
+            num_arms = int(ceil(
+                self.B/self.max_size/s*self.eta**s))
+            num_rounds = self.max_size*self.eta**(-s)
 
-            for l in xrange(inner_num_rounds):
-                ratio1 = B/self.max_size
-                ratio2 = float(self.eta**(l)) / (l+1)
-                num_arms = int(floor(ratio1 * ratio2))
+            print 'Generating', num_arms, 'arms'
+            
+            (arms, parameters) = unzip(
+                [self.get_arm()
+                 for i in xrange(num_arms)])
 
-                print 'Generating', num_arms, 'arms'
-                
-                (arms, parameters) = unzip(
-                    [self.get_arm()
-                     for i in xrange(num_arms)])
+            print 'Parameters for generated arms:'
 
-                print 'Parameters for generated arms:'
+            for p_set in parameters:
+                print '\t', p_set
 
-                for p_set in parameters:
-                    print '\t', p_set
+            print 'Initializing SuccessiveHalvingRunner'
 
-                print 'Initializing SuccessiveHalvingRunner'
+            sh = FSHR(
+                arms, 
+                self.ds_list, 
+                s+1,
+                self.max_size, 
+                self.min_size,
+                eta=self.eta)
 
-                sh = FSHR(
-                    arms, 
-                    self.ds_list, 
-                    B, 
-                    self.max_size, 
-                    self.min_size,
-                    eta=self.eta)
+            print 'Running SuccessiveHalvingRunner'
 
-                print 'Running SuccessiveHalvingRunner'
+            sh.run()
 
-                sh.run()
+            sh_info = sh.get_status()
+            windex = sh_info['winner']
+            winner = arms[windex]
+            winning_parameters = parameters[windex]
+            loss = sh_info['winner_loss']
+            num_pulls = sh_info['num_pulls']
+            
+            self.history.append(
+                (winner,winning_parameters, loss))
 
-                sh_info = sh.get_status()
-                windex = sh_info['winner']
-                winner = arms[windex]
-                winning_parameters = parameters[windex]
-                loss = sh_info['winner_loss']
-                num_pulls = sh_info['num_pulls']
-                
-                self.history.append(
-                    (winner,winning_parameters, loss))
+            # TODO: figure out how to update num_pulls
+            # The indexing is weird
 
-                # TODO: figure out how to update num_pulls
-                # The indexing is weird
+            print 'Refreshing data servers'
 
-                print 'Refreshing data servers'
-
-                # TODO: should I be doing this?
-                for ds in self.ds_list:
-                    ds.refresh()
-
-            self.num_rounds += 1
+            # TODO: should I be doing this?
+            for ds in self.ds_list:
+                ds.refresh()
 
     def get_status(self):
 

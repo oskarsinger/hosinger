@@ -5,29 +5,19 @@ class FiniteSuccessiveHalvingRunner:
     def __init__(self,
         arms, 
         servers,
-        budget, 
+        num_rounds, 
         max_size, 
         min_size,
         eta=3):
 
         self.arms = arms
         self.servers = servers
-        self.budget = budget
+        self.num_rounds = num_rounds
         self.max_size = max_size
         self.min_size = min_size
         self.eta = eta
 
         self.num_arms = len(self.arms)
-
-        threshold = float(self.budget) / \
-            (self.num_arms * self.max_size)
-        i = 0
-
-        while (i+1) * self.eta**(-i) > threshold:
-            i += 1
-
-        self.max_rounds = i
-        
         self.still_pull = [True] * self.num_arms
         self.num_pulls = [0] * self.num_arms
         self.num_rounds = 0
@@ -38,36 +28,34 @@ class FiniteSuccessiveHalvingRunner:
 
         print 'Running SuccessiveHalving for', self.max_rounds, 'rounds'
 
-        print_interval = self.max_rounds / 10
+        print_interval = self.num_rounds / 10
 
-        for k in xrange(self.max_rounds):
+        for i in xrange(self.num_rounds):
 
-            if k % print_interval == 0:
-                print 'SuccessiveHalving round', k
+            if i % print_interval == 0:
+                print 'SuccessiveHalving round', i
 
             losses = {i : 0
                       for i in xrange(self.num_arms)
                       if self.still_pull[i]}
-            r = int(floor(self.max_size * 
-                self.eta**(k - self.max_rounds)))
+            n = self.num_arms * self.eta**(-i)
+            r = self.num_rounds * self.eta**(-i)
 
-            for i in xrange(r):
+            for j in xrange(r):
 
+                # TODO: abstract this to a data selection function
                 data = [ds.get_data() for ds in self.servers]
 
-                for j in losses.keys():
-                    # TODO: should I be accumulating or just taking last one?
-                    # TODO: probably also should do validation loss instead;
-                    # may have to allow loss function evaluator to be fed in
-                    losses[j] += self.arm[j].update(data)[1]
+                for k in losses.keys():
+                    # TODO: figure out validation loss instead of this crap
+                    losses[k] += self.arm[k].update(data)[1]
 
-                    self.num_pulls[j] += 1
+                    self.num_pulls[k] += 1
 
             sigma = sorted(
                 losses.items(), 
                 key=lambda x: x[1]) 
-            comparator_j = int(floor(
-                self.num_arms * self.eta**(-k+1)))
+            comparator_j = int(n / self.eta)
 
             for j, l in sigma[comparator_j:]:
                 self.still_pull[j] = False
