@@ -70,14 +70,11 @@ class FiniteSuccessiveHalvingRunner:
             'winning_loss': self.winning_loss,
             'arms': self.arms,
             'servers': self.servers,
-            'budget': self.budget,
             'max_size': self.max_size,
             'min_size': self.min_size,
             'eta': self.eta,
-            'max_rounds': self.max_rounds,
             'still_pull': self.still_pull,
             'num_pulls': self.num_pulls, 
-            'num_rounds': self.num_rounds,
             'num_arms': self.num_arms}
 
 class InfiniteSuccessiveHalvingRunner:

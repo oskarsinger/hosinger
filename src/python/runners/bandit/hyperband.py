@@ -31,8 +31,18 @@ class FiniteHyperBandRunner:
         for s in reversed(range(self.s_max+1)):
 
             i = self.s_max + 1 - s
+
             print 'HyperBand Round', i
 
+            print ' '.join([
+                'B',
+                self.B, 
+                'max_size',
+                self.max_size, 
+                's',
+                s, 
+                'eta**s', 
+                self.eta**s])
             num_arms = int(ceil(
                 self.B/self.max_size/s*self.eta**s))
             num_rounds = self.max_size*self.eta**(-s)
@@ -86,7 +96,6 @@ class FiniteHyperBandRunner:
         return {
             'get_arms': self.get_arms,
             'ds_list': self.ds_list,
-            'num_rounds': self.num_rounds,
             'arms': self.arms,
             'num_pulls': self.num_pulls,
             'history': self.history}
