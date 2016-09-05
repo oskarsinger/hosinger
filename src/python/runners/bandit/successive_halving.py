@@ -26,7 +26,7 @@ class FiniteSuccessiveHalvingRunner:
 
     def run(self):
 
-        print 'Running SuccessiveHalving for', self.max_rounds, 'rounds'
+        print 'Running SuccessiveHalving for', self.num_rounds, 'rounds'
 
         print_interval = self.num_rounds / 10
 

@@ -28,37 +28,31 @@ class FiniteHyperBandRunner:
 
     def run(self):
 
+        print 'Running HyperBand for', self.s_max+1, 'rounds'
+
+        print_interval = (self.s_max+1) / 10
+
         for s in reversed(range(self.s_max+1)):
 
             i = self.s_max + 1 - s
+            should_print = i % print_interval == 0
 
-            print 'HyperBand Round', i
+            if should_print:
+                print 'HyperBand Round', i
 
-            print ' '.join([
-                'B',
-                str(self.B), 
-                'max_size',
-                str(self.max_size), 
-                's',
-                str(s), 
-                'eta**s', 
-                str(self.eta**s)])
             num_arms = int(ceil(
                 self.B/self.max_size/s*self.eta**s))
             num_rounds = self.max_size*self.eta**(-s)
 
-            print 'Generating', num_arms, 'arms'
+            if should_print:
+                print 'Generating', num_arms, 'arms'
             
             (arms, parameters) = unzip(
                 [self.get_arm()
                  for i in xrange(num_arms)])
 
-            print 'Parameters for generated arms:'
-
-            for p_set in parameters:
-                print '\t', p_set
-
-            print 'Initializing SuccessiveHalvingRunner'
+            if should_print:
+                print 'Initializing SuccessiveHalvingRunner'
 
             sh = FSHR(
                 arms, 
@@ -68,7 +62,8 @@ class FiniteHyperBandRunner:
                 self.min_size,
                 eta=self.eta)
 
-            print 'Running SuccessiveHalvingRunner'
+            if should_print:
+                print 'Running SuccessiveHalvingRunner'
 
             sh.run()
 
@@ -85,7 +80,8 @@ class FiniteHyperBandRunner:
             # TODO: figure out how to update num_pulls
             # The indexing is weird
 
-            print 'Refreshing data servers'
+            if should_print:
+                print 'Refreshing data servers'
 
             # TODO: should I be doing this?
             for ds in self.ds_list:
