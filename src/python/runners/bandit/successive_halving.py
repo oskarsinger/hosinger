@@ -47,7 +47,7 @@ class FiniteSuccessiveHalvingRunner:
 
                 for k in losses.keys():
                     # TODO: figure out validation loss instead of this crap
-                    losses[k] += self.arm[k].update(data)[1]
+                    losses[k] += self.arms[k].update(data)[1]
 
                     self.num_pulls[k] += 1
 
