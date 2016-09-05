@@ -38,7 +38,7 @@ class FiniteSuccessiveHalvingRunner:
                       for i in xrange(self.num_arms)
                       if self.still_pull[i]}
             n = self.num_arms * self.eta**(-i)
-            r = self.inner_num_rounds * self.eta**(-i)
+            r = int(self.inner_num_rounds * self.eta**(-i))
 
             for j in xrange(r):
 
