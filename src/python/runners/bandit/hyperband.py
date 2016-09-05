@@ -29,21 +29,34 @@ class FiniteHyperBandRunner:
     def run(self):
 
         while self.num_rounds <= self.max_rounds:
+
+            print 'HyperBand Round', self.num_rounds
+
             B = self.max_size * 2**(self.num_rounds)
             get_second = lambda x,b: int(floor(log(x,b)))
             size_ratio = float(self.max_size)/self.min_size
-            num_rounds = min([
+            inner_num_rounds = min([
                 B/self.max_size - 1,
                 get_second(size_ratio, self.eta)])
 
-            for l in xrange(num_rounds):
+            for l in xrange(inner_num_rounds):
                 ratio1 = B/self.max_size
                 ratio2 = float(self.eta**(l)) / (l+1)
                 num_arms = int(floor(ratio1 * ratio2))
-                # Should have 
+
+                print 'Generating', num_arms, 'arms'
+                
                 (arms, parameters) = unzip(
                     [self.get_arm()
                      for i in xrange(num_arms)])
+
+                print 'Parameters for generated arms:'
+
+                for p_set in parameters:
+                    print '\t', p_set
+
+                print 'Initializing SuccessiveHalvingRunner'
+
                 sh = FSHR(
                     arms, 
                     self.ds_list, 
@@ -51,6 +64,8 @@ class FiniteHyperBandRunner:
                     self.max_size, 
                     self.min_size,
                     eta=self.eta)
+
+                print 'Running SuccessiveHalvingRunner'
 
                 sh.run()
 
@@ -67,6 +82,8 @@ class FiniteHyperBandRunner:
                 # TODO: figure out how to update num_pulls
 
                 # TODO: should I be doing this?
+
+                print 'Refreshing data servers'
                 for ds in self.ds_list:
                     ds.refresh()
 
