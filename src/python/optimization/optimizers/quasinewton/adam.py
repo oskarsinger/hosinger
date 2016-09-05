@@ -3,7 +3,7 @@ import numpy as np
 from .. import utils as ou
 from optimization.utils import get_shrunk_and_thresholded as get_st
 from linal.utils import get_safe_power
-from linal.svd_funcs import get_multiplied_svd
+from linal.svd_funcs import get_multiplied_svd, get_svd_power
 from drrobert.arithmetic import get_moving_avg as get_ma
 
 class DiagonalAdamOptimizer:
