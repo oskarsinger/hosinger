@@ -21,7 +21,7 @@ class FiniteHyperBandRunner:
         self.eta = eta
 
         self.s_max = int(log(self.max_size, self.eta))
-        self.B = (self.s_max + 1)**self.max_size
+        self.B = (self.s_max + 1)*self.max_size
         self.num_pulls = []
         self.arms = []
         self.history = []
