@@ -23,7 +23,7 @@ class FiniteSuccessiveHalvingRunner:
             (self.num_arms * self.max_size)
         i = 0
 
-        while (i+1) * self.eta**(-i) <= threshold:
+        while (i+1) * self.eta**(-i) > threshold:
             i += 1
 
         self.max_rounds = i
