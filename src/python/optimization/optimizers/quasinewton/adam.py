@@ -122,6 +122,8 @@ class DiagonalAdamOptimizer:
 
 class FullAdamOptimizer:
 
+    # TODO: check for where the NaN or inf is happening
+
     def __init__(self,
         delta=0.1,
         beta1=None,
