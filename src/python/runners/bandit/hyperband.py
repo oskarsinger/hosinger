@@ -9,15 +9,14 @@ class FiniteHyperBandRunner:
 
     def __init__(self,
         get_arm,
-        ds_list,
+        server,
         max_rounds,
         max_size,
         min_size,
         eta=3):
 
         self.get_arm = get_arm
-        self.ds_list = ds_list
-        self.num_views = len(ds_list)
+        self.server = server
         self.max_size = max_size
         self.min_size = min_size
         self.eta = eta
@@ -52,7 +51,7 @@ class FiniteHyperBandRunner:
 
             sh = FSHR(
                 arms, 
-                self.ds_list, 
+                self.server, 
                 s+1,
                 num_rounds,
                 self.max_size, 
@@ -79,14 +78,13 @@ class FiniteHyperBandRunner:
             print 'Refreshing data servers'
 
             # TODO: should I be doing this?
-            for ds in self.ds_list:
-                ds.refresh()
+            self.server.refresh()
 
     def get_status(self):
 
         return {
             'get_arms': self.get_arms,
-            'ds_list': self.ds_list,
+            'server': self.server,
             'arms': self.arms,
             'num_pulls': self.num_pulls,
             'history': self.history}

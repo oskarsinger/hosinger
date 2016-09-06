@@ -2,7 +2,7 @@ class FiniteSuccessiveHalvingRunner:
 
     def __init__(self,
         arms, 
-        servers,
+        get_data,
         outer_num_rounds, 
         inner_num_rounds,
         max_size, 
@@ -10,7 +10,7 @@ class FiniteSuccessiveHalvingRunner:
         eta=3):
 
         self.arms = arms
-        self.servers = servers
+        self.server = server
         self.outer_num_rounds = outer_num_rounds
         self.inner_num_rounds = inner_num_rounds
         self.max_size = max_size
@@ -37,10 +37,10 @@ class FiniteSuccessiveHalvingRunner:
             n = self.num_arms * self.eta**(-i)
             r = int(self.inner_num_rounds * self.eta**(-i))
 
+            print '\tRunning inner loop for', r, 'rounds'
             for j in xrange(r):
 
-                # TODO: abstract this to a data selection function
-                data = [ds.get_data() for ds in self.servers]
+                data = self.server.get_data()
 
                 for k in losses.keys():
                     # TODO: figure out validation loss instead of this crap
