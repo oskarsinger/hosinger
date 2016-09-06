@@ -21,7 +21,7 @@ class FiniteSuccessiveHalvingRunner:
         self.still_pull = [True] * self.num_arms
         self.num_pulls = [0] * self.num_arms
         self.winner = None
-        self.winning_loss = None
+        self.winner_loss = None
 
     def run(self):
 
@@ -57,13 +57,13 @@ class FiniteSuccessiveHalvingRunner:
                 self.still_pull[j] = False
 
             self.winner = sigma[0][0]
-            self.winning_loss = sigma[0][1]
+            self.winner_loss = sigma[0][1]
 
     def get_status(self):
 
         return {
             'winner': self.winner,
-            'winning_loss': self.winning_loss,
+            'winner_loss': self.winner_loss,
             'arms': self.arms,
             'servers': self.servers,
             'max_size': self.max_size,

@@ -3,6 +3,8 @@ from drrobert.misc import unzip
 from math import floor, log, ceil
 
 # TODO: so far this is specialized to AppGrad a bit; fix that later
+# TODO: try to be prepared for experiments that go bad for numerical reasons
+# should not have to account for that in hyperparameter samplers
 class FiniteHyperBandRunner:
 
     def __init__(self,
