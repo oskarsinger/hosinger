@@ -27,7 +27,7 @@ class FiniteSuccessiveHalvingRunner:
 
         print 'Running SuccessiveHalving for', self.outer_num_rounds, 'rounds'
 
-        print_interval = self.outer_num_rounds / 10
+        print_interval = self.outer_num_rounds / 20
 
         for i in xrange(self.outer_num_rounds):
 
