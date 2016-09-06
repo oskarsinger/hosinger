@@ -40,7 +40,7 @@ class FiniteHyperBandRunner:
             if should_print:
                 print 'HyperBand Round', i
 
-            num_arms = int(ceil(
+            num_arms = int(0.1 * ceil(
                 self.B/self.max_size/s*self.eta**s))
             num_rounds = self.max_size*self.eta**(-s)
 

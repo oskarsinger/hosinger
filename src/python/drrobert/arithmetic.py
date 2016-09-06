@@ -10,8 +10,8 @@ def get_running_avg(old, new, i):
 
 def get_moving_avg(old, new, alpha, beta):
 
-    weighted_old = self.beta * old
-    weighted_new = self.alpha * new
+    weighted_old = beta * old
+    weighted_new = alpha * new
 
     return weighted_old + weighted_new
 
