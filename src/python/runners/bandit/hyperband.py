@@ -30,29 +30,23 @@ class FiniteHyperBandRunner:
 
         print 'Running HyperBand for', self.s_max+1, 'rounds'
 
-        print_interval = (self.s_max+1) / 10
-
         for s in reversed(range(self.s_max+1)):
 
             i = self.s_max + 1 - s
-            should_print = i % print_interval == 0
 
-            if should_print:
-                print 'HyperBand Round', i
+            print 'HyperBand Round', i
 
             num_arms = int(ceil(
                 self.B/self.max_size/s*self.eta**s))
             num_rounds = self.max_size*self.eta**(-s)
 
-            if should_print:
-                print 'Generating', num_arms, 'arms'
+            print 'Generating', num_arms, 'arms'
             
             (arms, parameters) = unzip(
                 [self.get_arm()
                  for i in xrange(num_arms)])
 
-            if should_print:
-                print 'Initializing SuccessiveHalvingRunner'
+            print 'Initializing SuccessiveHalvingRunner'
 
             sh = FSHR(
                 arms, 
@@ -63,8 +57,7 @@ class FiniteHyperBandRunner:
                 self.min_size,
                 eta=self.eta)
 
-            if should_print:
-                print 'Running SuccessiveHalvingRunner'
+            print 'Running SuccessiveHalvingRunner'
 
             sh.run()
 
@@ -81,8 +74,7 @@ class FiniteHyperBandRunner:
             # TODO: figure out how to update num_pulls
             # The indexing is weird
 
-            if should_print:
-                print 'Refreshing data servers'
+            print 'Refreshing data servers'
 
             # TODO: should I be doing this?
             for ds in self.ds_list:
