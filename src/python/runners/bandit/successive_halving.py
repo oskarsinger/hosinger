@@ -1,4 +1,4 @@
-from multiprocessor import Pool
+from multiprocessing import Pool
 
 class FiniteSuccessiveHalvingRunner:
 
