@@ -50,8 +50,16 @@ def get_thresholded(x, upper=None, lower=None):
     if np.isscalar(lower):
         lower = np.zeros_like(x) + lower
 
-    upper_idx = x > upper
-    lower_idx = x < lower
+    try:
+        upper_idx = x > upper
+    except RuntimeWarning:
+        print 'UPPER:', upper
+
+    try:
+        lower_idx = x < lower
+    except RuntimeWarning:
+        print 'LOWER:', lower
+
     new_x = np.copy(x)
     new_x[upper_idx] = upper[upper_idx]
     new_x[lower_idx] = lower[lower_idx]

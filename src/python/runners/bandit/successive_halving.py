@@ -1,4 +1,5 @@
 from multiprocessing import Pool
+from drrobert.misc import unzip
 
 class FiniteSuccessiveHalvingRunner:
 
@@ -65,7 +66,8 @@ class FiniteSuccessiveHalvingRunner:
                             _get_model_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
-                        losses[l] += r.get()[1]
+                        r_losses = unzip(r.get())[1]
+                        losses[l] += sum(r_losses)
                         self.num_pulls[l] += 1
 
                 """
