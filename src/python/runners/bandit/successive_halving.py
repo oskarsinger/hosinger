@@ -1,3 +1,5 @@
+from multiprocessor import Pool
+
 class FiniteSuccessiveHalvingRunner:
 
     def __init__(self,
@@ -7,6 +9,7 @@ class FiniteSuccessiveHalvingRunner:
         inner_num_rounds,
         max_size, 
         min_size,
+        num_processes=12,
         eta=3):
 
         self.arms = arms
@@ -15,6 +18,7 @@ class FiniteSuccessiveHalvingRunner:
         self.inner_num_rounds = inner_num_rounds
         self.max_size = max_size
         self.min_size = min_size
+        self.num_processes = num_processes
         self.eta = eta
 
         self.num_arms = len(self.arms)
@@ -42,11 +46,34 @@ class FiniteSuccessiveHalvingRunner:
 
                 data = self.server.get_data()
 
+                # Parallelize this loop
+                p = Pool(12)
+                keys = losses.keys()
+                num_keys = len(keys)
+                results = {}
+                k = 0
+                
+                while k * 12 < num_keys:
+                    begin = k * self.num_processes
+                    end = begin + self.num_processes
+                    current = {l : None
+                               for l in keys[begin:end]}
+
+                    for l in current.keys():
+                        current[l] = p.apply_async(
+                            self.arms[l].update, data)
+
+                    for (l, r) in current:
+                        losses[l] += r.get()
+                        self.num_pulls[l] += 1
+
+                """
                 for k in losses.keys():
                     # TODO: figure out validation loss instead of this crap
                     losses[k] += self.arms[k].update(data)[1]
 
                     self.num_pulls[k] += 1
+                """
 
             sigma = sorted(
                 losses.items(), 
