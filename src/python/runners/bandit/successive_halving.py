@@ -30,7 +30,6 @@ class FiniteSuccessiveHalvingRunner:
     def run(self):
 
         print 'Running SuccessiveHalving for', self.outer_num_rounds, 'rounds'
-        get_update = lambda x: x[0].update(x[1])
 
         for i in xrange(self.outer_num_rounds):
 
@@ -63,7 +62,7 @@ class FiniteSuccessiveHalvingRunner:
 
                     for l in current.keys():
                         current[l] = p.apply_async(
-                            get_update, (self.arms[l], data))
+                            get_model_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
                         losses[l] += r.get()[1]
@@ -115,3 +114,9 @@ class InfiniteSuccessiveHalvingRunner:
 def _get_validation_loss(ds_list, arms, num_points):
 
     return 'poop'
+
+def _get_model_update(model_data_pair):
+
+    (model, data) = model_data_pair
+
+    return model.update(data)
