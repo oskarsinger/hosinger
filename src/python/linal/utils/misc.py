@@ -38,31 +38,15 @@ def get_largest_entries(s, energy=None, k=None):
 
 def get_thresholded(x, upper=None, lower=None):
 
-    if upper is None:
-        upper = float('Inf')
-
-    if lower is None:
-        lower = -float('Inf')
-
-    if np.isscalar(upper):
-        upper = np.zeros_like(x) + upper
-
-    if np.isscalar(lower):
-        lower = np.zeros_like(x) + lower
-
-    try:
-        upper_idx = x > upper
-    except RuntimeWarning:
-        print 'UPPER:', upper
-
-    try:
-        lower_idx = x < lower
-    except RuntimeWarning:
-        print 'LOWER:', lower
-
     new_x = np.copy(x)
-    new_x[upper_idx] = upper[upper_idx]
-    new_x[lower_idx] = lower[lower_idx]
+
+    if upper is not None:
+        upper_idx = x > upper
+        new_x[upper_idx] = upper[upper_idx]
+
+    if lower is not None:
+        lower_idx = x < lower
+        new_x[lower_idx] = lower[lower_idx]
 
     return new_x
 
