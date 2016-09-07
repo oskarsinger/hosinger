@@ -38,24 +38,25 @@ class FiniteSuccessiveHalvingRunner:
             losses = {i : 0
                       for i in xrange(self.num_arms)
                       if self.still_pull[i]}
-            n = self.num_arms * self.eta**(-i)
-            r = int(self.inner_num_rounds * self.eta**(-i))
+            num_arms_i = self.num_arms * self.eta**(-i)
+            r_i = int(self.inner_num_rounds * self.eta**(-i))
+            num_processes_i = min([12, num_arms_i])
 
-            print '\tRunning inner loop for', r, 'rounds'
-            for j in xrange(r):
+            print '\tRunning inner loop for', r_i, 'rounds'
+            for j in xrange(r_i):
 
                 data = self.server.get_data()
 
                 # Parallelize this loop
-                p = Pool(12)
+                p = Pool(num_processes_i)
                 keys = losses.keys()
                 num_keys = len(keys)
                 results = {}
                 k = 0
                 
-                while k * 12 < num_keys:
-                    begin = k * self.num_processes
-                    end = begin + self.num_processes
+                while k * num_processes_i < num_keys:
+                    begin = k * num_processes_i
+                    end = begin + num_processes_i
                     current = {l : None
                                for l in keys[begin:end]}
 
@@ -78,7 +79,7 @@ class FiniteSuccessiveHalvingRunner:
             sigma = sorted(
                 losses.items(), 
                 key=lambda x: x[1]) 
-            comparator_j = int(n / self.eta)
+            comparator_j = int(num_arms_i / self.eta)
 
             for j, l in sigma[comparator_j:]:
                 self.still_pull[j] = False
