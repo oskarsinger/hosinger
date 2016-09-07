@@ -115,8 +115,6 @@ def _get_validation_loss(ds_list, arms, num_points):
 
     return 'poop'
 
-def _get_model_update(model_data_pair):
-
-    (model, data) = model_data_pair
+def _get_model_update(model, data):
 
     return model.update(data)
