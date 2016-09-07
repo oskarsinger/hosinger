@@ -65,7 +65,7 @@ class FiniteSuccessiveHalvingRunner:
                             self.arms[l].update, data)
 
                     for (l, r) in current.items():
-                        losses[l] += r.get()
+                        losses[l] += r.get()[1]
                         self.num_pulls[l] += 1
 
                 """
