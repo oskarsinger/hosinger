@@ -4,7 +4,7 @@ class FiniteSuccessiveHalvingRunner:
 
     def __init__(self,
         arms, 
-        get_data,
+        server,
         outer_num_rounds, 
         inner_num_rounds,
         max_size, 
