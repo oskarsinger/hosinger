@@ -62,7 +62,7 @@ class FiniteSuccessiveHalvingRunner:
 
                     for l in current.keys():
                         current[l] = p.apply_async(
-                            get_model_update, (self.arms[l], data))
+                            _get_model_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
                         losses[l] += r.get()[1]
