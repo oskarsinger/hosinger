@@ -63,20 +63,13 @@ class FiniteSuccessiveHalvingRunner:
 
                     for l in current.keys():
                         current[l] = p.apply_async(
-                            _get_model_update, (self.arms[l], data))
+                            _get_arm_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
-                        r_losses = unzip(r.get())[1]
-                        losses[l] += sum(r_losses)
+                        l_results = drdb.print_and_return(r.get())
+                        l_losses = unzip(l_results)[1]
+                        losses[l] += sum(l_losses)
                         self.num_pulls[l] += 1
-
-                """
-                for k in losses.keys():
-                    # TODO: figure out validation loss instead of this crap
-                    losses[k] += self.arms[k].update(data)[1]
-
-                    self.num_pulls[k] += 1
-                """
 
             sigma = sorted(
                 losses.items(), 
@@ -117,6 +110,6 @@ def _get_validation_loss(ds_list, arms, num_points):
 
     return 'poop'
 
-def _get_model_update(model, data):
+def _get_model_update(arm, data):
 
-    return model.update(data)
+    return arm.update(data)
