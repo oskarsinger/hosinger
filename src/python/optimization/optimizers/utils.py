@@ -50,9 +50,6 @@ def get_mirror_update(
 
     primal_parameters = get_primal(dual_update)
 
-    print np.any(np.isnan(primal_parameters))
-    print np.any(np.isinf(primal_parameters))
-
     drdb.check_for_nan_or_inf(
         primal_parameters, 
         'optimizers.utils get_mirror_update', 

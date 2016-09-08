@@ -156,7 +156,7 @@ class DiagonalAdamOptimizer:
 
         # Get the primal transformation
         H_inv = get_safe_power(self.scale + self.delta, -1)
-
+            
         drdb.check_for_nan_or_inf(
             H_inv, 'DADO _get_primal', 'H_inv')
 
