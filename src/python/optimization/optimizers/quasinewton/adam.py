@@ -144,11 +144,17 @@ class DiagonalAdamOptimizer:
         if self.lower is not None:
             dus = dual_update.shape
 
+            print 'Inside soft thresholding with dus', dus
+
             if len(dus) == 2 and not 1 in set(dus):
+                print 'Inside matrix soft thresholding'
                 (U, s, V) = np.linalg.svd(dual_update)
+                print 'Thresholding singular values'
                 sparse_s = get_st(s, lower=self.lower)
+                print 'Remultiplying SVD'
                 dual_update = get_multiplied_svd(U, s, V)
             else:
+                print 'Inside vector soft thresholding'
                 dual_update = get_st(
                     dual_update, lower=self.lower) 
 
