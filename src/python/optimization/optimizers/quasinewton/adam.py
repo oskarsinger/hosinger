@@ -10,7 +10,7 @@ from drrobert.arithmetic import get_moving_avg as get_ma
 class DiagonalAdamOptimizer:
 
     def __init__(self, 
-        delta=0.1,
+        delta=1,
         beta1=None,
         beta2=None,
         lower=None, 
@@ -117,6 +117,8 @@ class DiagonalAdamOptimizer:
         drdb.check_for_nan_or_inf(
             mirror_update, 'DADO get_update', 'mirror_update')
 
+        print 'Inside DADO returning mirror update'
+
         return mirror_update
 
     def _get_dual(self, parameters):
@@ -139,8 +141,14 @@ class DiagonalAdamOptimizer:
                 dual_update = get_st(
                     dual_update, lower=self.lower) 
 
+        print 'Computing transformation back to primal space'
         # Get the primal transformation
         H_inv = get_safe_power(self.scale + self.delta, -1)
+
+        drdb.check_for_nan_or_inf(
+            H_inv, 'DADO _get_primal', 'H_inv')
+
+        print 'Returning primal parameters'
 
         return H_inv * dual_update
 
@@ -164,7 +172,7 @@ class FullAdamOptimizer:
     # TODO: check for where the NaN or inf is happening
 
     def __init__(self,
-        delta=0.1,
+        delta=1,
         beta1=None,
         beta2=None,
         lower=None,

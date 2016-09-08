@@ -27,7 +27,33 @@ def get_mirror_update(
     get_dual, 
     get_primal):
 
+    print 'Computing dual parameters'
+
     dual_parameters = get_dual(parameters)
+
+    drdb.check_for_nan_or_inf(
+        dual_parameters, 
+        'optimizers.utils get_mirror_update', 
+        'dual_parameters')
+
+    print 'Computing dual descent update'
+
     dual_update = dual_parameters - eta * search_direction
 
-    return get_primal(dual_update)
+    drdb.check_for_nan_or_inf(
+        dual_update, 
+        'optimizers.utils get_mirror_update', 
+        'dual_update')
+
+    print 'Computing primal parameters'
+
+    primal_parameters = get_primal(dual_update)
+
+    drdb.check_for_nan_or_inf(
+        primal_parameters, 
+        'optimizers.utils get_mirror_update', 
+        'primal_parameters')
+
+    print 'Returning primal parameters'
+
+    return primal_parameters
