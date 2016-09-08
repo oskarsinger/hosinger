@@ -28,7 +28,7 @@ def get_mirror_update(
     get_dual, 
     get_primal):
 
-    print 'Computing dual parameters'
+    #print 'Computing dual parameters'
 
     dual_parameters = get_dual(parameters)
 
@@ -37,7 +37,7 @@ def get_mirror_update(
         'optimizers.utils get_mirror_update', 
         'dual_parameters')
 
-    print 'Computing dual descent update'
+    #print 'Computing dual descent update'
 
     dual_update = dual_parameters - eta * search_direction
 
@@ -46,7 +46,7 @@ def get_mirror_update(
         'optimizers.utils get_mirror_update', 
         'dual_update')
 
-    print 'Computing primal parameters'
+    #print 'Computing primal parameters'
 
     primal_parameters = get_primal(dual_update)
 
@@ -55,6 +55,6 @@ def get_mirror_update(
         'optimizers.utils get_mirror_update', 
         'primal_parameters')
 
-    print 'Returning primal parameters'
+    #print 'Returning primal parameters'
 
     return primal_parameters

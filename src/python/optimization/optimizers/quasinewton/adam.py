@@ -59,25 +59,25 @@ class DiagonalAdamOptimizer:
 
         # Update step sizes
         if self.scale is None:
-            print 'Inside DADO initializing scale'
+            #print 'Inside DADO initializing scale'
             self.scale = np.absolute(gradient)
 
             drdb.check_for_nan_or_inf(
                 self.scale, 'DADO get_update first if body', 'scale')
         else:
-            print 'Inside DADO computing old'
+            #print 'Inside DADO computing old'
             old = get_safe_power(self.scale, 2)
 
             drdb.check_for_nan_or_inf(
                 old, 'DADO get_update first else body', 'old')
 
-            print 'Inside DADO computing new'
+            #print 'Inside DADO computing new'
             new = get_safe_power(gradient, 2)
 
             drdb.check_for_nan_or_inf(
                 new, 'DADO get_update first else body', 'new')
 
-            print 'Inside DADO computing total'
+            #print 'Inside DADO computing total'
             denom = (1 - self.beta2**(self.num_rounds))
             total = get_ma(
                 old, 
@@ -88,13 +88,13 @@ class DiagonalAdamOptimizer:
             drdb.check_for_nan_or_inf(
                 total, 'DADO get_update first else body', 'total')
 
-            print 'Inside DADO updating scale'
+            #print 'Inside DADO updating scale'
             self.scale = get_safe_power(total, 0.5)
 
             drdb.check_for_nan_or_inf(
                 self.scale, 'DADO get_update first else body', 'scale')
 
-        print 'Inside DADO updating search direction'
+        #print 'Inside DADO updating search direction'
         # Update search direction
         denom = (1 - self.beta1**(self.num_rounds))
         self.search_direction = np.copy(ou.get_avg_search_direction(
@@ -108,7 +108,7 @@ class DiagonalAdamOptimizer:
         drdb.check_for_nan_or_inf(
             self.search_direction, 'DADO get_update', 'search_direction')
         
-        print 'Inside DADO getting mirror update'
+        #print 'Inside DADO getting mirror update'
         mirror_update = ou.get_mirror_update(
             parameters, 
             eta, 
@@ -119,7 +119,7 @@ class DiagonalAdamOptimizer:
         drdb.check_for_nan_or_inf(
             mirror_update, 'DADO get_update', 'mirror_update')
 
-        print 'Inside DADO returning mirror update'
+        #print 'Inside DADO returning mirror update'
 
         return mirror_update
 
@@ -128,14 +128,14 @@ class DiagonalAdamOptimizer:
         drdb.check_for_nan_or_inf(
             parameters, 'DADO _get_dual', 'parameters')
 
-        print 'Inside DADO._get_dual computing H'
+        #print 'Inside DADO._get_dual computing H'
         # Get the dual transformation
         H = self.scale + self.delta
 
         drdb.check_for_nan_or_inf(
             H, 'DADO _get_dual', 'H')
 
-        print 'Returning H * parameters'
+        #print 'Returning H * parameters'
 
         return H * parameters
 
@@ -144,21 +144,21 @@ class DiagonalAdamOptimizer:
         if self.lower is not None:
             dus = dual_update.shape
 
-            print 'Inside soft thresholding with dus', dus
+            #print 'Inside soft thresholding with dus', dus
 
             if len(dus) == 2 and not 1 in set(dus):
-                print 'Inside matrix soft thresholding'
+                #print 'Inside matrix soft thresholding'
                 (U, s, V) = np.linalg.svd(dual_update)
-                print 'Thresholding singular values'
+                #print 'Thresholding singular values'
                 sparse_s = get_st(s, lower=self.lower)
-                print 'Remultiplying SVD'
+                #print 'Remultiplying SVD'
                 dual_update = get_multiplied_svd(U, s, V)
             else:
-                print 'Inside vector soft thresholding'
+                #print 'Inside vector soft thresholding'
                 dual_update = get_st(
                     dual_update, lower=self.lower) 
 
-        print 'Computing transformation back to primal space'
+        #print 'Computing transformation back to primal space'
 
         # Get the primal transformation
         H_inv = get_safe_power(self.scale + self.delta, -1)
@@ -166,7 +166,7 @@ class DiagonalAdamOptimizer:
         drdb.check_for_nan_or_inf(
             H_inv, 'DADO _get_primal', 'H_inv')
 
-        print 'Returning primal parameters'
+        #print 'Returning primal parameters'
 
         return H_inv * dual_update
 
@@ -186,8 +186,6 @@ class DiagonalAdamOptimizer:
             'num_rounds': self.num_rounds}
 
 class FullAdamOptimizer:
-
-    # TODO: check for where the NaN or inf is happening
 
     def __init__(self,
         delta=1,
