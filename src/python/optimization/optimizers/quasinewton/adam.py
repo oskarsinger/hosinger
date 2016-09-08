@@ -82,7 +82,7 @@ class DiagonalAdamOptimizer:
                 old, 
                 new, 
                 self.alpha2, 
-                self.beta2) / self.alpha2
+                self.beta2) / self.alpha2**(self.num_rounds)
 
             drdb.check_for_nan_or_inf(
                 total, 'DADO get_update first else body', 'total')
@@ -101,7 +101,7 @@ class DiagonalAdamOptimizer:
             self.dual_avg, 
             self.num_rounds,
             alpha=self.alpha1,
-            beta=self.beta1)) / self.alpha1
+            beta=self.beta1)) / self.alpha1**(self.num_rounds)
 
         drdb.check_for_nan_or_inf(
             self.search_direction, 'DADO get_update', 'search_direction')
@@ -232,7 +232,7 @@ class FullAdamOptimizer:
                 self.G, 
                 new_G, 
                 self.alpha2, 
-                self.beta2) / self.alpha2
+                self.beta2) / self.alpha2**(self.num_rounds)
 
         self.scale = get_svd_power(self.G, 0.5)
 
@@ -243,7 +243,7 @@ class FullAdamOptimizer:
             self.dual_avg, 
             self.num_rounds,
             alpha=self.alpha1,
-            beta=self.beta1)) / self.alpha1
+            beta=self.beta1)) / self.alpha1**(self.num_rounds)
         
         return ou.get_mirror_update(
             parameters, 
