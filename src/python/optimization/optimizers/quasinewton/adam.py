@@ -123,8 +123,17 @@ class DiagonalAdamOptimizer:
 
     def _get_dual(self, parameters):
 
+        drdb.check_for_nan_or_inf(
+            parameters, 'DADO _get_dual', 'parameters')
+
+        print 'Inside DADO._get_dual computing H'
         # Get the dual transformation
         H = self.scale + self.delta
+
+        drdb.check_for_nan_or_inf(
+            H, 'DADO _get_dual', 'H')
+
+        print 'Returning H * parameters'
 
         return H * parameters
 
@@ -142,6 +151,7 @@ class DiagonalAdamOptimizer:
                     dual_update, lower=self.lower) 
 
         print 'Computing transformation back to primal space'
+
         # Get the primal transformation
         H_inv = get_safe_power(self.scale + self.delta, -1)
 
