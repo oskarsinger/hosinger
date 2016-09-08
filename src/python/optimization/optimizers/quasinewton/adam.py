@@ -59,24 +59,42 @@ class DiagonalAdamOptimizer:
 
         # Update step sizes
         if self.scale is None:
+            print 'Inside DADO initializing scale'
             self.scale = np.absolute(gradient)
 
             drdb.check_for_nan_or_inf(
                 self.scale, 'DADO get_update first if body', 'scale')
         else:
+            print 'Inside DADO computing old'
             old = get_safe_power(self.scale, 2)
+
+            drdb.check_for_nan_or_inf(
+                old, 'DADO get_update first else body', 'old')
+
+            print 'Inside DADO computing new'
             new = get_safe_power(gradient, 2)
+
+            drdb.check_for_nan_or_inf(
+                new, 'DADO get_update first else body', 'new')
+
+            print 'Inside DADO computing total'
             total = get_ma(
                 old, 
                 new, 
                 self.alpha2, 
                 self.beta2) / self.alpha2
+
+            drdb.check_for_nan_or_inf(
+                total, 'DADO get_update first else body', 'total')
+
+            print 'Inside DADO updating scale'
             self.scale = get_safe_power(total, 0.5)
 
             drdb.check_for_nan_or_inf(
                 self.scale, 'DADO get_update first else body', 'scale')
 
-        # Update gradient
+        print 'Inside DADO updating search direction'
+        # Update search direction
         self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
             gradient, 
@@ -88,6 +106,7 @@ class DiagonalAdamOptimizer:
         drdb.check_for_nan_or_inf(
             self.search_direction, 'DADO get_update', 'search_direction')
         
+        print 'Inside DADO getting mirror update'
         mirror_update = ou.get_mirror_update(
             parameters, 
             eta, 
