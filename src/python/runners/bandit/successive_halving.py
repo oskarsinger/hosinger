@@ -50,6 +50,8 @@ class FiniteSuccessiveHalvingRunner:
 
                 data = self.server.get_data()
 
+                print 'Inside SH with data length', len(data)
+
                 # Parallelize this loop
                 p = Pool(num_processes_i)
                 keys = losses.keys()
