@@ -110,6 +110,6 @@ def _get_validation_loss(ds_list, arms, num_points):
 
     return 'poop'
 
-def _get_model_update(arm, data):
+def _get_arm_update(arm, data):
 
     return arm.update(data)
