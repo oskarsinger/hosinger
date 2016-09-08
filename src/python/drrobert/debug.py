@@ -6,7 +6,8 @@ def print_and_return(val):
 
     return val
 
-def check_for_nan_or_inf(np_array, loc_string, var_name):
+def check_for_nan_or_inf(
+    np_array, loc_string, var_name):
 
     has_nan = np.any(np.isnan(np_array))
     has_inf = np.any(np.isinf(np_array))
