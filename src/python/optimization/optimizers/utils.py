@@ -1,4 +1,5 @@
 import drrobert.arithmetic as da
+import drrobert.debug as drdb
 
 def get_avg_search_direction(
     old, 
