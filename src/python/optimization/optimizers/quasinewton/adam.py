@@ -78,11 +78,12 @@ class DiagonalAdamOptimizer:
                 new, 'DADO get_update first else body', 'new')
 
             print 'Inside DADO computing total'
+            denom = (1 - self.beta2**(self.num_rounds))
             total = get_ma(
                 old, 
                 new, 
                 self.alpha2, 
-                self.beta2) / self.alpha2**(self.num_rounds)
+                self.beta2) / denom
 
             drdb.check_for_nan_or_inf(
                 total, 'DADO get_update first else body', 'total')
@@ -95,13 +96,14 @@ class DiagonalAdamOptimizer:
 
         print 'Inside DADO updating search direction'
         # Update search direction
+        denom = (1 - self.beta1**(self.num_rounds))
         self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
             alpha=self.alpha1,
-            beta=self.beta1)) / self.alpha1**(self.num_rounds)
+            beta=self.beta1)) / denom
 
         drdb.check_for_nan_or_inf(
             self.search_direction, 'DADO get_update', 'search_direction')
@@ -228,22 +230,24 @@ class FullAdamOptimizer:
             self.G = np.dot(gradient, gradient.T)
         else:
             new_G = np.dot(gradient, gradient.T)
+            denom = (1 - self.beta2**(self.num_rounds))
             self.G = get_ma(
                 self.G, 
                 new_G, 
                 self.alpha2, 
-                self.beta2) / self.alpha2**(self.num_rounds)
+                self.beta2) / denom
 
         self.scale = get_svd_power(self.G, 0.5)
 
         # Update gradient
+        denom = (1 - self.beta1**(self.num_rounds))
         self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
             alpha=self.alpha1,
-            beta=self.beta1)) / self.alpha1**(self.num_rounds)
+            beta=self.beta1)) / denom
         
         return ou.get_mirror_update(
             parameters, 
