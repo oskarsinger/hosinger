@@ -68,8 +68,7 @@ class FiniteSuccessiveHalvingRunner:
                             _get_arm_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
-                        l_results = drdb.print_and_return(r.get())
-                        l_losses = unzip(l_results)[1]
+                        l_losses = unzip(r.get())[1]
                         losses[l] += sum(l_losses)
                         self.num_pulls[l] += 1
 
