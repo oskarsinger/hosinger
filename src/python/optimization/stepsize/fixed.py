@@ -6,4 +6,4 @@ class FixedScheduler:
 
     def get_stepsize(self):
 
-        return stepsize
+        return self.stepsize
