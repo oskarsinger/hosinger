@@ -15,11 +15,14 @@ def check_for_nan_or_inf(
     end = ' values inside.'
 
     if has_nan and has_inf:
-        raise ValueError(
-            start + 'NaN and inf' + end)
+        msg = start + 'NaN and inf' + end
+        print msg
+        raise ValueError(msg)
     elif has_nan:
-        raise ValueError(
-            start + 'NaN' + end)
+        msg = start + 'NaN' + end
+        print msg
+        raise ValueError(msg)
     elif has_inf:
-        raise ValueError(
-            start + 'inf' + end)
+        msg = start + 'inf' + end
+        print msg
+        raise ValueError(msg)
