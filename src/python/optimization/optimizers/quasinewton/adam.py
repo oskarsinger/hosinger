@@ -52,16 +52,16 @@ class DiagonalAdamOptimizer:
 
         self.num_rounds += 1
 
-        drdb.check_if_nan_or_inf(
+        drdb.check_for_nan_or_inf(
             parameters, 'DADO get_update', 'parameters')
-        drdb.check_if_nan_or_inf(
+        drdb.check_for_nan_or_inf(
             gradient, 'DADO get_update', 'gradient')
 
         # Update step sizes
         if self.scale is None:
             self.scale = np.absolute(gradient)
 
-            drdb.check_if_nan_or_inf(
+            drdb.check_for_nan_or_inf(
                 self.scale, 'DADO get_update first if body', 'scale')
         else:
             old = get_safe_power(self.scale, 2)
@@ -73,7 +73,7 @@ class DiagonalAdamOptimizer:
                 self.beta2) / self.alpha2
             self.scale = get_safe_power(total, 0.5)
 
-            drdb.check_if_nan_or_inf(
+            drdb.check_for_nan_or_inf(
                 self.scale, 'DADO get_update first else body', 'scale')
 
         # Update gradient
@@ -85,7 +85,7 @@ class DiagonalAdamOptimizer:
             alpha=self.alpha1,
             beta=self.beta1)) / self.alpha1
 
-        drdb.check_if_nan_or_inf(
+        drdb.check_for_nan_or_inf(
             self.search_direction, 'DADO get_update', 'search_direction')
         
         mirror_update = ou.get_mirror_update(
@@ -95,7 +95,7 @@ class DiagonalAdamOptimizer:
             self._get_dual, 
             self._get_primal)
 
-        drdb.check_if_nan_or_inf(
+        drdb.check_for_nan_or_inf(
             mirror_update, 'DADO get_update', 'mirror_update')
 
         return mirror_update
