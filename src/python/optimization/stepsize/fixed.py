@@ -4,6 +4,6 @@ class FixedScheduler:
 
         self.stepsize = stepsize
 
-    def get_stepsize(self, num_rounds):
+    def get_stepsize(self):
 
         return stepsize
