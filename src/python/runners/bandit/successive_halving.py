@@ -60,17 +60,19 @@ class FiniteSuccessiveHalvingRunner:
                 k = 0
                 
                 while k * num_processes_i < num_keys:
+                    print 'Running parallel experiment batch', k
                     begin = k * num_processes_i
                     end = begin + num_processes_i
                     current = {l : None
                                for l in keys[begin:end]}
 
                     for l in current.keys():
-
+                        print '\tStarting parallel experiment', l
                         current[l] = p.apply_async(
                             _get_arm_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
+                        print '\tRetreiving results of parallel experiment', l
                         l_losses = unzip(r.get())[1]
                         losses[l] += sum(l_losses)
                         self.num_pulls[l] += 1
