@@ -66,6 +66,7 @@ class FiniteSuccessiveHalvingRunner:
                                for l in keys[begin:end]}
 
                     for l in current.keys():
+
                         current[l] = p.apply_async(
                             _get_arm_update, (self.arms[l], data))
 
@@ -73,6 +74,8 @@ class FiniteSuccessiveHalvingRunner:
                         l_losses = unzip(r.get())[1]
                         losses[l] += sum(l_losses)
                         self.num_pulls[l] += 1
+
+                    k += 1
 
             sigma = sorted(
                 losses.items(), 
