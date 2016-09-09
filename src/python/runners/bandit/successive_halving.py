@@ -96,7 +96,7 @@ class FiniteSuccessiveHalvingRunner:
             'winner': self.winner,
             'winner_loss': self.winner_loss,
             'arms': self.arms,
-            'servers': self.servers,
+            'server': self.server,
             'max_size': self.max_size,
             'min_size': self.min_size,
             'eta': self.eta,
