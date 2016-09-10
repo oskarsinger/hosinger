@@ -43,7 +43,7 @@ class FiniteSuccessiveHalvingRunner:
                       if self.still_pull[i]}
             num_arms_i = self.num_arms * self.eta**(-i)
             r_i = int(self.inner_num_rounds * self.eta**(-i))
-            num_processes_i = min([12, num_arms_i])
+            num_processes_i = int(min([12, num_arms_i]))
 
             print '\tRunning inner loop for', r_i, 'rounds'
             for j in xrange(r_i):
