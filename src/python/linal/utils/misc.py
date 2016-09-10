@@ -1,4 +1,5 @@
 import numpy as np
+import drrobert.debug as drdb
 
 def get_largest_entries(s, energy=None, k=None):
 
@@ -48,10 +49,16 @@ def get_thresholded(x, upper=None, lower=None):
     if lower is not None:
         lower = np.ones_like(x) * lower
 
-        print 'x', x
-        print 'lower', lower
+        exception_msg = ' '.join([
+            'x:', x, 
+            '\n',
+            'lower:', lower])
 
-        lower_idx = new_x < lower
+        def less():
+            return new_x < lower
+
+        lower_idx = drdb.handle_runtime_warning(
+            less, exception_msg)
         new_x[lower_idx] = lower[lower_idx]
 
     return new_x
