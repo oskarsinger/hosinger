@@ -50,9 +50,9 @@ def get_thresholded(x, upper=None, lower=None):
         lower = np.ones_like(x) * lower
 
         exception_msg = ' '.join([
-            'x:', x, 
+            'x:', str(x), 
             '\n',
-            'lower:', lower])
+            'lower:', str(lower)])
 
         def less():
             return new_x < lower
