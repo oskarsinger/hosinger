@@ -65,14 +65,15 @@ def get_thresholded(x, upper=None, lower=None):
 
 def get_safe_power(s, power):
 
-    power_vec = np.ones(s.shape)
+    new = np.zeros_like(s)
 
-    if power == 0:
-        power_vec = np.zeros(s.shape)
+    if power < 0:
+        non_zero = s != 0
+        new[non_zero] = np.power(s, power)
     else:
-        power_vec[s != 0] = power
+        new = np.power(s, power)
 
-    return np.power(s, power_vec)
+    return new
 
 def get_array_mod(a, divisor, axis=0):
 
