@@ -10,7 +10,7 @@ def check_for_nan_or_inf(
     np_array, 
     loc_string, 
     var_name, 
-    raise_error=False):
+    raise_error=True):
 
     has_nan = np.any(np.isnan(np_array))
     has_inf = np.any(np.isinf(np_array))
@@ -27,6 +27,7 @@ def check_for_nan_or_inf(
     
     if msg is not None:
         print msg
+        print np_array
 
         if raise_error:
             raise ValueError(msg)
