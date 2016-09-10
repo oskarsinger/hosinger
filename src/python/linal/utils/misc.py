@@ -69,7 +69,7 @@ def get_safe_power(s, power):
 
     if power < 0:
         non_zero = s != 0
-        new[non_zero] = np.power(s, power)
+        new[non_zero] = np.power(s[non_zero], power)
     else:
         new = np.power(s, power)
 
