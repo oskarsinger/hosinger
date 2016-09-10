@@ -46,8 +46,8 @@ def get_thresholded(x, upper=None, lower=None):
         try:
             upper_idx = x > upper
         except RuntimeWarning:
-            print 'x', x
-            print 'upper', upper
+            raise Exception(
+                'x' + str(x) + ' ' + 'upper' + str(upper))
 
         new_x[upper_idx] = upper[upper_idx]
 
@@ -57,8 +57,8 @@ def get_thresholded(x, upper=None, lower=None):
         try:
             lower_idx = x < lower
         except RuntimeWarning:
-            print 'x', x
-            print 'lower', lower
+            raise Exception(
+                'x' + str(x) + ' ' + 'lower' + str(lower))
 
         new_x[lower_idx] = lower[lower_idx]
 

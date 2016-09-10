@@ -78,12 +78,16 @@ class DiagonalAdamOptimizer:
                 new, 'DADO get_update first else body', 'new')
 
             #print 'Inside DADO computing total'
-            denom = (1 - self.beta2**(self.num_rounds))
-            total = get_ma(
-                old, 
-                new, 
-                self.alpha2, 
-                self.beta2) / denom
+            try:
+                denom = (1 - self.beta2**(self.num_rounds))
+                total = get_ma(
+                    old, 
+                    new, 
+                    self.alpha2, 
+                    self.beta2) / denom
+            except RuntimeWarning:
+                raise Exception(
+                    'Denom' + str(denom))
 
             drdb.check_for_nan_or_inf(
                 total, 'DADO get_update first else body', 'total')
