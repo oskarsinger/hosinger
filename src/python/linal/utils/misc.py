@@ -42,12 +42,24 @@ def get_thresholded(x, upper=None, lower=None):
 
     if upper is not None:
         upper = np.ones_like(x) * upper
-        upper_idx = x > upper
+
+        try:
+            upper_idx = x > upper
+        except RuntimeWarning:
+            print 'x', x
+            print 'upper', upper
+
         new_x[upper_idx] = upper[upper_idx]
 
     if lower is not None:
         lower = np.ones_like(x) * lower
-        lower_idx = x < lower
+
+        try:
+            lower_idx = x < lower
+        except RuntimeWarning:
+            print 'x', x
+            print 'lower', lower
+
         new_x[lower_idx] = lower[lower_idx]
 
     return new_x
