@@ -79,7 +79,7 @@ class FiniteSuccessiveHalvingRunner:
 
                         if cum_losses == 0:
                             raise Exception('\n'.join(
-                                [str(p) for p im parameters])
+                                [str(p) for p in parameters])
                         
                         losses[l] += cum_losses
                         self.num_pulls[l] += 1
