@@ -40,7 +40,7 @@ def check_for_nan_or_inf(
     
     if msg is not None:
         print msg
-        print np_array
+        print str(np_array)
 
         if raise_error:
             raise ValueError(msg)
