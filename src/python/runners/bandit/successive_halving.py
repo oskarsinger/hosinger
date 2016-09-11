@@ -74,7 +74,7 @@ class FiniteSuccessiveHalvingRunner:
 
                     for (l, r) in current.items():
                         #print '\tRetreiving results of parallel experiment', l
-                        (l_losses, parameters) = unzip(r.get())
+                        (parameters, l_losses) = unzip(r.get())
                         cum_losses = sum(l_losses)
 
                         if cum_losses == 0:
