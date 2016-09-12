@@ -1,4 +1,5 @@
 import numpy as np
+
 import os
 
 def reflect(X, minx, maxx):
@@ -9,16 +10,16 @@ def reflect(X, minx, maxx):
 
     t = np.nonzero(Y < minx)
 
-    while not np.all(t==0):
+    while np.count_nonzero(t) > 0:
         Y[t] = 2 * minx - Y[t]
         t = np.nonzero(Y > maxx)
 
-        if not np.all(t==0):
+        if not np.count_nonzero(t) > 0:
             Y[t] = 2 * maxx - Y[t]
 
         t = np.nonzero(Y < minx)
 
-    return Y
+    return Y - 1
 
 def get_wavelet_basis(wavelet_name):
 
@@ -29,7 +30,8 @@ def get_wavelet_basis(wavelet_name):
     path = os.path.join(*path_items)
 
     with open(path) as f:
-        titles = f.readline().split(',')
+        titles = [t.strip() 
+                  for t in f.readline().split(',')]
         val_lists = {t : [] for t in titles}
 
         for l in f:
@@ -39,5 +41,5 @@ def get_wavelet_basis(wavelet_name):
                 if len(v) > 0:
                     val_lists[t].append(float(v))
 
-    return {t : np.array(vec)
+    return {t : np.array(vec)[:,np.newaxis]
             for (t, vec) in val_lists.items()}

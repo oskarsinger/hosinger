@@ -6,14 +6,17 @@ import numpy as np
 @click.command()
 def run_it_all_day():
 
-    X = np.random.randn(521,1)
+    X = np.random.randn(512,1)
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
-    (Yl, Yh) = wdtcwt.oned.dtwaveifm(
+
+    print 'Performing transformation'
+    (Yl, Yh, Y_scale) = wdtcwt.oned.dtwavexfm(
         X, 5, near_sym_b, qshift_b)
-    Z = dtwaveifm(Yl, Yh, near_sym_b, qshift_b)
+    print 'Undoing transformation'
+    Z = wdtcwt.oned.dtwaveifm(Yl, Yh, near_sym_b, qshift_b)
     error = np.abs(Z-X).max()
 
     print error < 10**(-12)

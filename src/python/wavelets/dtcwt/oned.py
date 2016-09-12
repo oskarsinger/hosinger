@@ -8,16 +8,17 @@ def dtwavexfm(
     (Yl, Yh, Y_scale) = [None] * 3
 
     (h0a, h0b, h1a, h1b, h0o, h1o) = (
-        qshift['h0a'],
-        qshift['h0b'],
-        qshift['h1a'],
-        qshift['h1b'],
+        q_shift['h0a'],
+        q_shift['h0b'],
+        q_shift['h1a'],
+        q_shift['h1b'],
         biorthogonal['h0o'],
         biorthogonal['h1o'])
 
     L = X.shape
 
     if L[0] % 2 > 0:
+        print L[0]
         raise ValueError(
             'Size of X must be a multiple of 2!')
 
@@ -27,23 +28,27 @@ def dtwavexfm(
     Yh = [None] * nlevels
     Y_scale = [None] * nlevels
     j = 1j
+    print 'Initializing highpass filter'
     Hi = filters.get_column_filtered(X, h1o)
+    print 'Initializing lowpass filter'
     Lo = filters.get_column_filtered(X, h0o)
     t = np.arange(0, Hi.shape[0]-1, 2)
     Yh[0] = Hi[t,:] + j * Hi[t+1,:]
     Y_scale[0] = np.copy(Lo)
 
     if nlevels >= 2:
+        print 'First loop running for', nlevels-2, 'rounds'
         for level in range(1, nlevels-1):
 
             if Lo.shape[0] % 4 > 0:
-                # TODO: finish up this nasty concatenation
                 Lo = np.vstack(
                     np.copy(Lo[0,:]), 
-                    something, 
-                    something_else)
+                    np.copy(Lo), 
+                    np.copy(Lo[-1,:])).T
 
+            print 'Getting highpass filter for round', level
             Hi = filters.get_column_d_filtered(Lo, h1b, h1a)
+            print 'Getting lowpass filter for round', level
             Lo = filters.get_column_d_filtered(Lo, h0b, h0a)
             t = np.arange(0, Hi.shape[0] - 1, 2)
             Yh[level] = Hi[t,:] + j * Hi[t+1,:]
@@ -54,19 +59,19 @@ def dtwavexfm(
     return (Yl, Yh, Y_scale)
 
 def dtwaveifm(
-    Yl, Yh, biorthogonal, qshift, 
+    Yl, Yh, biorthogonal, q_shift, 
     gain_mask=None):
 
-    a = Yh.shape[0]
+    a = len(Yh)
 
     if gain_mask is None:
         gain_mask = np.ones((1,a))
 
     (g0a, g0b, g1a, g1b, g0o, g1o) = (
-        qshift['g0a'],
-        qshift['g0b'],
-        qshift['g1a'],
-        qshift['g1b'],
+        q_shift['g0a'],
+        q_shift['g0b'],
+        q_shift['g1a'],
+        q_shift['g1b'],
         biorthogonal['g0o'],
         biorthogonal['g1o'])
         

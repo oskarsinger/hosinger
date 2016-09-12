@@ -13,19 +13,23 @@ def get_column_filtered(X, h):
     Y = None
     
     if np.count_nonzero(X) > 0:
-        xe = dtcwtu.reflect(np.arange(-m2, n+m2), 0.5, n+0.5)
+        print 'Calling reflect subroutine from real column filter'
+        xe = dtcwtu.reflect(np.arange(1-m2, n+m2+1), 0.5, n+0.5)
 
+        print 'Calling convolution subroutine from real column filter'
+        print X[xe,:].shape
+        print h.shape
         Y = conv2(X[xe,:], h, mode='valid')
     else:
         Y = np.zeros((n+1-(m % 2), p))
 
-    return np.copy(Y)
+    return Y
 
 def get_column_i_filtered(X, ha, hb):
 
     (n, p) = X.shape
 
-    if r % 2 > 0:
+    if n % 2 > 0:
         raise ValueError(
             'No. of rows in X must be multiple of 2!')
 
@@ -42,7 +46,7 @@ def get_column_i_filtered(X, ha, hb):
     m2 = int(m/2)
     Y = np.zeros((n*2, p))
 
-    xe = dtcwtu.reflect(np.arange(-m2, n+m2), 0.5, n+0.5)
+    xe = dtcwtu.reflect(np.arange(1-m2, n+m2+1), 0.5, n+0.5)
     hao = ha[0:m:2]
     hae = ha[1:m:2]
     hbo = hb[0:m:2]
@@ -84,7 +88,7 @@ def get_column_d_filtered(X, ha, hb):
 
     (n, p) = X.shape
 
-    if r % 4 > 0:
+    if n % 4 > 0:
         raise ValueError(
             'No. of rows in X must be a multiple of 4!')
 
@@ -100,7 +104,7 @@ def get_column_d_filtered(X, ha, hb):
 
     m2 = int(m/2)
 
-    xe = dtcwtu.reflect(np.arange(m,n+m), 0.5, r+0.5)
+    xe = dtcwtu.reflect(np.arange(1-m,n+m+1), 0.5, n+0.5)
 
     hao = ha[0:m:2]
     hae = ha[1:m:2]
@@ -110,7 +114,7 @@ def get_column_d_filtered(X, ha, hb):
 
     n2 = n/2
     Y = np.zeros((n2, p))
-    s2 = np.arange(0, r2, 2)
+    s2 = np.arange(0, n2, 2)
     s1 = s2 + 1
 
     if np.sum(ha * hb) > 0:
