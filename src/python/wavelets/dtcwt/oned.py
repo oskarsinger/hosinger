@@ -38,7 +38,7 @@ def dtwavexfm(
 
     if nlevels >= 2:
         print 'First loop running for', nlevels-2, 'rounds'
-        for level in range(1, nlevels-1):
+        for level in range(1, nlevels):
 
             if Lo.shape[0] % 4 > 0:
                 Lo = np.vstack(
@@ -79,7 +79,8 @@ def dtwaveifm(
     Lo = Yl
 
     while level >= 1:
-        Hi = c2q1d(Yh[level] * gain_mask[level])
+        print 'Yh[', level, ']:', Yh[level]
+        Hi = c2q1d(Yh[level] * gain_mask[:,level])
         Lo = filters.get_column_i_filtered(Lo, g0b, g0a) + \
             filters.get_column_i_filtered(Hi, g1b, g1a)
 
@@ -104,8 +105,8 @@ def c2q1d(X):
 
     (n, p) = X.shape
     z = np.zeros((n*2, p))
-    skip = np.arange(0, a*2-1, 2)
-    z[skip,:] = np.real(x)
-    z[skip+1,:] = np.imag(x)
+    skip = np.arange(0, n*2-1, 2)
+    z[skip,:] = np.real(X)
+    z[skip+1,:] = np.imag(X)
 
     return z

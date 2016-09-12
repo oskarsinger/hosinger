@@ -19,7 +19,10 @@ def run_it_all_day():
     Z = wdtcwt.oned.dtwaveifm(Yl, Yh, near_sym_b, qshift_b)
     error = np.abs(Z-X).max()
 
-    print error < 10**(-12)
+    if error < 10**(-12):
+        print 'Ur gud, dood'
+    else:
+        print error
 
     #TODO: implement the 2D test
 

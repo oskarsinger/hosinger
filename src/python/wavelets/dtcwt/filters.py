@@ -13,12 +13,8 @@ def get_column_filtered(X, h):
     Y = None
     
     if np.count_nonzero(X) > 0:
-        print 'Calling reflect subroutine from real column filter'
         xe = dtcwtu.reflect(np.arange(1-m2, n+m2+1), 0.5, n+0.5)
 
-        print 'Calling convolution subroutine from real column filter'
-        print X[xe,:].shape
-        print h.shape
         Y = conv2(X[xe,:], h, mode='valid')
     else:
         Y = np.zeros((n+1-(m % 2), p))
@@ -35,7 +31,7 @@ def get_column_i_filtered(X, ha, hb):
 
     m = ha.shape[0]
 
-    if not m == hp.shape[0]:
+    if not m == hb.shape[0]:
         raise ValueError(
             'Lengths of ha and hb must be the same!')
 
