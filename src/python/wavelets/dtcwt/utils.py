@@ -22,13 +22,11 @@ def reflect(X, minx, maxx):
 
 def get_wavelet_basis(wavelet_name):
 
-    base_dir = '/'.join(
-        ['..'] * 4 +
-        ['constants', 'wavelets'])
-    path = os.path.join([
-        base_dir, 
-        wavelet_name, 
-        '.csv'])
+    path_items = [os.pardir] * 2 + [
+        'constants', 
+        'wavelets',
+        wavelet_name + '.csv']
+    path = os.path.join(*path_items)
 
     with open(path) as f:
         titles = f.readline().split(',')

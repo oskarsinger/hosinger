@@ -3,12 +3,17 @@ import numpy as np
 import filters
 
 def dtwavexfm(
-    X, nlevels, biort, q_shift):
+    X, nlevels, biorthogonal, q_shift):
 
     (Yl, Yh, Y_scale) = [None] * 3
 
-    # TODO: make the proper calls to get_biort and get_qshift 
-    (h0a, h0b, h1a, h1b, h0o, h1o) = [None] * 6
+    (h0a, h0b, h1a, h1b, h0o, h1o) = (
+        qshift['h0a'],
+        qshift['h0b'],
+        qshift['h1a'],
+        qshift['h1b'],
+        biorthogonal['h0o'],
+        biorthogonal['h1o'])
 
     L = X.shape
 
@@ -49,7 +54,7 @@ def dtwavexfm(
     return (Yl, Yh, Y_scale)
 
 def dtwaveifm(
-    Yl, Yh, biort, qshift, 
+    Yl, Yh, biorthogonal, qshift, 
     gain_mask=None):
 
     a = Yh.shape[0]
@@ -57,8 +62,13 @@ def dtwaveifm(
     if gain_mask is None:
         gain_mask = np.ones((1,a))
 
-    # TODO: make the proper calls to get_biort and get_qshift 
-    (g0a, g0b, g1a, g1b, g0o, g1o) = [None] * 6
+    (g0a, g0b, g1a, g1b, g0o, g1o) = (
+        qshift['g0a'],
+        qshift['g0b'],
+        qshift['g1a'],
+        qshift['g1b'],
+        biorthogonal['g0o'],
+        biorthogonal['g1o'])
         
     level = a - 1
     Lo = Yl

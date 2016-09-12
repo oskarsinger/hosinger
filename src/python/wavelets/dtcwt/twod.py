@@ -6,8 +6,13 @@ def dtwavexfm2(X, nlevels, get_biort, get_qshift):
 
     (Yl, Yh, Y_scale) = [None]*3
 
-    # TODO: make the proper calls to get_biort and get_qshift 
-    (h0a, h0b, h1a, h1b, h0o, h1o) = [None]*6
+    (h0a, h0b, h1a, h1b, h0o, h1o) = (
+        qshift['h0a'],
+        qshift['h0b'],
+        qshift['h1a'],
+        qshift['h1b'],
+        biort['h0o'],
+        biort['h1o'])
 
     original_size = X.shape
 
@@ -75,8 +80,6 @@ def dtwavexfm2(X, nlevels, get_biort, get_qshift):
 
     Yl = np.copy(LoLo)
 
-    # TODO: Implement the warnings from the Matlab code
-
     return (Yl, Yh, Y_scale)
 
 def dtwaveifm2(
@@ -88,8 +91,13 @@ def dtwaveifm2(
     if gain_mask is None:
         gain_mask = np.ones(6, a)
 
-    # TODO: make the proper calls to get_biort and get_qshift 
-    (g0a, g0b, g1a, g1b, g0o, g1o) = [None]*6
+    (g0a, g0b, g1a, g1b, g0o, g1o) = (
+        qshift['g0a'],
+        qshift['g0b'],
+        qshift['g1a'],
+        qshift['g1b'],
+        biort['g0o'],
+        biort['g1o'])
         
     current_level = a - 1;
 
@@ -114,7 +122,7 @@ def dtwaveifm2(
 
         # Check size of Z and crop as required
         (n, p) = Z.shape
-        S = [2 * i for i in Yh[current_level-].shape]
+        S = [2 * i for i in Yh[current_level-1].shape]
 
         if not n == S[0]:
             Z = Z[1:n-1,:]

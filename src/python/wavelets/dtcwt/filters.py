@@ -1,6 +1,6 @@
 import numpy as np
 
-from scipy.signal import convolve2 as conv2
+from scipy.signal import convolve2d as conv2
 import utils as dtcwtu
 
 # TODO: double check indexing to translate from Matlab to numpy
