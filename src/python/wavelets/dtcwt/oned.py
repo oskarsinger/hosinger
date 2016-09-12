@@ -18,7 +18,6 @@ def dtwavexfm(
     L = X.shape
 
     if L[0] % 2 > 0:
-        print L[0]
         raise ValueError(
             'Size of X must be a multiple of 2!')
 
@@ -28,16 +27,13 @@ def dtwavexfm(
     Yh = [None] * nlevels
     Y_scale = [None] * nlevels
     j = 1j
-    print 'Initializing highpass filter'
     Hi = filters.get_column_filtered(X, h1o)
-    print 'Initializing lowpass filter'
     Lo = filters.get_column_filtered(X, h0o)
     t = np.arange(0, Hi.shape[0]-1, 2)
     Yh[0] = Hi[t,:] + j * Hi[t+1,:]
     Y_scale[0] = np.copy(Lo)
 
     if nlevels >= 2:
-        print 'First loop running for', nlevels-2, 'rounds'
         for level in range(1, nlevels):
 
             if Lo.shape[0] % 4 > 0:
@@ -46,9 +42,7 @@ def dtwavexfm(
                     np.copy(Lo), 
                     np.copy(Lo[-1,:])).T
 
-            print 'Getting highpass filter for round', level
             Hi = filters.get_column_d_filtered(Lo, h1b, h1a)
-            print 'Getting lowpass filter for round', level
             Lo = filters.get_column_d_filtered(Lo, h0b, h0a)
             t = np.arange(0, Hi.shape[0] - 1, 2)
             Yh[level] = Hi[t,:] + j * Hi[t+1,:]
@@ -79,7 +73,6 @@ def dtwaveifm(
     Lo = Yl
 
     while level >= 1:
-        print 'Yh[', level, ']:', Yh[level]
         Hi = c2q1d(Yh[level] * gain_mask[:,level])
         Lo = filters.get_column_i_filtered(Lo, g0b, g0a) + \
             filters.get_column_i_filtered(Hi, g1b, g1a)
