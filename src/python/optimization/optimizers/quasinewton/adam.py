@@ -85,8 +85,11 @@ class DiagonalAdamOptimizer:
                 self.alpha2, 
                 self.beta2)
             normed = lambda: unnormed_total / denom
+
             drdb.handle_runtime_warning(
                 normed, 'Denom: ' + str(denom))
+
+            total = normed()
 
             drdb.check_for_nan_or_inf(
                 total, 'DADO get_update first else body', 'total')
