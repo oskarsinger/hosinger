@@ -29,7 +29,7 @@ def dtwavexfm(
     j = 1j
     Hi = filters.get_column_filtered(X, h1o)
     Lo = filters.get_column_filtered(X, h0o)
-    t = np.arange(0, Hi.shape[0]-1, 2)
+    t = np.arange(0, Hi.shape[0], 2)
     Yh[0] = Hi[t,:] + j * Hi[t+1,:]
     Y_scale[0] = np.copy(Lo)
 
@@ -44,7 +44,7 @@ def dtwavexfm(
 
             Hi = filters.get_column_d_filtered(Lo, h1b, h1a)
             Lo = filters.get_column_d_filtered(Lo, h0b, h0a)
-            t = np.arange(0, Hi.shape[0] - 1, 2)
+            t = np.arange(0, Hi.shape[0], 2)
             Yh[level] = Hi[t,:] + j * Hi[t+1,:]
             Y_scale[level] = np.copy(Lo)
 
@@ -70,7 +70,7 @@ def dtwaveifm(
         biorthogonal['g1o'])
         
     level = a - 1
-    Lo = Yl
+    Lo = np.copy(Yl)
 
     while level >= 1:
         Hi = c2q1d(Yh[level] * gain_mask[:,level])
@@ -81,7 +81,7 @@ def dtwaveifm(
         (Yh_n, Yh_p) = Yh[level-1].shape
 
         if not Lo_n == 2 * Yh_n:
-            Lo = Lo[1:Lo.shape[0]-1,:]
+            Lo = Lo[1:Lo_n-1,:]
 
         if not (Lo_n == 2 * Yh_n and Lo_p == Yh_p):
             raise ValueError(
@@ -89,7 +89,7 @@ def dtwaveifm(
 
         level -= 1
 
-    Hi = c2q1d(Yh[level] * gain_mask[level])
+    Hi = c2q1d(Yh[level] * gain_mask[:,level])
 
     return filters.get_column_filtered(Lo, g0o) + \
         filters.get_column_filtered(Hi, g1o)
@@ -98,7 +98,7 @@ def c2q1d(X):
 
     (n, p) = X.shape
     z = np.zeros((n*2, p))
-    skip = np.arange(0, n*2-1, 2)
+    skip = np.arange(0, n*2, 2)
     z[skip,:] = np.real(X)
     z[skip+1,:] = np.imag(X)
 

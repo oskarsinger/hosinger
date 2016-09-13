@@ -12,11 +12,10 @@ def run_it_all_day():
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
 
-    print 'Performing transformation'
     (Yl, Yh, Y_scale) = wdtcwt.oned.dtwavexfm(
         X, 5, near_sym_b, qshift_b)
-    print 'Undoing transformation'
-    Z = wdtcwt.oned.dtwaveifm(Yl, Yh, near_sym_b, qshift_b)
+    Z = wdtcwt.oned.dtwaveifm(
+        Yl, Yh, near_sym_b, qshift_b)
     error = np.abs(Z-X).max()
 
     if error < 10**(-12):
