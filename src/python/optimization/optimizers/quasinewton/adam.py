@@ -52,31 +52,39 @@ class DiagonalAdamOptimizer:
 
         self.num_rounds += 1
 
-        drdb.check_for_nan_or_inf(
-            parameters, 'DADO get_update', 'parameters')
-        drdb.check_for_nan_or_inf(
-            gradient, 'DADO get_update', 'gradient')
+        drdb.check_for_large_numbers(
+            parameters, 
+            'DADO get_update at round ' + str(self.num_rounds),
+            'parameters')
+        drdb.check_for_large_numbers(
+            gradient,
+            'DADO get_update at round ' + str(self.num_rounds),
+            'gradient')
 
         # Update step sizes
         if self.scale is None:
             #print 'Inside DADO initializing scale'
             self.scale = np.absolute(gradient)
 
-            drdb.check_for_nan_or_inf(
-                self.scale, 'DADO get_update first if body', 'scale')
+            drdb.check_for_large_numbers(
+                self.scale, 
+                'DADO get_update first if body at round ' + str(self.num_rounds),
+                'scale')
         else:
             #print 'Inside DADO computing old'
             old = get_safe_power(self.scale, 2)
 
-            drdb.check_for_nan_or_inf(
-                old, 'DADO get_update first else body', 'old')
-
+            drdb.check_for_large_numbers(
+                old,
+                'DADO get_update first else body at round ' + str(self.num_rounds),
+                'old')
             #print 'Inside DADO computing new'
             new = get_safe_power(gradient, 2)
 
-            drdb.check_for_nan_or_inf(
-                new, 'DADO get_update first else body', 'new')
-
+            drdb.check_for_large_numbers(
+                new,
+                'DADO get_update first else body at round ' + str(self.num_rounds),
+                'new')
             #print 'Inside DADO computing total'
             denom = (1 - self.beta2**(self.num_rounds))
             unnormed_total = get_ma(
@@ -91,15 +99,17 @@ class DiagonalAdamOptimizer:
 
             total = normed()
 
-            drdb.check_for_nan_or_inf(
-                total, 'DADO get_update first else body', 'total')
-
+            drdb.check_for_large_numbers(
+                total,
+                'DADO get_update first else body at round ' + str(self.num_rounds),
+                'total')
             #print 'Inside DADO updating scale'
             self.scale = get_safe_power(total, 0.5)
 
-            drdb.check_for_nan_or_inf(
-                self.scale, 'DADO get_update first else body', 'scale')
-
+            drdb.check_for_large_numbers(
+                self.scale,
+                'DADO get_update first else body at round ' + str(self.num_rounds),
+                'scale')
         #print 'Inside DADO updating search direction'
         # Update search direction
         denom = (1 - self.beta1**(self.num_rounds))
@@ -111,9 +121,10 @@ class DiagonalAdamOptimizer:
             alpha=self.alpha1,
             beta=self.beta1)) / denom
 
-        drdb.check_for_nan_or_inf(
-            self.search_direction, 'DADO get_update', 'search_direction')
-        
+        drdb.check_for_large_numbers(
+            self.search_direction,
+            'DADO get_update at round ' + str(self.num_rounds),
+            'search_direction')
         #print 'Inside DADO getting mirror update'
         mirror_update = ou.get_mirror_update(
             parameters, 
@@ -122,25 +133,29 @@ class DiagonalAdamOptimizer:
             self._get_dual, 
             self._get_primal)
 
-        drdb.check_for_nan_or_inf(
-            mirror_update, 'DADO get_update', 'mirror_update')
-
+        drdb.check_for_large_numbers(
+            mirror_update,
+            'DADO get_update at round ' + str(self.num_rounds),
+            'mirror_update')
         #print 'Inside DADO returning mirror update'
 
         return mirror_update
 
     def _get_dual(self, parameters):
 
-        drdb.check_for_nan_or_inf(
-            parameters, 'DADO _get_dual', 'parameters')
+        drdb.check_for_large_numbers(
+            parameters, 
+            'DADO _get_dual at round' + str(self.num_rounds), 
+            'parameters')
 
         #print 'Inside DADO._get_dual computing H'
         # Get the dual transformation
         H = self.scale + self.delta
 
-        drdb.check_for_nan_or_inf(
-            H, 'DADO _get_dual', 'H')
-
+        drdb.check_for_large_numbers(
+            H,
+            'DADO _get_dual at round' + str(self.num_rounds), 
+            'H')
         #print 'Returning H * parameters'
 
         return H * parameters
@@ -169,8 +184,10 @@ class DiagonalAdamOptimizer:
         # Get the primal transformation
         H_inv = get_safe_power(self.scale + self.delta, -1)
             
-        drdb.check_for_nan_or_inf(
-            H_inv, 'DADO _get_primal', 'H_inv')
+        drdb.check_for_large_numbers(
+            H_inv,
+            'DADO _get_primal at round ' + str(self.num_rounds),
+            'H_inv')
 
         #print 'Returning primal parameters'
 
