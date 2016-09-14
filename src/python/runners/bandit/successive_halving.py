@@ -43,7 +43,7 @@ class FiniteSuccessiveHalvingRunner:
                       for i in xrange(self.num_arms)
                       if self.still_pull[i]}
             num_arms_i = self.num_arms * self.eta**(-i)
-            r_i = int(self.inner_num_rounds * self.eta**(-i))
+            r_i = self.inner_num_rounds * self.eta**(i)
             num_processes_i = int(min([12, num_arms_i]))
 
             print '\tRunning inner loop for', r_i, 'rounds'
@@ -75,21 +75,8 @@ class FiniteSuccessiveHalvingRunner:
                     for (l, r) in current.items():
                         #print '\tRetreiving results of parallel experiment', l
                         (parameters, l_losses) = unzip(r.get())
-                        cum_losses = sum(l_losses)
 
-                        print 'Cumulative losses:', cum_losses
-                        is_zero = cum_losses == 0
-                        print 'Is Zero?:', is_zero
-                        if cum_losses == 0:
-                            param_string =  'Parameters:\n' + '\n'.join(
-                                [str(p) for p in parameters])
-                            data_string = 'Data:\n' + str(data)
-                            message = 'Losses were zero with\n'
-
-                            raise Exception(
-                                message + param_string + data_string)
-                        
-                        losses[l] += cum_losses
+                        losses[l] += sum(l_losses) / len(l_losses)
                         self.num_pulls[l] += 1
 
                     k += 1
