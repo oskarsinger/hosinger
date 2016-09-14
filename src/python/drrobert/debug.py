@@ -46,12 +46,12 @@ def check_for_large_numbers(
             msg = mk_msg(neg_error)
 
         if msg is not None:
+            print msg
+            print str(variable)
+
             if raise_error:
                 raise ValueError(
                     msg + '\nVariable:\n' + str(variable))
-            else:
-                print msg
-                print str(variable)
     except TypeError:
         pass
 
@@ -77,11 +77,11 @@ def check_for_nan_or_inf(
             msg = mk_msg('inf')
         
         if msg is not None:
+            print msg
+            print str(variable)
+
             if raise_error:
                 raise ValueError(
                     msg + '\nVariable:\n' + str(variable))
-            else:
-                print msg
-                print str(variable)
     except TypeError:
         pass
