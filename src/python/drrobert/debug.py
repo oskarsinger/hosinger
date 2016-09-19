@@ -26,10 +26,10 @@ def check_for_large_numbers(
     exponent=5):
 
     try:
-        has_large_pos = np.any(
-            variable > 10**(exponent))
-        has_large_neg = np.any(
-            variable < -10**(exponent))
+        large_pos = variable > 10**(exponent)
+        has_large_pos = np.any(large_pos)
+        large_neg = variable < -10**(exponent)
+        has_large_neg = np.any(large_neg)
         start = var_name + ' at ' + loc_string + ' has values '
         end = ' inside.'
         pos_error = 'greater than ' + str(10**(exponent))
@@ -47,6 +47,13 @@ def check_for_large_numbers(
 
         if msg is not None:
             print msg
+
+            if has_large_pos:
+                print str(large_pos)
+
+            if has_large_neg:
+                print str(large_neg)
+
             print str(variable)
 
             if raise_error:
