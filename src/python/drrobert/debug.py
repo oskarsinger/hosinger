@@ -76,7 +76,7 @@ def check_for_large_numbers(
         start = var_name + ' at ' + loc_string + ' has values '
         end = ' inside.'
         pos_error = 'greater than ' + str(10**(exponent))
-        neg_error = 'less than ' + str(10**(exponent))
+        neg_error = 'less than ' + str(-10**(exponent))
         mk_msg = lambda x: start + x + end
         msg = None
 
