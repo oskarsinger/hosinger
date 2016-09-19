@@ -91,7 +91,8 @@ class DiagonalAdamOptimizer:
             drdb.check_for_small_numbers(
                 np.array([denom]),
                 'DADO get_update first else body at round ' + str(self.num_rounds),
-                'denom')
+                'denom',
+                exponent=-2)
 
             unnormed_total = get_ma(
                 old, 
@@ -123,7 +124,8 @@ class DiagonalAdamOptimizer:
         drdb.check_for_small_numbers(
             np.array([denom]),
             'DADO get_update at round ' + str(self.num_rounds),
-            'denom')
+            'denom',
+            exponent=-2)
 
         self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
