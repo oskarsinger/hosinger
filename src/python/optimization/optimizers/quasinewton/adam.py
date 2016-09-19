@@ -53,11 +53,11 @@ class DiagonalAdamOptimizer:
         self.num_rounds += 1
 
         drdb.check_for_large_numbers(
-            parameters, 
+            (parameters, self.get_status()),
             'DADO get_update at round ' + str(self.num_rounds),
             'parameters')
         drdb.check_for_large_numbers(
-            gradient,
+            (gradient, self.get_status()),
             'DADO get_update at round ' + str(self.num_rounds),
             'gradient')
 
@@ -67,7 +67,7 @@ class DiagonalAdamOptimizer:
             self.scale = np.absolute(gradient)
 
             drdb.check_for_large_numbers(
-                self.scale, 
+                (self.scale, self.get_status()),
                 'DADO get_update first if body at round ' + str(self.num_rounds),
                 'scale')
         else:
@@ -75,14 +75,14 @@ class DiagonalAdamOptimizer:
             old = get_safe_power(self.scale, 2)
 
             drdb.check_for_large_numbers(
-                old,
+                (old, self.get_status()),
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'old')
             #print 'Inside DADO computing new'
             new = get_safe_power(gradient, 2)
 
             drdb.check_for_large_numbers(
-                (new, gradient),
+                (new, gradient, self.get_status()),
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'new')
             #print 'Inside DADO computing total'
@@ -100,14 +100,14 @@ class DiagonalAdamOptimizer:
             total = normed()
 
             drdb.check_for_large_numbers(
-                total,
+                (total, self.get_status()),
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'total')
             #print 'Inside DADO updating scale'
             self.scale = get_safe_power(total, 0.5)
 
             drdb.check_for_large_numbers(
-                self.scale,
+                (self.scale, self.get_status())
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'scale')
         #print 'Inside DADO updating search direction'
@@ -134,7 +134,7 @@ class DiagonalAdamOptimizer:
             self._get_primal)
 
         drdb.check_for_large_numbers(
-            mirror_update,
+            (mirror_update, self.get_status()),
             'DADO get_update at round ' + str(self.num_rounds),
             'mirror_update')
         #print 'Inside DADO returning mirror update'
@@ -144,7 +144,7 @@ class DiagonalAdamOptimizer:
     def _get_dual(self, parameters):
 
         drdb.check_for_large_numbers(
-            parameters, 
+            (parameters, self.get_status()),
             'DADO _get_dual at round' + str(self.num_rounds), 
             'parameters')
 
@@ -153,7 +153,7 @@ class DiagonalAdamOptimizer:
         H = self.scale + self.delta
 
         drdb.check_for_large_numbers(
-            H,
+            (H, self.get_status()),
             'DADO _get_dual at round' + str(self.num_rounds), 
             'H')
         #print 'Returning H * parameters'
@@ -185,7 +185,7 @@ class DiagonalAdamOptimizer:
         H_inv = get_safe_power(self.scale + self.delta, -1)
             
         drdb.check_for_large_numbers(
-            H_inv,
+            (H_inv, self.get_status()),
             'DADO _get_primal at round ' + str(self.num_rounds),
             'H_inv')
 
