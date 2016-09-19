@@ -18,6 +18,49 @@ def handle_runtime_warning(func, exception_msg):
         except RuntimeWarning:
             raise Exception(exception_msg)
 
+def check_for_small_numbers(
+    variable,
+    loc_string,
+    var_name,
+    raise_error=True,
+    exponent=-5):
+
+    try:
+        small_pos = np.logical_and(
+            variable < 10**(exponent),
+            variable > 0)
+        has_small_pos = np.any(small_pos)
+        small_neg = np.logical_and(
+            variable > -10**(exponent),
+            variable < 0)
+        has_small_neg = np.any(small_neg)
+        start = var_name + ' at ' + loc_string + ' has values '
+        end = ' inside.'
+        pos_error = 'in range (0, ' + str(10**(exponent)) + ')'
+        neg_error = 'in range (' + str(-10**(exponent)) + ', 0)'
+        mk_msg = lambda x: start + x + end
+        msg = None
+
+        if has_small_pos and has_small_neg:
+            error = pos_error + ' and ' + neg_error
+            msg = mk_msg(error)
+        elif has_small_pos:
+            msg = mk_msg(pos_error)
+        elif has_small_neg:
+            msg = mk_msg(neg_error)
+
+        if msg is not None:
+            print msg
+            print str(small_pos)
+            print str(small_neg)
+            print str(variable)
+
+            if raise_error:
+                raise ValueError(
+                    msg + '\nVariable:\n' + str(variable))
+    except TypeError:
+        pass
+
 def check_for_large_numbers(
     variable,
     loc_string,
@@ -47,13 +90,8 @@ def check_for_large_numbers(
 
         if msg is not None:
             print msg
-
-            if has_large_pos:
-                print str(large_pos)
-
-            if has_large_neg:
-                print str(large_neg)
-
+            print str(large_pos)
+            print str(large_neg)
             print str(variable)
 
             if raise_error:

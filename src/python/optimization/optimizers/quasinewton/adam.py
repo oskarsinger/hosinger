@@ -53,11 +53,11 @@ class DiagonalAdamOptimizer:
         self.num_rounds += 1
 
         drdb.check_for_large_numbers(
-            (parameters, self.get_status()),
+            parameters,
             'DADO get_update at round ' + str(self.num_rounds),
             'parameters')
         drdb.check_for_large_numbers(
-            (gradient, self.get_status()),
+            gradient,
             'DADO get_update at round ' + str(self.num_rounds),
             'gradient')
 
@@ -67,7 +67,7 @@ class DiagonalAdamOptimizer:
             self.scale = np.absolute(gradient)
 
             drdb.check_for_large_numbers(
-                (self.scale, self.get_status()),
+                self.scale,
                 'DADO get_update first if body at round ' + str(self.num_rounds),
                 'scale')
         else:
@@ -75,18 +75,24 @@ class DiagonalAdamOptimizer:
             old = get_safe_power(self.scale, 2)
 
             drdb.check_for_large_numbers(
-                (old, self.get_status()),
+                old,
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'old')
             #print 'Inside DADO computing new'
             new = get_safe_power(gradient, 2)
 
             drdb.check_for_large_numbers(
-                (new, gradient, self.get_status()),
+                new,
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'new')
             #print 'Inside DADO computing total'
             denom = (1 - self.beta2**(self.num_rounds))
+
+            drdb.check_for_small_numbers(
+                np.array([denom]),
+                'DADO get_update first else body at round ' + str(self.num_rounds),
+                'denom')
+
             unnormed_total = get_ma(
                 old, 
                 new, 
@@ -100,19 +106,25 @@ class DiagonalAdamOptimizer:
             total = normed()
 
             drdb.check_for_large_numbers(
-                (total, self.get_status()),
+                total,
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'total')
             #print 'Inside DADO updating scale'
             self.scale = get_safe_power(total, 0.5)
 
             drdb.check_for_large_numbers(
-                (self.scale, self.get_status()),
+                self.scale,
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'scale')
         #print 'Inside DADO updating search direction'
         # Update search direction
         denom = (1 - self.beta1**(self.num_rounds))
+
+        drdb.check_for_small_numbers(
+            np.array([denom]),
+            'DADO get_update at round ' + str(self.num_rounds),
+            'denom')
+
         self.search_direction = np.copy(ou.get_avg_search_direction(
             self.search_direction, 
             gradient, 
@@ -134,7 +146,7 @@ class DiagonalAdamOptimizer:
             self._get_primal)
 
         drdb.check_for_large_numbers(
-            (mirror_update, self.get_status()),
+            mirror_update,
             'DADO get_update at round ' + str(self.num_rounds),
             'mirror_update')
         #print 'Inside DADO returning mirror update'
@@ -144,7 +156,7 @@ class DiagonalAdamOptimizer:
     def _get_dual(self, parameters):
 
         drdb.check_for_large_numbers(
-            (parameters, self.get_status()),
+            parameters,
             'DADO _get_dual at round' + str(self.num_rounds), 
             'parameters')
 
@@ -153,7 +165,7 @@ class DiagonalAdamOptimizer:
         H = self.scale + self.delta
 
         drdb.check_for_large_numbers(
-            (H, self.get_status()),
+            H,
             'DADO _get_dual at round' + str(self.num_rounds), 
             'H')
         #print 'Returning H * parameters'
@@ -185,7 +197,7 @@ class DiagonalAdamOptimizer:
         H_inv = get_safe_power(self.scale + self.delta, -1)
             
         drdb.check_for_large_numbers(
-            (H_inv, self.get_status()),
+            H_inv,
             'DADO _get_primal at round ' + str(self.num_rounds),
             'H_inv')
 
