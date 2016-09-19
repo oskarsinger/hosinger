@@ -107,7 +107,7 @@ class DiagonalAdamOptimizer:
             self.scale = get_safe_power(total, 0.5)
 
             drdb.check_for_large_numbers(
-                (self.scale, self.get_status())
+                (self.scale, self.get_status()),
                 'DADO get_update first else body at round ' + str(self.num_rounds),
                 'scale')
         #print 'Inside DADO updating search direction'
