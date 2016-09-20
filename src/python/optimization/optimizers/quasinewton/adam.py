@@ -114,7 +114,7 @@ class DiagonalAdamOptimizer:
             'denom',
             exponent=-2)
 
-        self.first_moment = np.copy(ou.get_avg_first_moment(
+        self.first_moment = np.copy(ou.get_avg_search_direction(
             self.first_moment, 
             gradient, 
             self.dual_avg, 
@@ -268,7 +268,7 @@ class FullAdamOptimizer:
 
         # Update gradient
         denom = (1 - self.beta1**(self.num_rounds))
-        self.first_moment = np.copy(ou.get_avg_first_moment(
+        self.first_moment = np.copy(ou.get_avg_search_direction(
             self.first_moment, 
             gradient, 
             self.dual_avg, 
