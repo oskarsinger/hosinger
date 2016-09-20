@@ -69,10 +69,12 @@ class DiagonalAdamOptimizer:
         #print 'Inside DADO computing new'
         new = get_safe_power(gradient, 2)
 
+        """
         drdb.check_for_large_numbers(
             new,
             'DADO get_update first else body at round ' + str(self.num_rounds),
             'new')
+        """
         #print 'Inside DADO computing total'
         denom = (1 - self.beta2**(self.num_rounds))
 
