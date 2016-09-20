@@ -23,8 +23,6 @@ class DiagonalAdamOptimizer:
         self.delta = delta
         self.verbose = verbose
 
-        self.scale = None
-
         if dual_avg and (beta1 is not None or beta2 is not None):
             raise ValueError(
                 'You must choose either dual averaging or moving average for the initial search direction.')
@@ -45,7 +43,8 @@ class DiagonalAdamOptimizer:
 
         self.beta2 = beta2
 
-        self.search_direction = None
+        self.first_moment = None
+        self.second_moment = None
         self.num_rounds = 0
 
     def get_update(self, parameters, gradient, eta):
@@ -61,68 +60,44 @@ class DiagonalAdamOptimizer:
             'DADO get_update at round ' + str(self.num_rounds),
             'gradient')
 
-        # Update step sizes
-        if self.scale is None:
-            #print 'Inside DADO initializing scale'
-            self.scale = np.absolute(gradient)
+        #print 'Inside DADO computing new'
+        new = get_safe_power(gradient, 2)
 
-            drdb.check_for_large_numbers(
-                self.scale,
-                'DADO get_update first if body at round ' + str(self.num_rounds),
-                'scale')
-        else:
-            #print 'Inside DADO computing old'
-            old = get_safe_power(self.scale, 2)
+        drdb.check_for_large_numbers(
+            new,
+            'DADO get_update first else body at round ' + str(self.num_rounds),
+            'new')
+        #print 'Inside DADO computing total'
+        denom = (1 - self.beta2**(self.num_rounds))
 
-            drdb.check_for_large_numbers(
-                old,
-                'DADO get_update first else body at round ' + str(self.num_rounds),
-                'old')
-            #print 'Inside DADO computing new'
-            new = get_safe_power(gradient, 2)
+        drdb.check_for_small_numbers(
+            np.array([denom]),
+            'DADO get_update first else body at round ' + str(self.num_rounds),
+            'denom',
+            exponent=-2)
 
-            drdb.check_for_large_numbers(
-                new,
-                'DADO get_update first else body at round ' + str(self.num_rounds),
-                'new')
-            #print 'Inside DADO computing total'
-            denom = (1 - self.beta2**(self.num_rounds))
+        unnormed_total = get_ma(
+            self.second_moment, 
+            new, 
+            self.alpha2, 
+            self.beta2)
 
-            drdb.check_for_small_numbers(
-                np.array([denom]),
-                'DADO get_update first else body at round ' + str(self.num_rounds),
-                'denom',
-                exponent=-2)
+        drdb.check_for_large_numbers(
+            unnormed_total,
+            'DADO get_update first else body at round ' + str(self.num_rounds),
+            'unnormed_total')
 
-            unnormed_total = get_ma(
-                old, 
-                new, 
-                self.alpha2, 
-                self.beta2)
+        normed = lambda: unnormed_total / denom
 
-            drdb.check_for_large_numbers(
-                unnormed_total,
-                'DADO get_update first else body at round ' + str(self.num_rounds),
-                'unnormed_total')
+        drdb.handle_runtime_warning(
+            normed, 'Denom: ' + str(denom))
 
-            normed = lambda: unnormed_total / denom
+        self.second_moment = normed()
 
-            drdb.handle_runtime_warning(
-                normed, 'Denom: ' + str(denom))
-
-            total = normed()
-
-            drdb.check_for_large_numbers(
-                total,
-                'DADO get_update first else body at round ' + str(self.num_rounds),
-                'total')
-            #print 'Inside DADO updating scale'
-            self.scale = get_safe_power(total, 0.5)
-
-            drdb.check_for_large_numbers(
-                self.scale,
-                'DADO get_update first else body at round ' + str(self.num_rounds),
-                'scale')
+        drdb.check_for_large_numbers(
+            self.second_moment,
+            'DADO get_update first else body at round ' + str(self.num_rounds),
+            'second_moment')
         #print 'Inside DADO updating search direction'
         # Update search direction
         denom = (1 - self.beta1**(self.num_rounds))
@@ -133,8 +108,8 @@ class DiagonalAdamOptimizer:
             'denom',
             exponent=-2)
 
-        self.search_direction = np.copy(ou.get_avg_search_direction(
-            self.search_direction, 
+        self.first_moment = np.copy(ou.get_avg_first_moment(
+            self.first_moment, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
@@ -142,14 +117,14 @@ class DiagonalAdamOptimizer:
             beta=self.beta1)) / denom
 
         drdb.check_for_large_numbers(
-            self.search_direction,
+            self.first_moment,
             'DADO get_update at round ' + str(self.num_rounds),
-            'search_direction')
+            'first_moment')
         #print 'Inside DADO getting mirror update'
         mirror_update = ou.get_mirror_update(
             parameters, 
             eta, 
-            self.search_direction, 
+            self.first_moment, 
             self._get_dual, 
             self._get_primal)
 
@@ -170,7 +145,7 @@ class DiagonalAdamOptimizer:
 
         #print 'Inside DADO._get_dual computing H'
         # Get the dual transformation
-        H = self.scale + self.delta
+        H = get_safe_power(self.second_moment + self.delta, 0.5)
 
         drdb.check_for_large_numbers(
             H,
@@ -202,7 +177,7 @@ class DiagonalAdamOptimizer:
         #print 'Computing transformation back to primal space'
 
         # Get the primal transformation
-        H_inv = get_safe_power(self.scale + self.delta, -1)
+        H_inv = get_safe_power(self.second_moment + self.delta, -0.5)
             
         drdb.check_for_large_numbers(
             H_inv,
@@ -218,13 +193,13 @@ class DiagonalAdamOptimizer:
         return {
             'delta': self.delta,
             'lower': self.lower,
-            'scale': self.scale,
+            'second_moment': self.second_moment,
             'alpha1': self.alpha1,
             'beta1': self.beta1,
             'alpha2': self.alpha2,
             'beta2': self.beta2,
             'dual_avg': self.dual_avg,
-            'grad': self.search_direction,
+            'grad': self.first_moment,
             'verbose': self.verbose,
             'num_rounds': self.num_rounds}
 
@@ -242,9 +217,6 @@ class FullAdamOptimizer:
         self.dual_avg = dual_avg
         self.delta = delta
         self.verbose = verbose
-
-        self.G = None
-        self.scale = None
 
         if dual_avg and beta1 is not None:
             raise ValueError(
@@ -265,7 +237,8 @@ class FullAdamOptimizer:
             self.alpha2 = 1 - beta2
 
         self.beta2 = beta2
-        self.search_direction = None
+        self.first_moment = None
+        self.second_moment = None
         self.num_rounds = 0
 
     def get_update(self, parameters, gradient, eta):
@@ -273,23 +246,21 @@ class FullAdamOptimizer:
         self.num_rounds += 1
 
         # Update step sizes
-        if self.scale is None:
-            self.G = np.dot(gradient, gradient.T)
+        if self.second_moment is None:
+            self.second_moment = np.dot(gradient, gradient.T)
         else:
-            new_G = np.dot(gradient, gradient.T)
+            new_second_moment = np.dot(gradient, gradient.T)
             denom = (1 - self.beta2**(self.num_rounds))
-            self.G = get_ma(
-                self.G, 
-                new_G, 
+            self.second_moment = get_ma(
+                self.second_moment, 
+                new_second_moment, 
                 self.alpha2, 
                 self.beta2) / denom
 
-        self.scale = get_svd_power(self.G, 0.5)
-
         # Update gradient
         denom = (1 - self.beta1**(self.num_rounds))
-        self.search_direction = np.copy(ou.get_avg_search_direction(
-            self.search_direction, 
+        self.first_moment = np.copy(ou.get_avg_first_moment(
+            self.first_moment, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
@@ -299,15 +270,15 @@ class FullAdamOptimizer:
         return ou.get_mirror_update(
             parameters, 
             eta, 
-            self.search_direction, 
+            self.first_moment, 
             self._get_dual, 
             self._get_primal)
 
     def _get_dual(self, parameters):
 
         # Get the dual transformation
-        pd_help = self.delta * np.identity(self.scale.shape[0])
-        H = self.scale + pd_help
+        pd_help = self.delta * np.identity(self.second_moment.shape[0])
+        H = get_svd_power(self.second_moment + pd_help, 0.5)
 
         return np.dot(H, parameters)
 
@@ -325,8 +296,8 @@ class FullAdamOptimizer:
                     dual_update, lower=self.lower) 
 
         # Get the primal transformation
-        pd_help = self.delta * np.identity(self.scale.shape[0])
-        H_inv = get_svd_power(self.scale + pd_help, -1)
+        pd_help = self.delta * np.identity(self.second_moment.shape[0])
+        H_inv = get_svd_power(self.second_moment + pd_help, -0.5)
 
         return np.dot(H_inv, dual_update)
 
@@ -335,13 +306,12 @@ class FullAdamOptimizer:
         return {
             'delta': self.delta,
             'lower': self.lower,
-            'G': self.G,
-            'scale': self.scale,
+            'second_moment': self.second_moment,
             'alpha1': self.alpha1,
             'beta1': self.beta1,
             'alpha2': self.alpha2,
             'beta2': self.beta2,
             'dual_avg': self.dual_avg,
-            'search_direction': self.search_direction,
+            'first_moment': self.first_moment,
             'verbose': self.verbose,
             'num_rounds': self.num_rounds}

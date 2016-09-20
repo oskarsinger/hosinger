@@ -9,7 +9,7 @@ def get_avg_search_direction(
     alpha=1,
     beta=0):
 
-    search_direction = new
+    search_direction = None
 
     if old is not None:
         if dual_avg:
@@ -18,6 +18,8 @@ def get_avg_search_direction(
         else:
             search_direction = da.get_moving_avg(
                 old, new, alpha, beta)
+    else:
+        search_direction = alpha * new
 
     return search_direction
 
