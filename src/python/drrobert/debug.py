@@ -66,7 +66,7 @@ def check_for_large_numbers(
     loc_string,
     var_name,
     raise_error=True,
-    exponent=3):
+    exponent=5):
 
     try:
         large_pos = variable > 10**(exponent)
