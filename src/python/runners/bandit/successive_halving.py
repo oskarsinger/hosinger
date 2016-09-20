@@ -68,12 +68,12 @@ class FiniteSuccessiveHalvingRunner:
                                for l in keys[begin:end]}
 
                     for l in current.keys():
-                        #print '\tStarting parallel experiment', l
+                        print '\tStarting parallel experiment', l
                         current[l] = p.apply_async(
                             _get_arm_update, (self.arms[l], data))
 
                     for (l, r) in current.items():
-                        #print '\tRetreiving results of parallel experiment', l
+                        print '\tRetreiving results of parallel experiment', l
                         (parameters, l_losses) = unzip(r.get())
 
                         losses[l] += sum(l_losses) / len(l_losses)
