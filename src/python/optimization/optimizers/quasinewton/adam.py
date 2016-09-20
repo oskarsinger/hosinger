@@ -57,50 +57,20 @@ class DiagonalAdamOptimizer:
         if self.second_moment is None:
             self.second_moment = np.zeros_like(gradient)
 
-        drdb.check_for_large_numbers(
-            parameters,
-            'DADO get_update at round ' + str(self.num_rounds),
-            'parameters')
-        drdb.check_for_large_numbers(
-            gradient,
-            'DADO get_update at round ' + str(self.num_rounds),
-            'gradient')
-
         #print 'Inside DADO computing new'
         new = get_safe_power(gradient, 2)
 
-        """
         drdb.check_for_large_numbers(
             new,
             'DADO get_update first else body at round ' + str(self.num_rounds),
             'new')
-        """
         #print 'Inside DADO computing total'
         denom = (1 - self.beta2**(self.num_rounds))
-
-        drdb.check_for_small_numbers(
-            np.array([denom]),
-            'DADO get_update first else body at round ' + str(self.num_rounds),
-            'denom',
-            exponent=-2)
-
-        unnormed_total = get_ma(
+        self.second_moment = np.copy(get_ma(
             self.second_moment, 
             new, 
             self.alpha2, 
-            self.beta2)
-
-        drdb.check_for_large_numbers(
-            unnormed_total,
-            'DADO get_update first else body at round ' + str(self.num_rounds),
-            'unnormed_total')
-
-        normed = lambda: unnormed_total / denom
-
-        drdb.handle_runtime_warning(
-            normed, 'Denom: ' + str(denom))
-
-        self.second_moment = normed()
+            self.beta2)) / denom
 
         drdb.check_for_large_numbers(
             self.second_moment,
@@ -109,13 +79,6 @@ class DiagonalAdamOptimizer:
         #print 'Inside DADO updating search direction'
         # Update search direction
         denom = (1 - self.beta1**(self.num_rounds))
-
-        drdb.check_for_small_numbers(
-            np.array([denom]),
-            'DADO get_update at round ' + str(self.num_rounds),
-            'denom',
-            exponent=-2)
-
         self.first_moment = np.copy(ou.get_avg_search_direction(
             self.first_moment, 
             gradient, 
