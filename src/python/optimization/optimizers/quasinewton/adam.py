@@ -51,6 +51,12 @@ class DiagonalAdamOptimizer:
 
         self.num_rounds += 1
 
+        if self.first_moment is None:
+            self.first_moment = np.zeros_like(gradient)
+
+        if self.second_moment is None:
+            self.second_moment = np.zeros_like(gradient)
+
         drdb.check_for_large_numbers(
             parameters,
             'DADO get_update at round ' + str(self.num_rounds),
@@ -245,17 +251,20 @@ class FullAdamOptimizer:
 
         self.num_rounds += 1
 
-        # Update step sizes
+        if self.first_moment is None:
+            self.first_moment = np.zeros_like(gradient)
+
         if self.second_moment is None:
-            self.second_moment = np.dot(gradient, gradient.T)
-        else:
-            new_second_moment = np.dot(gradient, gradient.T)
-            denom = (1 - self.beta2**(self.num_rounds))
-            self.second_moment = get_ma(
-                self.second_moment, 
-                new_second_moment, 
-                self.alpha2, 
-                self.beta2) / denom
+            self.second_moment = np.zeros_like(gradient)
+
+        # Update step sizes
+        new_second_moment = np.dot(gradient, gradient.T)
+        denom = (1 - self.beta2**(self.num_rounds))
+        self.second_moment = get_ma(
+            self.second_moment, 
+            new_second_moment, 
+            self.alpha2, 
+            self.beta2) / denom
 
         # Update gradient
         denom = (1 - self.beta1**(self.num_rounds))
