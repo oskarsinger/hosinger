@@ -99,6 +99,12 @@ class DiagonalAdamOptimizer:
                 new, 
                 self.alpha2, 
                 self.beta2)
+
+            drdb.check_for_large_numbers(
+                unnormed_total,
+                'DADO get_update first else body at round ' + str(self.num_rounds),
+                'unnormed_total')
+
             normed = lambda: unnormed_total / denom
 
             drdb.handle_runtime_warning(
