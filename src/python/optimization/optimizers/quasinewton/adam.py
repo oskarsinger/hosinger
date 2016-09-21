@@ -65,17 +65,21 @@ class DiagonalAdamOptimizer:
             'DADO get_update first else body at round ' + str(self.num_rounds),
             'new_second_moment')
         #print 'Inside DADO computing total'
-        denom = (1 - self.beta2**(self.num_rounds))
-        print 'Second moment before update', self.second_moment
-        print 'Beta2', self.beta2, 'alpha2', self.alpha2
-        print 'gradient', gradient
-        print 'new_second_moment', new_second_moment
-        self.second_moment = get_ma(
+        #print 'Second moment before update', self.second_moment
+        #print 'Beta2', self.beta2, 'alpha2', self.alpha2
+        #print 'gradient', gradient
+        #print 'new_second_moment', new_second_moment
+        self.second_moment = np.copy(get_ma(
             self.second_moment, 
             new_second_moment, 
             self.alpha2, 
-            self.beta2) #/ denom
-        print 'Second moment after update', self.second_moment
+            self.beta2)) 
+
+        denom = (1 - self.beta2**(self.num_rounds))
+
+        if not denom == 0:
+            self.second_moment /= denom
+        #print 'Second moment after update', self.second_moment
 
         drdb.check_for_large_numbers(
             self.second_moment,
@@ -83,14 +87,18 @@ class DiagonalAdamOptimizer:
             'second_moment')
         #print 'Inside DADO updating search direction'
         # Update search direction
-        denom = (1 - self.beta1**(self.num_rounds))
         self.first_moment = np.copy(ou.get_avg_search_direction(
             self.first_moment, 
             gradient, 
             self.dual_avg, 
             self.num_rounds,
             alpha=self.alpha1,
-            beta=self.beta1)) #/ denom
+            beta=self.beta1))
+
+        denom = (1 - self.beta1**(self.num_rounds))
+
+        if not denom == 0:
+            self.first_moment /= denom
 
         drdb.check_for_large_numbers(
             self.first_moment,
@@ -229,15 +237,18 @@ class FullAdamOptimizer:
 
         # Update second moment estimate
         new_second_moment = np.dot(gradient, gradient.T)
-        denom = (1 - self.beta2**(self.num_rounds))
-        self.second_moment = get_ma(
+        self.second_moment = np.copy(get_ma(
             self.second_moment, 
             new_second_moment, 
             self.alpha2, 
-            self.beta2) / denom
+            self.beta2))
+
+        denom = (1 - self.beta2**(self.num_rounds))
+
+        if not denom == 0:
+            self.second_moment /= denom
 
         # Update first moment estimate
-        denom = (1 - self.beta1**(self.num_rounds))
         self.first_moment = np.copy(ou.get_avg_search_direction(
             self.first_moment, 
             gradient, 
@@ -245,6 +256,11 @@ class FullAdamOptimizer:
             self.num_rounds,
             alpha=self.alpha1,
             beta=self.beta1)) / denom
+
+        denom = (1 - self.beta1**(self.num_rounds))
+
+        if not denom == 0:
+            self.first_moment /= denom
         
         return ou.get_mirror_update(
             parameters, 

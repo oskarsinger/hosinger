@@ -50,10 +50,10 @@ def check_for_small_numbers(
             msg = mk_msg(neg_error)
 
         if msg is not None:
-            print msg
-            print str(small_pos)
-            print str(small_neg)
-            print str(variable)
+            #print msg
+            #print str(small_pos)
+            #print str(small_neg)
+            #print str(variable)
 
             if raise_error:
                 raise ValueError(
@@ -89,10 +89,10 @@ def check_for_large_numbers(
             msg = mk_msg(neg_error)
 
         if msg is not None:
-            print msg
-            print str(large_pos)
-            print str(large_neg)
-            print str(variable)
+            #print msg
+            #print str(large_pos)
+            #print str(large_neg)
+            #print str(variable)
 
             if raise_error:
                 raise ValueError(
@@ -122,8 +122,8 @@ def check_for_nan_or_inf(
             msg = mk_msg('inf')
         
         if msg is not None:
-            print msg
-            print str(variable)
+            #print msg
+            #print str(variable)
 
             if raise_error:
                 raise ValueError(
