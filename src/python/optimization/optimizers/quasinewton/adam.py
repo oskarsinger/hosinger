@@ -67,6 +67,9 @@ class DiagonalAdamOptimizer:
         #print 'Inside DADO computing total'
         denom = (1 - self.beta2**(self.num_rounds))
         print 'Second moment before update', self.second_moment
+        print 'Beta2', self.beta2, 'alpha2', self.alpha2
+        print 'gradient', gradient
+        print 'new_second_moment', new_second_moment
         self.second_moment = get_ma(
             self.second_moment, 
             new_second_moment, 
