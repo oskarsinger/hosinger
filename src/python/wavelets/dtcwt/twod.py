@@ -2,7 +2,11 @@ import numpy as np
 
 import filters
 
-def dtwavexfm2(X, nlevels, get_biort, get_qshift):
+def dtwavexfm2(
+    X, 
+    nlevels, 
+    get_biort, 
+    get_qshift):
 
     (Yl, Yh, Y_scale) = [None]*3
 
@@ -83,7 +87,10 @@ def dtwavexfm2(X, nlevels, get_biort, get_qshift):
     return (Yl, Yh, Y_scale)
 
 def dtwaveifm2(
-    Yl, Yh, biort, qshift, 
+    Yl, 
+    Yh, 
+    biort, 
+    qshift, 
     gain_mask=None):
 
     a = Yh.shape[0]
@@ -163,7 +170,11 @@ def q2c(y):
 
     return np.concatenate([p-q,p+q], axis=2)
 
-def c2q(Yh, gain_mask, indexes, level):
+def c2q(
+    Yh, 
+    gain_mask, 
+    indexes, 
+    level):
 
     w = Yh[level][:,:,indexes]
     gain = gain_mask[indexes,level]
