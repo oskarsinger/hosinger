@@ -58,19 +58,21 @@ class DiagonalAdamOptimizer:
             self.second_moment = np.zeros_like(gradient)
 
         #print 'Inside DADO computing new'
-        new = get_safe_power(gradient, 2)
+        new_second_moment = get_safe_power(gradient, 2)
 
         drdb.check_for_large_numbers(
-            new,
+            new_second_moment,
             'DADO get_update first else body at round ' + str(self.num_rounds),
-            'new')
+            'new_second_moment')
         #print 'Inside DADO computing total'
         denom = (1 - self.beta2**(self.num_rounds))
-        self.second_moment = np.copy(get_ma(
+        print 'Second moment before update', self.second_moment
+        self.second_moment = get_ma(
             self.second_moment, 
-            new, 
+            new_second_moment, 
             self.alpha2, 
-            self.beta2)) / denom
+            self.beta2) / denom
+        print 'Second moment after update', self.second_moment
 
         drdb.check_for_large_numbers(
             self.second_moment,
@@ -222,7 +224,7 @@ class FullAdamOptimizer:
         if self.second_moment is None:
             self.second_moment = np.zeros_like(gradient)
 
-        # Update step sizes
+        # Update second moment estimate
         new_second_moment = np.dot(gradient, gradient.T)
         denom = (1 - self.beta2**(self.num_rounds))
         self.second_moment = get_ma(
@@ -231,7 +233,7 @@ class FullAdamOptimizer:
             self.alpha2, 
             self.beta2) / denom
 
-        # Update gradient
+        # Update first moment estimate
         denom = (1 - self.beta1**(self.num_rounds))
         self.first_moment = np.copy(ou.get_avg_search_direction(
             self.first_moment, 
