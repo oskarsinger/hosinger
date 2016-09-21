@@ -36,7 +36,7 @@ class DiagonalAdamOptimizer:
         self.beta1 = beta1
 
         if beta2 is None:
-            beta2 = 0
+            beta2 = 1
             self.alpha2 = 1
         else:
             self.alpha2 = 1 - beta2

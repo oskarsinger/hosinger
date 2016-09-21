@@ -65,7 +65,7 @@ def check_for_large_numbers(
     variable,
     loc_string,
     var_name,
-    raise_error=True,
+    raise_error=False,
     exponent=5):
 
     try:
