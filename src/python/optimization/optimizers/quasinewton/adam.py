@@ -74,7 +74,7 @@ class DiagonalAdamOptimizer:
             self.second_moment, 
             new_second_moment, 
             self.alpha2, 
-            self.beta2) / denom
+            self.beta2) #/ denom
         print 'Second moment after update', self.second_moment
 
         drdb.check_for_large_numbers(
@@ -90,7 +90,7 @@ class DiagonalAdamOptimizer:
             self.dual_avg, 
             self.num_rounds,
             alpha=self.alpha1,
-            beta=self.beta1)) / denom
+            beta=self.beta1)) #/ denom
 
         drdb.check_for_large_numbers(
             self.first_moment,
