@@ -7,6 +7,12 @@ import numpy as np
 def run_it_all_day():
 
     X = np.random.randn(512,1)
+
+    with open('data.txt', 'w') as f:
+        X_str = '\n'.join([
+            str(x) for x in X.T[0].tolist()])
+        f.write(X_str)
+
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
     qshift_b = wdtcwt.utils.get_wavelet_basis(

@@ -52,9 +52,12 @@ def dtwavexfm(
 
     return (Yl, Yh, Y_scale)
 
+
 def dtwaveifm(
     Yl, Yh, biorthogonal, q_shift, 
     gain_mask=None):
+
+    print 'WARNING: this function is buggy, don\'t use.'
 
     a = len(Yh)
 
