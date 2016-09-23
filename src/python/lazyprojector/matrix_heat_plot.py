@@ -4,7 +4,7 @@ from math import pi
 
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
-from bokeh.palettes import Spectral10
+from bokeh.palettes import BuPu9, OrRd9
 
 from utils import get_plot_path
 
@@ -16,11 +16,12 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
-    color_scheme=Spectral10,
+    color_scheme=reversed(BuPu9),
     norm_axis=0,
     width=900,
     height=400):
 
+    # Make negative values use different color
     if not np.all(value_matrix >= 0):
         raise ValueError(
             'Elements of value_matrix must all be non-negative.')

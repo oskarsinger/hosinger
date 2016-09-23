@@ -1,4 +1,6 @@
 from wavelets import dtcwt
+from lazyprojector import plot_matrix_heat as plot_mh
+from bokeh.palettes import BuPu9
 
 class MultiviewDTCWTCCAAnalysisRunner:
 
@@ -15,17 +17,24 @@ class MultiviewDTCWTCCAAnalysisRunner:
         self.period = period
         self.max_iter = max_iter
 
+        self.num_views = len(self.servers)
         self.converged = False
         self.num_iters = 0
         self.num_rounds = 0
 
     def run(self):
 
+        (Yls, Yhs) = self._get_wavelet_transforms()
+        heat_matrices = self._get_heat_matrices(Yls, Yhs)
+        heat_plots = [
+
+    def _get_wavelet_transforms(self):
+
         data = [ds.get_data() for ds in self.servers]
         min_length = min(
             [ds.rows() for ds in self.servers])
-        Yls = []
-        Yhs = []
+        Yls = [[] for i in xrange(self.num_views)]
+        Yhs = [[] for i in xrange(self.num_views)]
         k = 0
 
         while (k + 1) * period < min_length:
@@ -33,14 +42,69 @@ class MultiviewDTCWTCCAAnalysisRunner:
             end = begin + period
             current_data = [view[begin:end,:] for view in data]
 
-            for view in current_data:
-                (Yl, Yh, Y_scale) = dtcwt.twod.dtwavexfm(
+            for (i, view) in enumerate(current_data):
+                (Yl, Yh, _) = dtcwt.twod.dtwavexfm(
                     view, 
                     self.nlevels, 
                     self.get_biort, 
                     self.get_qshift)
                      
-                Yls.append(Yl)
-                Yhs.append(Yh)
+                Yls[i].append(Yl)
+                Yhs[i].append(Yh)
 
             k += 1
+
+        return (Yls, Yhs)
+
+    def _get_heat_matrices(self, Yls, Yhs):
+
+        heat_matrices = [frozenset([i,j]):
+                         None
+                         for i in xrange(self.num_views) 
+                         for j in xrange(i, self.num_views-1)]
+
+        for i in xrange(self.num_views):
+            Yl_i = Yls[i]
+            Yh_i = Yhs[i]
+
+            for j in xrange(i, self.num_views-1):
+                Yl_j = Yls[j]
+                Yh_j = Yhs[j]
+
+                # Make the heat matrix for Yh_i vs Yh_j
+                min_length = min(
+                    [item.size[0] for item in Yh_j] +
+                    [item.size[0] for item in Yh_i])
+
+                Yh_i_matrix = self._trunc_and_concat(
+                    Yh_i, min_length)
+                Yh_j_matrix = self._trunc_and_concat(
+                    Yh_j, min_length)
+                ij_heat_matrix = np.dot(Yh_i_matrix.T, Yh_j_matrix)
+
+                heat_matrices[frozenset([i,j])] = ij_heat_matrix
+
+        return heat_matrices
+
+    def _get_matrix_heat_plot(self, heat_matrix):
+
+        x_labels = 'Something'
+        y_labels = 'Something'
+        title = 'Something'
+        x_name = 'Something'
+        y_name = 'Something'
+        val_name = 'Something'
+        p = plot_matrix_heat(
+            heat_matrix,
+            x_labels,
+            y_labels,
+            title,
+            x_name,
+            y_name,
+            val_name)
+
+    def _trunc_and_concat(self, Yh, min_length):
+
+        truncd = [item[:min_length,:] for item in Yh]
+
+        return np.hstack(truncd)
