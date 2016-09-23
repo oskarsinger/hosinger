@@ -35,6 +35,7 @@ class MultiviewDTCWTCCAAnalysisRunner:
         heat_matrices = self._get_heat_matrices(Yls, Yhs)
         heat_plots = {k : self._get_matrix_heat_plots(hm)
                       for (k, hm) in heat_matrices.items()}
+        # TODO: do something with these plots; show them eventually
 
         # Do real-valued CCA analysis
         # This should just require taking magnitude of Yhs, then proceeding as usual
@@ -56,6 +57,7 @@ class MultiviewDTCWTCCAAnalysisRunner:
             current_data = [view[begin:end,:] for view in data]
 
             for (i, view) in enumerate(current_data):
+                # TODO: test twod wavelet encoding stuff
                 (Yl, Yh, _) = dtcwt.twod.dtwavexfm(
                     view, 
                     self.nlevels, 
