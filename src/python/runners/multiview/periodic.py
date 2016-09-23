@@ -1,6 +1,10 @@
+import numpy as np
+import spancca as scca
+
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat as plot_mh
 from bokeh.palettes import BuPu9
+from sklearn.cross_decomposition import CCA
 
 class MultiviewDTCWTCCAAnalysisRunner:
 
@@ -24,9 +28,18 @@ class MultiviewDTCWTCCAAnalysisRunner:
 
     def run(self):
 
+        # TODO: understand the meaning behind Yls and Yhs
         (Yls, Yhs) = self._get_wavelet_transforms()
+
+        # Get heat plots
         heat_matrices = self._get_heat_matrices(Yls, Yhs)
-        heat_plots = [
+        heat_plots = {k : self._get_matrix_heat_plots(hm)
+                      for (k, hm) in heat_matrices.items()}
+
+        # Do real-valued CCA analysis
+        # This should just require taking magnitude of Yhs, then proceeding as usual
+        
+        # Do complex-valued CCA analysis
 
     def _get_wavelet_transforms(self):
 
@@ -86,15 +99,16 @@ class MultiviewDTCWTCCAAnalysisRunner:
 
         return heat_matrices
 
-    def _get_matrix_heat_plot(self, heat_matrix):
+    def _get_matrix_heat_plots(self, heat_matrix, i, j):
 
-        x_labels = 'Something'
-        y_labels = 'Something'
-        title = 'Something'
-        x_name = 'Something'
-        y_name = 'Something'
-        val_name = 'Something'
-        p = plot_matrix_heat(
+        (n, p) = heat_matrix.shape
+        x_labels = ['2^' + str(-i) for i in xrange(p)]
+        y_labels = ['2^' + str(-i) for i in xrange(n)]
+        title = 'Correlation of two views by decimation level'
+        x_name = str(j) + ' decimation level'
+        y_name = str(i) + ' decimation level'
+        val_name = 'correlation'
+        ps = plot_matrix_heat(
             heat_matrix,
             x_labels,
             y_labels,
@@ -102,6 +116,8 @@ class MultiviewDTCWTCCAAnalysisRunner:
             x_name,
             y_name,
             val_name)
+
+        return ps
 
     def _trunc_and_concat(self, Yh, min_length):
 

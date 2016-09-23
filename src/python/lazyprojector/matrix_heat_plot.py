@@ -1,12 +1,11 @@
 import numpy as np
 
 from math import pi
-
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
 from bokeh.palettes import BuPu9, OrRd9
-
 from utils import get_plot_path
+import linal.utils.misc as lum
 
 def plot_matrix_heat(
     value_matrix,
@@ -16,34 +15,45 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
-    color_scheme=reversed(BuPu9),
+    pos_color_scheme=reversed(BuPu9),
+    neg_color_scheme=reversed(OrRd9),
     norm_axis=0,
     width=900,
     height=400):
 
-    # Make negative values use different color
-    if not np.all(value_matrix >= 0):
-        raise ValueError(
-            'Elements of value_matrix must all be non-negative.')
+    value_matrices = None
+    ps = {}
 
-    source = _populate_data_source(
-        value_matrix, 
-        x_labels, 
-        y_labels,
-        norm_axis,
-        color_scheme)
-    p = _initialize_figure(
-        source,
-        width,
-        height,
-        title,
-        x_labels,
-        y_labels,
-        x_name,
-        y_name,
-        val_name)
+    if np.any(np.iscomplex(value_matrix)):
+        value_matrices = {
+            'real': np.real(value_matrix),
+            'imag': np.imag(value_matrix)}
+    else:
+        value_matrices = {
+            'real': np.real(value_matrix)}
 
-    return p
+    for k, matrix in value_matrices.items():
+        source = _populate_data_source(
+            value_matrix, 
+            x_labels, 
+            y_labels,
+            norm_axis,
+            pos_color_scheme,
+            neg_color_scheme)
+        p = _initialize_figure(
+            source,
+            width,
+            height,
+            title,
+            x_labels,
+            y_labels,
+            x_name,
+            y_name,
+            val_name)
+
+       ps[k] = p
+
+    return ps
 
 def _initialize_figure(
     source, 
@@ -89,15 +99,23 @@ def _populate_data_source(
     x_labels, 
     y_labels, 
     norm_axis,
-    color_scheme):
+    pos_color_scheme,
+    neg_color_scheme):
 
     (n, p) = value_matrix.shape
-    normalizer = np.sum(value_matrix, axis=norm_axis)
-    normed = value_matrix / normalizer \
-        if norm_axis == 0 else \
-        (value_matrix.T / normalizer).T
-    color_mat = (normed * (len(color_scheme) - 1)).astype(int)
-    get_index = lambda v: int(len(colors)*(v - (v % 0.1)))
+    pos_value_matrix = np.absolute(lum.get_thresholded(
+        value_matrix, lower=0))
+    neg_value_matrix = np.absolute(lum.get_thresholded(
+        value_matrix, upper=0))
+    pos_color_matrix = _get_color_matrix(
+        pos_value_matrix, 
+        norm_axis, 
+        len(pos_color_scheme))
+    neg_color_matrix = _get_color_matrix(
+        neg_value_matrix,
+        norm_axis,
+        len(neg_color_scheme))
+    color_matrix = pos_color_matrix + neg_color_matrix
     x_element = []
     y_element = []
     value = []
@@ -108,12 +126,33 @@ def _populate_data_source(
             x_element.append(x_labels[j])
             y_element.append(y_labels[i])
             value.append(value_matrix[i,j])
-            color.append(color_scheme[color_mat[i,j]])
+
+            value_color = None
+
+            if value[-1] >= 0:
+                value_color = pos_color_scheme[color_mat[i,j]]
+            else:
+                value_color = neg_color_scheme[color_mat[i,j]]
+
+            color.append(value_color)
 
     return ColumnDataSource(
         data=dict(
             y_element=y_element,
             x_element=x_element,
             color=color, 
-            value=value)
-    )
+            value=value))
+
+def _get_color_matrix(
+    matrix, norm_axis, num_colors):
+
+    normalizer = np.sum(
+        matrix, axis=norm_axis)
+    normed = matrix / normalizer \
+        if norm_axis == 0 else \
+        (matrix.T / normalizer).T
+
+    return (
+        normed * 
+        (num_colors - 1)
+    ).astype(int)
