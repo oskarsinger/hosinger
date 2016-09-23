@@ -29,18 +29,34 @@ class MultiviewDTCWTCCAAnalysisRunner:
     def run(self):
 
         # TODO: understand the meaning behind Yls and Yhs
+        # TODO: figure out what to do with Yls
         (Yls, Yhs) = self._get_wavelet_transforms()
 
         # Get heat plots
-        heat_matrices = self._get_heat_matrices(Yls, Yhs)
-        heat_plots = {k : self._get_matrix_heat_plots(hm)
-                      for (k, hm) in heat_matrices.items()}
-        # TODO: do something with these plots; show them eventually
+        heat_matrices = [] 
+        heat_plots = []
 
+        for period in xrange(len(Yhs[0])):
+            Yhs_period = [view[period] for view in Yhs]
+
+            heat_matrices.append(
+                self._get_heat_matrices(Yhs_period))
+            heat_plots.append(
+                {k : self._get_matrix_heat_plots(hm)
+                 for (k, hm) in heat_matrices.items()})
+
+        # What exactly am I doing CCA on? Right, the matrices of coefficients
+        # What is the output like for the 2d wavelets though. Can I still do standard CCA?
         # Do real-valued CCA analysis
         # This should just require taking magnitude of Yhs, then proceeding as usual
+
+        # Do CCA on np.real(stuff)
+
+        # Do CCA on np.imag(stuff)
         
-        # Do complex-valued CCA analysis
+        # Do complex-valued CCA
+
+        return heat_plots
 
     def _get_wavelet_transforms(self):
 
@@ -71,7 +87,7 @@ class MultiviewDTCWTCCAAnalysisRunner:
 
         return (Yls, Yhs)
 
-    def _get_heat_matrices(self, Yls, Yhs):
+    def _get_heat_matrices(self, Yhs):
 
         heat_matrices = [frozenset([i,j]):
                          None
@@ -79,11 +95,9 @@ class MultiviewDTCWTCCAAnalysisRunner:
                          for j in xrange(i, self.num_views-1)]
 
         for i in xrange(self.num_views):
-            Yl_i = Yls[i]
             Yh_i = Yhs[i]
 
             for j in xrange(i, self.num_views-1):
-                Yl_j = Yls[j]
                 Yh_j = Yhs[j]
 
                 # Make the heat matrix for Yh_i vs Yh_j
