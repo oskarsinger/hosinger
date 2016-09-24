@@ -5,18 +5,18 @@ import filters
 def dtwavexfm2(
     X, 
     nlevels, 
-    get_biort, 
-    get_qshift):
+    biorthogonal, 
+    q_shift):
 
     (Yl, Yh, Y_scale) = [None]*3
 
     (h0a, h0b, h1a, h1b, h0o, h1o) = (
-        qshift['h0a'],
-        qshift['h0b'],
-        qshift['h1a'],
-        qshift['h1b'],
-        biort['h0o'],
-        biort['h1o'])
+        q_shift['h0a'],
+        q_shift['h0b'],
+        q_shift['h1a'],
+        q_shift['h1b'],
+        biorthogonal['h0o'],
+        biorthogonal['h1o'])
 
     original_size = X.shape
 
@@ -49,9 +49,9 @@ def dtwavexfm2(
         # Do odd top-level filters on rows
         LoLo = filters.get_column_filtered(Lo, h0o).T
         Yh[0] = np.zeros([i/2 for i in LoLo.shape]+[6])
-        Yh[0][:,:,[0,5]] = q2c(get_column_filtered(Hi, h0o).T)
-        Yh[0][:,:,[2,3]] = q2c(get_column_filtered(Lo, h1o).T)
-        Yh[0][:,:,[1,4]] = q2c(get_column_filtered(Hi, h1o).T)
+        Yh[0][:,:,[0,5]] = q2c(filters.get_column_filtered(Hi, h0o).T)
+        Yh[0][:,:,[2,3]] = q2c(filters.get_column_filtered(Lo, h1o).T)
+        Yh[0][:,:,[1,4]] = q2c(filters.get_column_filtered(Hi, h1o).T)
         S = np.hstack([np.array(LoLo.shape), S])
         Y_scale[0] = np.copy(LoLo)
 
@@ -89,8 +89,8 @@ def dtwavexfm2(
 def dtwaveifm2(
     Yl, 
     Yh, 
-    biort, 
-    qshift, 
+    biorthogonal, 
+    q_shift, 
     gain_mask=None):
 
     a = Yh.shape[0]
@@ -99,12 +99,12 @@ def dtwaveifm2(
         gain_mask = np.ones(6, a)
 
     (g0a, g0b, g1a, g1b, g0o, g1o) = (
-        qshift['g0a'],
-        qshift['g0b'],
-        qshift['g1a'],
-        qshift['g1b'],
-        biort['g0o'],
-        biort['g1o'])
+        q_shift['g0a'],
+        q_shift['g0b'],
+        q_shift['g1a'],
+        q_shift['g1b'],
+        biorthogonal['g0o'],
+        biorthogonal['g1o'])
         
     current_level = a - 1;
 
@@ -165,8 +165,9 @@ def q2c(y):
     t1 = np.arange(0, sy[0], 2)
     t2 = np.arange(0, sy[1], 2)
     j2 = np.array([0.5**(0.5), 1j*0.5**(0.5)])
-    p = (y[t1,t2]*j2[0] + y[t1,t2+1]*j2[1])[:,:,np.newaxis]
-    q = (y[t1+1,t2+1]*j2[0] - y[t1+1,t2]*j2[1])[:,:,np.newaxis]
+    p = (y[t1,t2]*j2[0] + y[t1,t2+1]*j2[1])#[:,:,np.newaxis]
+    q = (y[t1+1,t2+1]*j2[0] - y[t1+1,t2]*j2[1])#[:,:,np.newaxis]
+    print p.shape, q.shape
 
     return np.concatenate([p-q,p+q], axis=2)
 

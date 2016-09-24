@@ -33,14 +33,18 @@ class MultiviewDTCWTCCAAnalysisRunner:
         (Yls, Yhs) = self._get_wavelet_transforms()
 
         # Get heat plots
+        wavelet_matrices = []
         heat_matrices = [] 
         heat_plots = []
 
         for period in xrange(len(Yhs[0])):
             Yhs_period = [view[period] for view in Yhs]
+            Yhs_matrices = [self._trunc_and_concat(Yh)
+                            for Yh_p in Yhs_period]
 
+            wavelet_matrices.append(Yhs_matrices)
             heat_matrices.append(
-                self._get_heat_matrices(Yhs_period))
+                self._get_heat_matrices(Yhs_matrices))
             heat_plots.append(
                 {k : self._get_matrix_heat_plots(hm)
                  for (k, hm) in heat_matrices.items()})
@@ -50,13 +54,13 @@ class MultiviewDTCWTCCAAnalysisRunner:
         # What exactly am I doing CCA on? Right, the matrices of coefficients
         # What is the output like for the 2d wavelets though. Can I still do standard CCA?
 
-        # Do CCA on magnitude of coefficients
+        # TODO: Do (multi-view?) CCA on magnitude of coefficients
 
-        # Do CCA on np.real(coefficients)
+        # TODO: Do CCA on np.real(coefficients)
 
-        # Do CCA on np.imag(coefficients)
+        # TODO: Do CCA on np.imag(coefficients)
         
-        # Do CCA on unmodified complex coefficients
+        # TODO: Do CCA on unmodified complex coefficients
 
         return heat_plots
 
@@ -89,33 +93,14 @@ class MultiviewDTCWTCCAAnalysisRunner:
 
         return (Yls, Yhs)
 
-    def _get_heat_matrices(self, Yhs):
+    def _get_heat_matrices(self, Yhs_matrices):
 
-        heat_matrices = [frozenset([i,j]):
-                         None
-                         for i in xrange(self.num_views) 
-                         for j in xrange(i, self.num_views-1)]
+        get_matrix = lambda i,j: np.dot(
+            Yhs_matrices[i].T, Yhs_matrices[j])
 
-        for i in xrange(self.num_views):
-            Yh_i = Yhs[i]
-
-            for j in xrange(i, self.num_views-1):
-                Yh_j = Yhs[j]
-
-                # Make the heat matrix for Yh_i vs Yh_j
-                min_length = min(
-                    [item.size[0] for item in Yh_j] +
-                    [item.size[0] for item in Yh_i])
-
-                Yh_i_matrix = self._trunc_and_concat(
-                    Yh_i, min_length)
-                Yh_j_matrix = self._trunc_and_concat(
-                    Yh_j, min_length)
-                ij_heat_matrix = np.dot(Yh_i_matrix.T, Yh_j_matrix)
-
-                heat_matrices[frozenset([i,j])] = ij_heat_matrix
-
-        return heat_matrices
+        return {frozenset([i,j]): get_matrix(i,j)
+                for i in xrange(self.num_views - 1)
+                for j in xrange(i + 1, self.num_views)}
 
     def _get_matrix_heat_plots(self, heat_matrix, i, j):
 
@@ -137,8 +122,10 @@ class MultiviewDTCWTCCAAnalysisRunner:
 
         return ps
 
-    def _trunc_and_concat(self, Yh, min_length):
+    def _trunc_and_concat(self, Yh):
 
+        min_length = min(
+            [item.shape[0] for item in Yh])
         truncd = [item[:min_length,:] for item in Yh]
 
         return np.hstack(truncd)

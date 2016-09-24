@@ -4,18 +4,22 @@ import wavelets.dtcwt as wdtcwt
 import numpy as np
 
 @click.command()
-@click.option('1d', default=True)
-@click.option('2d', default=True)
-@click.option('lenna-path', 
+@click.option('--oned', default=True)
+@click.option('--twod', default=True)
+@click.option('--lenna-path', 
     default='/home/oskar/Data/DTCWTSample/lennaX.csv')
-def run_it_all_day(1d, 2d, lenna_path):
+def run_it_all_day(
+    oned, twod, lenna_path):
+
+    oned = bool(oned)
+    twod = bool(twod)
 
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
 
-    if 1d:
+    if oned:
         X = np.random.randn(512,1)
 
         with open('data.txt', 'w') as f:
@@ -34,7 +38,7 @@ def run_it_all_day(1d, 2d, lenna_path):
         else:
             print error
 
-    if 2d:
+    if twod:
         line_list = []
 
         with open(lenna_path) as f:
@@ -42,7 +46,7 @@ def run_it_all_day(1d, 2d, lenna_path):
                 vals = l.strip().split(',')
 
                 line_list.append(
-                    [float(v) for v in values])
+                    [float(v) for v in vals])
 
         X = np.array(line_list)
         (Yl, Yh, Y_scale) = wdtcwt.twod.dtwavexfm2(
