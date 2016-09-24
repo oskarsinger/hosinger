@@ -45,16 +45,18 @@ class MultiviewDTCWTCCAAnalysisRunner:
                 {k : self._get_matrix_heat_plots(hm)
                  for (k, hm) in heat_matrices.items()})
 
+        # TODO: so many heat plots; need to design a clean way to display all of them
+
         # What exactly am I doing CCA on? Right, the matrices of coefficients
         # What is the output like for the 2d wavelets though. Can I still do standard CCA?
-        # Do real-valued CCA analysis
-        # This should just require taking magnitude of Yhs, then proceeding as usual
 
-        # Do CCA on np.real(stuff)
+        # Do CCA on magnitude of coefficients
 
-        # Do CCA on np.imag(stuff)
+        # Do CCA on np.real(coefficients)
+
+        # Do CCA on np.imag(coefficients)
         
-        # Do complex-valued CCA
+        # Do CCA on unmodified complex coefficients
 
         return heat_plots
 
