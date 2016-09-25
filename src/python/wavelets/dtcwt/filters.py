@@ -100,26 +100,33 @@ def get_column_d_filtered(X, ha, hb):
 
     m2 = int(m/2)
 
-    xe = dtcwtu.reflect(np.arange(1-m,n+m+1), 0.5, n+0.5)
+    xe = dtcwtu.reflect(np.arange(1-m,n+m), 0.5, n+0.5)
+    print 'xe\n', xe
 
     hao = ha[0:m:2]
     hae = ha[1:m:2]
     hbo = hb[0:m:2]
     hbe = hb[1:m:2]
     t = np.arange(5, n+2*m-2, 4)
+    print 't\n', t
 
     n2 = n/2
     Y = np.zeros((n2, p))
-    s2 = np.arange(0, n2, 2)
-    s1 = s2 + 1
+    begin2 = 0
+    end2 = n2
+    begin1 = 1
+    end1 = n2+1
 
     if np.sum(ha * hb) > 0:
-        s1 = np.arange(0, n2, 2)
-        s2 = s1 + 1
+        begin2 = 1
+        end2 = n2+1
+        begin1 = 0
+        end1 = n2
 
-    Y[s1,:] = conv2(X[xe[t-1],:], hao, 'valid') + \
+    print 'xe[t-1]\n', xe[t-1]
+    Y[begin1:end1:2,:] = conv2(X[xe[t-1],:], hao, 'valid') + \
         conv2(X[xe[t-3],:], hae, 'valid')
-    Y[s2,:] = conv2(X[xe[t],:], hbo, 'valid') + \
+    Y[begin2:end2:2,:] = conv2(X[xe[t],:], hbo, 'valid') + \
         conv2(X[xe[t-2],:], hbe, 'valid')
 
     return Y

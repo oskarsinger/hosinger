@@ -4,6 +4,7 @@ import os
 
 def reflect(X, minx, maxx):
 
+    print 'X', X
     Y = np.copy(X)
     t = np.nonzero(Y > maxx)
     Y[t] = 2 * maxx - Y[t]

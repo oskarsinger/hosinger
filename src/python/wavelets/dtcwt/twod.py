@@ -73,6 +73,8 @@ def dtwavexfm2(
 
             # Do even Qshift filters on columns
             LoLo = filters.get_column_d_filtered(Lo, h0b, h0a)
+            (n, p) = LoLo.shape
+            Yh[level] = np.zeros((n/2, p/2, 6))
             Yh[level][:,:,[0,5]] = q2c(
                 filters.get_column_d_filtered(Hi,h0b,h0a))
             Yh[level][:,:,[2,3]] = q2c(
@@ -165,9 +167,10 @@ def q2c(y):
     t1 = np.arange(0, sy[0], 2)
     t2 = np.arange(0, sy[1], 2)
     j2 = np.array([0.5**(0.5), 1j*0.5**(0.5)])
-    p = (y[t1,t2]*j2[0] + y[t1,t2+1]*j2[1])#[:,:,np.newaxis]
-    q = (y[t1+1,t2+1]*j2[0] - y[t1+1,t2]*j2[1])#[:,:,np.newaxis]
-    print p.shape, q.shape
+    p = (y[0:sy[0]:2, 0:sy[1]:2]*j2[0] + 
+        y[0:sy[0]:2, 1:sy[1]+1:2]*j2[1])[:,:,np.newaxis]
+    q = (y[1:sy[0]+1:2, 1:sy[1]+1:2]*j2[0] - 
+        y[1:sy[0]+1:2, 0:sy[1]:2]*j2[1])[:,:,np.newaxis]
 
     return np.concatenate([p-q,p+q], axis=2)
 
