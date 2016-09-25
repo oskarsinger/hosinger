@@ -4,7 +4,7 @@ import wavelets.dtcwt as wdtcwt
 import numpy as np
 
 @click.command()
-@click.option('--oned', default=True)
+@click.option('--oned', default=False)
 @click.option('--twod', default=True)
 @click.option('--lenna-path', 
     default='/home/oskar/Data/DTCWTSample/lennaX.csv')

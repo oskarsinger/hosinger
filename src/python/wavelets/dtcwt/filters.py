@@ -51,32 +51,38 @@ def get_column_i_filtered(X, ha, hb):
 
     if m2 % 2 == 0:
 
-        t = np.arange(3, n+m, 2)
-        ta = t - 1
-        tb = t
+        begin_b = 3
+        end_b = n + m
+        begin_a = 2
+        end_a = n + m - 1
 
         if np.sum(ha * hb) > 0:
-            ta = t
-            tb = t - 1
+            begin_b = 2
+            end_b = n + m - 1
+            begin_a = 3
+            end_a = n + m
 
-        Y[s,:] = conv2(X[xe[tb-2],:], hae, 'valid')
-        Y[s+1,:] = conv2(X[xe[ta-2],:], hbe, 'valid')
-        Y[s+2,:] = conv2(X[xe[tb],:], hao, 'valid')
-        Y[s+3,:] = conv2(X[xe[ta],:], hbo, 'valid')
+        Y[s,:] = conv2(X[xe[begin_b-2:end_b-2:2],:], hae, 'valid')
+        Y[s+1,:] = conv2(X[xe[begin_a-2:end_a-2:2],:], hbe, 'valid')
+        Y[s+2,:] = conv2(X[xe[begin_b:end_b:2],:], hao, 'valid')
+        Y[s+3,:] = conv2(X[xe[begin_a:end_a:2],:], hbo, 'valid')
     else:
 
-        t = np.arange(2, n+m-1, 2)
-        ta = t - 1
-        tb = t
+        begin_b = 2
+        end_b = n + m - 1
+        begin_a = 1
+        end_a = n + m - 2
 
         if np.sum(ha * hb) > 0:
-            ta = t
-            tb = t - 1
+            begin_a = 2
+            end_a = n + m - 1
+            begin_b = 1
+            end_b = n + m - 2
 
-        Y[s,:] = conv2(X[xe[tb],:], hao, 'valid')
-        Y[s+1,:] = conv2(X[xe[ta],:], hbo, 'valid')
-        Y[s+2,:] = conv2(X[xe[tb],:], hae, 'valid')
-        Y[s+3,:] = conv2(X[xe[ta],:], hbe, 'valid')
+        Y[s,:] = conv2(X[xe[begin_b:end_b:2],:], hao, 'valid')
+        Y[s+1,:] = conv2(X[xe[begin_a:end_a:2],:], hbo, 'valid')
+        Y[s+2,:] = conv2(X[xe[begin_b:end_b:2],:], hae, 'valid')
+        Y[s+3,:] = conv2(X[xe[begin_a:end_a:2],:], hbe, 'valid')
 
     return np.copy(Y)
 
@@ -100,15 +106,14 @@ def get_column_d_filtered(X, ha, hb):
 
     m2 = int(m/2)
 
-    xe = dtcwtu.reflect(np.arange(1-m,n+m), 0.5, n+0.5)
-    print 'xe\n', xe
+    xe = dtcwtu.reflect(np.arange(1-m,n+m+1), 0.5, n+0.5)
 
     hao = ha[0:m:2]
     hae = ha[1:m:2]
     hbo = hb[0:m:2]
     hbe = hb[1:m:2]
-    t = np.arange(5, n+2*m-2, 4)
-    print 't\n', t
+    begin_t = 5
+    end_t = n + 2*m - 2
 
     n2 = n/2
     Y = np.zeros((n2, p))
@@ -123,10 +128,9 @@ def get_column_d_filtered(X, ha, hb):
         begin1 = 0
         end1 = n2
 
-    print 'xe[t-1]\n', xe[t-1]
-    Y[begin1:end1:2,:] = conv2(X[xe[t-1],:], hao, 'valid') + \
-        conv2(X[xe[t-3],:], hae, 'valid')
-    Y[begin2:end2:2,:] = conv2(X[xe[t],:], hbo, 'valid') + \
-        conv2(X[xe[t-2],:], hbe, 'valid')
+    Y[begin1:end1:2,:] = conv2(X[xe[begin_t-1:end_t-1:4],:], hao, 'valid') + \
+            conv2(X[xe[begin_t-3:end_t-3:4],:], hae, 'valid')
+    Y[begin2:end2:2,:] = conv2(X[xe[begin_t:end_t:4],:], hbo, 'valid') + \
+            conv2(X[xe[begin_t-2:end_t-2:4],:], hbe, 'valid')
 
     return Y

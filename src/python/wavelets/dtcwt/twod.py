@@ -56,7 +56,7 @@ def dtwavexfm2(
         Y_scale[0] = np.copy(LoLo)
 
     if nlevels >= 2:
-        for level in xrange(2, nlevels+1):
+        for level in xrange(1, nlevels):
             (n, p) = LoLo.shape
 
             # Extend by 2 rows if no. of rows of LoLo are divisable by 4
@@ -68,19 +68,19 @@ def dtwavexfm2(
                 LoLo = np.vstack([LoLo[:,0], LoLo, LoLo[:,-1]]).T
 
             # Do even Qshift filters on rows
-            Lo = filters.get_column_d_filtered(LoLo, h0b, h0a)
-            Hi = filters.get_column_d_filtered(LoLo, h1b, h1a)
+            Lo = filters.get_column_d_filtered(LoLo, h0b, h0a).T
+            Hi = filters.get_column_d_filtered(LoLo, h1b, h1a).T
 
             # Do even Qshift filters on columns
             LoLo = filters.get_column_d_filtered(Lo, h0b, h0a)
             (n, p) = LoLo.shape
             Yh[level] = np.zeros((n/2, p/2, 6))
             Yh[level][:,:,[0,5]] = q2c(
-                filters.get_column_d_filtered(Hi,h0b,h0a))
+                filters.get_column_d_filtered(Hi,h0b,h0a).T)
             Yh[level][:,:,[2,3]] = q2c(
-                filters.get_column_d_filtered(Lo,h1b,h1a))
+                filters.get_column_d_filtered(Lo,h1b,h1a).T)
             Yh[level][:,:,[1,4]] = q2c(
-                filters.get_column_d_filtered(Hi,h1b,h1a))
+                filters.get_column_d_filtered(Hi,h1b,h1a).T)
             S = np.hstack([np.array(LoLo.shape), S])
             Y_scale[level] = np.copy(LoLo)
 
