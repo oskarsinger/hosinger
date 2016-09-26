@@ -13,7 +13,8 @@ import numpy as np
 class FixedRateLoader(AbstractDataLoader):
 
     def __init__(self,
-        hdf5_path, subject, sensor, seconds, reader,
+        hdf5_path, subject, sensor, reader,
+        seconds=None,
         online=False):
 
         self.hdf5_path = hdf5_path
@@ -31,8 +32,11 @@ class FixedRateLoader(AbstractDataLoader):
         dataset = repo.values()[0][self.sensor]
         key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
         self.hertz = dataset.attrs[key]
+        self.window = 1
 
-        self.window = int(self.hertz * self.seconds)
+        if self.seconds is not None: 
+            self.window = int(self.hertz * self.seconds)
+
         self.data = None
         self.on_deck_data = None
         self.num_rounds = 0

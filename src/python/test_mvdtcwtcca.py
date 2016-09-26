@@ -21,7 +21,7 @@ def run_it_all_day(center, period):
     loaders = dles.get_changing_e4_loaders(
         '/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5',
         'HRV15-005',
-        1,
+        None,
         False)
     servers = [BS(dl, center=center) for dl in loaders]
     runner = MVCCADTCWTRunner(

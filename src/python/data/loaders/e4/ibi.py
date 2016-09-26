@@ -11,7 +11,8 @@ import numpy as np
 class IBILoader(AbstractDataLoader):
 
     def __init__(self,
-        hdf5_path, subject, sensor, seconds, reader,
+        hdf5_path, subject, sensor, reader,
+        seconds=None,
         online=False):
 
         self.hdf5_path = hdf5_path
@@ -21,6 +22,8 @@ class IBILoader(AbstractDataLoader):
         self.seconds = seconds
         self.online = online
         self.num_sessions = len(self._get_hdf5_repo())
+
+        # TODO: figure out what to do when seconds == None
 
         self.data = None
         self.num_rounds = 0

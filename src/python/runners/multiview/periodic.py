@@ -80,8 +80,7 @@ class MVCCADTCWTRunner:
             current_data = [view[begin:end,:] for view in data]
 
             for (i, view) in enumerate(current_data):
-                # TODO: test twod wavelet encoding stuff
-                (Yl, Yh, _) = dtcwt.twod.dtwavexfm2(
+                (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                     view, 
                     self.nlevels, 
                     self.biorthogonal, 
