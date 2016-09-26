@@ -37,10 +37,10 @@ def dtwavexfm(
         for level in range(1, nlevels):
 
             if Lo.shape[0] % 4 > 0:
-                Lo = np.vstack(
+                Lo = np.vstack([
                     np.copy(Lo[0,:]), 
                     np.copy(Lo), 
-                    np.copy(Lo[-1,:])).T
+                    np.copy(Lo[-1,:])])
 
             Hi = filters.get_column_d_filtered(Lo, h1b, h1a)
             Lo = filters.get_column_d_filtered(Lo, h0b, h0a)

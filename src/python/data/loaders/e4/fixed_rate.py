@@ -36,6 +36,8 @@ class FixedRateLoader(AbstractDataLoader):
 
         if self.seconds is not None: 
             self.window = int(self.hertz * self.seconds)
+        else:
+            self.seconds = 1.0 / self.hertz
 
         self.data = None
         self.on_deck_data = None

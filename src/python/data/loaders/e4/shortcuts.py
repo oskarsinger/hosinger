@@ -8,11 +8,11 @@ def get_e4_loaders(hdf5_path, subject, seconds, online):
     fac = fn.get_fields_as_columns
 
     return [
-        FRL(hdf5_path, subject, 'EDA', seconds, fac, online=online),
-        FRL(hdf5_path, subject, 'TEMP', seconds, fac, online=online),
-        FRL(hdf5_path, subject, 'ACC', seconds, mag, online=online),
-        FRL(hdf5_path, subject, 'BVP', seconds, fac, online=online),
-        FRL(hdf5_path, subject, 'HR', seconds, fac, online=online)]
+        FRL(hdf5_path, subject, 'EDA', fac, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'TEMP', fac, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'ACC',  mag, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'BVP', fac, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
 
 def get_changing_e4_loaders(hdf5_path, subject, seconds, online):
 
@@ -20,10 +20,10 @@ def get_changing_e4_loaders(hdf5_path, subject, seconds, online):
     fac = fn.get_fields_as_columns
 
     return [
-        FRL(hdf5_path, subject, 'ACC', seconds, mag, online=online),
-        #IBI(hdf5_path, subject, 'IBI', seconds, fac, online=online),
-        FRL(hdf5_path, subject, 'BVP', seconds, fac, online=online),
-        FRL(hdf5_path, subject, 'HR', seconds, fac, online=online)]
+        FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
+        #IBI(hdf5_path, subject, 'IBI', fac, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'BVP', fac, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
 
 def get_hr_and_acc(hdf5_path, subject, seconds, online):
 
@@ -31,5 +31,5 @@ def get_hr_and_acc(hdf5_path, subject, seconds, online):
     fac = fn.get_fields_as_columns
 
     return [
-        FRL(hdf5_path, subject, 'ACC', seconds, mag, online=online),
-        FRL(hdf5_path, subject, 'HR', seconds, fac, online=online)]
+        FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
+        FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
