@@ -13,15 +13,13 @@ class MVCCADTCWTRunner:
         qshift,
         nlevels,
         servers, 
-        period, 
-        max_iter):
+        period):
 
-        self.biorthogonal
-        self.qshift
-        self.model = model
+        self.biorthogonal = biorthogonal
+        self.qshift = qshift
+        self.nlevels = nlevels
         self.servers = servers
         self.period = period
-        self.max_iter = max_iter
 
         self.num_views = len(self.servers)
         self.converged = False
@@ -41,7 +39,7 @@ class MVCCADTCWTRunner:
 
         for period in xrange(len(Yhs[0])):
             Yhs_period = [view[period] for view in Yhs]
-            Yhs_matrices = [self._trunc_and_concat(Yh)
+            Yhs_matrices = [self._trunc_and_concat(Yh, Yl)
                             for Yh_p in Yhs_period]
 
             wavelet_matrices.append(Yhs_matrices)
@@ -71,18 +69,19 @@ class MVCCADTCWTRunner:
         data = [ds.get_data() for ds in self.servers]
         min_length = min(
             [ds.rows() for ds in self.servers])
+        print min_length
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
 
-        while (k + 1) * period < min_length:
-            begin = k * period
-            end = begin + period
+        while (k + 1) * self.period < min_length:
+            begin = k * self.period
+            end = begin + self.period
             current_data = [view[begin:end,:] for view in data]
 
             for (i, view) in enumerate(current_data):
                 # TODO: test twod wavelet encoding stuff
-                (Yl, Yh, _) = dtcwt.twod.dtwavexfm(
+                (Yl, Yh, _) = dtcwt.twod.dtwavexfm2(
                     view, 
                     self.nlevels, 
                     self.biorthogonal, 
@@ -124,10 +123,11 @@ class MVCCADTCWTRunner:
 
         return ps
 
-    def _trunc_and_concat(self, Yh):
+    def _trunc_and_concat(self, Yh, Yl):
 
+        hi_and_lo = Yh + [Yl]
         min_length = min(
-            [item.shape[0] for item in Yh])
-        truncd = [item[:min_length,:] for item in Yh]
+            [item.shape[0] for item in hi_and_lo])
+        truncd = [item[:min_length,:] for item in hi_and_lo]
 
         return np.hstack(truncd)

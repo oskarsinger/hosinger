@@ -75,11 +75,18 @@ class FixedRateLoader(AbstractDataLoader):
         repo = self._get_hdf5_repo()
 
         for (ts, session) in repo.items():
+            new_data = self._get_rows(ts, session)
+
             if data is None:
-                data = self._get_rows(session)
-            else:
+                data = new_data
+            elif self.on_deck_data is not None:
                 data = np.vstack(
-                    [data, self._get_rows(session)])
+                    [data, self.on_deck_data])
+
+                self.on_deck_data = None
+            else:
+                    data = np.vstack(
+                        [data, new_data])
 
         self.data = data
 

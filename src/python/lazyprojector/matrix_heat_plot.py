@@ -51,7 +51,7 @@ def plot_matrix_heat(
             y_name,
             val_name)
 
-       ps[k] = p
+        ps[k] = p
 
     return ps
 

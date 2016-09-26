@@ -67,12 +67,15 @@ def dtwavexfm2(
             if p % 4 > 0:
                 LoLo = np.vstack([LoLo[:,0], LoLo, LoLo[:,-1]]).T
 
+            print LoLo.shape
+
             # Do even Qshift filters on rows
             Lo = filters.get_column_d_filtered(LoLo, h0b, h0a).T
             Hi = filters.get_column_d_filtered(LoLo, h1b, h1a).T
 
             # Do even Qshift filters on columns
-            LoLo = filters.get_column_d_filtered(Lo, h0b, h0a)
+            LoLo = filters.get_column_d_filtered(Lo, h0b, h0a).T
+            print LoLo.shape
             (n, p) = LoLo.shape
             Yh[level] = np.zeros((n/2, p/2, 6))
             Yh[level][:,:,[0,5]] = q2c(
