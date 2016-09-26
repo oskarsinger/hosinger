@@ -6,16 +6,18 @@ from lazyprojector import plot_matrix_heat as plot_mh
 from bokeh.palettes import BuPu9
 from sklearn.cross_decomposition import CCA
 
-class MultiviewDTCWTCCAAnalysisRunner:
+class MVCCADTCWTRunner:
 
     def __init__(self, 
-        get_biort,
-        get_qshift,
+        biorthogonal,
+        qshift,
         nlevels,
         servers, 
         period, 
         max_iter):
 
+        self.biorthogonal
+        self.qshift
         self.model = model
         self.servers = servers
         self.period = period
@@ -83,8 +85,8 @@ class MultiviewDTCWTCCAAnalysisRunner:
                 (Yl, Yh, _) = dtcwt.twod.dtwavexfm(
                     view, 
                     self.nlevels, 
-                    self.get_biort, 
-                    self.get_qshift)
+                    self.biorthogonal, 
+                    self.qshift)
                      
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
