@@ -5,6 +5,7 @@ from math import pi
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
 from bokeh.palettes import YlGn9, OrRd9
+from bokeh.models.layouts import Column
 from utils import get_plot_path
 
 def plot_matrix_heat(
@@ -22,7 +23,7 @@ def plot_matrix_heat(
     height=400):
 
     value_matrices = None
-    ps = {}
+    ps = []
 
     if np.any(np.iscomplex(value_matrix)):
         value_matrices = {
@@ -51,9 +52,9 @@ def plot_matrix_heat(
             y_name,
             val_name)
 
-        ps[k] = p
+        ps.append(p)
 
-    return ps
+    return Column(*ps)
 
 def _initialize_figure(
     source, 
@@ -147,17 +148,15 @@ def _get_color_matrix(
     matrix, norm_axis, num_colors):
 
     if norm_axis is None:
-        normalizer = np.sum(matrix)
+        normalizer = np.max(matrix)
     else:
-        normalizer = np.sum(
+        normalizer = np.max(
             matrix, axis=norm_axis)
         normalizer[normalizer == 0] = 1
 
     normed = matrix / normalizer \
         if norm_axis == 0 else \
         (matrix.T / normalizer).T
+    pre_truncd = normed * (num_colors - 1)
 
-    return (
-        normed * 
-        (num_colors - 1)
-    ).astype(int)
+    return pre_truncd.astype(int)

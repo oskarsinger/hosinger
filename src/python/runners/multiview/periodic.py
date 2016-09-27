@@ -1,9 +1,13 @@
+import os
+
 import numpy as np
 import spancca as scca
 
+from drrobert.file_io import get_timestamped as get_ts
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9
+from bokeh.plotting import output_file
 from sklearn.cross_decomposition import CCA
 from math import log
 
@@ -13,12 +17,14 @@ class MVCCADTCWTRunner:
         biorthogonal,
         qshift,
         servers, 
-        period):
+        period,
+        plot_path='.'):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.servers = servers
         self.period = period
+        self.plot_path = plot_path
 
         self.num_views = len(self.servers)
         self.converged = False
@@ -95,24 +101,29 @@ class MVCCADTCWTRunner:
         get_matrix = lambda i,j: np.dot(
             Yhs_matrices[i].T, Yhs_matrices[j])
 
-        return {frozenset([i,j]): get_matrix(i,j)
+        return {frozenset([i,j]): self._get_matrix(i, j, Yhs_matrices)
                 for i in xrange(self.num_views - 1)
                 for j in xrange(i + 1, self.num_views)}
+
+    def _get_matrix(self, i, j, Yhs_matrices):
+
+        matrix = np.dot(Yhs_matrices[i].T, Yhs_matrices[j])
+
+        return matrix
 
     def _get_matrix_heat_plots(self, heat_matrix, key):
 
         # TODO: figure out how to get ordered key
-        print key
         (i,j) = tuple(key)
         names = [ds.name() for ds in self.servers]
         (n, p) = heat_matrix.shape
-        x_labels = ['2^' + str(-i) for k in xrange(p)]
-        y_labels = ['2^' + str(-i) for k in xrange(n)]
+        x_labels = ['2^' + str(-k) for k in xrange(p)]
+        y_labels = ['2^' + str(-k) for k in xrange(n)]
         title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '  by decimation level'
         x_name = 'decimation level'
         y_name = 'decimation level'
         val_name = 'correlation'
-        ps = plot_matrix_heat(
+        p = plot_matrix_heat(
             heat_matrix,
             x_labels,
             y_labels,
@@ -121,7 +132,14 @@ class MVCCADTCWTRunner:
             y_name,
             val_name)
 
-        return ps
+        filename = get_ts(
+            'correlation_of_wavelet_coefficients_' +
+            names[i] + '_' + names[j]) + '.html'
+        filepath = os.path.join(self.plot_path, filename)
+        output_file(filepath, 'correlation_of_wavelet_coefficients_' +
+            names[i] + '_' + names[j])
+
+        return p
 
     def _trunc_and_concat(self, Yh, Yl):
 

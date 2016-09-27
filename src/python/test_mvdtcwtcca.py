@@ -32,9 +32,9 @@ def run_it_all_day(center, period):
         period)
     heat_plots = runner.run()
 
-    for period in heat_plots:
-        for (view_pair, plot_pair) in period.items():
-            show(Column(*plot_pair.values()))
+    for period in heat_plots[:2]:
+        for (view_pair, plot) in period.items():
+            show(plot)
 
 if __name__=='__main__':
     run_it_all_day()
