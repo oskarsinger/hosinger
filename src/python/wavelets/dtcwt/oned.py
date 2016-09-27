@@ -29,8 +29,8 @@ def dtwavexfm(
     j = 1j
     Hi = filters.get_column_filtered(X, h1o)
     Lo = filters.get_column_filtered(X, h0o)
-    t = np.arange(0, Hi.shape[0], 2)
-    Yh[0] = Hi[t,:] + j * Hi[t+1,:]
+    end = Hi.shape[0]
+    Yh[0] = Hi[0:end:2,:] + j * Hi[1:end+1:2,:]
     Y_scale[0] = np.copy(Lo)
 
     if nlevels >= 2:
@@ -44,8 +44,8 @@ def dtwavexfm(
 
             Hi = filters.get_column_d_filtered(Lo, h1b, h1a)
             Lo = filters.get_column_d_filtered(Lo, h0b, h0a)
-            t = np.arange(0, Hi.shape[0], 2)
-            Yh[level] = Hi[t,:] + j * Hi[t+1,:]
+            end = Hi.shape[0]
+            Yh[level] = Hi[0:end:2,:] + j * Hi[1:end+1:2,:]
             Y_scale[level] = np.copy(Lo)
 
     Yl = np.copy(Lo)

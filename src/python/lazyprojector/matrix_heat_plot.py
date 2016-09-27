@@ -15,8 +15,8 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
-    pos_color_scheme=reversed(BuPu9),
-    neg_color_scheme=reversed(OrRd9),
+    pos_color_scheme=list(reversed(BuPu9)),
+    neg_color_scheme=list(reversed(OrRd9)),
     norm_axis=0,
     width=900,
     height=400):
@@ -130,9 +130,9 @@ def _populate_data_source(
             value_color = None
 
             if value[-1] >= 0:
-                value_color = pos_color_scheme[color_mat[i,j]]
+                value_color = pos_color_scheme[color_matrix[i,j]]
             else:
-                value_color = neg_color_scheme[color_mat[i,j]]
+                value_color = neg_color_scheme[color_matrix[i,j]]
 
             color.append(value_color)
 
@@ -148,6 +148,7 @@ def _get_color_matrix(
 
     normalizer = np.sum(
         matrix, axis=norm_axis)
+    normalizer[normalizer == 0] = 1
     normed = matrix / normalizer \
         if norm_axis == 0 else \
         (matrix.T / normalizer).T

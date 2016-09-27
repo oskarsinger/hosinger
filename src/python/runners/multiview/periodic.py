@@ -2,7 +2,7 @@ import numpy as np
 import spancca as scca
 
 from wavelets import dtcwt
-from lazyprojector import plot_matrix_heat as plot_mh
+from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9
 from sklearn.cross_decomposition import CCA
 
@@ -28,8 +28,6 @@ class MVCCADTCWTRunner:
 
     def run(self):
 
-        # TODO: understand the meaning behind Yls and Yhs
-        # TODO: figure out what to do with Yls
         (Yls, Yhs) = self._get_wavelet_transforms()
 
         # Get heat plots
@@ -39,15 +37,16 @@ class MVCCADTCWTRunner:
 
         for period in xrange(len(Yhs[0])):
             Yhs_period = [view[period] for view in Yhs]
-            Yhs_matrices = [self._trunc_and_concat(Yh, Yl)
-                            for Yh_p in Yhs_period]
+            Yls_period = [view[period] for view in Yls]
+            Ys_matrices = [self._trunc_and_concat(Yh_p, Yl_p)
+                            for (Yh_p, Yl_p) in zip(Yhs_period, Yls_period)]
 
-            wavelet_matrices.append(Yhs_matrices)
+            wavelet_matrices.append(Ys_matrices)
             heat_matrices.append(
-                self._get_heat_matrices(Yhs_matrices))
+                self._get_heat_matrices(Ys_matrices))
             heat_plots.append(
-                {k : self._get_matrix_heat_plots(hm)
-                 for (k, hm) in heat_matrices.items()})
+                {k : self._get_matrix_heat_plots(hm, *k)
+                 for (k, hm) in heat_matrices[-1].items()})
 
         # TODO: so many heat plots; need to design a clean way to display all of them
 
@@ -69,7 +68,6 @@ class MVCCADTCWTRunner:
         data = [ds.get_data() for ds in self.servers]
         min_length = min(
             [ds.rows() for ds in self.servers])
-        print min_length
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
