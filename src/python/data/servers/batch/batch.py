@@ -59,6 +59,10 @@ class BatchServer:
 
         return 0 if self.data is None else self.data.shape[0]
 
+    def name(self):
+
+        return self.dl.name()
+
     def get_status(self):
 
         return {

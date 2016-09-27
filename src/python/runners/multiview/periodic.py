@@ -5,19 +5,18 @@ from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9
 from sklearn.cross_decomposition import CCA
+from math import log
 
 class MVCCADTCWTRunner:
 
     def __init__(self, 
         biorthogonal,
         qshift,
-        nlevels,
         servers, 
         period):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
-        self.nlevels = nlevels
         self.servers = servers
         self.period = period
 
@@ -45,7 +44,7 @@ class MVCCADTCWTRunner:
             heat_matrices.append(
                 self._get_heat_matrices(Ys_matrices))
             heat_plots.append(
-                {k : self._get_matrix_heat_plots(hm, *k)
+                {k : self._get_matrix_heat_plots(hm, k)
                  for (k, hm) in heat_matrices[-1].items()})
 
         # TODO: so many heat plots; need to design a clean way to display all of them
@@ -80,7 +79,7 @@ class MVCCADTCWTRunner:
             for (i, view) in enumerate(current_data):
                 (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                     view, 
-                    self.nlevels, 
+                    int(log(view.shape[0], 2)) - 1,
                     self.biorthogonal, 
                     self.qshift)
                      
@@ -100,14 +99,18 @@ class MVCCADTCWTRunner:
                 for i in xrange(self.num_views - 1)
                 for j in xrange(i + 1, self.num_views)}
 
-    def _get_matrix_heat_plots(self, heat_matrix, i, j):
+    def _get_matrix_heat_plots(self, heat_matrix, key):
 
+        # TODO: figure out how to get ordered key
+        print key
+        (i,j) = tuple(key)
+        names = [ds.name() for ds in self.servers]
         (n, p) = heat_matrix.shape
-        x_labels = ['2^' + str(-i) for i in xrange(p)]
-        y_labels = ['2^' + str(-i) for i in xrange(n)]
-        title = 'Correlation of two views by decimation level'
-        x_name = str(j) + ' decimation level'
-        y_name = str(i) + ' decimation level'
+        x_labels = ['2^' + str(-i) for k in xrange(p)]
+        y_labels = ['2^' + str(-i) for k in xrange(n)]
+        title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '  by decimation level'
+        x_name = 'decimation level'
+        y_name = 'decimation level'
         val_name = 'correlation'
         ps = plot_matrix_heat(
             heat_matrix,

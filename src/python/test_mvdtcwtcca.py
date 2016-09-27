@@ -28,13 +28,13 @@ def run_it_all_day(center, period):
     runner = MVCCADTCWTRunner(
         near_sym_b,
         qshift_b,
-        2,
         servers,
         period)
     heat_plots = runner.run()
 
-    plots = heat_plots[0].values()[0].values()
-    show(Column(*plots))
+    for period in heat_plots:
+        for (view_pair, plot_pair) in period.items():
+            show(Column(*plot_pair.values()))
 
 if __name__=='__main__':
     run_it_all_day()

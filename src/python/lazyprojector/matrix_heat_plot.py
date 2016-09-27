@@ -4,7 +4,7 @@ import linal.utils.misc as lum
 from math import pi
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
-from bokeh.palettes import BuPu9, OrRd9
+from bokeh.palettes import YlGn9, OrRd9
 from utils import get_plot_path
 
 def plot_matrix_heat(
@@ -15,9 +15,9 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
-    pos_color_scheme=list(reversed(BuPu9)),
+    pos_color_scheme=list(reversed(YlGn9)),
     neg_color_scheme=list(reversed(OrRd9)),
-    norm_axis=0,
+    norm_axis=None,
     width=900,
     height=400):
 
@@ -44,7 +44,7 @@ def plot_matrix_heat(
             source,
             width,
             height,
-            title,
+            title + ' ' + k,
             x_labels,
             y_labels,
             x_name,
@@ -72,7 +72,7 @@ def _initialize_figure(
         title=title,
         x_range=x_labels, y_range=list(reversed(y_labels)),
         plot_width=width, plot_height=height,
-        x_axis_location="above", toolbar_location="left", 
+        x_axis_location="above", toolbar_location="right", 
         tools=TOOLS)
 
     p.grid.grid_line_color = None
@@ -146,9 +146,13 @@ def _populate_data_source(
 def _get_color_matrix(
     matrix, norm_axis, num_colors):
 
-    normalizer = np.sum(
-        matrix, axis=norm_axis)
-    normalizer[normalizer == 0] = 1
+    if norm_axis is None:
+        normalizer = np.sum(matrix)
+    else:
+        normalizer = np.sum(
+            matrix, axis=norm_axis)
+        normalizer[normalizer == 0] = 1
+
     normed = matrix / normalizer \
         if norm_axis == 0 else \
         (matrix.T / normalizer).T
