@@ -27,11 +27,11 @@ def plot_matrix_heat(
 
     if np.any(np.iscomplex(value_matrix)):
         value_matrices = {
-            'real': value_matrix.real,
-            'imag': value_matrix.imag}
+            'magnitude': np.absolute(value_matrix),
+            'phase': np.angle(value_matrix)}
     else:
         value_matrices = {
-            'real': value_matrix}
+            'magnitude': value_matrix}
 
     for k, matrix in value_matrices.items():
         source = _populate_data_source(
@@ -149,6 +149,8 @@ def _get_color_matrix(
 
     if norm_axis is None:
         normalizer = np.max(matrix)
+        if normalizer == 0:
+            normalizer = 1
     else:
         normalizer = np.max(
             matrix, axis=norm_axis)
