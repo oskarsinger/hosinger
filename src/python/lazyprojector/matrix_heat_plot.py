@@ -1,11 +1,11 @@
 import numpy as np
+import linal.utils.misc as lum
 
 from math import pi
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
 from bokeh.palettes import BuPu9, OrRd9
 from utils import get_plot_path
-import linal.utils.misc as lum
 
 def plot_matrix_heat(
     value_matrix,
@@ -26,15 +26,15 @@ def plot_matrix_heat(
 
     if np.any(np.iscomplex(value_matrix)):
         value_matrices = {
-            'real': np.real(value_matrix),
-            'imag': np.imag(value_matrix)}
+            'real': value_matrix.real,
+            'imag': value_matrix.imag}
     else:
         value_matrices = {
-            'real': np.real(value_matrix)}
+            'real': value_matrix}
 
     for k, matrix in value_matrices.items():
         source = _populate_data_source(
-            value_matrix, 
+            matrix, 
             x_labels, 
             y_labels,
             norm_axis,
