@@ -14,7 +14,8 @@ from data.pseudodata import MissingData
 from data.servers.minibatch import Minibatch2Minibatch as M2M
 
 from bokeh.palettes import Spectral11
-from bokeh.plotting import show, output_file, vplot
+from bokeh.models.layouts import Column
+from bokeh.plotting import output_file
 
 def plot_e4_hdf5_subject(
     hdf5_path, 

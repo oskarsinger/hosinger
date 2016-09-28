@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
+from multiprocessing import Pool
 from drrobert.file_io import get_timestamped as get_ts
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
@@ -50,6 +51,7 @@ class MVCCADTCWTRunner:
         if self.load_heat:
             self._load_heat_matrices()
         else:
+            print 'Computing heat matrices'
             self._compute_heat_matrices()
 
         if self.show_plots:
@@ -100,6 +102,7 @@ class MVCCADTCWTRunner:
         (Yls, Yhs) = self._get_wavelet_transforms()
 
         for period in xrange(len(Yhs[0])):
+            print 'Computing heat matrices for period', period
             Yhs_period = [view[period] for view in Yhs]
             Yls_period = [view[period] for view in Yls]
             Ys_matrices = [self._fill_and_concat(Yh_p, Yl_p)
@@ -126,6 +129,8 @@ class MVCCADTCWTRunner:
 
     def _get_wavelet_transforms(self):
 
+        print 'Computing wavelet transforms'
+
         data = self._get_resampled_data()
         factor = self.period * max(self.rates)
         min_length = min(
@@ -138,13 +143,24 @@ class MVCCADTCWTRunner:
             current_data = [view[k * factor: (k+1) * factor,:] 
                             for view in data]
 
+            p = Pool(len(current_data))
+            processes = []
+
             for (i, view) in enumerate(current_data):
-                (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
-                    view, 
+                biorthogonal = {k, np.copy(v) 
+                                for (k,v) in self.biorthogonal.items()}
+                qshift = {k, np.copy(v) 
+                          for (k,v) in self.qshift.items()}
+                processes.append(p.apply_async(
+                    dtcwt.oned.dtwavexfm,
+                    (view, 
                     int(log(view.shape[0], 2)) - 1,
-                    self.biorthogonal, 
-                    self.qshift)
-                     
+                    biorthogonal, 
+                    qshift)))
+
+            for process in processes:
+                (Yl, Yh, _) = process.get()
+
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
 
@@ -154,28 +170,18 @@ class MVCCADTCWTRunner:
 
     def _get_resampled_data(self):
 
-        data = [ds.get_data() for ds in self.servers]
-        loaders = [ds.get_status()['data_loader'] 
-                   for ds in self.servers]
-        dts = [l.get_status()['start_times'][0]
-               for l in loaders]
-        freqs = [1.0 / r for r in self.rates]
-        dt_indexes = [pd.DatetimeIndex(
-                        data=self._get_dt_index(ds.rows(), f, dt))
-                      for (dt, f, ds) in zip(dts, freqs, self.servers)]
-        series = [pd.Series(data=view[:,0], index=dti) 
-                  for (dti, view) in zip(dt_indexes, data)]
+        p = Pool(len(self.servers))
+        processes = []
+        resampled = []
 
-        return [s.resample('L').pad().as_matrix()
-                for s in series]
+        for (ds, rate) in zip(self.servers, self.rates):
+            processes.append(p.apply_async(
+                _get_resampled_view, (ds, rate)))
 
-    def _get_dt_index(self, rows, f, dt):
+        for process in processes:
+            resampled.append(process.get())
 
-        start = mktime(dt.timetuple())
-        times = (np.arange(rows) * f + start).tolist()
-
-        return [datetime.fromtimestamp(t)
-                for t in times]
+        return resampled
 
     def _get_heat_matrices(self, Yhs_matrices):
 
@@ -225,3 +231,23 @@ class MVCCADTCWTRunner:
             filled[::2**i,i] = np.copy(y)
 
         return filled
+
+def _get_resampled_view(server, rate):
+
+    data = server.get_data()
+    loader = server.get_status()['data_loader']
+    dt = loader.get_status()['start_times'][0]
+    freq = 1.0 / rate
+    dt_index = pd.DatetimeIndex(
+        data=_get_dt_index(server.rows(), freq, dt))
+    series = pd.Series(data=data[:,0], index=dt_index)
+
+    return series.resample('L').pad().as_matrix()
+
+def _get_dt_index(rows, f, dt):
+
+    start = mktime(dt.timetuple())
+    times = (np.arange(rows) * f + start).tolist()
+
+    return [datetime.fromtimestamp(t)
+            for t in times]
