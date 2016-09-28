@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-import spancca as scca
 import pandas as pd
 
 from drrobert.file_io import get_timestamped as get_ts
