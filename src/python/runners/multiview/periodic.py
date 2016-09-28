@@ -133,6 +133,7 @@ class MVCCADTCWTRunner:
         # TODO: downsampled after wavelet coefficient
         data = [ds.get_data() for ds in self.servers]
         factors = [self.period * r for r in self.rates]
+        print factors
         thresholds  = [data.shape[0] / f 
                        for (data, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
@@ -148,7 +149,6 @@ class MVCCADTCWTRunner:
 
             current_data = [view[k * f: (k+1) * f]
                             for (f, view) in zip(factors, data)]
-            print [view.shape for view in current_data]
 
             """
             p = Pool(len(current_data))
