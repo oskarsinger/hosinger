@@ -133,16 +133,19 @@ class MVCCADTCWTRunner:
         # TODO: downsampled after wavelet coefficient
         data = [ds.get_data() for ds in self.servers]
         factors = [self.period * r for r in self.rates]
-        print factors
-        min_length = min(
-            [view.shape[0] for view in data])
-        print min_length
+        lengths = [view.shape[0] for view in data]
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
+        complete = False
 
-        while max([(k + 1) * f for f in factors]) < min_length:
+        while not complete:
+            complete = any(
+                [(k+1) * f >= l 
+                 for (f, l) in zip(factors, lengths)])
+
             print 'Computing wavelet transforms for period', k
+
             current_data = [view[k * f: (k+1) * f, :]
                             for (f, view) in zip(factors, data)]
 
