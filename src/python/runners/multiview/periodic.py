@@ -258,8 +258,8 @@ def _get_sampled_wavelets(Yh, Yl):
     basis = np.zeros((num_coeffs, len(hi_and_lo))) 
 
     for (i, y) in enumerate(hi_and_lo):
-        power = num_levels - i - 2
-        print y.shape
+        power = num_levels - i - 1
+        print y.shape, 2**power, y.shape[0] * 1.0 / 2**power
         basis[:,i] = np.copy(y[::2**power])
 
     return basis
