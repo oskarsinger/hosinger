@@ -147,9 +147,9 @@ class MVCCADTCWTRunner:
             processes = []
 
             for (i, view) in enumerate(current_data):
-                biorthogonal = {k, np.copy(v) 
+                biorthogonal = {k : np.copy(v) 
                                 for (k,v) in self.biorthogonal.items()}
-                qshift = {k, np.copy(v) 
+                qshift = {k : np.copy(v) 
                           for (k,v) in self.qshift.items()}
                 processes.append(p.apply_async(
                     dtcwt.oned.dtwavexfm,
