@@ -41,7 +41,7 @@ def plot_e4_hdf5_subject(
     # Create plot
     plots = [plot_lines(dm, 'Times (days)', 'Value', t)
              for (t, dm) in zip(titles, data_maps)]
-    plot = vplot(*plots)
+    plot = Column(*plots)
 
     print 'Creating filepath'
     # Preparing filepath
