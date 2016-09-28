@@ -114,7 +114,7 @@ class MVCCADTCWTRunner:
         series = [pd.Series(data=view[:,0], index=dti) 
                   for (dti, view) in zip(dt_indexes, data)]
 
-        return [s.resample('100U').pad().data.as_matrix()
+        return [s.resample('L').pad().data.as_matrix()
                 for s in series]
 
     def _get_dt_index(self, rows, f, dt):
