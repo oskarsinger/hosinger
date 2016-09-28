@@ -9,9 +9,11 @@ from bokeh.plotting import show
 from bokeh.models.layouts import Column
 
 @click.command()
-@click.argument('center', default=True)
-@click.argument('period', default=24*3600)
-def run_it_all_day(center, period):
+@click.argument('--data-path', 
+    default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
+@click.argument('--center', default=True)
+@click.argument('--period', default=24*3600)
+def run_it_all_day(data_path, center, period):
 
     # TODO: do it with different bases and shifts
     # TODO: also figure out what shifts are
@@ -20,7 +22,7 @@ def run_it_all_day(center, period):
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
     loaders = dles.get_changing_e4_loaders(
-        '/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5',
+        data_path,
         'HRV15-005',
         None,
         False)
