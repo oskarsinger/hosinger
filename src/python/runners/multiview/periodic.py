@@ -250,7 +250,7 @@ class MVCCADTCWTRunner:
 def _get_sampled_wavelets(Yh, Yl):
 
     hi_and_lo = Yh + [Yl]
-    print hi_and_lo
+    print [Y.shape for Y in hi_and_lo]
     num_levels = len(hi_and_lo)
     print num_levels
     num_coeffs = min([Y.shape[0] for Y in hi_and_lo])
