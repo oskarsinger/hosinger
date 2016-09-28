@@ -25,7 +25,6 @@ def run_it_all_day(
     show_plots,
     center, 
     period):
-    print heat_dir
 
     # TODO: do it with different bases and shifts
     # TODO: also figure out what shifts are
