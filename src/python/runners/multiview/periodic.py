@@ -140,6 +140,7 @@ class MVCCADTCWTRunner:
         k = 0
 
         while (k + 1) * factor < min_length:
+            print 'Computing wavelet transforms for period', k
             current_data = [view[k * factor: (k+1) * factor,:] 
                             for view in data]
 
@@ -170,15 +171,19 @@ class MVCCADTCWTRunner:
 
     def _get_resampled_data(self):
 
+        print 'Resampling data'
+
         p = Pool(len(self.servers))
         processes = []
         resampled = []
 
         for (ds, rate) in zip(self.servers, self.rates):
+            print 'Starting process for resampling of view', ds.name()
             processes.append(p.apply_async(
                 _get_resampled_view, (ds, rate)))
 
         for process in processes:
+            print 'Getting result for process'
             resampled.append(process.get())
 
         return resampled
