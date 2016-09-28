@@ -11,8 +11,8 @@ from bokeh.models.layouts import Column
 @click.command()
 @click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
-@click.argument('--center', default=True)
-@click.argument('--period', default=24*3600)
+@click.option('--center', default=True)
+@click.option('--period', default=24*3600)
 def run_it_all_day(data_path, center, period):
 
     # TODO: do it with different bases and shifts
