@@ -105,9 +105,8 @@ class MVCCADTCWTRunner:
             print 'Computing heat matrices for period', period
             Yhs_period = [view[period] for view in Yhs]
             Yls_period = [view[period] for view in Yls]
-            Ys_matrices = [self._fill_and_concat(Yh_p, Yl_p)
-                            for (Yh_p, Yl_p) in zip(Yhs_period, Yls_period)]
-            period_heat = self._get_heat_matrices(Ys_matrices)
+            period_heat = self._get_heat_matrices(
+                Yhs_period, Yls_period)
 
             self.wavelet_matrices.append(Ys_matrices)
             self.heat_matrices.append(period_heat)
@@ -131,18 +130,19 @@ class MVCCADTCWTRunner:
 
         print 'Computing wavelet transforms'
 
-        data = self._get_resampled_data()
-        factor = self.period * max(self.rates)
+        # TODO: downsampled after wavelet coefficient
+        data = [ds.get_data() for ds in self.servers]
+        factors = [self.period * r for r in self.rates]
         min_length = min(
-            [ds.rows() for ds in self.servers])
+            [view.shape[0] for view in data])
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
 
-        while (k + 1) * factor < min_length:
+        while max([(k + 1) * f for f in factors]) < min_length:
             print 'Computing wavelet transforms for period', k
-            current_data = [view[k * factor: (k+1) * factor, np.newaxis]
-                            for view in data]
+            current_data = [view[k * f: (k+1) * f, :]
+                            for (f, view) in zip(factors, data)]
 
             """
             p = Pool(len(current_data))
@@ -209,10 +209,14 @@ class MVCCADTCWTRunner:
 
         return resampled
 
-    def _get_heat_matrices(self, Yhs_matrices):
+    def _get_heat_matrices(self, Yhs, Yls):
 
+        Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
+                        for (Yh, Yl) in zip(Yhs, Yls)]
+        subsamples = [m[::r,:]
+                      for (m, r) in zip(Yh_matrices, self.rates)]
         get_matrix = lambda i,j: np.dot(
-            Yhs_matrices[i].T, Yhs_matrices[j])
+            subsamples[i].T, subsamples[j])
 
         return {frozenset([i,j]): get_matrix(i, j)
                 for i in xrange(self.num_views)
@@ -248,15 +252,18 @@ class MVCCADTCWTRunner:
 
         show(p)
 
-    def _fill_and_concat(self, Yh, Yl):
+def _get_sampled_wavelets(Yh, Yl):
 
-        hi_and_lo = Yh + [Yl]
-        filled = np.zeros((Yh.shape[0], len(hi_and_lo))) 
+    hi_and_lo = Yh + [Yl]
+    num_levels = len(hi_and_lo)
+    num_coeffs = min([Y.shape[0] for Y in hi_and_lo])
+    basis = np.zeros((num_coeffs, len(hi_and_lo))) 
 
-        for (i, y) in enumerate(hi_and_lo):
-            filled[::2**i,i] = np.copy(y)
+    for (i, y) in enumerate(hi_and_lo):
+        power = num_levels - i - 1
+        basis[:,i] = np.copy(y[::2**power])
 
-        return filled
+    return basis
 
 def _get_resampled_view(server, rate):
 
