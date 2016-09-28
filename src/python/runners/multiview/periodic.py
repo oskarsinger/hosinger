@@ -75,7 +75,7 @@ class MVCCADTCWTRunner:
 
         heat_matrices = {}
 
-        for fn in os.listdir(self.heat_dir)
+        for fn in os.listdir(self.heat_dir):
             path = os.path.join(self.heat_dir, fn)
 
             with open(path) as f:
