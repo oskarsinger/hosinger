@@ -268,7 +268,7 @@ def _get_resampled_view(server, rate):
         data=_get_dt_index(server.rows(), freq, dt))
     series = pd.Series(data=data[:,0], index=dt_index)
 
-    return series.resample('L').pad().as_matrix()
+    return series.resample('S').pad().as_matrix()
 
 def _get_dt_index(rows, f, dt):
 
