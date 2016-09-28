@@ -11,9 +11,20 @@ from bokeh.models.layouts import Column
 @click.command()
 @click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
-@click.option('--center', default=True)
+@click.option('--save-heat', default=False)
+@click.option('--load-heat', default=False)
+@click.option('--heat-dir', default=None)
+@click.optoin('--show-plots', default=False)
+@click.option('--center', default=False)
 @click.option('--period', default=24*3600)
-def run_it_all_day(data_path, center, period):
+def run_it_all_day(
+    data_path, 
+    save_heat, 
+    load_heat,
+    heat_dir, 
+    show_plots,
+    center, 
+    period):
 
     # TODO: do it with different bases and shifts
     # TODO: also figure out what shifts are
@@ -31,7 +42,11 @@ def run_it_all_day(data_path, center, period):
         near_sym_b,
         qshift_b,
         servers,
-        period)
+        period,
+        heat_dir=heat_dir,
+        save_heat=save_heat,
+        load_heat=load_heat,
+        show_plots=show_plots)
     heat_plots = runner.run()
 
     for period in heat_plots[:2]:

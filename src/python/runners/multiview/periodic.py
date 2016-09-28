@@ -20,12 +20,20 @@ class MVCCADTCWTRunner:
         qshift,
         servers, 
         period,
+        heat_dir=None,
+        load_heat=False,
+        save_heat=False,
+        show_plots=False,
         plot_path='.'):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.servers = servers
         self.period = period
+        self.heat_dir = heat_dir
+        self.load_heat = load_heat
+        self.save_heat = save_heat
+        self.show_plots = show_plots
         self.plot_path = plot_path
 
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
@@ -34,31 +42,18 @@ class MVCCADTCWTRunner:
         self.converged = False
         self.num_iters = 0
         self.num_rounds = 0
+        self.wavelet_matrices = []
+        self.heat_matrices = [] 
 
     def run(self):
 
-        (Yls, Yhs) = self._get_wavelet_transforms()
+        if self.load_heat:
+            self._load_heat_matrices()
+        else:
+            self._compute_heat_matrices()
 
-        # Get heat plots
-        wavelet_matrices = []
-        heat_matrices = [] 
-        heat_plots = []
-
-        for period in xrange(len(Yhs[0])):
-            Yhs_period = [view[period] for view in Yhs]
-            Yls_period = [view[period] for view in Yls]
-            Ys_matrices = [self._fill_and_concat(Yh_p, Yl_p)
-                            for (Yh_p, Yl_p) in zip(Yhs_period, Yls_period)]
-
-            wavelet_matrices.append(Ys_matrices)
-            heat_matrices.append(
-                self._get_heat_matrices(Ys_matrices))
-            heat_plots.append(
-                {k : self._get_matrix_heat_plots(hm, k)
-                 for (k, hm) in heat_matrices[-1].items()})
-
-        # TODO: so many heat plots; need to design a clean way to display all of them
-
+        if self.show_plots:
+            self._show_plots()
         # What exactly am I doing CCA on? Right, the matrices of coefficients
         # What is the output like for the 2d wavelets though. Can I still do standard CCA?
 
@@ -70,7 +65,62 @@ class MVCCADTCWTRunner:
         
         # TODO: Do CCA on unmodified complex coefficients
 
-        return heat_plots
+    def _show_plots(self):
+
+        for period in self.heat_matrices:
+            for (k, hm) in period:
+                self._plot_matrix_heat(hm, k)
+
+    def _load_heat_matrices(self):
+
+        heat_matrices = {}
+
+        for fn in os.listdir(self.heat_dir)
+            path = os.path.join(self.heat_dir, fn)
+
+            with open(path) as f:
+                heat_matrices[fn] = np.load(f)
+
+        num_periods = max(
+            [int(k.split('_')[1]) 
+             for k in heat_matrices.keys()])
+
+        self.heat_matrices = [{} for i in xrange(num_periods)]
+
+        for (k, hm) in heat_matrices.items():
+            info = k.split('_')
+            period = int(info[1])
+            views = frozenset(
+                [int(i) for i in info[3].split('-')]) 
+
+            self.heat_matrices[period][views] = hm
+
+    def _compute_heat_matrices(self):
+
+        (Yls, Yhs) = self._get_wavelet_transforms()
+
+        for period in xrange(len(Yhs[0])):
+            Yhs_period = [view[period] for view in Yhs]
+            Yls_period = [view[period] for view in Yls]
+            Ys_matrices = [self._fill_and_concat(Yh_p, Yl_p)
+                            for (Yh_p, Yl_p) in zip(Yhs_period, Yls_period)]
+            period_heat = self._get_heat_matrices(Ys_matrices)
+
+            self.wavelet_matrices.append(Ys_matrices)
+            self.heat_matrices.append(period_heat)
+
+            if self.save_heat:
+                for (k, hm) in period_heat.items():
+                    period_str = 'period_' + str(period)
+                    views_str = 'views_' + '-'.join([str(i) for i in k])
+                    path = '_'.join(
+                        [period_str, views_str, 'dtcwt_heat_matrix.thang'])
+
+                    if self.heat_dir is not None:
+                        path = os.path.join(self.heat_dir, path)
+
+                    with open(path, 'w') as f:
+                        np.save(f, hm)
 
     def _get_wavelet_transforms(self):
 
@@ -130,17 +180,11 @@ class MVCCADTCWTRunner:
         get_matrix = lambda i,j: np.dot(
             Yhs_matrices[i].T, Yhs_matrices[j])
 
-        return {frozenset([i,j]): self._get_matrix(i, j, Yhs_matrices)
+        return {frozenset([i,j]): get_matrix(i, j)
                 for i in xrange(self.num_views)
                 for j in xrange(i, self.num_views)}
 
-    def _get_matrix(self, i, j, Yhs_matrices):
-
-        matrix = np.dot(Yhs_matrices[i].T, Yhs_matrices[j])
-
-        return matrix
-
-    def _get_matrix_heat_plots(self, heat_matrix, key):
+    def _plot_matrix_heat(self, heat_matrix, key):
 
         # TODO: figure out how to get ordered key
         (i,j) = tuple(key)
@@ -168,7 +212,7 @@ class MVCCADTCWTRunner:
         output_file(filepath, 'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
 
-        return p
+        show(p)
 
     def _fill_and_concat(self, Yh, Yl):
 
