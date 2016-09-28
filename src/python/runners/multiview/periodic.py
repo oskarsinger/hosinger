@@ -48,7 +48,7 @@ class MVCCADTCWTRunner:
         for period in xrange(len(Yhs[0])):
             Yhs_period = [view[period] for view in Yhs]
             Yls_period = [view[period] for view in Yls]
-            Ys_matrices = [self._trunc_and_concat(Yh_p, Yl_p)
+            Ys_matrices = [self._fill_and_concat(Yh_p, Yl_p)
                             for (Yh_p, Yl_p) in zip(Yhs_period, Yls_period)]
 
             wavelet_matrices.append(Ys_matrices)
@@ -103,6 +103,7 @@ class MVCCADTCWTRunner:
 
     def _get_resampled_data(self):
 
+        data = [ds.get_data() for ds in self.servers]
         loaders = [ds.get_status()['data_loader'] 
                    for ds in self.servers]
         dts = [l.get_status()['start_times'][0]
@@ -111,11 +112,10 @@ class MVCCADTCWTRunner:
         dt_indexes = [pd.DatetimeIndex(
                         data=self._get_dt_index(ds.rows(), f, dt))
                       for (dt, f, ds) in zip(dts, freqs, self.servers)]
-        print dt_indexes
-        series = [pd.Series(data=ds.get_data()[:,0], index=dti) 
-                  for (dti, ds) in zip(dt_indexes, self.servers)]
+        series = [pd.Series(data=view[:,0], index=dti) 
+                  for (dti, view) in zip(dt_indexes, data)]
 
-        return [s.resample('N').pad().data.as_matrix()
+        return [s.resample('100U').pad().data.as_matrix()
                 for s in series]
 
     def _get_dt_index(self, rows, f, dt):
