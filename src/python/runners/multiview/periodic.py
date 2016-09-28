@@ -148,14 +148,11 @@ class MVCCADTCWTRunner:
 
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
-
-            """
+            print [view.shape for view in current_data]
             p = Pool(len(current_data))
             processes = []
-            """
 
             for (i, view) in enumerate(current_data):
-                """
                 biorthogonal = {k : np.copy(v) 
                                 for (k,v) in self.biorthogonal.items()}
                 qshift = {k : np.copy(v) 
@@ -176,13 +173,12 @@ class MVCCADTCWTRunner:
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
 
-            """
+                """
             for process in processes:
                 (Yl, Yh, _) = process.get()
 
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
-            """
 
             k += 1
 
@@ -192,25 +188,21 @@ class MVCCADTCWTRunner:
 
         print 'Resampling data'
 
-        """
         p = Pool(len(self.servers))
         processes = []
-        """
         resampled = []
 
         for (ds, rate) in zip(self.servers, self.rates):
             print 'Starting process for resampling of view', ds.name()
-            """
             processes.append(p.apply_async(
                 _get_resampled_view, (ds, rate)))
             """
             resampled.append(_get_resampled_view(ds, rate))
 
-        """
+            """
         for process in processes:
             print 'Getting result for process'
             resampled.append(process.get())
-        """
 
         return resampled
 
