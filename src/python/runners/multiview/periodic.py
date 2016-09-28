@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import spancca as scca
+import pandas as pd
 
 from drrobert.file_io import get_timestamped as get_ts
 from wavelets import dtcwt
@@ -10,6 +11,8 @@ from bokeh.palettes import BuPu9
 from bokeh.plotting import output_file
 from sklearn.cross_decomposition import CCA
 from math import log
+from time import mktime
+from datetime import datetime
 
 class MVCCADTCWTRunner:
 
@@ -26,6 +29,8 @@ class MVCCADTCWTRunner:
         self.period = period
         self.plot_path = plot_path
 
+        self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
+                        for ds in self.servers]
         self.num_views = len(self.servers)
         self.converged = False
         self.num_iters = 0
@@ -70,17 +75,17 @@ class MVCCADTCWTRunner:
 
     def _get_wavelet_transforms(self):
 
-        data = [ds.get_data() for ds in self.servers]
+        data = self._get_resampled_data()
+        factor = self.period * max(self.rates)
         min_length = min(
             [ds.rows() for ds in self.servers])
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
 
-        while (k + 1) * self.period < min_length:
-            begin = k * self.period
-            end = begin + self.period
-            current_data = [view[begin:end,:] for view in data]
+        while (k + 1) * factor < min_length:
+            current_data = [view[k * factor: (k+1) * factor,:] 
+                            for view in data]
 
             for (i, view) in enumerate(current_data):
                 (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
@@ -96,14 +101,39 @@ class MVCCADTCWTRunner:
 
         return (Yls, Yhs)
 
+    def _get_resampled_data(self):
+
+        loaders = [ds.get_status()['data_loader'] 
+                   for ds in self.servers]
+        dts = [l.get_status()['start_times'][0]
+               for l in loaders]
+        freqs = [1.0 / r for r in self.rates]
+        dt_indexes = [pd.DatetimeIndex(
+                        data=self._get_dt_index(ds.rows(), f, dt))
+                      for (dt, f, ds) in zip(dts, freqs, self.servers)]
+        print dt_indexes
+        series = [pd.Series(data=ds.get_data()[:,0], index=dti) 
+                  for (dti, ds) in zip(dt_indexes, self.servers)]
+
+        return [s.resample('N').pad().data.as_matrix()
+                for s in series]
+
+    def _get_dt_index(self, rows, f, dt):
+
+        start = mktime(dt.timetuple())
+        times = (np.arange(rows) * f + start).tolist()
+
+        return [datetime.fromtimestamp(t)
+                for t in times]
+
     def _get_heat_matrices(self, Yhs_matrices):
 
         get_matrix = lambda i,j: np.dot(
             Yhs_matrices[i].T, Yhs_matrices[j])
 
         return {frozenset([i,j]): self._get_matrix(i, j, Yhs_matrices)
-                for i in xrange(self.num_views - 1)
-                for j in xrange(i + 1, self.num_views)}
+                for i in xrange(self.num_views)
+                for j in xrange(i, self.num_views)}
 
     def _get_matrix(self, i, j, Yhs_matrices):
 
@@ -141,11 +171,12 @@ class MVCCADTCWTRunner:
 
         return p
 
-    def _trunc_and_concat(self, Yh, Yl):
+    def _fill_and_concat(self, Yh, Yl):
 
         hi_and_lo = Yh + [Yl]
-        min_length = min(
-            [item.shape[0] for item in hi_and_lo])
-        truncd = [item[:min_length,:] for item in hi_and_lo]
+        filled = np.zeros((Yh.shape[0], len(hi_and_lo))) 
 
-        return np.hstack(truncd)
+        for (i, y) in enumerate(hi_and_lo):
+            filled[::2**i,i] = np.copy(y)
+
+        return filled
