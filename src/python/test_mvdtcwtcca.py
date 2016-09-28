@@ -14,7 +14,7 @@ from bokeh.models.layouts import Column
 @click.option('--save-heat', default=False)
 @click.option('--load-heat', default=False)
 @click.option('--heat-dir', default=None)
-@click.optoin('--show-plots', default=False)
+@click.option('--show-plots', default=False)
 @click.option('--center', default=False)
 @click.option('--period', default=24*3600)
 def run_it_all_day(
