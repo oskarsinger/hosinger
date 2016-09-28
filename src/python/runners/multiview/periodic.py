@@ -131,11 +131,10 @@ class MVCCADTCWTRunner:
         print 'Computing wavelet transforms'
 
         # TODO: downsampled after wavelet coefficient
-        data = [np.copy(ds.get_data()) 
-                for ds in self.servers]
+        data = [ds.get_data() for ds in self.servers]
         factors = [int(self.period * r) for r in self.rates]
-        thresholds  = [data.shape[0] * 1.0 / f 
-                       for (data, f) in zip(data, factors)]
+        thresholds  = [view.shape[0] * 1.0 / f 
+                       for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
