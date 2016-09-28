@@ -128,8 +128,6 @@ class MVCCADTCWTRunner:
 
     def _get_wavelet_transforms(self):
 
-        print 'Computing wavelet transforms'
-
         # TODO: downsampled after wavelet coefficient
         data = [ds.get_data() for ds in self.servers]
         factors = [int(self.period * r) for r in self.rates]
@@ -141,7 +139,7 @@ class MVCCADTCWTRunner:
         k = 0
 
         while not complete:
-            exceeded = [k >= t for t in thresholds]
+            exceeded = [(k+1) >= t for t in thresholds]
             complete = any(exceeded)
 
             print 'Computing wavelet transforms for period', k
