@@ -146,8 +146,9 @@ class MVCCADTCWTRunner:
 
             print 'Computing wavelet transforms for period', k
 
-            current_data = [view[k * f: (k+1) * f, np.newaxis]
+            current_data = [view[k * f: (k+1) * f]
                             for (f, view) in zip(factors, data)]
+            print [view.shape for view in current_data]
 
             """
             p = Pool(len(current_data))
