@@ -25,6 +25,7 @@ def run_it_all_day(
     show_plots,
     center, 
     period):
+    print save_heat
 
     # TODO: do it with different bases and shifts
     # TODO: also figure out what shifts are
@@ -47,11 +48,8 @@ def run_it_all_day(
         save_heat=save_heat,
         load_heat=load_heat,
         show_plots=show_plots)
-    heat_plots = runner.run()
 
-    for period in heat_plots[:2]:
-        for (view_pair, plot) in period.items():
-            show(plot)
+    runner.run()
 
 if __name__=='__main__':
     run_it_all_day()
