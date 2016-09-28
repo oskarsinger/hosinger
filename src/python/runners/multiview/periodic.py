@@ -29,7 +29,7 @@ class MVCCADTCWTRunner:
         self.plot_path = plot_path
 
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
-                        for ds in self.servers]
+                      for ds in self.servers]
         self.num_views = len(self.servers)
         self.converged = False
         self.num_iters = 0
@@ -114,7 +114,7 @@ class MVCCADTCWTRunner:
         series = [pd.Series(data=view[:,0], index=dti) 
                   for (dti, view) in zip(dt_indexes, data)]
 
-        return [s.resample('L').pad().data.as_matrix()
+        return [s.resample('L').pad().as_matrix()
                 for s in series]
 
     def _get_dt_index(self, rows, f, dt):
