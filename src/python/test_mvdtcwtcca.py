@@ -9,7 +9,7 @@ from bokeh.plotting import show
 from bokeh.models.layouts import Column
 
 @click.command()
-@click.argument('--data-path', 
+@click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
 @click.argument('--center', default=True)
 @click.argument('--period', default=24*3600)
