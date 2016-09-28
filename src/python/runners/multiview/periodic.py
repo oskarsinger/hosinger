@@ -110,6 +110,7 @@ class MVCCADTCWTRunner:
             self.heat_matrices.append(period_heat)
 
             if self.save_heat:
+                print 'Saving heat matrices for period', period
                 for (k, hm) in period_heat.items():
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
@@ -120,6 +121,7 @@ class MVCCADTCWTRunner:
                         path = os.path.join(self.heat_dir, path)
 
                     with open(path, 'w') as f:
+                        print 'Saving heat matrix for view pair', k
                         np.save(f, hm)
 
     def _get_wavelet_transforms(self):
