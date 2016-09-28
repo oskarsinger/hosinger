@@ -141,7 +141,7 @@ class MVCCADTCWTRunner:
 
         while (k + 1) * factor < min_length:
             print 'Computing wavelet transforms for period', k
-            current_data = [view[k * factor: (k+1) * factor,:] 
+            current_data = [view[k * factor: (k+1) * factor, np.newaxis]
                             for view in data]
 
             """
