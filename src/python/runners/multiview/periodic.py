@@ -100,6 +100,7 @@ class MVCCADTCWTRunner:
     def _compute_heat_matrices(self):
 
         (Yls, Yhs) = self._get_wavelet_transforms()
+        print len(Yhs[0])
 
         for period in xrange(len(Yhs[0])):
             print 'Computing heat matrices for period', period
@@ -171,7 +172,7 @@ class MVCCADTCWTRunner:
                 Yhs[i].append(Yh)
 
                 """
-            for process in processes:
+            for (i, process) in enumerate(processes):
                 (Yl, Yh, _) = process.get()
 
                 Yls[i].append(Yl)
