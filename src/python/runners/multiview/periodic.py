@@ -142,14 +142,11 @@ class MVCCADTCWTRunner:
 
         while not complete:
             exceeded = [k >= t for t in thresholds]
-
-            print 'exceeded', exceeded
-
             complete = any(exceeded)
 
             print 'Computing wavelet transforms for period', k
 
-            current_data = [view[k * f: (k+1) * f, :]
+            current_data = [view[k * f: (k+1) * f]
                             for (f, view) in zip(factors, data)]
 
             """
