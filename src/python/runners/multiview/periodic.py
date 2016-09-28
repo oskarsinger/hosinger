@@ -146,9 +146,9 @@ class MVCCADTCWTRunner:
 
             print 'Computing wavelet transforms for period', k
 
-            print [(k+1) * f for f in factors]
-            current_data = [view[k * f: (k+1) * f]
+            current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
+            print current_data
 
             """
             p = Pool(len(current_data))
