@@ -133,16 +133,19 @@ class MVCCADTCWTRunner:
         # TODO: downsampled after wavelet coefficient
         data = [ds.get_data() for ds in self.servers]
         factors = [self.period * r for r in self.rates]
-        lengths = [view.shape[0] for view in data]
+        thresholds  = [data.shape[0] / f 
+                       for (data, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
         complete = False
 
         while not complete:
-            complete = any(
-                [(k+1) * f >= l 
-                 for (f, l) in zip(factors, lengths)])
+            exceeded = [k >= t for t in thresholds]
+
+            print 'exceeded', exceeded
+
+            complete = any(exceeded)
 
             print 'Computing wavelet transforms for period', k
 
