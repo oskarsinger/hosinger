@@ -165,8 +165,8 @@ class MVCCADTCWTRunner:
                 (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                     view, 
                     int(log(view.shape[0], 2)) - 1,
-                    biorthogonal, 
-                    qshift)
+                    self.biorthogonal, 
+                    self.qshift)
 
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
