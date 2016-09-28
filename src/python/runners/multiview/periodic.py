@@ -133,8 +133,10 @@ class MVCCADTCWTRunner:
         # TODO: downsampled after wavelet coefficient
         data = [ds.get_data() for ds in self.servers]
         factors = [self.period * r for r in self.rates]
+        print factors
         min_length = min(
             [view.shape[0] for view in data])
+        print min_length
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         k = 0
