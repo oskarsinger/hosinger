@@ -199,7 +199,7 @@ class MVCCADTCWTRunner:
             processes.append(p.apply_async(
                 _get_resampled_view, (ds, rate)))
             """
-            resampled.append(get_resampled_view(ds, rate))
+            resampled.append(_get_resampled_view(ds, rate))
 
         """
         for process in processes:
