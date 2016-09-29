@@ -271,7 +271,7 @@ def _get_sampled_wavelets(Yh, Yl):
     hi_and_lo = hi_and_lo[:k]
     basis = np.zeros(
         (hi_and_lo[-1].shape[0], k),
-        dtype=complex_)
+        dtype=complex)
     
     for (i, y) in enumerate(hi_and_lo):
         power = k - i - 1
