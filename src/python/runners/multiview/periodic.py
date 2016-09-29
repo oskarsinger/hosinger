@@ -258,7 +258,7 @@ def _get_sampled_wavelets(Yh, Yl):
 
     # Truncate for full-rank down-sampled coefficient matrix
     threshold = log(hi_and_lo[0].shape[0], 2)
-    k = 0
+    k = 1
 
     while log(k, 2) + k <= threshold:
         k += 1
