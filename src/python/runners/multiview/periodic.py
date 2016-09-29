@@ -109,7 +109,7 @@ class MVCCADTCWTRunner:
             period_heat = self._get_heat_matrices(
                 Yhs_period, Yls_period)
 
-            self.wavelet_matrices.append(Ys_matrices)
+            self.wavelet_matrices.append((Yhs_period, Yls_period))
             self.heat_matrices.append(period_heat)
 
             if self.save_heat:
@@ -210,10 +210,8 @@ class MVCCADTCWTRunner:
                        for (Yh, Yl) in zip(Yhs, Yls)]
         min_length = min(
             [Y.shape[0] for Y in Yh_matrices]) 
-        print 'min_length', min_length
         rates = [int(Y.shape[0] / min_length)
                  for Y in Yh_matrices]
-        print 'rates', rates
         subsamples = [m[::r,:]
                       for (m, r) in zip(Yh_matrices, rates)]
         get_matrix = lambda i,j: np.dot(
@@ -257,13 +255,19 @@ def _get_sampled_wavelets(Yh, Yl):
 
     # TODO: figure out what to do with Yl
     hi_and_lo = Yh# + [Yl]
-    num_levels = len(hi_and_lo)
-    num_coeffs = min([Y.shape[0] for Y in hi_and_lo])
-    basis = np.zeros((num_coeffs, len(hi_and_lo))) 
-    print 'wavelet matrix shape', basis.shape
 
+    # Truncate for full-rank down-sampled coefficient matrix
+    threshold = log(hi_and_lo[0].shape[0], 2)
+    k = 0
+
+    while log(k, 2) + k <= threshold:
+        k += 1
+
+    hi_and_lo = hi_and_lo[:k]
+    basis = np.zeros((k, hi_and_lo[-1].shape[0]))
+    
     for (i, y) in enumerate(hi_and_lo):
-        power = num_levels - i - 1
+        power = k - i - 1
         basis[:,i] = np.copy(y[::2**power,0])
 
     return basis
