@@ -249,7 +249,7 @@ class MVCCADTCWTRunner:
 
 def _get_sampled_wavelets(Yh, Yl):
 
-    hi_and_lo = Yh + [Yl]
+    hi_and_lo = Yh# + [Yl]
     print 'Yh shapes', [Y.shape for Y in Yh]
     print 'Yl shape', Yl.shape
     num_levels = len(hi_and_lo)
