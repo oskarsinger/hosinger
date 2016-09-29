@@ -161,6 +161,7 @@ class MVCCADTCWTRunner:
                     int(log(view.shape[0], 2)) - 2,
                     biorthogonal, 
                     qshift)))
+
                 """
                 (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                     view, 
@@ -170,8 +171,8 @@ class MVCCADTCWTRunner:
 
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
-
                 """
+
             for (i, process) in enumerate(processes):
                 (Yl, Yh, _) = process.get()
 
@@ -208,8 +209,10 @@ class MVCCADTCWTRunner:
 
         Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
                         for (Yh, Yl) in zip(Yhs, Yls)]
+        print 'Yh matrix shapes', [Y.shape for Y in Yh_matrices]
         subsamples = [m[::r,:]
                       for (m, r) in zip(Yh_matrices, self.rates)]
+        print 'subsample shapes', [s.shape for s in subsamples]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
 
