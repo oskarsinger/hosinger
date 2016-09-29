@@ -249,19 +249,15 @@ class MVCCADTCWTRunner:
 
 def _get_sampled_wavelets(Yh, Yl):
 
+    # TODO: figure out what to do with Yl
     hi_and_lo = Yh# + [Yl]
-    print 'Yh shapes', [Y.shape for Y in Yh]
-    print 'Yl shape', Yl.shape
     num_levels = len(hi_and_lo)
-    print 'num_levels', num_levels
     num_coeffs = min([Y.shape[0] for Y in hi_and_lo])
-    print 'num_coeffs', num_coeffs
     basis = np.zeros((num_coeffs, len(hi_and_lo))) 
+    print 'wavelet matrix shape', basis.shape
 
     for (i, y) in enumerate(hi_and_lo):
         power = num_levels - i - 1
-        print 'power', power
-        print 'num elements ish', y.shape[0] * 1.0 / 2**power
         basis[:,i] = np.copy(y[::2**power,0])
 
     return basis
