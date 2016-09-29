@@ -16,11 +16,17 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
-    pos_color_scheme=list(reversed(YlGn9)),
-    neg_color_scheme=list(reversed(OrRd9)),
+    pos_color_scheme=None,
+    neg_color_scheme=None,
     norm_axis=None,
     width=None,
     height=None):
+
+    if pos_color_scheme is None:
+        pos_color_scheme = list(reversed(YlGn9))
+
+    if neg_color_scheme is None:
+        neg_color_scheme = list(reversed(OrRd9))
 
     (n, m) = value_matrix.shape
 

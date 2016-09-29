@@ -21,7 +21,6 @@ def get_changing_e4_loaders(hdf5_path, subject, seconds, online):
 
     return [
         FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
-        #IBI(hdf5_path, subject, 'IBI', fac, seconds=seconds, online=online),
         FRL(hdf5_path, subject, 'BVP', fac, seconds=seconds, online=online),
         FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
 

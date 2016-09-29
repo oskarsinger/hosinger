@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from drrobert.file_io import get_timestamped as get_ts
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
-from bokeh.palettes import BuPu9
+from bokeh.palettes import BuPu9, Oranges9
 from bokeh.plotting import output_file, show
 from bokeh.models.layouts import Column
 from sklearn.cross_decomposition import CCA
@@ -70,10 +70,16 @@ class MVCCADTCWTRunner:
     def _show_plots(self):
 
         timelines = {k : [] for k in self.heat_matrices[0].keys()}
+        prev = None
 
-        for (i, period) in enumerate(self.heat_matrices[:5]):
+        for (i, period) in enumerate(self.heat_matrices):
             for (k, hm) in period.items():
+                if i > 0:
+                    timelines[k].append(hm - prev[k])
+
                 timelines[k].append(hm)
+
+            prev = period
 
         for (k, l) in timelines.items():
             self._plot_correlation_heat(k, l)
@@ -226,7 +232,7 @@ class MVCCADTCWTRunner:
 
         (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
-        title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '  by decimation level'
+        title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '\nby decimation level'
         x_name = 'decimation level'
         y_name = 'decimation level'
         x_labels = ['2^' + str(-k) for k in xrange(p)]
@@ -234,7 +240,14 @@ class MVCCADTCWTRunner:
         val_name = 'correlation'
         plots = []
 
-        for hm in timeline:
+        for (k, hm) in enumerate(timeline):
+            pos_color_scheme = None
+            neg_color_scheme = None
+
+            if k % 2 > 0:
+                pos_color_scheme = list(reversed(BuPu9))
+                neg_color_scheme = list(reversed(Oranges9))
+
             hmp = plot_matrix_heat(
                 hm,
                 x_labels,
@@ -242,7 +255,9 @@ class MVCCADTCWTRunner:
                 title,
                 x_name,
                 y_name,
-                val_name)
+                val_name,
+                pos_color_scheme=pos_color_scheme,
+                neg_color_scheme=neg_color_scheme)
 
             plots.append(hmp)
 
