@@ -33,7 +33,7 @@ def run_it_all_day(
         'near_sym_b')
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
-    loaders = dles.get_changing_e4_loaders(
+    loaders = dles.get_e4_loaders(
         data_path,
         subject,
         None,
