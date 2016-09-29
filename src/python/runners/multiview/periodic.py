@@ -8,7 +8,7 @@ from drrobert.file_io import get_timestamped as get_ts
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9
-from bokeh.plotting import output_file
+from bokeh.plotting import output_file, show
 from sklearn.cross_decomposition import CCA
 from math import log
 from time import mktime
@@ -70,7 +70,7 @@ class MVCCADTCWTRunner:
     def _show_plots(self):
 
         for period in self.heat_matrices:
-            for (k, hm) in period:
+            for (k, hm) in period.items():
                 self._plot_matrix_heat(hm, k)
 
     def _load_heat_matrices(self):
@@ -86,12 +86,13 @@ class MVCCADTCWTRunner:
         num_periods = max(
             [int(k.split('_')[1]) 
              for k in heat_matrices.keys()])
+        print 'num_periods', num_periods 
 
         self.heat_matrices = [{} for i in xrange(num_periods)]
 
         for (k, hm) in heat_matrices.items():
             info = k.split('_')
-            period = int(info[1])
+            period = int(info[1]) - 1
             views = frozenset(
                 [int(i) for i in info[3].split('-')]) 
 
@@ -100,7 +101,6 @@ class MVCCADTCWTRunner:
     def _compute_heat_matrices(self):
 
         (Yls, Yhs) = self._get_wavelet_transforms()
-        print len(Yhs[0])
 
         for period in xrange(len(Yhs[0])):
             print 'Computing heat matrices for period', period
@@ -223,8 +223,12 @@ class MVCCADTCWTRunner:
 
     def _plot_matrix_heat(self, heat_matrix, key):
 
-        # TODO: figure out how to get ordered key
-        (i,j) = tuple(key)
+        (i, j) = [None] * 2
+        if len(key) == 1:
+            (i, j) = list(key) * 2
+        else:
+            (i,j) = tuple(key)
+
         names = [ds.name() for ds in self.servers]
         (n, p) = heat_matrix.shape
         x_labels = ['2^' + str(-k) for k in xrange(p)]
