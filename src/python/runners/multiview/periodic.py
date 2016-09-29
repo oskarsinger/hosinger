@@ -83,6 +83,8 @@ class MVCCADTCWTRunner:
             with open(path) as f:
                 heat_matrices[fn] = np.load(f)
 
+            print 'Loaded hm complex?:', np.any(np.iscomplex(heat_matrices[fn]))
+
         num_periods = max(
             [int(k.split('_')[1]) 
              for k in heat_matrices.keys()])
