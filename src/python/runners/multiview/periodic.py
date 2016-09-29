@@ -197,7 +197,6 @@ class MVCCADTCWTRunner:
                 _get_resampled_view, (ds, rate)))
             """
             resampled.append(_get_resampled_view(ds, rate))
-
             """
         for process in processes:
             print 'Getting result for process'
@@ -208,11 +207,15 @@ class MVCCADTCWTRunner:
     def _get_heat_matrices(self, Yhs, Yls):
 
         Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
-                        for (Yh, Yl) in zip(Yhs, Yls)]
-        print 'Yh matrix shapes', [Y.shape for Y in Yh_matrices]
+                       for (Yh, Yl) in zip(Yhs, Yls)]
+        min_length = min(
+            [Y.shape[0] for Y in Yh_matrices]) 
+        print 'min_length', min_length
+        rates = [int(Y.shape[0] / min_length)
+                 for Y in Yh_matrices]
+        print 'rates', rates
         subsamples = [m[::r,:]
-                      for (m, r) in zip(Yh_matrices, self.rates)]
-        print 'subsample shapes', [s.shape for s in subsamples]
+                      for (m, r) in zip(Yh_matrices, rates)]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
 
