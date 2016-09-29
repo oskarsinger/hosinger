@@ -158,13 +158,13 @@ class MVCCADTCWTRunner:
                 processes.append(p.apply_async(
                     dtcwt.oned.dtwavexfm,
                     (view, 
-                    int(log(view.shape[0], 2)) - 1,
+                    int(log(view.shape[0], 2)) - 2,
                     biorthogonal, 
                     qshift)))
                 """
                 (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                     view, 
-                    int(log(view.shape[0], 2)) - 1,
+                    int(log(view.shape[0], 2)) - 2,
                     self.biorthogonal, 
                     self.qshift)
 
