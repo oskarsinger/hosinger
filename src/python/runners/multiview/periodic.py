@@ -51,7 +51,6 @@ class MVCCADTCWTRunner:
         if self.load_heat:
             self._load_heat_matrices()
         else:
-            print 'Computing heat matrices'
             self._compute_heat_matrices()
 
         if self.show_plots:
@@ -69,9 +68,9 @@ class MVCCADTCWTRunner:
 
     def _show_plots(self):
 
-        for period in self.heat_matrices:
+        for (i, period) in enumerate(self.heat_matrices[:4]):
             for (k, hm) in period.items():
-                self._plot_matrix_heat(hm, k)
+                self._plot_correlation_heat(hm, k, i)
 
     def _load_heat_matrices(self):
 
@@ -82,8 +81,6 @@ class MVCCADTCWTRunner:
 
             with open(path) as f:
                 heat_matrices[fn] = np.load(f)
-
-            print 'Loaded hm complex?:', np.any(np.iscomplex(heat_matrices[fn]))
 
         num_periods = max(
             [int(k.split('_')[1]) 
@@ -114,7 +111,6 @@ class MVCCADTCWTRunner:
             self.heat_matrices.append(period_heat)
 
             if self.save_heat:
-                print 'Saving heat matrices for period', period
                 for (k, hm) in period_heat.items():
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
@@ -125,7 +121,6 @@ class MVCCADTCWTRunner:
                         path = os.path.join(self.heat_dir, path)
 
                     with open(path, 'w') as f:
-                        print 'Saving heat matrix for view pair', k
                         np.save(f, hm)
 
     def _get_wavelet_transforms(self):
@@ -143,9 +138,6 @@ class MVCCADTCWTRunner:
         while not complete:
             exceeded = [(k+1) >= t for t in thresholds]
             complete = any(exceeded)
-
-            print 'Computing wavelet transforms for period', k
-
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
             p = Pool(len(current_data))
@@ -186,21 +178,17 @@ class MVCCADTCWTRunner:
 
     def _get_resampled_data(self):
 
-        print 'Resampling data'
-
         p = Pool(len(self.servers))
         processes = []
         resampled = []
 
         for (ds, rate) in zip(self.servers, self.rates):
-            print 'Starting process for resampling of view', ds.name()
             processes.append(p.apply_async(
                 _get_resampled_view, (ds, rate)))
             """
             resampled.append(_get_resampled_view(ds, rate))
             """
         for process in processes:
-            print 'Getting result for process'
             resampled.append(process.get())
 
         return resampled
@@ -222,7 +210,7 @@ class MVCCADTCWTRunner:
                 for i in xrange(self.num_views)
                 for j in xrange(i, self.num_views)}
 
-    def _plot_matrix_heat(self, heat_matrix, key):
+    def _plot_correlation_heat(self, heat_matrix, key, period):
 
         (i, j) = [None] * 2
         if len(key) == 1:
@@ -245,11 +233,14 @@ class MVCCADTCWTRunner:
             title,
             x_name,
             y_name,
-            val_name)
+            val_name,
+            width=p*50,
+            height=n*50)
 
         filename = get_ts(
             'correlation_of_wavelet_coefficients_' +
-            names[i] + '_' + names[j]) + '.html'
+            names[i] + '_' + names[j] +
+            '_period_' + str(period)) + '.html'
         filepath = os.path.join(self.plot_path, filename)
         output_file(filepath, 'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
@@ -278,8 +269,6 @@ def _get_sampled_wavelets(Yh, Yl):
         new = y[::2**power,0]
         new_copy = np.copy(new)
         basis[:,i] = new_copy
-
-    print 'basis complex?:', np.any(np.iscomplex(basis))
 
     return basis
 
