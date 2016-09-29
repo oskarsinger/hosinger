@@ -177,11 +177,6 @@ class MVCCADTCWTRunner:
             for (i, process) in enumerate(processes):
                 (Yl, Yh, _) = process.get()
 
-                print 'Num Ys in _get_wavelet_transforms:', len(Yh)
-                real_only = [Y for Y in Yh 
-                             if not np.any(np.iscomplex(Y))]
-                print 'Num real only:', len(real_only)
-
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
 
@@ -214,12 +209,6 @@ class MVCCADTCWTRunner:
 
         Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
                        for (Yh, Yl) in zip(Yhs, Yls)]
-
-        print 'Num Y matrices:', len(Yh_matrices)
-        real_only = [Ym for Ym in Yh_matrices 
-                     if not np.any(np.iscomplex(Ym))]
-        print 'Num real only:', len(real_only)
-
         min_length = min(
             [Y.shape[0] for Y in Yh_matrices]) 
         rates = [int(Y.shape[0] / min_length)
@@ -272,11 +261,6 @@ def _get_sampled_wavelets(Yh, Yl):
     # TODO: figure out what to do with Yl
     hi_and_lo = Yh# + [Yl]
 
-    print 'Num Ys in _get_sampled_wavelets:', len(hi_and_lo)
-    real_only = [Y for Y in hi_and_lo 
-                 if not np.any(np.iscomplex(Y))]
-    print 'Num real only:', len(real_only)
-
     # Truncate for full-rank down-sampled coefficient matrix
     threshold = log(hi_and_lo[0].shape[0], 2)
     k = 1
@@ -285,14 +269,14 @@ def _get_sampled_wavelets(Yh, Yl):
         k += 1
 
     hi_and_lo = hi_and_lo[:k]
-    basis = np.zeros((hi_and_lo[-1].shape[0], k))
+    basis = np.zeros(
+        (hi_and_lo[-1].shape[0], k),
+        dtype=complex_)
     
     for (i, y) in enumerate(hi_and_lo):
         power = k - i - 1
         new = y[::2**power,0]
-        print 'new complex?:', np.any(np.iscomplex(new))
         new_copy = np.copy(new)
-        print 'new_copy complex?:', np.any(np.iscomplex(new_copy))
         basis[:,i] = new_copy
 
     print 'basis complex?:', np.any(np.iscomplex(basis))
