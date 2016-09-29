@@ -11,6 +11,7 @@ from bokeh.models.layouts import Column
 @click.command()
 @click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
+@click.option('--subject', default='HRV15-005')
 @click.option('--save-heat', default=False)
 @click.option('--load-heat', default=False)
 @click.option('--heat-dir', default=None)
@@ -19,6 +20,7 @@ from bokeh.models.layouts import Column
 @click.option('--period', default=24*3600)
 def run_it_all_day(
     data_path, 
+    subject,
     save_heat, 
     load_heat,
     heat_dir, 
@@ -27,14 +29,13 @@ def run_it_all_day(
     period):
 
     # TODO: do it with different bases and shifts
-    # TODO: also figure out what shifts are
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
     loaders = dles.get_changing_e4_loaders(
         data_path,
-        'HRV15-005',
+        subject,
         None,
         False)
     servers = [BS(dl, center=center) for dl in loaders]

@@ -5,7 +5,7 @@ from math import pi
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
 from bokeh.palettes import YlGn9, OrRd9
-from bokeh.models.layouts import Column
+from bokeh.models.layouts import Row
 from utils import get_plot_path
 
 def plot_matrix_heat(
@@ -19,8 +19,16 @@ def plot_matrix_heat(
     pos_color_scheme=list(reversed(YlGn9)),
     neg_color_scheme=list(reversed(OrRd9)),
     norm_axis=None,
-    width=900,
-    height=400):
+    width=None,
+    height=None):
+
+    (n, m) = value_matrix.shape
+
+    if height is None:
+        height = n * 30
+
+    if width is None:
+        width = m * 30
 
     value_matrices = None
     ps = []
@@ -54,7 +62,7 @@ def plot_matrix_heat(
 
         ps.append(p)
 
-    return Column(*ps)
+    return Row(*ps)
 
 def _initialize_figure(
     source, 

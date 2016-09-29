@@ -9,6 +9,7 @@ from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9
 from bokeh.plotting import output_file, show
+from bokeh.models.layouts import Column
 from sklearn.cross_decomposition import CCA
 from math import log
 from time import mktime
@@ -68,9 +69,14 @@ class MVCCADTCWTRunner:
 
     def _show_plots(self):
 
-        for (i, period) in enumerate(self.heat_matrices[:4]):
+        timelines = {k : [] for k in self.heat_matrices[0].keys()}
+
+        for (i, period) in enumerate(self.heat_matrices[:5]):
             for (k, hm) in period.items():
-                self._plot_correlation_heat(hm, k, i)
+                timelines[k].append(hm)
+
+        for (k, l) in timelines.items():
+            self._plot_correlation_heat(k, l)
 
     def _load_heat_matrices(self):
 
@@ -210,7 +216,7 @@ class MVCCADTCWTRunner:
                 for i in xrange(self.num_views)
                 for j in xrange(i, self.num_views)}
 
-    def _plot_correlation_heat(self, heat_matrix, key, period):
+    def _plot_correlation_heat(self, key, timeline):
 
         (i, j) = [None] * 2
         if len(key) == 1:
@@ -218,34 +224,37 @@ class MVCCADTCWTRunner:
         else:
             (i,j) = tuple(key)
 
+        (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
-        (n, p) = heat_matrix.shape
-        x_labels = ['2^' + str(-k) for k in xrange(p)]
-        y_labels = ['2^' + str(-k) for k in xrange(n)]
         title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '  by decimation level'
         x_name = 'decimation level'
         y_name = 'decimation level'
+        x_labels = ['2^' + str(-k) for k in xrange(p)]
+        y_labels = ['2^' + str(-k) for k in xrange(n)]
         val_name = 'correlation'
-        p = plot_matrix_heat(
-            heat_matrix,
-            x_labels,
-            y_labels,
-            title,
-            x_name,
-            y_name,
-            val_name,
-            width=p*50,
-            height=n*50)
+        plots = []
 
+        for hm in timeline:
+            hmp = plot_matrix_heat(
+                hm,
+                x_labels,
+                y_labels,
+                title,
+                x_name,
+                y_name,
+                val_name)
+
+            plots.append(hmp)
+
+        plot = Column(*plots)
         filename = get_ts(
             'correlation_of_wavelet_coefficients_' +
-            names[i] + '_' + names[j] +
-            '_period_' + str(period)) + '.html'
+            names[i] + '_' + names[j]) + '.html'
         filepath = os.path.join(self.plot_path, filename)
+
         output_file(filepath, 'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
-
-        show(p)
+        show(plot)
 
 def _get_sampled_wavelets(Yh, Yl):
 
