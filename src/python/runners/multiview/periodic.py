@@ -262,7 +262,7 @@ def _get_sampled_wavelets(Yh, Yl):
         power = num_levels - i - 2
         print 'power', power
         print 'num elements ish', y.shape[0] * 1.0 / 2**power
-        basis[:,i] = np.copy(y[::2**power])
+        basis[:,i] = np.copy(y[::2**power,0])
 
     return basis
 
