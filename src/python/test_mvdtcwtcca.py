@@ -12,19 +12,27 @@ from bokeh.models.layouts import Column
 @click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
 @click.option('--subject', default='HRV15-005')
-@click.option('--save-heat', default=False)
-@click.option('--load-heat', default=False)
-@click.option('--heat-dir', default=None)
-@click.option('--show-plots', default=False)
+@click.option('--save-correlation', default=False)
+@click.option('--load-correlation', default=False)
+@click.option('--correlation-dir', default=None)
+@click.option('--show-correlation', default=False)
+@click.option('--save-cca', default=False)
+@click.option('--load-cca', default=False)
+@click.option('--cca-dir', default=None)
+@click.option('--show-cca', default=False)
 @click.option('--center', default=False)
 @click.option('--period', default=24*3600)
 def run_it_all_day(
     data_path, 
     subject,
-    save_heat, 
-    load_heat,
-    heat_dir, 
-    show_plots,
+    save_correlation, 
+    load_correlation,
+    correlation_dir, 
+    show_correlation,
+    save_cca, 
+    load_cca,
+    cca_dir, 
+    show_cca,
     center, 
     period):
 
@@ -44,10 +52,14 @@ def run_it_all_day(
         qshift_b,
         servers,
         period,
-        heat_dir=heat_dir,
-        save_heat=save_heat,
-        load_heat=load_heat,
-        show_plots=show_plots)
+        correlation_dir=correlation_dir,
+        save_correlation=save_correlation,
+        load_correlation=load_correlation,
+        show_correlation=show_correlation,
+        cca_dir=cca_dir,
+        save_cca=save_cca,
+        load_cca=load_cca,
+        show_cca=show_cca)
 
     runner.run()
 
