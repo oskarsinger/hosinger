@@ -6,7 +6,7 @@ import spancca as scca
 
 from multiprocessing import Pool
 from drrobert.file_io import get_timestamped as get_ts
-from drrobert.data_structures import SparsePairwiseUnorderedDictionary as SPUD
+from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9, Oranges9
