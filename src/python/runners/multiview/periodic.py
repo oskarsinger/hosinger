@@ -59,7 +59,8 @@ class MVCCADTCWTRunner:
         if self.show_plots:
             self._show_plots()
 
-        # TODO: Do pair-wise CCA on magnitude of coefficients
+    def _compute_CCA_coefficients(self):
+
         for (Yhs, Yls) in self.wavelet_coefficients:
             current = SPUD(self.num_views)
             wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
@@ -74,12 +75,15 @@ class MVCCADTCWTRunner:
                     cca = CCA(n_components=1)
 
                     cca.fit(X_data, Y_data)
-
                     current.insert(i,j, cca.get_params())
 
             self.pairwise_CCA_params.append(current)
 
+        if self.show
+        for XY_spud in self.pairwise_CCA_params.append(current):
+            for (k, xy_pair) in XY_spud.items():
         # TODO: Do multi-view CCA on magnitude of coefficients
+
 
         # TODO: Maybe also do pairwise and multi-view on phase
             
