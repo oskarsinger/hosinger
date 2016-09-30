@@ -8,7 +8,7 @@ class SparsePairwiseUnorderedDict:
                      for j in xrange(i, self.num_indexes)}
 
         if no_double:
-            self.spud = {k : v for (k, v) in self.spud
+            self.spud = {k : v for (k, v) in self.spud.items()
                          if not k[0] == k[1]}
 
     def insert(self, i, j, v):
