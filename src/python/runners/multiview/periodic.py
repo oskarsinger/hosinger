@@ -130,6 +130,7 @@ class MVCCADTCWTRunner:
                             for i in xrange(num_periods)]
 
         for (k, hm) in correlation.items():
+            print k
             info = k.split('_')
             period = int(info[1]) - 1
             views = [int(i) for i in info[3].split('-')]
@@ -166,7 +167,7 @@ class MVCCADTCWTRunner:
                 period_str = 'period_' + str(period)
 
                 for (k, xy_pair) in current.items(no_double=True):
-                    views_str = 'views_' + '-'.join([str(i) for i in k])
+                    views_str = 'views_' + '-'.join([str(j) for j in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
@@ -195,6 +196,7 @@ class MVCCADTCWTRunner:
 
             if self.save_correlation:
                 for (k, hm) in correlation.items():
+                    print k
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
