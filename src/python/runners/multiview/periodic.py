@@ -149,8 +149,8 @@ class MVCCADTCWTRunner:
             abs_wms = [np.absolute(wm) 
                        for wm in wavelet_matrices]
 
-            for i in xrange(len(Yhs)-1):
-                for j in xrange(i+1, len(Yhs)):
+            for i in xrange(self.num_views):
+                for j in xrange(i+1, self.num_views):
                     X_data = abs_wms[i]
                     Y_data = abs_wms[j]
                     cca = CCA(n_components=1)
@@ -160,6 +160,7 @@ class MVCCADTCWTRunner:
                     xy_pair = {
                         'Xw': cca.x_weights_,
                         'Yw': cca.y_weights_}
+                    print xy_pair
 
                     current.insert(i, j, xy_pair)
 
@@ -230,7 +231,6 @@ class MVCCADTCWTRunner:
 
     def _get_wavelet_transforms(self):
 
-        # TODO: downsampled after wavelet coefficient
         data = [ds.get_data() for ds in self.servers]
         factors = [int(self.period * r) for r in self.rates]
         thresholds  = [int(view.shape[0] * 1.0 / f)
@@ -333,7 +333,9 @@ class MVCCADTCWTRunner:
 
         (i, j) = key
         (nx, px) = timeline[0]['Xw'].shape
+        print 'nx', nx, 'px', px
         (ny, py) = timeline[0]['Yw'].shape
+        print 'ny', ny, 'py', py
         names = [ds.name() for ds in self.servers]
         title = 'CCA decomposition of views ' + \
             names[i] + ' and ' + names[j] + \
@@ -343,8 +345,11 @@ class MVCCADTCWTRunner:
         x_name = 'component'
         y_name = 'decimation level'
         x_labels = [str(k) for k in xrange(px)]
+        print 'x_labels', x_labels
         yx_labels = ['2^' + str(-k) for k in xrange(nx)]
+        print 'yx_labels', yx_labels
         yy_labels = ['2^' + str(-k) for k in xrange(ny)]
+        print 'yy_labels', yy_labels
         val_name = 'cca parameter'
         plots = []
 
