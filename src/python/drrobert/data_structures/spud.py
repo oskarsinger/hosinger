@@ -44,7 +44,7 @@ class SparsePairwiseUnorderedDict:
 
         return self.spud.values()
 
-    def items(self, no_dup=False):
+    def items(self, no_double=False):
         
         items = self.spud.items()
 
