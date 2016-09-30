@@ -5,6 +5,7 @@ import pandas as pd
 
 from multiprocessing import Pool
 from drrobert.file_io import get_timestamped as get_ts
+from drrobert.data_structures import SparsePairwiseUnorderedDictionary as SPUD
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9, Oranges9
@@ -44,8 +45,9 @@ class MVCCADTCWTRunner:
         self.converged = False
         self.num_iters = 0
         self.num_rounds = 0
-        self.wavelet_matrices = []
+        self.wavelet_coefficients = []
         self.heat_matrices = [] 
+        self.pairwise_CCA_params = []
 
     def run(self):
 
@@ -56,16 +58,32 @@ class MVCCADTCWTRunner:
 
         if self.show_plots:
             self._show_plots()
-        # What exactly am I doing CCA on? Right, the matrices of coefficients
-        # What is the output like for the 2d wavelets though. Can I still do standard CCA?
 
-        # TODO: Do (multi-view?) CCA on magnitude of coefficients
+        # TODO: Do pair-wise CCA on magnitude of coefficients
+        for (Yhs, Yls) in self.wavelet_coefficients:
+            current = SPUD(self.num_views)
+            wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
+                                for (Yh, Yl) in zip(Yhs, Yls)]
+            abs_wms = [np.absolute(wm) 
+                       for wm in wavelet_matrices]
 
-        # TODO: Do CCA on np.real(coefficients)
+            for i in xrange(len(Yhs)-1):
+                for j in xrange(i+1, len(Yhs)):
+                    X_data = abs_wms[i]
+                    Y_data = abs_wms[j]
+                    cca = CCA(n_components=1)
 
-        # TODO: Do CCA on np.imag(coefficients)
-        
-        # TODO: Do CCA on unmodified complex coefficients
+                    cca.fit(X_data, Y_data)
+
+                    current.insert(i,j, cca.get_params())
+
+            self.pairwise_CCA_params.append(current)
+
+        # TODO: Do multi-view CCA on magnitude of coefficients
+
+        # TODO: Maybe also do pairwise and multi-view on phase
+            
+        # TODO: Do CCA on unmodified complex coefficients (probably not)
 
     def _show_plots(self):
 
@@ -98,15 +116,16 @@ class MVCCADTCWTRunner:
             [int(k.split('_')[1]) 
              for k in heat_matrices.keys()])
 
-        self.heat_matrices = [{} for i in xrange(num_periods)]
+        self.heat_matrices = [SPUD(self.num_views)
+                              for i in xrange(num_periods)]
 
         for (k, hm) in heat_matrices.items():
             info = k.split('_')
             period = int(info[1]) - 1
-            views = frozenset(
-                [int(i) for i in info[3].split('-')]) 
+            views = [int(i) for i in info[3].split('-')]
 
-            self.heat_matrices[period][views] = hm
+            self.heat_matrices[period].insert(
+                views[0], views[1], hm)
 
     def _compute_heat_matrices(self):
 
@@ -119,7 +138,7 @@ class MVCCADTCWTRunner:
             period_heat = self._get_period_heat_matrices(
                 Yhs_period, Yls_period)
 
-            self.wavelet_matrices.append((Yhs_period, Yls_period))
+            self.wavelet_coefficients.append((Yhs_period, Yls_period))
             self.heat_matrices.append(period_heat)
 
             if self.save_heat:
@@ -217,19 +236,17 @@ class MVCCADTCWTRunner:
                       for (m, r) in zip(Yh_matrices, rates)]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
+        period_heat = SPUD(self.num_views)
 
-        return {frozenset([i,j]): get_matrix(i, j)
-                for i in xrange(self.num_views)
-                for j in xrange(i, self.num_views)}
+        for i in xrange(self.num_views):
+            for j in xrange(i, self.num_views):
+                period_heat.insert(i, j, get_matrix(i, j))
+
+        return period_heat
 
     def _plot_correlation_heat(self, key, timeline):
 
-        (i, j) = [None] * 2
-        if len(key) == 1:
-            (i, j) = list(key) * 2
-        else:
-            (i,j) = tuple(key)
-
+        (i, j) = key
         (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
         title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '\nby decimation level'
@@ -267,7 +284,9 @@ class MVCCADTCWTRunner:
             names[i] + '_' + names[j]) + '.html'
         filepath = os.path.join(self.plot_path, filename)
 
-        output_file(filepath, 'correlation_of_wavelet_coefficients_' +
+        output_file(
+            filepath, 
+            'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
         show(plot)
 
