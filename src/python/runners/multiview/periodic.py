@@ -172,10 +172,10 @@ class MVCCADTCWTRunner:
 
                     for (l, mat) in xy_pair.items():
                         if self.cca_dir is not None:
-                            path = os.path.join(
+                            current_path = os.path.join(
                                 self.cca_dir, l + '_' + path)
 
-                        with open(path, 'w') as f:
+                        with open(current_path, 'w') as f:
                             np.save(f, mat)
 
         # TODO: Do multi-view CCA on magnitude of coefficients
