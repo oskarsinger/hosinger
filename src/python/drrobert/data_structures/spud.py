@@ -48,7 +48,7 @@ class SparsePairwiseUnorderedDict:
         
         items = self.spud.items()
 
-        if no_dup:
+        if no_double:
             items = {k : v for (k,v) in items
                      if not k[0] == k[1]}
 
