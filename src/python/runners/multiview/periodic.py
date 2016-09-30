@@ -165,7 +165,7 @@ class MVCCADTCWTRunner:
             if self.save_cca:
                 period_str = 'period_' + str(period)
 
-                for (k, xy_pair) in current.items():
+                for (k, xy_pair) in current.items(no_double=True):
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
@@ -302,7 +302,7 @@ class MVCCADTCWTRunner:
         prev = None
 
         for (i, period) in enumerate(self.pairwise_cca):
-            for (k, xy_pair) in period.items(no_dup=True):
+            for (k, xy_pair) in period.items(no_double=True):
                 if i > 0:
                     timelines[k].append(
                         {l : mat - prev[l] 
