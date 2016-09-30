@@ -1,11 +1,15 @@
 class SparsePairwiseUnorderedDict:
 
-    def __init__(self, num_indexes, default=None):
+    def __init__(self, num_indexes, default=None, no_double=False):
 
         self.num_indexes = num_indexes
         self.spud = {(i, j) : None if default is None else default()
                      for i in xrange(self.num_indexes)
                      for j in xrange(i, self.num_indexes)}
+
+        if no_double:
+            self.spud = {k : v for (k, v) in self.spud
+                         if not k[0] == k[1]}
 
     def insert(self, i, j, v):
 
@@ -36,13 +40,25 @@ class SparsePairwiseUnorderedDict:
 
         return v
 
-    def keys(self):
+    def keys(self, no_double=False):
 
-        return self.spud.keys()
+        keys = self.spud.keys()
 
-    def values(self):
+        if no_double:
+            keys = {k for k in keys
+                    if not k[0] == k[1]}
 
-        return self.spud.values()
+        return keys
+
+    def values(self, no_double=False):
+
+        values = self.spud.values()
+
+        if no_double:
+            values = [v for (k,v) in self.spud.items()
+                      if not k[0] == k[1]]
+                      
+        return values
 
     def items(self, no_double=False):
         
