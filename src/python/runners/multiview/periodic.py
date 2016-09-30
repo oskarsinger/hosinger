@@ -23,20 +23,26 @@ class MVCCADTCWTRunner:
         qshift,
         servers, 
         period,
-        heat_dir=None,
-        load_heat=False,
-        save_heat=False,
-        show_plots=False,
+        correlation_dir=None,
+        load_correlation=False,
+        save_correlation=False,
+        show_correlation=False,
+        load_cca=False,
+        save_cca=False,
+        show_cca=False,
         plot_path='.'):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.servers = servers
         self.period = period
-        self.heat_dir = heat_dir
-        self.load_heat = load_heat
-        self.save_heat = save_heat
-        self.show_plots = show_plots
+        self.correlation_dir = correlation_dir
+        self.load_correlation = load_correlation
+        self.save_correlation = save_correlation
+        self.show_correlation = show_correlation
+        self.load_cca = load_cca
+        self.save_cca = save_cca
+        self.show_cca = show_cca
         self.plot_path = plot_path
 
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
@@ -46,15 +52,25 @@ class MVCCADTCWTRunner:
         self.num_iters = 0
         self.num_rounds = 0
         self.wavelet_coefficients = []
-        self.heat_matrices = [] 
+        self.correlation_matrices = [] 
         self.pairwise_CCA_params = []
 
     def run(self):
 
-        if self.load_heat:
-            self._load_heat_matrices()
+        if not self.load_correlation and not self.load_cca:
+            (Yls, Yhs) = self._get_wavelet_transforms()
+
+            for period in xrange(len(Yhs[0])):
+                Yhs_period = [view[period] for view in Yhs]
+                Yls_period = [view[period] for view in Yls]
+
+                self.wavelet_coefficients.append(
+                    (Yhs_period, Yls_period))
+
+        if self.load_correlation:
+            self._load_correlation_matrices()
         else:
-            self._compute_heat_matrices()
+            self._compute_correlation_matrices()
 
         if self.show_plots:
             self._show_plots()
@@ -79,9 +95,19 @@ class MVCCADTCWTRunner:
 
             self.pairwise_CCA_params.append(current)
 
-        if self.show
-        for XY_spud in self.pairwise_CCA_params.append(current):
-            for (k, xy_pair) in XY_spud.items():
+            if self.save_CCA:
+                for (k, hm) in current.items():
+                    period_str = 'period_' + str(period)
+                    views_str = 'views_' + '-'.join([str(i) for i in k])
+                    path = '_'.join(
+                        [period_str, views_str, 'dtcwt_heat_matrix.thang'])
+
+                    if self.correlation_dir is not None:
+                        path = os.path.join(self.correlation_dir, path)
+
+                    with open(path, 'w') as f:
+                        np.save(f, hm)
+
         # TODO: Do multi-view CCA on magnitude of coefficients
 
 
@@ -91,13 +117,15 @@ class MVCCADTCWTRunner:
 
     def _show_plots(self):
 
-        timelines = {k : [] for k in self.heat_matrices[0].keys()}
+        timelines = {k : [] for k in self.correlation_matrices[0].keys()}
         prev = None
 
-        for (i, period) in enumerate(self.heat_matrices):
+        for (i, period) in enumerate(self.correlation_matrices):
             for (k, hm) in period.items():
+                """
                 if i > 0:
                     timelines[k].append(hm - prev[k])
+                """
 
                 timelines[k].append(hm)
 
@@ -106,54 +134,49 @@ class MVCCADTCWTRunner:
         for (k, l) in timelines.items():
             self._plot_correlation_heat(k, l)
 
-    def _load_heat_matrices(self):
+    def _load_correlation_matrices(self):
 
-        heat_matrices = {}
+        correlation_matrices = {}
 
-        for fn in os.listdir(self.heat_dir):
-            path = os.path.join(self.heat_dir, fn)
+        for fn in os.listdir(self.correlation_dir):
+            path = os.path.join(self.correlation_dir, fn)
 
             with open(path) as f:
-                heat_matrices[fn] = np.load(f)
+                correlation_matrices[fn] = np.load(f)
 
         num_periods = max(
             [int(k.split('_')[1]) 
-             for k in heat_matrices.keys()])
+             for k in correlation_matrices.keys()])
 
-        self.heat_matrices = [SPUD(self.num_views)
+        self.correlation_matrices = [SPUD(self.num_views)
                               for i in xrange(num_periods)]
 
-        for (k, hm) in heat_matrices.items():
+        for (k, hm) in correlation_matrices.items():
             info = k.split('_')
             period = int(info[1]) - 1
             views = [int(i) for i in info[3].split('-')]
 
-            self.heat_matrices[period].insert(
+            self.correlation_matrices[period].insert(
                 views[0], views[1], hm)
 
-    def _compute_heat_matrices(self):
+    def _compute_correlation_matrices(self):
 
-        (Yls, Yhs) = self._get_wavelet_transforms()
-
-        for period in xrange(len(Yhs[0])):
+        for (Yhs, Yls) in self.wavelet_coefficients:
             print 'Computing heat matrices for period', period
-            Yhs_period = [view[period] for view in Yhs]
-            Yls_period = [view[period] for view in Yls]
-            period_heat = self._get_period_heat_matrices(
+            correlation = self._get_period_correlation_matrices(
                 Yhs_period, Yls_period)
 
-            self.wavelet_coefficients.append((Yhs_period, Yls_period))
-            self.heat_matrices.append(period_heat)
+            self.correlation_matrices.append(correlation)
 
-            if self.save_heat:
-                for (k, hm) in period_heat.items():
+            if self.save_correlation:
+                for (k, hm) in correlation.items():
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
-                    if self.heat_dir is not None:
-                        path = os.path.join(self.heat_dir, path)
+                    if self.correlation_dir is not None:
+                        path = os.path.join(self.correlation_dir, path)
 
                     with open(path, 'w') as f:
                         np.save(f, hm)
@@ -228,7 +251,7 @@ class MVCCADTCWTRunner:
 
         return resampled
 
-    def _get_period_heat_matrices(self, Yhs, Yls):
+    def _get_period_correlation_matrices(self, Yhs, Yls):
 
         Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
                        for (Yh, Yl) in zip(Yhs, Yls)]
@@ -240,13 +263,20 @@ class MVCCADTCWTRunner:
                       for (m, r) in zip(Yh_matrices, rates)]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
-        period_heat = SPUD(self.num_views)
+        correlation = SPUD(self.num_views)
 
         for i in xrange(self.num_views):
             for j in xrange(i, self.num_views):
-                period_heat.insert(i, j, get_matrix(i, j))
+                correlation.insert(i, j, get_matrix(i, j))
 
-        return period_heat
+        return correlation
+
+    def _plot_cca_heat(self, key, timeline):
+
+        (i, j) = key
+        (nx, px) = timeline[0]['X'].shape
+        (ny, py) = timeline[0]['Y'].shape
+        names = [ds.name() for ds in self.servers]
 
     def _plot_correlation_heat(self, key, timeline):
 
