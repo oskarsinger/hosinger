@@ -1,9 +1,9 @@
 class SparsePairwiseUnorderedDict:
 
-    def __init__(self, num_indexes):
+    def __init__(self, num_indexes, default=None):
 
         self.num_indexes = num_indexes
-        self.spud = {(i, j) : None
+        self.spud = {(i, j) : None if default is None else default()
                      for i in xrange(self.num_indexes)
                      for j in xrange(i, self.num_indexes)}
 
@@ -44,6 +44,12 @@ class SparsePairwiseUnorderedDict:
 
         return self.spud.values()
 
-    def items(self):
+    def items(self, no_dup=False):
+        
+        items = self.spud.items()
 
-        return self.spud.items()
+        if no_dup:
+            items = {k : v for (k,v) in items
+                     if not k[0] == k[1]}
+
+        return items

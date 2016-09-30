@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pandas as pd
+import spancca as scca
 
 from multiprocessing import Pool
 from drrobert.file_io import get_timestamped as get_ts
@@ -10,7 +11,7 @@ from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9, Oranges9
 from bokeh.plotting import output_file, show
-from bokeh.models.layouts import Column
+from bokeh.models.layouts import Column, Row
 from sklearn.cross_decomposition import CCA
 from math import log
 from time import mktime
@@ -27,6 +28,7 @@ class MVCCADTCWTRunner:
         load_correlation=False,
         save_correlation=False,
         show_correlation=False,
+        cca_dir=None,
         load_cca=False,
         save_cca=False,
         show_cca=False,
@@ -40,6 +42,7 @@ class MVCCADTCWTRunner:
         self.load_correlation = load_correlation
         self.save_correlation = save_correlation
         self.show_correlation = show_correlation
+        self.cca_dir = cca_dir
         self.load_cca = load_cca
         self.save_cca = save_cca
         self.show_cca = show_cca
@@ -51,9 +54,9 @@ class MVCCADTCWTRunner:
         self.converged = False
         self.num_iters = 0
         self.num_rounds = 0
-        self.wavelet_coefficients = []
-        self.correlation_matrices = [] 
-        self.pairwise_CCA_params = []
+        self.wavelets = []
+        self.correlation= [] 
+        self.pairwise_cca = []
 
     def run(self):
 
@@ -64,20 +67,79 @@ class MVCCADTCWTRunner:
                 Yhs_period = [view[period] for view in Yhs]
                 Yls_period = [view[period] for view in Yls]
 
-                self.wavelet_coefficients.append(
+                self.wavelets.append(
                     (Yhs_period, Yls_period))
 
         if self.load_correlation:
-            self._load_correlation_matrices()
+            self._load_correlation()
         else:
-            self._compute_correlation_matrices()
+            self._compute_correlation()
 
-        if self.show_plots:
-            self._show_plots()
+        if self.load_cca:
+            self._load_cca()
+        else:
+            self._compute_cca()
 
-    def _compute_CCA_coefficients(self):
+        if self.show_correlation:
+            self._show_correlation()
 
-        for (Yhs, Yls) in self.wavelet_coefficients:
+        if self.show_cca:
+            self._show_cca()
+
+    def _load_cca(self):
+
+        cca = {}
+
+        for fn in os.listdir(self.cca_dir):
+            path = os.path.join(self.cca_dir, fn)
+
+            with open(path) as f:
+                cca[fn] = np.load(f)
+
+        num_periods = max(
+            [int(k.split('_')[2])
+             for k in correlation.keys()])
+
+        self.pairwise_cca = [SPUD(self.num_views, default=dict)
+                             for i in xrange(num_periods)]
+
+        for (k, mat) in cca.items():
+            info = k.split('_')
+            name = info[0]
+            period = int(info[2]) - 1
+            views = [int(i) for i in info[4].split('-')]
+
+            self.pairwise_cca[period].get(
+                views[0], views[1])[name] = mat
+    
+    def _load_correlation(self):
+
+        correlation = {}
+
+        for fn in os.listdir(self.correlation_dir):
+            path = os.path.join(self.correlation_dir, fn)
+
+            with open(path) as f:
+                correlation[fn] = np.load(f)
+
+        num_periods = max(
+            [int(k.split('_')[1]) 
+             for k in correlation.keys()])
+
+        self.correlation = [SPUD(self.num_views)
+                            for i in xrange(num_periods)]
+
+        for (k, hm) in correlation.items():
+            info = k.split('_')
+            period = int(info[1]) - 1
+            views = [int(i) for i in info[3].split('-')]
+
+            self.correlation[period].insert(
+                views[0], views[1], hm)
+
+    def _compute_cca(self):
+
+        for (Yhs, Yls) in self.wavelets:
             current = SPUD(self.num_views)
             wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
                                 for (Yh, Yl) in zip(Yhs, Yls)]
@@ -93,20 +155,22 @@ class MVCCADTCWTRunner:
                     cca.fit(X_data, Y_data)
                     current.insert(i,j, cca.get_params())
 
-            self.pairwise_CCA_params.append(current)
+            self.pairwise_cca.append(current)
 
-            if self.save_CCA:
-                for (k, hm) in current.items():
+            if self.save_cca:
+                for (k, xy_pair) in current.items():
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
-                    if self.correlation_dir is not None:
-                        path = os.path.join(self.correlation_dir, path)
+                    for (l, mat) in xy_pair.items():
+                        if self.cca_dir is not None:
+                            path = os.path.join(
+                                self.cca_dir, l + '_' + path)
 
-                    with open(path, 'w') as f:
-                        np.save(f, hm)
+                        with open(path, 'w') as f:
+                            np.save(f, mat)
 
         # TODO: Do multi-view CCA on magnitude of coefficients
 
@@ -115,58 +179,14 @@ class MVCCADTCWTRunner:
             
         # TODO: Do CCA on unmodified complex coefficients (probably not)
 
-    def _show_plots(self):
+    def _compute_correlation(self):
 
-        timelines = {k : [] for k in self.correlation_matrices[0].keys()}
-        prev = None
-
-        for (i, period) in enumerate(self.correlation_matrices):
-            for (k, hm) in period.items():
-                """
-                if i > 0:
-                    timelines[k].append(hm - prev[k])
-                """
-
-                timelines[k].append(hm)
-
-            prev = period
-
-        for (k, l) in timelines.items():
-            self._plot_correlation_heat(k, l)
-
-    def _load_correlation_matrices(self):
-
-        correlation_matrices = {}
-
-        for fn in os.listdir(self.correlation_dir):
-            path = os.path.join(self.correlation_dir, fn)
-
-            with open(path) as f:
-                correlation_matrices[fn] = np.load(f)
-
-        num_periods = max(
-            [int(k.split('_')[1]) 
-             for k in correlation_matrices.keys()])
-
-        self.correlation_matrices = [SPUD(self.num_views)
-                              for i in xrange(num_periods)]
-
-        for (k, hm) in correlation_matrices.items():
-            info = k.split('_')
-            period = int(info[1]) - 1
-            views = [int(i) for i in info[3].split('-')]
-
-            self.correlation_matrices[period].insert(
-                views[0], views[1], hm)
-
-    def _compute_correlation_matrices(self):
-
-        for (Yhs, Yls) in self.wavelet_coefficients:
+        for (Yhs, Yls) in self.wavelets:
             print 'Computing heat matrices for period', period
-            correlation = self._get_period_correlation_matrices(
+            correlation = self._get_period_correlation(
                 Yhs_period, Yls_period)
 
-            self.correlation_matrices.append(correlation)
+            self.correlation.append(correlation)
 
             if self.save_correlation:
                 for (k, hm) in correlation.items():
@@ -180,6 +200,26 @@ class MVCCADTCWTRunner:
 
                     with open(path, 'w') as f:
                         np.save(f, hm)
+
+    def _get_period_correlation(self, Yhs, Yls):
+
+        Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
+                       for (Yh, Yl) in zip(Yhs, Yls)]
+        min_length = min(
+            [Y.shape[0] for Y in Yh_matrices]) 
+        rates = [int(Y.shape[0] / min_length)
+                 for Y in Yh_matrices]
+        subsamples = [m[::r,:]
+                      for (m, r) in zip(Yh_matrices, rates)]
+        get_matrix = lambda i,j: np.dot(
+            subsamples[i].T, subsamples[j])
+        correlation = SPUD(self.num_views)
+
+        for i in xrange(self.num_views):
+            for j in xrange(i, self.num_views):
+                correlation.insert(i, j, get_matrix(i, j))
+
+        return correlation
 
     def _get_wavelet_transforms(self):
 
@@ -251,39 +291,106 @@ class MVCCADTCWTRunner:
 
         return resampled
 
-    def _get_period_correlation_matrices(self, Yhs, Yls):
+    def _show_cca(self):
 
-        Yh_matrices = [_get_sampled_wavelets(Yh, Yl)
-                       for (Yh, Yl) in zip(Yhs, Yls)]
-        min_length = min(
-            [Y.shape[0] for Y in Yh_matrices]) 
-        rates = [int(Y.shape[0] / min_length)
-                 for Y in Yh_matrices]
-        subsamples = [m[::r,:]
-                      for (m, r) in zip(Yh_matrices, rates)]
-        get_matrix = lambda i,j: np.dot(
-            subsamples[i].T, subsamples[j])
-        correlation = SPUD(self.num_views)
+        timelines = {k : [] for k in self.cca[0].keys()}
+        prev = None
 
-        for i in xrange(self.num_views):
-            for j in xrange(i, self.num_views):
-                correlation.insert(i, j, get_matrix(i, j))
+        for (i, period) in enumerate(self.pairwise_cca):
+            for (k, xy_pair) in period.items(no_dup=True):
+                if i > 0:
+                    timelines[k].append(
+                        {l : mat - prev[l] 
+                         for (l, mat) in xy_pair.items()})
 
-        return correlation
+                timelines[k].append(xy_pair)
 
-    def _plot_cca_heat(self, key, timeline):
+            prev = period
+
+        for (k, l) in timeline.items():
+            self._plot_cca(k, l)
+
+    def _show_correlation(self):
+
+        timelines = {k : [] for k in self.correlation[0].keys()}
+        prev = None
+
+        for (i, period) in enumerate(self.correlation):
+            for (k, hm) in period.items():
+                """
+                if i > 0:
+                    timelines[k].append(hm - prev[k])
+                """
+
+                timelines[k].append(hm)
+
+            prev = period
+
+        for (k, l) in timelines.items():
+            self._plot_correlation(k, l)
+
+    def _plot_cca(self, key, timeline):
 
         (i, j) = key
         (nx, px) = timeline[0]['X'].shape
         (ny, py) = timeline[0]['Y'].shape
         names = [ds.name() for ds in self.servers]
+        title = 'CCA decomposition of views ' + \
+            names[i] + ' and ' + names[j] + \
+            ' by decimation level'
+        x_title = 'CCA transform for view' + names[i]
+        y_title = 'CCA transform for view' + names[j]
+        x_name = 'component'
+        y_name = 'decimation level'
+        x_labels = [str(k) for k in xrange(px)]
+        yx_labels = ['2^' + str(-k) for k in xrange(nx)]
+        yy_labels = ['2^' + str(-k) for k in xrange(ny)]
+        val_name = 'cca parameter'
+        plots = []
 
-    def _plot_correlation_heat(self, key, timeline):
+        for (k, xy_pair) in enumerate(timeline):
+            (X, Y) = (xy_pair['X'], xy_pair['Y']) 
+            X_pos_color_scheme = list(reversed(BuPu9))
+            X_neg_color_scheme = list(reversed(Oranges9))
+            X_plot = plot_matrix_heat(
+                X,
+                x_labels,
+                yx_labels,
+                title,
+                x_name,
+                y_name,
+                val_name,
+                pos_color_scheme=X_pos_color_scheme,
+                neg_color_scheme=X_neg_color_scheme)
+            Y_plot = plot_matrix_heat(
+                Y,
+                x_labels,
+                yy_labels,
+                title,
+                x_name,
+                y_name,
+                val_name)
+
+            plots.append(Row(*[X_plot, Y_plot]))
+
+        plot = Column(*plots)
+        filename = get_ts(
+            'cca_of_wavelet_coefficients_' +
+            names[i] + '_' + names[j]) + '.html'
+        filepath = os.path.join(self.plot_path, filename)
+
+        output_file(
+            filepath, 
+            'cca_of_wavelet_coefficients_' +
+            names[i] + '_' + names[j])
+        show(plot)
+
+    def _plot_correlation(self, key, timeline):
 
         (i, j) = key
         (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
-        title = 'Correlation of views ' + names[i] + ' and ' + names[j] + '\nby decimation level'
+        title = 'Correlation of views ' + names[i] + ' and ' + names[j] + ' by decimation level'
         x_name = 'decimation level'
         y_name = 'decimation level'
         x_labels = ['2^' + str(-k) for k in xrange(p)]
@@ -295,9 +402,11 @@ class MVCCADTCWTRunner:
             pos_color_scheme = None
             neg_color_scheme = None
 
+            """
             if k % 2 > 0:
                 pos_color_scheme = list(reversed(BuPu9))
                 neg_color_scheme = list(reversed(Oranges9))
+            """
 
             hmp = plot_matrix_heat(
                 hm,
@@ -343,9 +452,7 @@ def _get_sampled_wavelets(Yh, Yl):
     
     for (i, y) in enumerate(hi_and_lo):
         power = k - i - 1
-        new = y[::2**power,0]
-        new_copy = np.copy(new)
-        basis[:,i] = new_copy
+        basis[:,i] = np.copy(y[::2**power,0])
 
     return basis
 
