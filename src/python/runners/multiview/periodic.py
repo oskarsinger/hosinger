@@ -100,7 +100,10 @@ class MVCCADTCWTRunner:
             [int(k.split('_')[2])
              for k in cca.keys()])
 
-        self.pairwise_cca = [SPUD(self.num_views, default=dict)
+        self.pairwise_cca = [SPUD(
+                                self.num_views, 
+                                default=dict, 
+                                no_double=True)
                              for i in xrange(num_periods)]
 
         for (k, mat) in cca.items():
@@ -140,7 +143,7 @@ class MVCCADTCWTRunner:
     def _compute_cca(self):
 
         for (period, (Yhs, Yls)) in enumerate(self.wavelets):
-            current = SPUD(self.num_views)
+            current = SPUD(self.num_views, no_double=True)
             wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
                                 for (Yh, Yl) in zip(Yhs, Yls)]
             abs_wms = [np.absolute(wm) 
@@ -165,8 +168,7 @@ class MVCCADTCWTRunner:
             if self.save_cca:
                 period_str = 'period_' + str(period)
 
-                for (k, xy_pair) in current.items(no_double=True):
-                    print k, xy_pair
+                for (k, xy_pair) in current.items():
                     views_str = 'views_' + '-'.join([str(j) for j in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
@@ -180,7 +182,6 @@ class MVCCADTCWTRunner:
                             np.save(f, mat)
 
         # TODO: Do multi-view CCA on magnitude of coefficients
-
 
         # TODO: Maybe also do pairwise and multi-view on phase
             
@@ -196,7 +197,6 @@ class MVCCADTCWTRunner:
 
             if self.save_correlation:
                 for (k, hm) in correlation.items():
-                    print k
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
@@ -300,27 +300,19 @@ class MVCCADTCWTRunner:
 
     def _show_cca(self):
 
-        timelines = {k : [] 
-                     for k in self.pairwise_cca[0].keys()}
-        prev = None
+        timelines = SPUD(
+            self.num_views, default=list, no_double=True)
 
         for (i, period) in enumerate(self.pairwise_cca):
-            for (k, xy_pair) in period.items(no_double=True):
-                if i > 0:
-                    timelines[k].append(
-                        {l : mat - prev.get(k[0], k[1])[l] 
-                         for (l, mat) in xy_pair.items()})
+            for (k, xy_pair) in period.items():
+                timelines.get(k[0], k[1]).append(xy_pair)
 
-                timelines[k].append(xy_pair)
-
-            prev = period
-
-        for (k, l) in timeline.items():
+        for (k, l) in timelines.items():
             self._plot_cca(k, l)
 
     def _show_correlation(self):
 
-        timelines = {k : [] for k in self.correlation[0].keys()}
+        timelines = SPUD(self.num_views, default=list)
         prev = None
 
         for (i, period) in enumerate(self.correlation):
@@ -330,7 +322,7 @@ class MVCCADTCWTRunner:
                     timelines[k].append(hm - prev[k])
                 """
 
-                timelines[k].append(hm)
+                timelines.get(k[0], k[1]).append(hm)
 
             prev = period
 
