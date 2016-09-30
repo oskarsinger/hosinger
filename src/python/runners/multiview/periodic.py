@@ -156,7 +156,7 @@ class MVCCADTCWTRunner:
 
                     xy_pair = {
                         'Xw': cca.x_weights_,
-                        'Yw': cca.Y_weights_}
+                        'Yw': cca.y_weights_}
 
                     current.insert(i, j, xy_pair)
 
