@@ -165,6 +165,7 @@ class MVCCADTCWTRunner:
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
                     for (l, mat) in xy_pair.items():
+                        print l
                         if self.cca_dir is not None:
                             path = os.path.join(
                                 self.cca_dir, l + '_' + path)
