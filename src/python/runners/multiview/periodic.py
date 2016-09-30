@@ -181,10 +181,9 @@ class MVCCADTCWTRunner:
 
     def _compute_correlation(self):
 
-        for (Yhs, Yls) in self.wavelets:
-            print 'Computing heat matrices for period', period
+        for (period, (Yhs, Yls)) in enumerate(self.wavelets):
             correlation = self._get_period_correlation(
-                Yhs_period, Yls_period)
+                Yhs, Yls)
 
             self.correlation.append(correlation)
 
