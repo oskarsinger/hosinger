@@ -98,7 +98,7 @@ class MVCCADTCWTRunner:
 
         num_periods = max(
             [int(k.split('_')[2])
-             for k in correlation.keys()])
+             for k in cca.keys()])
 
         self.pairwise_cca = [SPUD(self.num_views, default=dict)
                              for i in xrange(num_periods)]
@@ -130,7 +130,6 @@ class MVCCADTCWTRunner:
                             for i in xrange(num_periods)]
 
         for (k, hm) in correlation.items():
-            print k
             info = k.split('_')
             period = int(info[1]) - 1
             views = [int(i) for i in info[3].split('-')]
@@ -167,6 +166,7 @@ class MVCCADTCWTRunner:
                 period_str = 'period_' + str(period)
 
                 for (k, xy_pair) in current.items(no_double=True):
+                    print k, xy_pair
                     views_str = 'views_' + '-'.join([str(j) for j in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
@@ -300,14 +300,15 @@ class MVCCADTCWTRunner:
 
     def _show_cca(self):
 
-        timelines = {k : [] for k in self.cca[0].keys()}
+        timelines = {k : [] 
+                     for k in self.pairwise_cca[0].keys()}
         prev = None
 
         for (i, period) in enumerate(self.pairwise_cca):
             for (k, xy_pair) in period.items(no_double=True):
                 if i > 0:
                     timelines[k].append(
-                        {l : mat - prev[l] 
+                        {l : mat - prev.get(k[0], k[1])[l] 
                          for (l, mat) in xy_pair.items()})
 
                 timelines[k].append(xy_pair)
