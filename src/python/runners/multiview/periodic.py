@@ -139,7 +139,7 @@ class MVCCADTCWTRunner:
 
     def _compute_cca(self):
 
-        for (Yhs, Yls) in self.wavelets:
+        for (period, (Yhs, Yls)) in enumerate(self.wavelets):
             current = SPUD(self.num_views)
             wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
                                 for (Yh, Yl) in zip(Yhs, Yls)]
