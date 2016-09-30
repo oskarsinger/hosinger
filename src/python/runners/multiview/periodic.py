@@ -153,7 +153,12 @@ class MVCCADTCWTRunner:
                     cca = CCA(n_components=1)
 
                     cca.fit(X_data, Y_data)
-                    current.insert(i,j, cca.get_params())
+
+                    xy_pair = {
+                        'Xw': cca.x_weights_,
+                        'Yw': cca.Y_weights_}
+
+                    current.insert(i, j, xy_pair)
 
             self.pairwise_cca.append(current)
 
@@ -161,13 +166,11 @@ class MVCCADTCWTRunner:
                 period_str = 'period_' + str(period)
 
                 for (k, xy_pair) in current.items():
-                    print k, xy_pair
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
                     for (l, mat) in xy_pair.items():
-                        print l, mat
                         if self.cca_dir is not None:
                             path = os.path.join(
                                 self.cca_dir, l + '_' + path)
@@ -334,8 +337,8 @@ class MVCCADTCWTRunner:
     def _plot_cca(self, key, timeline):
 
         (i, j) = key
-        (nx, px) = timeline[0]['X'].shape
-        (ny, py) = timeline[0]['Y'].shape
+        (nx, px) = timeline[0]['Xw'].shape
+        (ny, py) = timeline[0]['Yw'].shape
         names = [ds.name() for ds in self.servers]
         title = 'CCA decomposition of views ' + \
             names[i] + ' and ' + names[j] + \
@@ -351,7 +354,7 @@ class MVCCADTCWTRunner:
         plots = []
 
         for (k, xy_pair) in enumerate(timeline):
-            (X, Y) = (xy_pair['X'], xy_pair['Y']) 
+            (X, Y) = (xy_pair['Xw'], xy_pair['Yw']) 
             X_pos_color_scheme = list(reversed(BuPu9))
             X_neg_color_scheme = list(reversed(Oranges9))
             X_plot = plot_matrix_heat(
