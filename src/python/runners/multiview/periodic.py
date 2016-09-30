@@ -158,14 +158,16 @@ class MVCCADTCWTRunner:
             self.pairwise_cca.append(current)
 
             if self.save_cca:
+                period_str = 'period_' + str(period)
+
                 for (k, xy_pair) in current.items():
-                    period_str = 'period_' + str(period)
+                    print k, xy_pair
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
                     for (l, mat) in xy_pair.items():
-                        print l
+                        print l, mat
                         if self.cca_dir is not None:
                             path = os.path.join(
                                 self.cca_dir, l + '_' + path)
