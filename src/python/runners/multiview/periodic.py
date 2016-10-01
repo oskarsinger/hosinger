@@ -193,12 +193,12 @@ class MVCCADTCWTRunner:
         for (period, (Yhs, Yls)) in enumerate(self.wavelets):
             correlation = self._get_period_correlation(
                 Yhs, Yls)
-            print period, [(k, c.shape) for (k, c) in correlation.items()]
 
             self.correlation.append(correlation)
 
             if self.save_correlation:
                 for (k, hm) in correlation.items():
+                    print k, hm.shape
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
@@ -216,19 +216,16 @@ class MVCCADTCWTRunner:
                        for (Yh, Yl) in zip(Yhs, Yls)]
         min_length = min(
             [Y.shape[0] for Y in Yh_matrices]) 
-        print 'Yh_matrices', [Y.shape for Y in Yh_matrices]
         rates = [int(Y.shape[0] / min_length)
                  for Y in Yh_matrices]
         subsamples = [m[::r,:]
                       for (m, r) in zip(Yh_matrices, rates)]
-        print 'subsamples', [s.shape for s in subsamples]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
         correlation = SPUD(self.num_views)
 
         for (i, j) in correlation.keys():
             mat = get_matrix(i, j)
-            print 'mat', mat.shape
             correlation.insert(i, j, mat)
 
         return correlation
