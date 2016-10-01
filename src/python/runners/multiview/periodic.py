@@ -137,6 +137,7 @@ class MVCCADTCWTRunner:
             info = k.split('_')
             period = int(info[1]) - 1
             views = [int(i) for i in info[3].split('-')]
+            print views, hm.shape
 
             self.correlation[period].insert(
                 views[0], views[1], hm)
@@ -198,7 +199,6 @@ class MVCCADTCWTRunner:
 
             if self.save_correlation:
                 for (k, hm) in correlation.items():
-                    print k, hm.shape
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join(
