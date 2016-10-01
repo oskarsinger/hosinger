@@ -137,6 +137,7 @@ class MVCCADTCWTRunner:
             info = k.split('_')
             period = int(info[1]) - 1
             views = [int(i) for i in info[3].split('-')]
+            
             print views, hm.shape
 
             self.correlation[period].insert(
@@ -204,6 +205,7 @@ class MVCCADTCWTRunner:
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
+                    print path, k, hm.shape
                     if self.correlation_dir is not None:
                         path = os.path.join(self.correlation_dir, path)
 
@@ -323,6 +325,7 @@ class MVCCADTCWTRunner:
                     timelines[k].append(hm - prev[k])
                 """
 
+                print k, hm.shape
                 timelines.get(k[0], k[1]).append(hm)
 
             prev = period
@@ -394,7 +397,6 @@ class MVCCADTCWTRunner:
     def _plot_correlation(self, key, timeline):
 
         (i, j) = key
-        print i, j
         (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
         title = 'Correlation of views ' + names[i] + ' and ' + names[j] + ' by decimation level'
@@ -405,7 +407,7 @@ class MVCCADTCWTRunner:
         val_name = 'correlation'
         plots = []
 
-        for (k, hm) in enumerate(timeline):
+        for (l, hm) in enumerate(timeline):
             pos_color_scheme = None
             neg_color_scheme = None
 
@@ -415,7 +417,7 @@ class MVCCADTCWTRunner:
                 neg_color_scheme = list(reversed(Oranges9))
             """
 
-            print k, hm.shape
+            print l, hm.shape
             hmp = plot_matrix_heat(
                 hm,
                 x_labels,
