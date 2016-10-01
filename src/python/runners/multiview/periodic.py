@@ -193,6 +193,7 @@ class MVCCADTCWTRunner:
         for (period, (Yhs, Yls)) in enumerate(self.wavelets):
             correlation = self._get_period_correlation(
                 Yhs, Yls)
+            print period, [(k, c.shape) for (k, c) in correlation.items()]
 
             self.correlation.append(correlation)
 
@@ -215,17 +216,20 @@ class MVCCADTCWTRunner:
                        for (Yh, Yl) in zip(Yhs, Yls)]
         min_length = min(
             [Y.shape[0] for Y in Yh_matrices]) 
+        print [Y.shape for Y in Yh_matrices]
         rates = [int(Y.shape[0] / min_length)
                  for Y in Yh_matrices]
         subsamples = [m[::r,:]
                       for (m, r) in zip(Yh_matrices, rates)]
+        print [s.shape for s in subsamples]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
         correlation = SPUD(self.num_views)
 
-        for i in xrange(self.num_views):
-            for j in xrange(i, self.num_views):
-                correlation.insert(i, j, get_matrix(i, j))
+        for (i, j) in correlation.keys():
+            mat = get_matrix(i, j)
+            print mat.shape
+            correlation.insert(i, j, mat)
 
         return correlation
 
@@ -245,7 +249,6 @@ class MVCCADTCWTRunner:
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
-            print [d.shape for d in current_data]
             p = Pool(len(current_data))
             processes = []
 
@@ -394,6 +397,7 @@ class MVCCADTCWTRunner:
     def _plot_correlation(self, key, timeline):
 
         (i, j) = key
+        print i, j
         (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
         title = 'Correlation of views ' + names[i] + ' and ' + names[j] + ' by decimation level'
@@ -414,6 +418,7 @@ class MVCCADTCWTRunner:
                 neg_color_scheme = list(reversed(Oranges9))
             """
 
+            print k, hm.shape
             hmp = plot_matrix_heat(
                 hm,
                 x_labels,
