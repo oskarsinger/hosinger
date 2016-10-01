@@ -216,19 +216,19 @@ class MVCCADTCWTRunner:
                        for (Yh, Yl) in zip(Yhs, Yls)]
         min_length = min(
             [Y.shape[0] for Y in Yh_matrices]) 
-        print [Y.shape for Y in Yh_matrices]
+        print 'Yh_matrices', [Y.shape for Y in Yh_matrices]
         rates = [int(Y.shape[0] / min_length)
                  for Y in Yh_matrices]
         subsamples = [m[::r,:]
                       for (m, r) in zip(Yh_matrices, rates)]
-        print [s.shape for s in subsamples]
+        print 'subsamples', [s.shape for s in subsamples]
         get_matrix = lambda i,j: np.dot(
             subsamples[i].T, subsamples[j])
         correlation = SPUD(self.num_views)
 
         for (i, j) in correlation.keys():
             mat = get_matrix(i, j)
-            print mat.shape
+            print 'mat', mat.shape
             correlation.insert(i, j, mat)
 
         return correlation
