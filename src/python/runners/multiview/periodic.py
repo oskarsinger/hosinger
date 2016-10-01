@@ -5,6 +5,7 @@ import pandas as pd
 import spancca as scca
 
 from multiprocessing import Pool
+from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from wavelets import dtcwt
@@ -160,7 +161,6 @@ class MVCCADTCWTRunner:
                     xy_pair = {
                         'Xw': cca.x_weights_,
                         'Yw': cca.y_weights_}
-                    print xy_pair
 
                     current.insert(i, j, xy_pair)
 
@@ -245,6 +245,7 @@ class MVCCADTCWTRunner:
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
+            print [d.shape for d in current_data]
             p = Pool(len(current_data))
             processes = []
 
@@ -333,52 +334,52 @@ class MVCCADTCWTRunner:
 
         (i, j) = key
         (nx, px) = timeline[0]['Xw'].shape
-        print 'nx', nx, 'px', px
         (ny, py) = timeline[0]['Yw'].shape
-        print 'ny', ny, 'py', py
         names = [ds.name() for ds in self.servers]
         title = 'CCA decomposition of views ' + \
             names[i] + ' and ' + names[j] + \
             ' by decimation level'
         x_title = 'CCA transform for view' + names[i]
         y_title = 'CCA transform for view' + names[j]
-        x_name = 'component'
+        x_name = 'period'
         y_name = 'decimation level'
-        x_labels = [str(k) for k in xrange(px)]
-        print 'x_labels', x_labels
+        x_labels = [str(k) for k in xrange(len(timeline))]
         yx_labels = ['2^' + str(-k) for k in xrange(nx)]
-        print 'yx_labels', yx_labels
         yy_labels = ['2^' + str(-k) for k in xrange(ny)]
-        print 'yy_labels', yy_labels
         val_name = 'cca parameter'
         plots = []
 
-        for (k, xy_pair) in enumerate(timeline):
-            (X, Y) = (xy_pair['Xw'], xy_pair['Yw']) 
-            X_pos_color_scheme = list(reversed(BuPu9))
-            X_neg_color_scheme = list(reversed(Oranges9))
-            X_plot = plot_matrix_heat(
-                X,
-                x_labels,
-                yx_labels,
-                title,
-                x_name,
-                y_name,
-                val_name,
-                pos_color_scheme=X_pos_color_scheme,
-                neg_color_scheme=X_neg_color_scheme)
-            Y_plot = plot_matrix_heat(
-                Y,
-                x_labels,
-                yy_labels,
-                title,
-                x_name,
-                y_name,
-                val_name)
+        X_t = np.hstack(
+            [t['Xw'] for t in timeline])
+        Y_t = np.hstack(
+            [t['Yw'] for t in timeline])
 
-            plots.append(Row(*[X_plot, Y_plot]))
+        X_pos_color_scheme = list(reversed(BuPu9))
+        X_neg_color_scheme = list(reversed(Oranges9))
+        X_plot = plot_matrix_heat(
+            X_t,
+            x_labels,
+            yx_labels,
+            title,
+            x_name,
+            y_name,
+            val_name,
+            width=100*X_t.shape[1],
+            height=50*X_t.shape[0],
+            pos_color_scheme=X_pos_color_scheme,
+            neg_color_scheme=X_neg_color_scheme)
+        Y_plot = plot_matrix_heat(
+            Y_t,
+            x_labels,
+            yy_labels,
+            title,
+            x_name,
+            y_name,
+            val_name,
+            width=100*X_t.shape[1],
+            height=50*X_t.shape[0])
 
-        plot = Column(*plots)
+        plot = Column(*[X_plot, Y_plot])
         filename = get_ts(
             'cca_of_wavelet_coefficients_' +
             names[i] + '_' + names[j]) + '.html'
@@ -388,7 +389,7 @@ class MVCCADTCWTRunner:
             filepath, 
             'cca_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
-        show(plot)
+        #show(plot)
 
     def _plot_correlation(self, key, timeline):
 
@@ -436,7 +437,7 @@ class MVCCADTCWTRunner:
             filepath, 
             'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
-        show(plot)
+        #show(plot)
 
 def _get_sampled_wavelets(Yh, Yl):
 
