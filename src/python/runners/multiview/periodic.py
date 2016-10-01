@@ -57,7 +57,10 @@ class MVCCADTCWTRunner:
         self.num_rounds = 0
         self.wavelets = []
         self.correlation= [] 
-        self.pairwise_cca = []
+        self.pw_cca_mag = []
+        self.pw_cca_phase = []
+        self.mv_cca_mag = []
+        self.mv_cca_phase []
 
     def run(self):
 
@@ -101,7 +104,12 @@ class MVCCADTCWTRunner:
             [int(k.split('_')[2])
              for k in cca.keys()])
 
-        self.pairwise_cca = [SPUD(
+        self.pw_cca_mag = [SPUD(
+                               self.num_views, 
+                               default=dict, 
+                               no_double=True)
+                           for i in xrange(num_periods)]
+        self.pw_cca_phase = [SPUD(
                                 self.num_views, 
                                 default=dict, 
                                 no_double=True)
@@ -113,7 +121,7 @@ class MVCCADTCWTRunner:
             period = int(info[2]) - 1
             views = [int(i) for i in info[4].split('-')]
 
-            self.pairwise_cca[period].get(
+            self.pw_cca[period].get(
                 views[0], views[1])[name] = mat
     
     def _load_correlation(self):
@@ -147,44 +155,43 @@ class MVCCADTCWTRunner:
             current = SPUD(self.num_views, no_double=True)
             wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
                                 for (Yh, Yl) in zip(Yhs, Yls)]
-            abs_wms = [np.absolute(wm) 
+            wms_mag = [np.absolute(wm) 
                        for wm in wavelet_matrices]
+            wms_phase = [np.angle(wm)
+                         for wm in wavelet_matrices]
+            current_mag = _get_pw_cca(wms_mag)
+            current_phase = _get_pw_cca(wms_phase)
 
-            for i in xrange(self.num_views):
-                for j in xrange(i+1, self.num_views):
-                    X_data = abs_wms[i]
-                    Y_data = abs_wms[j]
-                    cca = CCA(n_components=1)
-
-                    cca.fit(X_data, Y_data)
-
-                    xy_pair = {
-                        'Xw': cca.x_weights_,
-                        'Yw': cca.y_weights_}
-
-                    current.insert(i, j, xy_pair)
-
-            self.pairwise_cca.append(current)
+            self.pw_cca_mag.append(current_mag)
+            self.pw_cca_phase.append(current_phase)
 
             if self.save_cca:
-                period_str = 'period_' + str(period)
+                self._save_cca(current_mag, period, 'mag')
+                self._save_cca(current_phase, period, 'phase')
 
-                for (k, xy_pair) in current.items():
-                    views_str = 'views_' + '-'.join([str(j) for j in k])
-                    path = '_'.join(
-                        [period_str, views_str, 'dtcwt_heat_matrix.thang'])
+    def _save_cca(self, current, period, phase_or_mag):
 
-                    for (l, mat) in xy_pair.items():
-                        if self.cca_dir is not None:
-                            current_path = os.path.join(
-                                self.cca_dir, l + '_' + path)
+        period_str = 'period_' + str(period)
 
-                        with open(current_path, 'w') as f:
-                            np.save(f, mat)
+        for (k, xy_pair) in current.items():
+            views_str = 'views_' + '-'.join([str(j) for j in k])
+            path = '_'.join([
+                period_str, 
+                views_str, 
+                phase_or_mag,
+                'dtcwt_cca_matrix.thang'])
+
+            for (l, mat) in xy_pair.items():
+                if self.cca_dir is not None:
+                    current_path = os.path.join(
+                        self.cca_dir, l + '_' + path)
+
+                with open(current_path, 'w') as f:
+                    np.save(f, mat)
 
         # TODO: Do multi-view CCA on magnitude of coefficients
 
-        # TODO: Maybe also do pairwise and multi-view on phase
+        # TODO: Maybe also do pw and multi-view on phase
             
         # TODO: Do CCA on unmodified complex coefficients (probably not)
 
@@ -200,8 +207,10 @@ class MVCCADTCWTRunner:
                 for (k, hm) in correlation.items():
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
-                    path = '_'.join(
-                        [period_str, views_str, 'dtcwt_heat_matrix.thang'])
+                    path = '_'.join([
+                        period_str, 
+                        views_str, 
+                        'dtcwt_correlation_matrix.thang'])
 
                     if self.correlation_dir is not None:
                         path = os.path.join(self.correlation_dir, path)
@@ -303,7 +312,7 @@ class MVCCADTCWTRunner:
         timelines = SPUD(
             self.num_views, default=list, no_double=True)
 
-        for (i, period) in enumerate(self.pairwise_cca):
+        for (i, period) in enumerate(self.pw_cca_mag):
             for (k, xy_pair) in period.items():
                 timelines.get(k[0], k[1]).append(xy_pair)
 
@@ -437,6 +446,27 @@ class MVCCADTCWTRunner:
             'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
         show(plot)
+
+def _get_pw_cca(views):
+
+    num_views = len(views)
+    current = SPUD(num_views, no_double=True)
+
+    for i in xrange(num_views):
+        for j in xrange(i+1, num_views):
+            X_data = views[i]
+            Y_data = views[j]
+            cca = CCA(n_components=1)
+
+            cca.fit(X_data, Y_data)
+
+            xy_pair = {
+                'Xw': cca.x_weights_,
+                'Yw': cca.y_weights_}
+
+            current.insert(i, j, xy_pair)
+
+    return current
 
 def _get_sampled_wavelets(Yh, Yl):
 
