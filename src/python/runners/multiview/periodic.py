@@ -128,18 +128,16 @@ class MVCCADTCWTRunner:
 
         num_periods = max(
             [int(k.split('_')[1]) 
-             for k in correlation.keys()])
+             for k in correlation.keys()]) + 1
 
         self.correlation = [SPUD(self.num_views)
                             for i in xrange(num_periods)]
 
         for (k, hm) in correlation.items():
             info = k.split('_')
-            period = int(info[1]) - 1
+            period = int(info[1])
             views = [int(i) for i in info[3].split('-')]
             
-            print views, hm.shape
-
             self.correlation[period].insert(
                 views[0], views[1], hm)
 
@@ -205,7 +203,6 @@ class MVCCADTCWTRunner:
                     path = '_'.join(
                         [period_str, views_str, 'dtcwt_heat_matrix.thang'])
 
-                    print path, k, hm.shape
                     if self.correlation_dir is not None:
                         path = os.path.join(self.correlation_dir, path)
 
@@ -325,7 +322,6 @@ class MVCCADTCWTRunner:
                     timelines[k].append(hm - prev[k])
                 """
 
-                print k, hm.shape
                 timelines.get(k[0], k[1]).append(hm)
 
             prev = period
@@ -392,7 +388,7 @@ class MVCCADTCWTRunner:
             filepath, 
             'cca_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
-        #show(plot)
+        show(plot)
 
     def _plot_correlation(self, key, timeline):
 
@@ -417,7 +413,6 @@ class MVCCADTCWTRunner:
                 neg_color_scheme = list(reversed(Oranges9))
             """
 
-            print l, hm.shape
             hmp = plot_matrix_heat(
                 hm,
                 x_labels,
@@ -441,7 +436,7 @@ class MVCCADTCWTRunner:
             filepath, 
             'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
-        #show(plot)
+        show(plot)
 
 def _get_sampled_wavelets(Yh, Yl):
 
