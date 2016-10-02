@@ -387,7 +387,7 @@ class MVCCADTCWTRunner:
             x_name,
             y_name,
             val_name,
-            width=150*X_t.shape[1],
+            width=50*X_t.shape[1],
             height=50*X_t.shape[0],
             pos_color_scheme=X_pos_color_scheme,
             neg_color_scheme=X_neg_color_scheme)
@@ -399,7 +399,7 @@ class MVCCADTCWTRunner:
             x_name,
             y_name,
             val_name,
-            width=150*X_t.shape[1],
+            width=50*X_t.shape[1],
             height=50*X_t.shape[0])
 
         plot = Column(*[X_plot, Y_plot])
