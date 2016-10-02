@@ -118,19 +118,11 @@ def _populate_data_source(
     neg_color_scheme):
 
     (n, p) = value_matrix.shape
-    pos_value_matrix = np.absolute(lum.get_thresholded(
-        value_matrix, lower=0))
-    neg_value_matrix = np.absolute(lum.get_thresholded(
-        value_matrix, upper=0))
-    pos_color_matrix = _get_color_matrix(
-        pos_value_matrix, 
-        norm_axis, 
-        len(pos_color_scheme))
-    neg_color_matrix = _get_color_matrix(
-        neg_value_matrix,
+    color_matrix = _get_color_matrix(
+        value_matrix,
         norm_axis,
-        len(neg_color_scheme))
-    color_matrix = pos_color_matrix + neg_color_matrix
+        len(pos_color_scheme))
+
     x_element = []
     y_element = []
     value = []
@@ -161,13 +153,16 @@ def _populate_data_source(
 def _get_color_matrix(
     matrix, norm_axis, num_colors):
 
+    matrix = np.absolute(matrix)
+
     if norm_axis is None:
         normalizer = np.max(matrix)
         if normalizer == 0:
             normalizer = 1
     else:
         normalizer = np.max(
-            matrix, axis=norm_axis)
+            matrix,
+            axis=norm_axis)
         normalizer[normalizer == 0] = 1
 
     normed = matrix / normalizer \
