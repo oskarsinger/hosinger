@@ -102,7 +102,7 @@ class MVCCADTCWTRunner:
 
         num_periods = max(
             [int(k.split('_')[2])
-             for k in cca.keys()])
+             for k in cca.keys()]) + 1
 
         self.pw_cca_mag = [SPUD(
                                self.num_views, 
@@ -328,10 +328,10 @@ class MVCCADTCWTRunner:
                 timelines_phase.get(k[0], k[1]).append(xy_pair)
 
         for (k, l) in timelines_mag.items()[:1]:
-            self._plot_cca(k, l)
+            self._plot_cca(k, l, 'mag')
 
         for (k, l) in timelines_phase.items()[:1]:
-            self._plot_cca(k, l)
+            self._plot_cca(k, l, 'phase')
 
     def _show_correlation(self):
 
@@ -352,13 +352,14 @@ class MVCCADTCWTRunner:
         for (k, l) in timelines.items()[:1]:
             self._plot_correlation(k, l)
 
-    def _plot_cca(self, key, timeline):
+    def _plot_cca(self, key, timeline, phase_or_mag):
 
         (i, j) = key
         (nx, px) = timeline[0]['Xw'].shape
         (ny, py) = timeline[0]['Yw'].shape
         names = [ds.name() for ds in self.servers]
-        title = 'CCA decomposition of views ' + \
+        title = 'CCA decomposition of ' + phase_or_mag + \
+            ' of views ' + \
             names[i] + ' and ' + names[j] + \
             ' by decimation level'
         x_title = 'CCA transform for view' + names[i]
@@ -386,7 +387,7 @@ class MVCCADTCWTRunner:
             x_name,
             y_name,
             val_name,
-            width=100*X_t.shape[1],
+            width=150*X_t.shape[1],
             height=50*X_t.shape[0],
             pos_color_scheme=X_pos_color_scheme,
             neg_color_scheme=X_neg_color_scheme)
@@ -398,12 +399,13 @@ class MVCCADTCWTRunner:
             x_name,
             y_name,
             val_name,
-            width=100*X_t.shape[1],
+            width=150*X_t.shape[1],
             height=50*X_t.shape[0])
 
         plot = Column(*[X_plot, Y_plot])
         filename = get_ts(
-            'cca_of_wavelet_coefficients_' +
+            'cca_of_wavelet_coefficients_' + 
+            phase_or_mag + '_' + 
             names[i] + '_' + names[j]) + '.html'
         filepath = os.path.join(self.plot_path, filename)
 
