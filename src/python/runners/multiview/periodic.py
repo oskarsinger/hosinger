@@ -60,7 +60,7 @@ class MVCCADTCWTRunner:
         self.pw_cca_mag = []
         self.pw_cca_phase = []
         self.mv_cca_mag = []
-        self.mv_cca_phase []
+        self.mv_cca_phase = []
 
     def run(self):
 
@@ -118,10 +118,17 @@ class MVCCADTCWTRunner:
         for (k, mat) in cca.items():
             info = k.split('_')
             name = info[0]
-            period = int(info[2]) - 1
+            period = int(info[2])
             views = [int(i) for i in info[4].split('-')]
+            phase_or_mag = info[5]
+            l = None
 
-            self.pw_cca[period].get(
+            if phase_or_mag == 'phase':
+                l = self.pw_cca_phase
+            elif phase_or_mag == 'mag':
+                l = self.pw_cca_mag
+
+            l[period].get(
                 views[0], views[1])[name] = mat
     
     def _load_correlation(self):
@@ -169,6 +176,10 @@ class MVCCADTCWTRunner:
                 self._save_cca(current_mag, period, 'mag')
                 self._save_cca(current_phase, period, 'phase')
 
+        # TODO: Do multi-view CCA on magnitude of coefficients
+
+        # TODO: Do CCA on unmodified complex coefficients (probably not)
+
     def _save_cca(self, current, period, phase_or_mag):
 
         period_str = 'period_' + str(period)
@@ -188,12 +199,6 @@ class MVCCADTCWTRunner:
 
                 with open(current_path, 'w') as f:
                     np.save(f, mat)
-
-        # TODO: Do multi-view CCA on magnitude of coefficients
-
-        # TODO: Maybe also do pw and multi-view on phase
-            
-        # TODO: Do CCA on unmodified complex coefficients (probably not)
 
     def _compute_correlation(self):
 
@@ -309,14 +314,23 @@ class MVCCADTCWTRunner:
 
     def _show_cca(self):
 
-        timelines = SPUD(
+        timelines_mag = SPUD(
+            self.num_views, default=list, no_double=True)
+        timelines_phase = SPUD(
             self.num_views, default=list, no_double=True)
 
         for (i, period) in enumerate(self.pw_cca_mag):
             for (k, xy_pair) in period.items():
-                timelines.get(k[0], k[1]).append(xy_pair)
+                timelines_mag.get(k[0], k[1]).append(xy_pair)
+                
+        for (i, period) in enumerate(self.pw_cca_phase):
+            for (k, xy_pair) in period.items():
+                timelines_phase.get(k[0], k[1]).append(xy_pair)
 
-        for (k, l) in timelines.items():
+        for (k, l) in timelines_mag.items()[:1]:
+            self._plot_cca(k, l)
+
+        for (k, l) in timelines_phase.items()[:1]:
             self._plot_cca(k, l)
 
     def _show_correlation(self):
@@ -335,7 +349,7 @@ class MVCCADTCWTRunner:
 
             prev = period
 
-        for (k, l) in timelines.items():
+        for (k, l) in timelines.items()[:1]:
             self._plot_correlation(k, l)
 
     def _plot_cca(self, key, timeline):
