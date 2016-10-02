@@ -472,8 +472,8 @@ def _get_pw_cca(views):
         for j in xrange(i+1, num_views):
             X_data = views[i]
             Y_data = views[j]
-            print 'X shape', X.shape
-            print 'Y shape', Y.shape
+            print 'X shape', X_data.shape
+            print 'Y shape', Y_data.shape
             cca = CCA(n_components=1)
 
             cca.fit(X_data, Y_data)
