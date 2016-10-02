@@ -405,13 +405,16 @@ class MVCCADTCWTRunner:
             height=50*X_t.shape[0])
         """
 
-        X_info = {'values': X_t, 'x': x_labels, 'y': yx_labels}
+        print 'Creating X plot'
+        print X_t.shape, len(x_labels), len(yx_labels)
+        X_info = {'values': X_t.tolist(), 'x': x_labels, 'y': yx_labels}
         X_plot = HeatMap(
             X_info, 
             x='x', 
             y='y', 
             values='values')
         Y_info = {'values': Y_t, 'x': x_labels, 'y': yy_labels}
+        print 'Creating Y plot'
         Y_plot = HeatMap(
             X_info, 
             x='x', 
