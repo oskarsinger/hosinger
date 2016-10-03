@@ -4,6 +4,7 @@ import linal.utils.misc as lum
 from math import pi
 from bokeh.models import HoverTool
 from bokeh.plotting import ColumnDataSource, figure
+from bokeh.charts import HeatMap
 from bokeh.palettes import YlGn9, OrRd9
 from bokeh.models.layouts import Row
 from utils import get_plot_path
@@ -108,7 +109,6 @@ def _initialize_figure(
 
     return p
 
-
 def _populate_data_source(
     value_matrix, 
     x_labels, 
@@ -125,18 +125,18 @@ def _populate_data_source(
 
     x_element = []
     y_element = []
-    value = []
+    values = []
     color = []
 
     for j in xrange(p):
         for i in xrange(n):
             x_element.append(x_labels[j])
             y_element.append(y_labels[i])
-            value.append(value_matrix[i,j])
+            values.append(value_matrix[i,j])
 
             value_color = None
 
-            if value[-1] >= 0:
+            if values[-1] >= 0:
                 value_color = pos_color_scheme[color_matrix[i,j]]
             else:
                 value_color = neg_color_scheme[color_matrix[i,j]]
@@ -148,7 +148,7 @@ def _populate_data_source(
             y_element=y_element,
             x_element=x_element,
             color=color, 
-            value=value))
+            value=values))
 
 def _get_color_matrix(
     matrix, norm_axis, num_colors):

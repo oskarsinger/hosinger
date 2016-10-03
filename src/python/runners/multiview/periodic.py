@@ -378,7 +378,6 @@ class MVCCADTCWTRunner:
         Y_t = np.hstack(
             [t['Yw'] for t in timeline])
 
-        """
         X_pos_color_scheme = list(reversed(BuPu9))
         X_neg_color_scheme = list(reversed(Oranges9))
         X_plot = plot_matrix_heat(
@@ -403,23 +402,6 @@ class MVCCADTCWTRunner:
             val_name,
             width=50*X_t.shape[1],
             height=50*X_t.shape[0])
-        """
-
-        print 'Creating X plot'
-        print X_t.shape, len(x_labels), len(yx_labels)
-        X_info = {'values': X_t.tolist(), 'x': x_labels, 'y': yx_labels}
-        X_plot = HeatMap(
-            X_info, 
-            x='x', 
-            y='y', 
-            values='values')
-        Y_info = {'values': Y_t, 'x': x_labels, 'y': yy_labels}
-        print 'Creating Y plot'
-        Y_plot = HeatMap(
-            X_info, 
-            x='x', 
-            y='y', 
-            values='values')
 
         plot = Column(*[X_plot, Y_plot])
         filename = get_ts(
