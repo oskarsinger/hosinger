@@ -185,6 +185,12 @@ class MVCCADTCWTRunner:
 
     def _save_cca(self, current, period, phase_or_mag):
 
+        ts_cca_dir = os.path.join(
+            self.cca_dir, 
+            get_ts('dtcwt_cca'))
+
+        os.mkdir(ts_cca_dir)
+
         for (k, xy_pair) in current.items():
             views_str = 'views_' + '-'.join([str(j) for j in k])
             path = '_'.join([
@@ -215,6 +221,12 @@ class MVCCADTCWTRunner:
             self.correlation.append(correlation)
 
             if self.save_correlation:
+                ts_cca_dir = os.path.join(
+                    self.cca_dir, 
+                    get_ts('dtcwt_correlation'))
+
+                os.mkdir(ts_cca_dir)
+
                 for (k, hm) in correlation.items():
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
