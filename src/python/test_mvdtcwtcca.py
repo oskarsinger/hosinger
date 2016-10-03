@@ -12,6 +12,7 @@ from bokeh.models.layouts import Column
 @click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
 @click.option('--subject', default='HRV15-005')
+@click.option('--delay', default=None)
 @click.option('--save-correlation', default=False)
 @click.option('--load-correlation', default=False)
 @click.option('--correlation-dir', default=None)
@@ -22,9 +23,11 @@ from bokeh.models.layouts import Column
 @click.option('--show-cca', default=False)
 @click.option('--center', default=False)
 @click.option('--period', default=12*3600)
+@click.option('--plot-path', default='../../plots/')
 def run_it_all_day(
     data_path, 
     subject,
+    delay,
     save_correlation, 
     load_correlation,
     correlation_dir, 
@@ -34,7 +37,8 @@ def run_it_all_day(
     cca_dir, 
     show_cca,
     center, 
-    period):
+    period,
+    plot_path):
 
     # TODO: do it with different bases and shifts
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
@@ -52,6 +56,7 @@ def run_it_all_day(
         qshift_b,
         servers,
         period,
+        delay=delay,
         correlation_dir=correlation_dir,
         save_correlation=save_correlation,
         load_correlation=load_correlation,
@@ -59,7 +64,8 @@ def run_it_all_day(
         cca_dir=cca_dir,
         save_cca=save_cca,
         load_cca=load_cca,
-        show_cca=show_cca)
+        show_cca=show_cca,
+        plot_path=plot_path)
 
     runner.run()
 
