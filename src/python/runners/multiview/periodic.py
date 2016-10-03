@@ -3,18 +3,18 @@ import os
 import numpy as np
 import pandas as pd
 import spancca as scca
+import data.loaders.e4.shortcuts as dles
 
-from multiprocessing import Pool
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9, Oranges9
-#from bokeh.plotting import output_file, show
+from bokeh.plotting import output_file, show
 from bokeh.models.layouts import Column, Row
-from bokeh.charts import HeatMap, output_file, show
 from sklearn.cross_decomposition import CCA
+from multiprocessing import Pool
 from math import log
 from time import mktime
 from datetime import datetime
@@ -35,11 +35,11 @@ class MVCCADTCWTRunner:
         load_cca=False,
         save_cca=False,
         show_cca=False,
+        kmeans=None,
         plot_path='.'):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
-        self.servers = servers
         self.period = period
         self.delay = delay
         self.correlation_dir = correlation_dir
@@ -50,20 +50,21 @@ class MVCCADTCWTRunner:
         self.load_cca = load_cca
         self.save_cca = save_cca
         self.show_cca = show_cca
+        self.kmeans = kmeans
         self.plot_path = plot_path
 
+        self.servers = dles.get_hr_and_acc_all_subjects(
+            self.hdf5_path)
+        self.subjects = self.servers.keys()
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
                       for ds in self.servers]
         self.num_views = len(self.servers)
-        self.converged = False
-        self.num_iters = 0
-        self.num_rounds = 0
-        self.wavelets = []
-        self.correlation= [] 
-        self.pw_cca_mag = []
-        self.pw_cca_phase = []
-        self.mv_cca_mag = []
-        self.mv_cca_phase = []
+        self.wavelets = {s : [] for s in self.subjects}
+        self.correlation= {s : [] for s in self.subjects} 
+        self.pw_cca_mag = {s : [] for s in self.subjects}
+        self.pw_cca_phase = {s : [] for s in self.subjects}
+        self.mv_cca_mag = {s : [] for s in self.subjects}
+        self.mv_cca_phase = {s : [] for s in self.subjects}
 
     def run(self):
 
@@ -86,6 +87,9 @@ class MVCCADTCWTRunner:
             self._load_cca()
         else:
             self._compute_cca()
+
+        if self.kmeans is not None:
+            self._run_kmeans()
 
         if self.show_correlation:
             self._show_correlation()
@@ -158,6 +162,10 @@ class MVCCADTCWTRunner:
             
             self.correlation[period].insert(
                 views[0], views[1], hm)
+
+    def _run_kmeans(self):
+
+        model = KMeans(n_clusters=self.kmeans, random_state=0).fit()
 
     def _compute_cca(self):
 

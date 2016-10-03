@@ -1,3 +1,5 @@
+import h5py
+
 from data.loaders.e4 import FixedRateLoader as FRL
 from data.loaders.e4 import IBILoader as IBI
 from data.loaders.readers import from_num as fn
@@ -32,3 +34,10 @@ def get_hr_and_acc(hdf5_path, subject, seconds, online):
     return [
         FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
         FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
+
+def get_hr_and_acc_all_subjects(hdf5_path, seconds, online):
+
+    subjects = h5py.File(hdf5_path).keys()
+
+    return {s : get_hr_and_acc(hdf5_path, s, seconds, online)
+            for s in subejcts}
