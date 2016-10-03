@@ -10,8 +10,7 @@ from bokeh.models.layouts import Row
 from utils import get_plot_path
 
 def plot_matrix_heat(
-    value_matrix,
-    x_labels, 
+    value_matrix, x_labels, 
     y_labels, 
     title,
     x_name,
@@ -94,12 +93,12 @@ def _initialize_figure(
     p.grid.grid_line_color = None
     p.axis.axis_line_color = None
     p.axis.major_tick_line_color = None
-    p.axis.major_label_text_font_size = "5pt"
+    p.axis.major_label_text_font_size = "15pt"
     p.axis.major_label_standoff = 0
     p.xaxis.major_label_orientation = pi/3
 
     p.rect('x_element', 'y_element', 1, 1, source=source,
-           color='color', line_color=None)
+        color='color', line_color=None)
 
     p.select_one(HoverTool).tooltips = [
         (x_name, '@x_element'),

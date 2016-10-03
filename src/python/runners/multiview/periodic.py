@@ -26,6 +26,7 @@ class MVCCADTCWTRunner:
         qshift,
         servers, 
         period,
+        delay=None,
         correlation_dir=None,
         load_correlation=False,
         save_correlation=False,
@@ -40,6 +41,7 @@ class MVCCADTCWTRunner:
         self.qshift = qshift
         self.servers = servers
         self.period = period
+        self.delay = delay
         self.correlation_dir = correlation_dir
         self.load_correlation = load_correlation
         self.save_correlation = save_correlation
@@ -247,7 +249,13 @@ class MVCCADTCWTRunner:
     def _get_wavelet_transforms(self):
 
         data = [ds.get_data() for ds in self.servers]
+
         factors = [int(self.period * r) for r in self.rates]
+
+        if self.delay is not None:
+            data = [view[self.delay * r:] 
+                    for (r,view) in zip(self.rates, data)]
+
         thresholds  = [int(view.shape[0] * 1.0 / f)
                        for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
@@ -391,7 +399,8 @@ class MVCCADTCWTRunner:
             width=50*X_t.shape[1],
             height=50*X_t.shape[0],
             pos_color_scheme=X_pos_color_scheme,
-            neg_color_scheme=X_neg_color_scheme)
+            neg_color_scheme=X_neg_color_scheme,
+            norm_axis=0)
         Y_plot = plot_matrix_heat(
             Y_t,
             x_labels,
@@ -401,7 +410,8 @@ class MVCCADTCWTRunner:
             y_name,
             val_name,
             width=50*X_t.shape[1],
-            height=50*X_t.shape[0])
+            height=50*X_t.shape[0],
+            norm_axis=0)
 
         plot = Column(*[X_plot, Y_plot])
         filename = get_ts(
@@ -448,7 +458,9 @@ class MVCCADTCWTRunner:
                 y_name,
                 val_name,
                 pos_color_scheme=pos_color_scheme,
-                neg_color_scheme=neg_color_scheme)
+                neg_color_scheme=neg_color_scheme,
+                width=p*50,
+                height=n*50)
 
             plots.append(hmp)
 
