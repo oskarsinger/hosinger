@@ -185,14 +185,17 @@ class MVCCADTCWTRunner:
 
     def _save_cca(self, current, period, phase_or_mag):
 
-        period_str = 'period_' + str(period)
-
         for (k, xy_pair) in current.items():
             views_str = 'views_' + '-'.join([str(j) for j in k])
             path = '_'.join([
-                period_str, 
-                views_str, 
-                phase_or_mag,
+                'subject',
+                self.subject,
+                'delay',
+                str(self.delay),
+                'period',
+                str(self.period),
+                'views',
+                '-'.join([str(j) for j in k]),
                 'dtcwt_cca_matrix.thang'])
 
             for (l, mat) in xy_pair.items():
@@ -216,8 +219,14 @@ class MVCCADTCWTRunner:
                     period_str = 'period_' + str(period)
                     views_str = 'views_' + '-'.join([str(i) for i in k])
                     path = '_'.join([
-                        period_str, 
-                        views_str, 
+                        'subject',
+                        self.subject,
+                        'delay',
+                        str(self.delay),
+                        'period',
+                        str(self.period),
+                        'views',
+                        '-'.join([str(j) for j in k]),
                         'dtcwt_correlation_matrix.thang'])
 
                     if self.correlation_dir is not None:
@@ -414,10 +423,17 @@ class MVCCADTCWTRunner:
             norm_axis=0)
 
         plot = Column(*[X_plot, Y_plot])
-        filename = get_ts(
-            'cca_of_wavelet_coefficients_' + 
-            phase_or_mag + '_' + 
-            names[i] + '_' + names[j]) + '.html'
+        filename = get_ts('_'.join([
+            'cca_of_wavelet_coefficients',
+            'subject',
+            self.subject,
+            'delay',
+            str(self.delay),
+            'period',
+            str(self.period),
+            phase_or_mag,
+            names[i], 
+            names[j]])) + '.html'
         filepath = os.path.join(self.plot_path, filename)
 
         output_file(
@@ -467,7 +483,15 @@ class MVCCADTCWTRunner:
         plot = Column(*plots)
         filename = get_ts(
             'correlation_of_wavelet_coefficients_' +
-            names[i] + '_' + names[j]) + '.html'
+            'subject',
+            self.subject,
+            'delay',
+            str(self.delay),
+            'period',
+            str(self.period),
+            phase_or_mag,
+            names[i], 
+            names[j]) + '.html'
         filepath = os.path.join(self.plot_path, filename)
 
         output_file(
