@@ -24,6 +24,7 @@ from bokeh.models.layouts import Column
 @click.option('--show-cca', default=False)
 @click.option('--center', default=False)
 @click.option('--period', default=12*3600)
+@click.option('--kmeans', default=None)
 @click.option('--plot-path', default='../../plots/')
 def run_it_all_day(
     data_path, 
