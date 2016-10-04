@@ -1,5 +1,15 @@
 from sklearn.decomposition import PCA
 
+def get_kmeans(self, data, k=2):
+
+    model = KMeans(
+        n_clusters=k,
+        random_state=0)
+
+    model.fit(data)
+
+    return model
+
 def get_pca(data, n_components=None, whiten=False):
 
     pca = PCA(n_components=n_components, whiten=whiten)

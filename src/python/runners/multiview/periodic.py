@@ -25,7 +25,6 @@ class MVCCADTCWTRunner:
     def __init__(self, 
         biorthogonal,
         qshift,
-        servers, 
         period,
         delay=None,
         correlation_dir=None,
@@ -43,6 +42,8 @@ class MVCCADTCWTRunner:
         self.qshift = qshift
         self.period = period
         self.delay = delay
+        # TODO: k should probably be internally determined carefully
+        self.kmeans = kmeans
         self.load_correlation = load_correlation
         self.save_correlation = save_correlation
         self.show_correlation = show_correlation
@@ -117,7 +118,7 @@ class MVCCADTCWTRunner:
         self.num_periods = min(
             [ds.rows() / (r * self.period) 
              for (ds, r) in zip(self.servers, self.rates)])
-        self.num_views = len(self.servers)
+        self.num_views = len(self.servers[self.subjects[0]])
 
         get_spud = lambda d, nd: SPUD(
             self.num_views, 
@@ -215,9 +216,23 @@ class MVCCADTCWTRunner:
             self.correlation[period].insert(
                 views[0], views[1], hm)
 
-    def _run_kmeans(self):
+    def _get_correlation_kmeans(self):
 
-        model = KMeans(n_clusters=self.kmeans, random_state=0).fit()
+        data = SPUD(self.num_views, default=list)
+        
+        for subject in self.subjects:
+            for period in self.correlation[subject]: 
+                for (views, corr) in period.items():
+                    data.get(
+                        views[0], views[1]).append(
+                            np.ravel(corr))
+
+        labels = []
+
+        for v in data.values():
+            data_matrix = np.vstack(v) 
+            labels.append(
+                get_kmeans(data_matrix, k=self.kmeans).labels_)
 
     def _compute_cca(self):
 
@@ -239,14 +254,12 @@ class MVCCADTCWTRunner:
                 self._save_cca(current_mag, period, 'mag')
                 self._save_cca(current_phase, period, 'phase')
 
-        # TODO: Do multi-view CCA on magnitude of coefficients
-
-        # TODO: Do CCA on unmodified complex coefficients (probably not)
+        # TODO: Do multi-view CCA on magnitude and phase of coefficients
+        # Probably use CCALin
 
     def _save_cca(self, subject, current, period, phase_or_mag):
 
         for (k, xy_pair) in current.items():
-            views_str = 'views_' + '-'.join([str(j) for j in k])
             path = '_'.join([
                 'subject',
                 subject,
@@ -312,10 +325,9 @@ class MVCCADTCWTRunner:
 
         return correlation
 
-    def _get_wavelet_transforms(self):
+    def _get_wavelet_transforms(self, subject):
 
-        data = [ds.get_data() for ds in self.servers]
-
+        data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
 
         if self.delay is not None:
