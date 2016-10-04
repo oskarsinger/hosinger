@@ -14,6 +14,7 @@ from bokeh.palettes import BuPu9, Oranges9
 from bokeh.plotting import output_file, show
 from bokeh.models.layouts import Column, Row
 from sklearn.cross_decomposition import CCA
+from sklearn.cluster import KMeans, Birch, AgglomerativeClustering as AC
 from multiprocessing import Pool
 from math import log
 from time import mktime
@@ -36,47 +37,119 @@ class MVCCADTCWTRunner:
         save_cca=False,
         show_cca=False,
         kmeans=None,
-        plot_path='.'):
+        plot_dir=None):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.period = period
         self.delay = delay
-        self.correlation_dir = correlation_dir
         self.load_correlation = load_correlation
         self.save_correlation = save_correlation
         self.show_correlation = show_correlation
-        self.cca_dir = cca_dir
+
+        if correlation_dir is None:
+            self.correlation_dir = correlation_dir
+
+            if self.load_correlation or self.save_correlation:
+                raise ValueError(
+                    'Directory path for correlation save/load must be provided.')
+        else:
+            dir_name = get_ts('_'.join(
+                'delay',
+                str(self.delay),
+                'period',
+                str(self.period)),
+                'correlation')
+            self.correlation_dir = os.path.join(
+                correlation_dir,
+                dir_name)
+
+            os.mkdir(self.correlation_dir)
+
         self.load_cca = load_cca
         self.save_cca = save_cca
         self.show_cca = show_cca
-        self.kmeans = kmeans
-        self.plot_path = plot_path
+
+        if cca_dir is None:
+            self.cca_dir = cca_dir
+
+            if self.load_cca or self.save_cca:
+                raise ValueError(
+                    'Directory path for cca save/load must be provided.')
+        else:
+            dir_name = get_ts('_'.join(
+                'delay',
+                str(self.delay),
+                'period',
+                str(self.period)),
+                'cca')
+            self.cca_dir = os.path.join(
+                cca_dir,
+                dir_name)
+
+            os.mkdir(self.cca_dir)
+
+        if plot_dir is None:
+            self.plot_dir = plot_dir
+
+            if self.show_cca or self.show_correlation:
+                raise ValueError(
+                    'Directory path for plots save/load must be provided.')
+
+        else:
+            dir_name = get_ts('_'.join(
+                'delay',
+                str(self.delay),
+                'period',
+                str(self.period)),
+                'plots')
+            self.plot_dir = os.path.join(
+                plot_dir,
+                dir_name)
+
+            os.mkdir(self.plot_dir)
 
         self.servers = dles.get_hr_and_acc_all_subjects(
             self.hdf5_path)
         self.subjects = self.servers.keys()
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
                       for ds in self.servers]
+        self.num_periods = min(
+            [ds.rows() / (r * self.period) 
+             for (ds, r) in zip(self.servers, self.rates)])
         self.num_views = len(self.servers)
+
+        get_spud = lambda d, nd: SPUD(
+            self.num_views, 
+            default=d, 
+            no_double=nd)
+        get_spud_list = lambda d, nd: [get_spud(d, nd)
+                                   for i in xrange(self.num_periods)]
+
         self.wavelets = {s : [] for s in self.subjects}
-        self.correlation= {s : [] for s in self.subjects} 
-        self.pw_cca_mag = {s : [] for s in self.subjects}
-        self.pw_cca_phase = {s : [] for s in self.subjects}
-        self.mv_cca_mag = {s : [] for s in self.subjects}
-        self.mv_cca_phase = {s : [] for s in self.subjects}
+        self.correlation= {s : get_spud_list(None, False) 
+                           for s in self.subjects} 
+        self.pw_cca_mag = {s : get_spud_list(dict, True)
+                           for s in self.subjects}
+        self.pw_cca_phase = {s : get_spud_list(dict, True)
+                             for s in self.subjects}
+        self.mv_cca_mag = {s : get_spud_list(dict, True)
+                           for s in self.subjects}
+        self.mv_cca_phase = {s : get_spud_list(dict, True)
+                             for s in self.subjects}
 
     def run(self):
 
         if not self.load_correlation and not self.load_cca:
-            (Yls, Yhs) = self._get_wavelet_transforms()
+            for subject in self.subjects:
+                (Yls, Yhs) = self._get_wavelet_transforms(subject)
 
-            for period in xrange(len(Yhs[0])):
-                Yhs_period = [view[period] for view in Yhs]
-                Yls_period = [view[period] for view in Yls]
+                for period in xrange(self.num_periods):
+                    Yhs_period = [view[period] for view in Yhs]
+                    Yls_period = [view[period] for view in Yls]
 
-                self.wavelets.append(
-                    (Yhs_period, Yls_period))
+                    self.wavelets[subject].append(
+                        (Yhs_period, Yls_period))
 
         if self.load_correlation:
             self._load_correlation()
@@ -107,27 +180,13 @@ class MVCCADTCWTRunner:
             with open(path) as f:
                 cca[fn] = np.load(f)
 
-        num_periods = max(
-            [int(k.split('_')[2])
-             for k in cca.keys()]) + 1
-
-        self.pw_cca_mag = [SPUD(
-                               self.num_views, 
-                               default=dict, 
-                               no_double=True)
-                           for i in xrange(num_periods)]
-        self.pw_cca_phase = [SPUD(
-                                self.num_views, 
-                                default=dict, 
-                                no_double=True)
-                             for i in xrange(num_periods)]
-
         for (k, mat) in cca.items():
             info = k.split('_')
             name = info[0]
-            period = int(info[2])
-            views = [int(i) for i in info[4].split('-')]
-            phase_or_mag = info[5]
+            subject = info[2]
+            period = int(info[6])
+            views = [int(i) for i in info[8].split('-')]
+            phase_or_mag = info[9]
             l = None
 
             if phase_or_mag == 'phase':
@@ -135,7 +194,7 @@ class MVCCADTCWTRunner:
             elif phase_or_mag == 'mag':
                 l = self.pw_cca_mag
 
-            l[period].get(
+            l[subject][period].get(
                 views[0], views[1])[name] = mat
     
     def _load_correlation(self):
@@ -147,13 +206,6 @@ class MVCCADTCWTRunner:
 
             with open(path) as f:
                 correlation[fn] = np.load(f)
-
-        num_periods = max(
-            [int(k.split('_')[1]) 
-             for k in correlation.keys()]) + 1
-
-        self.correlation = [SPUD(self.num_views)
-                            for i in xrange(num_periods)]
 
         for (k, hm) in correlation.items():
             info = k.split('_')
@@ -191,25 +243,18 @@ class MVCCADTCWTRunner:
 
         # TODO: Do CCA on unmodified complex coefficients (probably not)
 
-    def _save_cca(self, current, period, phase_or_mag):
-
-        ts_cca_dir = os.path.join(
-            self.cca_dir, 
-            get_ts('dtcwt_cca'))
-
-        os.mkdir(ts_cca_dir)
+    def _save_cca(self, subject, current, period, phase_or_mag):
 
         for (k, xy_pair) in current.items():
             views_str = 'views_' + '-'.join([str(j) for j in k])
             path = '_'.join([
                 'subject',
-                self.subject,
-                'delay',
-                str(self.delay),
+                subject,
                 'period',
-                str(self.period),
+                str(period),
                 'views',
                 '-'.join([str(j) for j in k]),
+                phase_or_mag,
                 'dtcwt_cca_matrix.thang'])
 
             for (l, mat) in xy_pair.items():
@@ -222,38 +267,30 @@ class MVCCADTCWTRunner:
 
     def _compute_correlation(self):
 
-        for (period, (Yhs, Yls)) in enumerate(self.wavelets):
-            correlation = self._get_period_correlation(
-                Yhs, Yls)
+        for subject in self.subjects:
+            for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
+                correlation = self._get_period_correlation(
+                    Yhs, Yls)
 
-            self.correlation.append(correlation)
+                self.correlation[subject].append(correlation)
 
-            if self.save_correlation:
-                ts_cca_dir = os.path.join(
-                    self.cca_dir, 
-                    get_ts('dtcwt_correlation'))
+                if self.save_correlation:
+                    for (k, hm) in correlation.items():
+                        views_str = 'views_' + '-'.join([str(i) for i in k])
+                        path = '_'.join([
+                            'subject',
+                            subject,
+                            'period',
+                            str(period),
+                            'views',
+                            '-'.join([str(j) for j in k]),
+                            phase_or_mag,
+                            'dtcwt_correlation_matrix.thang'])
 
-                os.mkdir(ts_cca_dir)
-
-                for (k, hm) in correlation.items():
-                    period_str = 'period_' + str(period)
-                    views_str = 'views_' + '-'.join([str(i) for i in k])
-                    path = '_'.join([
-                        'subject',
-                        self.subject,
-                        'delay',
-                        str(self.delay),
-                        'period',
-                        str(self.period),
-                        'views',
-                        '-'.join([str(j) for j in k]),
-                        'dtcwt_correlation_matrix.thang'])
-
-                    if self.correlation_dir is not None:
                         path = os.path.join(self.correlation_dir, path)
 
-                    with open(path, 'w') as f:
-                        np.save(f, hm)
+                        with open(path, 'w') as f:
+                            np.save(f, hm)
 
     def _get_period_correlation(self, Yhs, Yls):
 
@@ -312,17 +349,6 @@ class MVCCADTCWTRunner:
                     biorthogonal, 
                     qshift)))
 
-                """
-                (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
-                    view, 
-                    int(log(view.shape[0], 2)) - 2,
-                    self.biorthogonal, 
-                    self.qshift)
-
-                Yls[i].append(Yl)
-                Yhs[i].append(Yh)
-                """
-
             for (i, process) in enumerate(processes):
                 (Yl, Yh, _) = process.get()
 
@@ -342,9 +368,7 @@ class MVCCADTCWTRunner:
         for (ds, rate) in zip(self.servers, self.rates):
             processes.append(p.apply_async(
                 _get_resampled_view, (ds, rate)))
-            """
-            resampled.append(_get_resampled_view(ds, rate))
-            """
+
         for process in processes:
             resampled.append(process.get())
 
@@ -352,45 +376,42 @@ class MVCCADTCWTRunner:
 
     def _show_cca(self):
 
-        timelines_mag = SPUD(
-            self.num_views, default=list, no_double=True)
-        timelines_phase = SPUD(
-            self.num_views, default=list, no_double=True)
+        for subject in self.subjects:
+            timelines_mag = SPUD(
+                self.num_views, default=list, no_double=True)
+            timelines_phase = SPUD(
+                self.num_views, default=list, no_double=True)
 
-        for (i, period) in enumerate(self.pw_cca_mag):
-            for (k, xy_pair) in period.items():
-                timelines_mag.get(k[0], k[1]).append(xy_pair)
-                
-        for (i, period) in enumerate(self.pw_cca_phase):
-            for (k, xy_pair) in period.items():
-                timelines_phase.get(k[0], k[1]).append(xy_pair)
+            for (i, period) in enumerate(self.pw_cca_mag[subject]):
+                for (k, xy_pair) in period.items():
+                    timelines_mag.get(k[0], k[1]).append(xy_pair)
+                    
+            for (i, period) in enumerate(self.pw_cca_phase[subject]):
+                for (k, xy_pair) in period.items():
+                    timelines_phase.get(k[0], k[1]).append(xy_pair)
 
-        for (k, l) in timelines_mag.items()[:1]:
-            self._plot_cca(k, l, 'mag')
+            for (k, l) in timelines_mag.items():
+                self._plot_cca(k, l, 'mag', subject)
 
-        for (k, l) in timelines_phase.items()[:1]:
-            self._plot_cca(k, l, 'phase')
+            for (k, l) in timelines_phase.items():
+                self._plot_cca(k, l, 'phase', subject)
 
     def _show_correlation(self):
 
         timelines = SPUD(self.num_views, default=list)
         prev = None
 
-        for (i, period) in enumerate(self.correlation):
-            for (k, hm) in period.items():
-                """
-                if i > 0:
-                    timelines[k].append(hm - prev[k])
-                """
+        for subject in self.subjects:
+            for (i, period) in enumerate(self.correlation[subject]):
+                for (k, hm) in period.items():
+                    timelines.get(k[0], k[1]).append(hm)
 
-                timelines.get(k[0], k[1]).append(hm)
+                prev = period
 
-            prev = period
+            for (k, l) in timelines.items():
+                self._plot_correlation(k, l, subject)
 
-        for (k, l) in timelines.items()[:1]:
-            self._plot_correlation(k, l)
-
-    def _plot_cca(self, key, timeline, phase_or_mag):
+    def _plot_cca(self, key, timeline, phase_or_mag, subject):
 
         (i, j) = key
         (nx, px) = timeline[0]['Xw'].shape
@@ -399,7 +420,8 @@ class MVCCADTCWTRunner:
         title = 'CCA decomposition of ' + phase_or_mag + \
             ' of views ' + \
             names[i] + ' and ' + names[j] + \
-            ' by decimation level'
+            ' by decimation level' + \
+            ' for subject ' + subject
         x_title = 'CCA transform for view' + names[i]
         y_title = 'CCA transform for view' + names[j]
         x_name = 'period'
@@ -446,15 +468,11 @@ class MVCCADTCWTRunner:
         filename = get_ts('_'.join([
             'cca_of_wavelet_coefficients',
             'subject',
-            self.subject,
-            'delay',
-            str(self.delay),
-            'period',
-            str(self.period),
+            subject,
             phase_or_mag,
             names[i], 
             names[j]])) + '.html'
-        filepath = os.path.join(self.plot_path, filename)
+        filepath = os.path.join(self.plot_dir, filename)
 
         output_file(
             filepath, 
@@ -462,12 +480,15 @@ class MVCCADTCWTRunner:
             names[i] + '_' + names[j])
         show(plot)
 
-    def _plot_correlation(self, key, timeline):
+    def _plot_correlation(self, key, timeline, subject):
 
         (i, j) = key
         (n, p) = timeline[0].shape
         names = [ds.name() for ds in self.servers]
-        title = 'Correlation of views ' + names[i] + ' and ' + names[j] + ' by decimation level'
+        title = 'Correlation of views ' + \
+            names[i] + ' and ' + names[j] + \
+            ' by decimation level' + \
+            ' for subject ' + subject
         x_name = 'decimation level'
         y_name = 'decimation level'
         x_labels = ['2^' + str(-k) for k in xrange(p)]
@@ -478,13 +499,6 @@ class MVCCADTCWTRunner:
         for (l, hm) in enumerate(timeline):
             pos_color_scheme = None
             neg_color_scheme = None
-
-            """
-            if k % 2 > 0:
-                pos_color_scheme = list(reversed(BuPu9))
-                neg_color_scheme = list(reversed(Oranges9))
-            """
-
             hmp = plot_matrix_heat(
                 hm,
                 x_labels,
@@ -504,15 +518,11 @@ class MVCCADTCWTRunner:
         filename = get_ts(
             'correlation_of_wavelet_coefficients_' +
             'subject',
-            self.subject,
-            'delay',
-            str(self.delay),
-            'period',
-            str(self.period),
+            subject,
             phase_or_mag,
             names[i], 
             names[j]) + '.html'
-        filepath = os.path.join(self.plot_path, filename)
+        filepath = os.path.join(self.plot_dir, filename)
 
         output_file(
             filepath, 
@@ -529,8 +539,6 @@ def _get_pw_cca(views):
         for j in xrange(i+1, num_views):
             X_data = views[i]
             Y_data = views[j]
-            print 'X shape', X_data.shape
-            print 'Y shape', Y_data.shape
             cca = CCA(n_components=1)
 
             cca.fit(X_data, Y_data)
@@ -578,10 +586,10 @@ def _get_resampled_view(server, rate):
 
     return series.resample('S').pad().as_matrix()
 
-def _get_dt_index(rows, f, dt):
+def _get_dt_index(num_rows, factor, datetime):
 
-    start = mktime(dt.timetuple())
-    times = (np.arange(rows) * f + start).tolist()
+    start = mktime(datetime.timetuple())
+    times = (np.arange(num_rows) * factor + start).tolist()
 
     return [datetime.fromtimestamp(t)
             for t in times]
