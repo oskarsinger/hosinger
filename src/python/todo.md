@@ -2,11 +2,14 @@
 The approach you are taking to determining canonical correlations between frequency components of each view over each day  is interesting and you should finish the analysis. I suggest that you generate the correlation matrices and canonical correlation vectors for all subjects and then cluster them to see if common patterns over time and over subject occur. You can use K-means or hierarchical clustering on all days for all subjects and see if interesting clusters occur (clusters of pre-innocc vs post-innoc or clusters of Sx vs Asx days).
     * I need to make the runner just run the analysis on all subjects. 
         * The easiest way to do this is probably to just adapt all of the functions to act on the data from one subject, then loop through the subjects.
-    *Then I need to cluster using sklearn implementations of KMeans, AgglomerativeClustering, or Birch. 
-        *Should unfold the matrices so I can just cluster on vectors.
-        *Need to do this on each of phase correlation, magnitude correlation, CCA over time. 
-            * For the correlations, look for patterns over _time_ and _subject_.
-            * For CCA over time, look for patterns over asymptomatic vs symptomatic.
+    * Then I need to cluster using sklearn implementations of KMeans, AgglomerativeClustering, or Birch. 
+        * Should unfold the matrices so I can just cluster on vectors.
+        * Need to do three clusterings: each data point is fixed subject, fixed day, fix view pair:
+            * phase correlation
+            * magnitude correlation
+            * canonical vector of view 1
+            * canonical vector of view 2
+        * Is there a way that I can avoid separately clustering the canonical vectors of different views? That's O(n^2) clustering, where n is number of views.
     * Might be helpful to project down using t-SNE. This could be a nice visualization for the DARPA people. There's a chance Al will be happy with that.
 
 #Additional Experiments to Address Weaknesses of Current Method
