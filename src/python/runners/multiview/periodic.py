@@ -115,33 +115,20 @@ class MVCCADTCWTRunner:
         self.subjects = self.servers.keys()
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
                       for ds in self.servers]
-        self.num_periods = min(
-            [ds.rows() / (r * self.period) 
-             for (ds, r) in zip(self.servers, self.rates)])
+        self.num_periods = [ds.rows() / (r * self.period) 
+                            for (ds, r) in zip(self.servers, self.rates)]
         self.num_views = len(self.servers[self.subjects[0]])
 
-        get_spud = lambda d, nd: SPUD(
-            self.num_views, 
-            default=d, 
-            no_double=nd)
-        get_spud_list = lambda d, nd: [get_spud(d, nd)
-                                   for i in xrange(self.num_periods)]
-
         self.wavelets = {s : [] for s in self.subjects}
-        self.correlation= {s : get_spud_list(None, False) 
-                           for s in self.subjects} 
-        self.pw_cca_mag = {s : get_spud_list(dict, True)
-                           for s in self.subjects}
-        self.pw_cca_phase = {s : get_spud_list(dict, True)
-                             for s in self.subjects}
-        self.mv_cca_mag = {s : get_spud_list(dict, True)
-                           for s in self.subjects}
-        self.mv_cca_phase = {s : get_spud_list(dict, True)
-                             for s in self.subjects}
-        self.corr_kmeans_mag = {s : get_spud_list(list, False)
-                                for s in self.subjects} 
-        self.corr_kmeans_phase = {s : get_spud_list(list, False)
-                                  for s in self.subjects} 
+        self.correlation= self._get_list_spud_dict()
+        self.pw_cca_mag = self._get_list_spud_dict(no_double=True)
+        self.pw_cca_phase = self._get_list_spud_dict(no_double=True)
+        self.mv_cca_mag = self._get_list_spud_dict(no_double=True)
+        self.mv_cca_phase = self._get_list_spud_dict(no_double=True)
+        self.corr_kmeans_mag = self._get_list_spud_dict()
+        self.corr_kmeans_phase = self._get_list_spud_dict()
+        self.pw_cca_mag_kmeans = self._get_list_spud_dict(no_double=True)
+        self.pw_cca_phase_kmeans = self._get_list_spud_dict(no_double=True)
 
     def run(self):
 
@@ -149,7 +136,7 @@ class MVCCADTCWTRunner:
             for subject in self.subjects:
                 (Yls, Yhs) = self._get_wavelet_transforms(subject)
 
-                for period in xrange(self.num_periods):
+                for period in xrange(self.num_periods[subject]):
                     Yhs_period = [view[period] for view in Yhs]
                     Yls_period = [view[period] for view in Yls]
 
@@ -167,13 +154,22 @@ class MVCCADTCWTRunner:
             self._compute_cca()
 
         if self.kmeans is not None:
-            self._run_kmeans()
+            self._compute_correlation_kmeans()
+            self._compute_cca_kmeans()
 
         if self.show_correlation:
             self._show_correlation()
 
         if self.show_cca:
             self._show_cca()
+
+    def _get_list_spud_dict(self, no_double=False):
+
+        get_list_spud = lambda nd: SPUD(
+            self.num_views, default=list, no_double=nd)
+
+        return {s : get_list_spud(no_double)
+                for s in self.subjects}
 
     def _load_cca(self):
 
@@ -220,55 +216,112 @@ class MVCCADTCWTRunner:
             self.correlation[period].insert(
                 views[0], views[1], hm)
 
+    def _compute_cca_kmeans(self):
+
+        mag_data = SPUD(
+            self.num_views, default=list, no_double=True)
+        phase_data = SPUD(
+            self.num_views, default=list, no_double=True)
+        subjects = SPUD(
+            self.num_views, default=list, no_double=True)
+
+        for subject in self.subjects:
+            mag = self.pw_cca_mag[subject].items()
+            phase = self.pw_cca_mag[subject].items()
+
+            for ((i, j), mag_pairs) in mag_data.items():
+                phase_pairs = phase.get(i, j)
+                # TODO: Double check that the dimension manipulation is correct here
+                stack = lambda p: np.ravel(
+                    np.vstack([p['Xw'], p['Yw']]))
+                mag_l = [stack(p) for p in mag_pairs]
+                phase_l = [stack(p) for p in phase_pairs]
+
+                mag_data.get(i, j).extend(mag_l)
+                phase_data.get(i, j).extend(phase_l)
+                subjects.get(i, j).extend(
+                    [subject] * len(l))
+
+        mag = SPUD(self.num_views, no_double=True)
+        phase = SPUD(self.num_views, no_double=True)
+
+        for ((i, j), mag_v) in mag_data.items()
+            mag_as_rows = np.vstack(mag_v)
+            phase_as_rows = np.vstack(
+                phase_data.get(i, j))
+
+            mag.insert(i, j, mag_as_rows)
+            phase.insert(i, j, phase_as_rows)
+
+        self.pw_cca_mag_kmeans = self._get_kmeans_spud_dict(
+            mag, subjects)
+        self.pw_cca_phase_kmeans = self._get_kmeans_spud_dict(
+            phase, subjects)
+
     def _compute_correlation_kmeans(self):
 
         data = SPUD(self.num_views, default=list)
         subjects = SPUD(self.num_views, default=list)
         
         for subject in self.subjects:
-            for period in self.correlation[subject]:
-                for ((i, j), corr) in period.items():
-                    corr_as_row = np.ravel(corr)
+            items = self.correlation[subject].items()
+            
+            for ((i, j), corr_list) in items:
+                data.get(i, j).extend(
+                    [np.ravel(corr) for corr in corr_list])
+                subjects.get(i, j).extend(
+                    [subject] * len(corr_list))
 
-                    data.get(i, j).append(corr_as_row)
-                    subjects.get(i, j).append(subject)
+        mag = SPUD(self.num_views)
+        phase = SPUD(self.num_views)
 
         for ((i, j), v) in data.items():
-
             corrs_as_rows = np.vstack(v)
-            mag = np.absolute(corrs_as_rows)
-            phase = np.angle(corrs_as_rows)
-            mag_labels = get_kmeans(
-                mag, k=self.kmeans).labels_.tolist()
-            phase_labels = get_kmeans(
-                phase, k=self.kmeans).labels_.tolist()
-            subjects = subjects.get(i, j)
 
-            for (m, s) in zip(mag_labels, subjects):
-                self.corr_kmeans_mag[s].get(i, j).append(m)
+            mag.insert(i, j, np.absolute(corrs_as_rows))
+            phase.insert(i, j, np.angle(corrs_as_rows))
 
-            for (p, s) in zip(phase_labels, subjects):
-                self.corr_kmeans_phase[s].get(i, j).append(p)
+        self.corr_kmeans_mag = self._get_kmeans_spud_dict(
+            mag, subjects)
+        self.corr_kmeans_phase = self._get_kmeans_spud_dict(
+            phase, subjects)
+
+    def _get_kmeans_spud_dict(self, data, subjects, no_double=False):
+
+        label_spud = self._get_list_spud_dict(no_double=no_double)
+
+        for ((i, j), d) in data.items():
+            labels = get_kmeans(
+                d, k=self.kmeans).labels_.tolist()
+            subject_list = subjects.get(i, j)
+
+            for (l, s) in zip(labels, subject_list):
+                label_spud[s].get(i, j).append(l)
+
+        return label_spud
 
     def _compute_cca(self):
 
-        for (period, (Yhs, Yls)) in enumerate(self.wavelets):
-            current = SPUD(self.num_views, no_double=True)
-            wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
-                                for (Yh, Yl) in zip(Yhs, Yls)]
-            wms_mag = [np.absolute(wm) 
-                       for wm in wavelet_matrices]
-            wms_phase = [np.angle(wm)
-                         for wm in wavelet_matrices]
-            current_mag = _get_pw_cca(wms_mag)
-            current_phase = _get_pw_cca(wms_phase)
+        for subject in self.subjects:
+            for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
+                current = SPUD(self.num_views, no_double=True)
+                wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
+                                    for (Yh, Yl) in zip(Yhs, Yls)]
+                wms_mag = [np.absolute(wm) 
+                           for wm in wavelet_matrices]
+                wms_phase = [np.angle(wm)
+                             for wm in wavelet_matrices]
+                current_mag = _get_pw_cca(wms_mag)
+                current_phase = _get_pw_cca(wms_phase)
 
-            self.pw_cca_mag.append(current_mag)
-            self.pw_cca_phase.append(current_phase)
+                self.pw_cca_mag = _get_append_spud(
+                    self.pw_cca_mag[subject], current_mag)
+                self.pw_cca_phase = _get_append_spud(
+                    self.pw_cca_phase[subject], current_phase)
 
-            if self.save_cca:
-                self._save_cca(current_mag, period, 'mag')
-                self._save_cca(current_phase, period, 'phase')
+                if self.save_cca:
+                    self._save_cca(current_mag, period, 'mag')
+                    self._save_cca(current_phase, period, 'phase')
 
         # TODO: Do multi-view CCA on magnitude and phase of coefficients
         # Probably use CCALin
@@ -557,6 +610,13 @@ class MVCCADTCWTRunner:
             'correlation_of_wavelet_coefficients_' +
             names[i] + '_' + names[j])
         show(plot)
+
+def _get_appended_spud(list_spud, item_spud):
+
+    for ((i, j), v) in item_spud.items():
+        list_spud.get(i, j).append(v)
+
+    return list_spud
 
 def _get_pw_cca(views):
 
