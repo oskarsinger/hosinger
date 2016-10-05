@@ -138,6 +138,10 @@ class MVCCADTCWTRunner:
                            for s in self.subjects}
         self.mv_cca_phase = {s : get_spud_list(dict, True)
                              for s in self.subjects}
+        self.corr_kmeans_mag = {s : get_spud_list(None, False)
+                                for s in self.subjects} 
+        self.corr_kmeans_phase = {s : get_spud_list(None, False)
+                                  for s in self.subjects} 
 
     def run(self):
 
@@ -227,12 +231,14 @@ class MVCCADTCWTRunner:
                         views[0], views[1]).append(
                             np.ravel(corr))
 
-        labels = []
+        labels = {s : SPUD(self.num_views)
 
-        for v in data.values():
+        for (k, v) in data.items():
             data_matrix = np.vstack(v) 
             labels.append(
                 get_kmeans(data_matrix, k=self.kmeans).labels_)
+
+        return labels
 
     def _compute_cca(self):
 
