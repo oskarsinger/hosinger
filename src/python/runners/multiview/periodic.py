@@ -27,88 +27,32 @@ class MVCCADTCWTRunner:
         qshift,
         period,
         delay=None,
-        correlation_dir=None,
+        save_load_dir=None, 
         load_correlation=False,
         save_correlation=False,
         show_correlation=False,
-        cca_dir=None,
         load_cca=False,
         save_cca=False,
         show_cca=False,
-        kmeans=None,
-        plot_dir=None):
+        correlation_kmeans=None,
+        cca_kmeans=None):
 
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.period = period
         self.delay = delay
         # TODO: k should probably be internally determined carefully
-        self.kmeans = kmeans
-        self.load_correlation = load_correlation
-        self.save_correlation = save_correlation
-        self.show_correlation = show_correlation
+        self.correlation_kmeans = correlation_kmeans
+        self.cca_kmeans = cca_kmeans
 
-        if correlation_dir is None:
-            self.correlation_dir = correlation_dir
-
-            if self.load_correlation or self.save_correlation:
-                raise ValueError(
-                    'Directory path for correlation save/load must be provided.')
-        else:
-            dir_name = get_ts('_'.join(
-                'delay',
-                str(self.delay),
-                'period',
-                str(self.period)),
-                'correlation')
-            self.correlation_dir = os.path.join(
-                correlation_dir,
-                dir_name)
-
-            os.mkdir(self.correlation_dir)
-
-        self.load_cca = load_cca
-        self.save_cca = save_cca
-        self.show_cca = show_cca
-
-        if cca_dir is None:
-            self.cca_dir = cca_dir
-
-            if self.load_cca or self.save_cca:
-                raise ValueError(
-                    'Directory path for cca save/load must be provided.')
-        else:
-            dir_name = get_ts('_'.join(
-                'delay',
-                str(self.delay),
-                'period',
-                str(self.period)),
-                'cca')
-            self.cca_dir = os.path.join(
-                cca_dir,
-                dir_name)
-
-            os.mkdir(self.cca_dir)
-
-        if plot_dir is None:
-            self.plot_dir = plot_dir
-
-            if self.show_cca or self.show_correlation:
-                raise ValueError(
-                    'Directory path for plots save/load must be provided.')
-
-        else:
-            dir_name = get_ts('_'.join(
-                'delay',
-                str(self.delay),
-                'period',
-                str(self.period)),
-                'plots')
-            self.plot_dir = os.path.join(
-                plot_dir,
-                dir_name)
-
-            os.mkdir(self.plot_dir)
+        self._init_dirs(self,
+            save_load_dir,
+            load_correlation,
+            save_correlation,
+            show_correlation,
+            load_cca,
+            save_cca,
+            show_cca)
 
         self.servers = dles.get_hr_and_acc_all_subjects(
             self.hdf5_path)
@@ -120,11 +64,14 @@ class MVCCADTCWTRunner:
         self.num_views = len(self.servers[self.subjects[0]])
 
         self.wavelets = {s : [] for s in self.subjects}
+
         self.correlation= self._get_list_spud_dict()
+
         self.pw_cca_mag = self._get_list_spud_dict(no_double=True)
         self.pw_cca_phase = self._get_list_spud_dict(no_double=True)
         self.mv_cca_mag = self._get_list_spud_dict(no_double=True)
         self.mv_cca_phase = self._get_list_spud_dict(no_double=True)
+
         self.corr_kmeans_mag = self._get_list_spud_dict()
         self.corr_kmeans_phase = self._get_list_spud_dict()
         self.pw_cca_mag_kmeans = self._get_list_spud_dict(no_double=True)
@@ -153,8 +100,10 @@ class MVCCADTCWTRunner:
         else:
             self._compute_cca()
 
-        if self.kmeans is not None:
+        if self.correlation_kmeans is not None:
             self._compute_correlation_kmeans()
+
+        if self.cca_kmeans is not None:
             self._compute_cca_kmeans()
 
         if self.show_correlation:
@@ -162,6 +111,51 @@ class MVCCADTCWTRunner:
 
         if self.show_cca:
             self._show_cca()
+
+    def _init_dirs(self):
+
+        save = save_correlation or save_cca
+        load = load_correlation or load_cca
+
+        if save and not load:
+            if not os.path.isdir(save_load_dir):
+                os.mkdir(save_load_dir)
+
+            model_dir = get_ts('_'.join([
+                'MVCCADTCWT',
+                'delay',
+                str(self.delay),
+                'period',
+                str(self.period)]))
+
+            self.save_load_dir = os.path.join(
+                self.save_load_dir,
+                model_dir)
+
+            os.mkdir(self.save_load_dir)
+        else:
+            self.save_load_dir = save_load_dir
+
+        self.correlation_dir = self._init_dir(
+            'correlation',
+            save_correlation)
+        self.cca_dir = self._init_dir(
+            'cca',
+            save_cca)
+        self.plot_dir = self._init_dir(
+            'plots',
+            show_cca or show_correlation)
+
+    def _init_dir(self, dir_name, save):
+
+        dir_path = os.path.join(
+            self.save_load_dir,
+            dir_name)
+
+        if save:
+            os.mkdir(dir_var)
+
+        return dir_path
 
     def _get_list_spud_dict(self, no_double=False):
 

@@ -13,33 +13,31 @@ from bokeh.models.layouts import Column
 @click.option('--data-path', 
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
 @click.option('--delay', default=None)
-@click.option('--correlation-dir', default=None)
+@click.option('--save-load-dir', default='.')
 @click.option('--load-correlation', default=False)
 @click.option('--save-correlation', default=False)
 @click.option('--show-correlation', default=False)
-@click.option('--cca-dir', default=None)
 @click.option('--load-cca', default=False)
 @click.option('--save-cca', default=False)
 @click.option('--show-cca', default=False)
 @click.option('--center', default=False)
 @click.option('--period', default=12*3600)
-@click.option('--kmeans', default=None)
-@click.option('--plot-dir', default='../../plots/')
+@click.option('--correlation-kmeans', default=None)
+@click.option('--cca-kmeans', default=None)
 def run_it_all_day(
     data_path, 
     delay,
-    correlation_dir, 
+    save_load_dir,
     load_correlation,
     save_correlation, 
     show_correlation,
-    cca_dir, 
     load_cca,
     save_cca, 
     show_cca,
     center, 
     period,
-    kmeans,
-    plot_dir):
+    correlation_kmeans,
+    cca_kmeans):
 
     # TODO: do it with different bases and shifts
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
@@ -51,16 +49,15 @@ def run_it_all_day(
         qshift_b,
         period,
         delay=delay,
-        correlation_dir=correlation_dir,
+        save_load_dir=save_load_dir,
         save_correlation=save_correlation,
         load_correlation=load_correlation,
         show_correlation=show_correlation,
-        cca_dir=cca_dir,
         save_cca=save_cca,
         load_cca=load_cca,
         show_cca=show_cca,
-        kmeans=kmeans,
-        plot_dir=plot_dir)
+        correlation_kmeans=correlation_kmeans,
+        cca_kmeans=cca_kmeans)
 
     runner.run()
 
