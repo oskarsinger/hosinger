@@ -9,7 +9,7 @@ The approach you are taking to determining canonical correlations between freque
             * magnitude correlation
             * canonical vector of view 1
             * canonical vector of view 2
-        * Is there a way that I can avoid separately clustering the canonical vectors of different views? That's O(n^2) clustering, where n is number of views.
+        * Is there a way that I can avoid separately clustering the canonical vectors of different views? That's O(n^2) clustering, where n is number of views. Could just concat the paired canonical vectors from each round. Yup, let's do that.
     * Might be helpful to project down using t-SNE. This could be a nice visualization for the DARPA people. There's a chance Al will be happy with that.
 
 #Additional Experiments to Address Weaknesses of Current Method
