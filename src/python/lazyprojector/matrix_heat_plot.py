@@ -93,7 +93,7 @@ def _initialize_figure(
     p.grid.grid_line_color = None
     p.axis.axis_line_color = None
     p.axis.major_tick_line_color = None
-    p.axis.major_label_text_font_size = "15pt"
+    p.axis.major_label_text_font_size = '15pt'
     p.axis.major_label_standoff = 0
     p.xaxis.major_label_orientation = pi/3
 

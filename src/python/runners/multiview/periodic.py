@@ -138,9 +138,9 @@ class MVCCADTCWTRunner:
                            for s in self.subjects}
         self.mv_cca_phase = {s : get_spud_list(dict, True)
                              for s in self.subjects}
-        self.corr_kmeans_mag = {s : get_spud_list(None, False)
+        self.corr_kmeans_mag = {s : get_spud_list(list, False)
                                 for s in self.subjects} 
-        self.corr_kmeans_phase = {s : get_spud_list(None, False)
+        self.corr_kmeans_phase = {s : get_spud_list(list, False)
                                   for s in self.subjects} 
 
     def run(self):
@@ -220,25 +220,35 @@ class MVCCADTCWTRunner:
             self.correlation[period].insert(
                 views[0], views[1], hm)
 
-    def _get_correlation_kmeans(self):
+    def _compute_correlation_kmeans(self):
 
         data = SPUD(self.num_views, default=list)
+        subjects = SPUD(self.num_views, default=list)
         
         for subject in self.subjects:
-            for period in self.correlation[subject]: 
-                for (views, corr) in period.items():
-                    data.get(
-                        views[0], views[1]).append(
-                            np.ravel(corr))
+            for period in self.correlation[subject]:
+                for ((i, j), corr) in period.items():
+                    corr_as_row = np.ravel(corr)
 
-        labels = {s : SPUD(self.num_views)
+                    data.get(i, j).append(corr_as_row)
+                    subjects.get(i, j).append(subject)
 
-        for (k, v) in data.items():
-            data_matrix = np.vstack(v) 
-            labels.append(
-                get_kmeans(data_matrix, k=self.kmeans).labels_)
+        for ((i, j), v) in data.items():
 
-        return labels
+            corrs_as_rows = np.vstack(v)
+            mag = np.absolute(corrs_as_rows)
+            phase = np.angle(corrs_as_rows)
+            mag_labels = get_kmeans(
+                mag, k=self.kmeans).labels_.tolist()
+            phase_labels = get_kmeans(
+                phase, k=self.kmeans).labels_.tolist()
+            subjects = subjects.get(i, j)
+
+            for (m, s) in zip(mag_labels, subjects):
+                self.corr_kmeans_mag[s].get(i, j).append(m)
+
+            for (p, s) in zip(phase_labels, subjects):
+                self.corr_kmeans_phase[s].get(i, j).append(p)
 
     def _compute_cca(self):
 
