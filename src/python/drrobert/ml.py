@@ -1,4 +1,5 @@
 from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
 def get_kmeans(data, k=2):
 
