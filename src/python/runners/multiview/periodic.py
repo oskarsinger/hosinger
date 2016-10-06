@@ -160,7 +160,7 @@ class MVCCADTCWTRunner:
             dir_name)
 
         if save:
-            os.mkdir(dir_var)
+            os.mkdir(dir_path)
 
         return dir_path
 
