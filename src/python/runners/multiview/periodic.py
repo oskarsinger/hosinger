@@ -8,6 +8,7 @@ import data.loaders.e4.shortcuts as dles
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from data.servers.batch import BatchServer as BS
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
 from bokeh.palettes import BuPu9, Oranges9
@@ -55,15 +56,7 @@ class MVCCADTCWTRunner:
             load_cca,
             save_cca,
             show_cca)
-
-        self.servers = dles.get_hr_and_acc_all_subjects(
-            self.hdf5_path, None, False)
-        self.subjects = self.servers.keys()
-        self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
-                      for ds in self.servers.items()[0][1]]
-        self.num_periods = [ds.rows() / (r * self.period) 
-                            for (ds, r) in zip(self.servers, self.rates)]
-        self.num_views = len(self.servers[self.subjects[0]])
+        self._init_server_stuff()
 
         self.wavelets = {s : [] for s in self.subjects}
 
@@ -113,6 +106,19 @@ class MVCCADTCWTRunner:
 
         if self.show_cca:
             self._show_cca()
+
+    def _init_server_stuff(self):
+
+        loaders = dles.get_hr_and_acc_all_subjects(
+            self.hdf5_path, None, False)
+        self.rates = [dl.get_status()['hertz']
+                      for dl in self.loaders.items()[0][1][0]]
+        self.servers = {s : [BS(dl) for dl in dl_list]
+                        for (s, dl_list) in loaders.items()}
+        self.subjects = self.servers.keys()
+        self.num_periods = [ds.rows() / (r * self.period) 
+                            for (ds, r) in zip(self.servers, self.rates)]
+        self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,
         save_load_dir,
