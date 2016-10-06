@@ -8,6 +8,7 @@ import data.loaders.e4.shortcuts as dles
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from drrobert.ml import get_kmeans
 from data.servers.batch import BatchServer as BS
 from wavelets import dtcwt
 from lazyprojector import plot_matrix_heat
@@ -15,7 +16,6 @@ from bokeh.palettes import BuPu9, Oranges9
 from bokeh.plotting import output_file, show
 from bokeh.models.layouts import Column, Row
 from sklearn.cross_decomposition import CCA
-from sklearn.cluster import KMeans, Birch, AgglomerativeClustering as AC
 from multiprocessing import Pool
 from math import log
 from time import mktime
