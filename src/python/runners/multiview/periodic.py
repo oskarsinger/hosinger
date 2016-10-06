@@ -57,7 +57,7 @@ class MVCCADTCWTRunner:
             show_cca)
 
         self.servers = dles.get_hr_and_acc_all_subjects(
-            self.hdf5_path)
+            self.hdf5_path, None, False)
         self.subjects = self.servers.keys()
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
                       for ds in self.servers]
