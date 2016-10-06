@@ -16,29 +16,31 @@ class BatchServer:
 
     def get_data(self):
 
+        data = self.dl.get_data()
+
         if self.center:
-            self.data -= np.mean(self.data, axis=0)
+            data -= np.mean(data, axis=0)
 
         if self.num_coords is not None:
-            self._avg_data()
+            self._avg_data(data)
 
-        return self.dl.get_data()
+        return data
 
-    def _avg_data(self):
+    def _avg_data(self, data):
 
-        new_batch = np.zeros((self.data.shape[0], self.num_coords))
+        new_batch = np.zeros((data.shape[0], self.num_coords))
         sample_size = self.cols() / self.num_coords
 
         for i in xrange(self.num_coords):
             begin = i * sample_size
             end = begin + sample_size
 
-            if end + sample_size > self.data.shape[1]+1:
-                new_batch[:,i] = np.mean(self.data[:,begin:], axis=1)
+            if end + sample_size > data.shape[1]+1:
+                new_batch[:,i] = np.mean(data[:,begin:], axis=1)
             else:
-                new_batch[:,i] = np.mean(self.data[:,begin:end], axis=1)
+                new_batch[:,i] = np.mean(data[:,begin:end], axis=1)
 
-        self.data = new_batch 
+        return new_batch 
 
     def cols(self):
 
@@ -51,7 +53,7 @@ class BatchServer:
 
     def rows(self):
 
-        return 0 if self.data is None else self.data.shape[0]
+        return self.dl.cols()
 
     def name(self):
 
@@ -63,5 +65,4 @@ class BatchServer:
             'data_loader': self.dl,
             'reg': self.reg,
             'lazy': self.lazy,
-            'online': False,
-            'data': self.data}
+            'online': False}
