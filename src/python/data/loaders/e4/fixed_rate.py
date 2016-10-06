@@ -47,12 +47,14 @@ class FixedRateLoader(AbstractDataLoader):
 
     def get_data(self):
 
+        batch = None
+
         if self.online:
             self._refill_data()
-        elif self.data is None:
-            self._set_data()
 
-        batch = self.data
+            batch = self.data
+        elif self.data is None:
+            batch = self._set_data()
 
         if not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
@@ -94,7 +96,7 @@ class FixedRateLoader(AbstractDataLoader):
                     data = np.vstack(
                         [data, new_data])
 
-        self.data = data
+        return data
 
     def _get_rows(self, key, session):
 
@@ -170,13 +172,12 @@ class FixedRateLoader(AbstractDataLoader):
 
     def rows(self):
 
-        # TODO: rewrite this; its wrong
-        rows = 0
+        rows = None
 
         if self.online:
             rows = self.num_rounds
-        elif self.data is not None:
-            rows = self.data.shape[0]
+        else:
+            rows = self._set_data().shape[0]
 
         return rows
 
