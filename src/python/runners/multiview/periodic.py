@@ -299,7 +299,6 @@ class MVCCADTCWTRunner:
         subjects = SPUD(self.num_views, default=list)
         
         for subject in self.subjects:
-            print subject
             items = self.correlation[subject].items()
             
             for ((i, j), corr_list) in items:
@@ -401,7 +400,8 @@ class MVCCADTCWTRunner:
                 correlation = self._get_period_correlation(
                     Yhs, Yls)
 
-                self.correlation[subject].append(correlation)
+                for ((i, j), corr) in correlation.items():
+                    self.correlation[subject].get(i, j).append(corr)
 
                 if self.save_correlation:
                     for (k, hm) in correlation.items():
