@@ -299,9 +299,13 @@ class MVCCADTCWTRunner:
         subjects = SPUD(self.num_views, default=list)
         
         for subject in self.subjects:
+            print subject
             items = self.correlation[subject].items()
             
             for ((i, j), corr_list) in items:
+                raveled_corrs = [np.ravel(corr) for corr in corr_list]
+                print 'i, j', i, j
+                print 'len(raveled_corrs)', len(raveled_corrs)
                 data.get(i, j).extend(
                     [np.ravel(corr) for corr in corr_list])
                 subjects.get(i, j).extend(
