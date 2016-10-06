@@ -57,8 +57,8 @@ def run_it_all_day(
         save_cca=save_cca,
         load_cca=load_cca,
         show_cca=show_cca,
-        correlation_kmeans=correlation_kmeans,
-        cca_kmeans=cca_kmeans)
+        correlation_kmeans=int(correlation_kmeans),
+        cca_kmeans=int(cca_kmeans))
 
     runner.run()
 
