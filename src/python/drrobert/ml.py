@@ -1,6 +1,6 @@
 from sklearn.decomposition import PCA
 
-def get_kmeans(self, data, k=2):
+def get_kmeans(data, k=2):
 
     model = KMeans(
         n_clusters=k,
