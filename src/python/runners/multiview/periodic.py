@@ -491,7 +491,6 @@ class MVCCADTCWTRunner:
                 qshift = {k : np.copy(v) 
                           for (k,v) in self.qshift.items()}
 
-                print 'Adding process'
                 processes.append(p.apply_async(
                     dtcwt.oned.dtwavexfm,
                     (view, 
@@ -500,7 +499,6 @@ class MVCCADTCWTRunner:
                     qshift)))
 
             for (i, process) in enumerate(processes):
-                print 'Getting result from process'
                 (Yl, Yh, _) = process.get()
 
                 Yls[i].append(Yl)
