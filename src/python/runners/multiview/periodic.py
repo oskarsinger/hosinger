@@ -112,7 +112,14 @@ class MVCCADTCWTRunner:
         if self.show_cca:
             self._show_cca()
 
-    def _init_dirs(self):
+    def _init_dirs(self,
+        save_load_dir,
+        load_correlation,
+        save_correlation,
+        show_correlation,
+        load_cca,
+        save_cca,
+        show_cca):
 
         save = save_correlation or save_cca
         load = load_correlation or load_cca
