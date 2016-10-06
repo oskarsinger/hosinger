@@ -128,6 +128,7 @@ class MVCCADTCWTRunner:
 
         for (s, dl_list) in loaders.items()[-7:]:
             # This is to ensure that all subjects have sufficient data
+            s = s[-2:]
             try:
                 [dl.get_data() for dl in dl_list]
 
@@ -551,14 +552,44 @@ class MVCCADTCWTRunner:
 
         print title, 'KMeans Labels'
 
-        for (subject, spud) in labels.items():
-            print '\tSubject:', subject
+        max_periods = max(self.num_periods.values())
+        default = lambda: [{} for i in xrange(max_periods)]
+        by_period = SPUD(self.num_views, default=default)
+
+        print '\tBy Subject'
+        for subject in self.subjects:
+            print '\t\tSubject:', subject
+            spud = labels[subject]
 
             for ((i, j), timeline) in spud.items():
-                print '\t\tView Pair:', i, j
+                print '\t\t\tView Pair:', i, j
 
-                for (p, label) in enumerate(timeline):
-                    print '\t\t\tPeriod', p, 'label:', label
+                line = '\t'.join(
+                    [str(p) + ': ' + str(label)
+                     for (p, label) in enumerate(timeline)])
+
+                print '\t\t\t\t' + line
+
+                for p in xrange(max_periods):
+                    if len(timeline) - 1 < p:
+                        label = 'X'
+                    else:
+                        label = timeline[p]
+
+                    by_period.get(i, j)[p][subject] = label
+
+        print '\tBy Period'
+        for ((i, j), timeline) in by_period.items():
+            print '\t\tViews', i, j
+
+            for (p, labels) in enumerate(timeline):
+                print '\t\t\tPeriod', p
+
+                line = '\t'.join(
+                    [subject + ': ' + str(label)
+                     for (subject, label) in labels.items()])
+
+                print '\t\t\t\t' + line
 
     def _show_cca(self):
 

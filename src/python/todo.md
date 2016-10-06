@@ -29,3 +29,10 @@ As we have discussed throughout the past year, our primary objective should be t
 
 #Test Signals
 To test your analysis I have prepared a pair of test signals in tab delimited files (attached). The files  (example1_TS1, example1_TS2,  example2_TS1 and example2_TS2) are two different examples of time series for two views  (TS1 and TS2 designation) for an easy case (example1) and a harder case (example2). The sampling rate for all these files is 1 sample/min.  Please use these to test your method and to explain your results to me at our next meeting.
+
+#Random (reorganize later)
+* Ignore phase
+* Cut down to high magnitude block of magnitude parameters, then plot over time
+* Linear regression between accelerometer and heart rate via scatter plot
+* First show 'statistical picture', then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
+* Add something to code to make phase analysis optional
