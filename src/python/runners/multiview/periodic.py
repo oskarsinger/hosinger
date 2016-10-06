@@ -136,7 +136,7 @@ class MVCCADTCWTRunner:
                 str(self.period)]))
 
             self.save_load_dir = os.path.join(
-                self.save_load_dir,
+                save_load_dir,
                 model_dir)
 
             os.mkdir(self.save_load_dir)
