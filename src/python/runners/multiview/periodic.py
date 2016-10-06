@@ -303,8 +303,7 @@ class MVCCADTCWTRunner:
             
             for ((i, j), corr_list) in items:
                 raveled_corrs = [np.ravel(corr) for corr in corr_list]
-                print 'i, j', i, j
-                print 'len(raveled_corrs)', len(raveled_corrs)
+
                 data.get(i, j).extend(
                     [np.ravel(corr) for corr in corr_list])
                 subjects.get(i, j).extend(
@@ -395,10 +394,8 @@ class MVCCADTCWTRunner:
         for subject in self.subjects:
 
             print 'Computing correlation for subject', subject
-            print 'len(self.wavelets[subject])', len(self.wavelets[subject])
 
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
-                print 'period', period
                 correlation = self._get_period_correlation(
                     Yhs, Yls)
 
@@ -473,7 +470,6 @@ class MVCCADTCWTRunner:
         k = 0
 
         while not complete:
-            print 'Round', k, 'of wavelet computation'
             exceeded = [(k+1) >= t for t in thresholds]
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
