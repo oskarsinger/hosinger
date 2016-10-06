@@ -39,6 +39,12 @@ def run_it_all_day(
     correlation_kmeans,
     cca_kmeans):
 
+    if correlation_kmeans is not None:
+        correlation_kmeans = int(correlation_kmeans)
+
+    if cca_kmeans is not None:
+        cca_kmeans = int(cca_kmeans)
+
     # TODO: do it with different bases and shifts
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
@@ -57,8 +63,8 @@ def run_it_all_day(
         save_cca=save_cca,
         load_cca=load_cca,
         show_cca=show_cca,
-        correlation_kmeans=int(correlation_kmeans),
-        cca_kmeans=int(cca_kmeans))
+        correlation_kmeans=correlation_kmeans,
+        cca_kmeans=cca_kmeans)
 
     runner.run()
 
