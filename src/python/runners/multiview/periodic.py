@@ -109,6 +109,8 @@ class MVCCADTCWTRunner:
 
     def _init_server_stuff(self):
 
+        print 'Initializing servers'
+
         loaders = dles.get_hr_and_acc_all_subjects(
             self.hdf5_path, None, False)
         self.servers = {}
@@ -117,8 +119,9 @@ class MVCCADTCWTRunner:
             try:
                 self.server[s] = [BS(dl, lazy=False) 
                                   for dl in dl_list]
-            except Exception:
-                pass
+            except Exception, e:
+                print 'Data for subject', s, 'could not be loaded.'
+                print e
 
         self.rates = [dl.get_status()['hertz']
                       for dl in loaders.items()[0][1]]
@@ -139,6 +142,8 @@ class MVCCADTCWTRunner:
         load_cca,
         save_cca,
         show_cca):
+
+        print 'Initializing directories'
 
         self.load_correlation = load_correlation
         self.save_correlation = save_correlation
@@ -200,6 +205,8 @@ class MVCCADTCWTRunner:
 
     def _load_cca(self):
 
+        print 'Loading CCA'
+
         cca = {}
 
         for fn in os.listdir(self.cca_dir):
@@ -227,6 +234,8 @@ class MVCCADTCWTRunner:
     
     def _load_correlation(self):
 
+        print 'Loading correlation'
+
         correlation = {}
 
         for fn in os.listdir(self.correlation_dir):
@@ -244,6 +253,8 @@ class MVCCADTCWTRunner:
                 views[0], views[1], hm)
 
     def _compute_cca_kmeans(self):
+
+        print 'Computing CCA k-means'
 
         mag_data = SPUD(
             self.num_views, default=list, no_double=True)
@@ -286,6 +297,8 @@ class MVCCADTCWTRunner:
             phase, subjects)
 
     def _compute_correlation_kmeans(self):
+
+        print 'Computing correlation k-means'
 
         data = SPUD(self.num_views, default=list)
         subjects = SPUD(self.num_views, default=list)
@@ -330,6 +343,9 @@ class MVCCADTCWTRunner:
     def _compute_cca(self):
 
         for subject in self.subjects:
+
+            print 'Computing CCA for subject', subject
+
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
                 current = SPUD(self.num_views, no_double=True)
                 wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
@@ -355,6 +371,8 @@ class MVCCADTCWTRunner:
 
     def _save_cca(self, subject, current, period, phase_or_mag):
 
+        print 'Saving CCA'
+
         for (k, xy_pair) in current.items():
             path = '_'.join([
                 'subject',
@@ -377,6 +395,9 @@ class MVCCADTCWTRunner:
     def _compute_correlation(self):
 
         for subject in self.subjects:
+
+            print 'Computing correlation for subject', subject
+
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
                 correlation = self._get_period_correlation(
                     Yhs, Yls)
@@ -422,6 +443,8 @@ class MVCCADTCWTRunner:
         return correlation
 
     def _get_wavelet_transforms(self, subject):
+
+        print 'Computing wavelet transforms for subject', subject
 
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
@@ -485,6 +508,9 @@ class MVCCADTCWTRunner:
     def _show_cca(self):
 
         for subject in self.subjects:
+
+            print 'Producing CCA plots for subject', subject
+
             timelines_mag = SPUD(
                 self.num_views, default=list, no_double=True)
             timelines_phase = SPUD(
@@ -510,6 +536,9 @@ class MVCCADTCWTRunner:
         prev = None
 
         for subject in self.subjects:
+
+            print 'Prodcing correlation plots for subject', subject
+
             for (i, period) in enumerate(self.correlation[subject]):
                 for (k, hm) in period.items():
                     timelines.get(k[0], k[1]).append(hm)
