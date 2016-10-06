@@ -126,6 +126,7 @@ class MVCCADTCWTRunner:
              for (ds, r) in zip(self.servers[s], self.rates)])
         self.num_periods = {s : int(subject_np(s))
                             for s in self.subjects}
+        print 'self.num_periods', self.num_periods
         self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,
@@ -395,6 +396,7 @@ class MVCCADTCWTRunner:
         for subject in self.subjects:
 
             print 'Computing correlation for subject', subject
+            print 'len(self.wavelets[subject])', len(self.wavelets[subject])
 
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
                 print 'period', period
@@ -451,6 +453,7 @@ class MVCCADTCWTRunner:
             (Yls, Yhs) = self._get_wavelet_transforms(subject)
 
             for period in xrange(self.num_periods[subject]):
+                print 'period', period
                 Yhs_period = [view[period] for view in Yhs]
                 Yls_period = [view[period] for view in Yls]
 
