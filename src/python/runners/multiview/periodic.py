@@ -45,7 +45,7 @@ class MVCCADTCWTRunner:
         self.correlation_kmeans = correlation_kmeans
         self.cca_kmeans = cca_kmeans
 
-        self._init_dirs(self,
+        self._init_dirs(
             save_load_dir,
             load_correlation,
             save_correlation,
