@@ -355,9 +355,9 @@ class MVCCADTCWTRunner:
                 current_mag = _get_pw_cca(wms_mag)
                 current_phase = _get_pw_cca(wms_phase)
 
-                self.pw_cca_mag = _get_append_spud(
+                self.pw_cca_mag = _get_appended_spud(
                     self.pw_cca_mag[subject], current_mag)
-                self.pw_cca_phase = _get_append_spud(
+                self.pw_cca_phase = _get_appended_spud(
                     self.pw_cca_phase[subject], current_phase)
 
                 if self.save_cca:
@@ -450,7 +450,6 @@ class MVCCADTCWTRunner:
             (Yls, Yhs) = self._get_wavelet_transforms(subject)
 
             for period in xrange(self.num_periods[subject]):
-                print 'period', period
                 Yhs_period = [view[period] for view in Yhs]
                 Yls_period = [view[period] for view in Yls]
 
