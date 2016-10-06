@@ -287,9 +287,9 @@ class MVCCADTCWTRunner:
             phase.insert(i, j, phase_as_rows)
 
         self.pw_cca_mag_kmeans = self._get_kmeans_spud_dict(
-            mag, subjects)
+            mag, subjects, self.cca_kmeans)
         self.pw_cca_phase_kmeans = self._get_kmeans_spud_dict(
-            phase, subjects)
+            phase, subjects, self.cca_kmeans)
 
     def _compute_correlation_kmeans(self):
 
@@ -320,17 +320,17 @@ class MVCCADTCWTRunner:
             phase.insert(i, j, np.angle(corrs_as_rows))
 
         self.corr_kmeans_mag = self._get_kmeans_spud_dict(
-            mag, subjects)
+            mag, subjects, self.correlation_kmeans)
         self.corr_kmeans_phase = self._get_kmeans_spud_dict(
-            phase, subjects)
+            phase, subjects, self.correlation_kmeans)
 
-    def _get_kmeans_spud_dict(self, data, subjects, no_double=False):
+    def _get_kmeans_spud_dict(self, data, subjects, k, no_double=False):
 
         label_spud = self._get_list_spud_dict(no_double=no_double)
 
         for ((i, j), d) in data.items():
             labels = get_kmeans(
-                d, k=self.kmeans).labels_.tolist()
+                d, k=k).labels_.tolist()
             subject_list = subjects.get(i, j)
 
             for (l, s) in zip(labels, subject_list):
