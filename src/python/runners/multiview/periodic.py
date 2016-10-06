@@ -28,11 +28,14 @@ class MVCCADTCWTRunner:
         biorthogonal,
         qshift,
         period,
+        sub_period,
         delay=None,
         save_load_dir=None, 
+        compute_correlation=False,
         load_correlation=False,
         save_correlation=False,
         show_correlation=False,
+        compute_cca=False,
         load_cca=False,
         save_cca=False,
         show_cca=False,
@@ -44,6 +47,8 @@ class MVCCADTCWTRunner:
         self.qshift = qshift
         self.period = period
         self.delay = delay
+        self.compute_correlation = compute_correlation
+        self.compute_cca = compute_cca
         # TODO: k should probably be internally determined carefully
         self.correlation_kmeans = correlation_kmeans
         self.cca_kmeans = cca_kmeans
@@ -59,8 +64,10 @@ class MVCCADTCWTRunner:
         self._init_server_stuff()
 
         self.wavelets = {s : [] for s in self.subjects}
+        self.sp_wavelets = {s : [] for s in self.subjects}
 
-        self.correlation= self._get_list_spud_dict()
+        self.correlation = self._get_list_spud_dict()
+        self.sp_correlation = self._get_list_spud_dict()
 
         self.pw_cca_mag = self._get_list_spud_dict(no_double=True)
         self.pw_cca_phase = self._get_list_spud_dict(no_double=True)
@@ -79,19 +86,31 @@ class MVCCADTCWTRunner:
 
         if self.load_correlation:
             self._load_correlation()
-        else:
+        elif self.compute_correlation:
             self._compute_correlation()
 
         if self.load_cca:
             self._load_cca()
-        else:
+        elif self.compute_cca:
             self._compute_cca()
 
         if self.correlation_kmeans is not None:
             self._compute_correlation_kmeans()
+            self._show_kmeans(
+                'Correlation Magnitude',
+                self.corr_kmeans_mag)
+            self._show_kmeans(
+                'Correlation Phase',
+                self.corr_kmeans_phase)
 
         if self.cca_kmeans is not None:
             self._compute_cca_kmeans()
+            self._show_kmeans(
+                'CCA Magnitude',
+                self.pw_cca_mag_kmeans)
+            self._show_kmeans(
+                'CCA Phase',
+                self.pw_cca_phase_kmeans)
 
         if self.show_correlation:
             self._show_correlation()
@@ -107,7 +126,7 @@ class MVCCADTCWTRunner:
             self.hdf5_path, None, False)
         self.servers = {}
 
-        for (s, dl_list) in loaders.items()[:2]:
+        for (s, dl_list) in loaders.items():
             # This is to ensure that all subjects have sufficient data
             try:
                 [dl.get_data() for dl in dl_list]
@@ -151,7 +170,6 @@ class MVCCADTCWTRunner:
 
         if save and not load:
             if not os.path.isdir(save_load_dir):
-            # This is to ensure that all subjects have sufficient data
                 os.mkdir(save_load_dir)
 
             model_dir = get_ts('_'.join([
@@ -213,19 +231,21 @@ class MVCCADTCWTRunner:
         keys = self.pw_cca_mag[self.subjects[0]].keys()
 
         for subject in self.subjects:
+            num_periods = self.num_periods[subject]
+
             for (i, j) in keys:
                 self.pw_cca_mag[subject].insert(
-                    i, j, [{} for k in self.num_periods[subject]])
+                    i, j, [{} for k in xrange(num_periods)])
                 self.pw_cca_phase[subject].insert(
-                    i, j, [{} for k in self.num_periods[subject]])
+                    i, j, [{} for k in xrange(num_periods)])
 
         for (k, mat) in cca.items():
             info = k.split('_')
             name = info[0]
             subject = info[2]
-            period = int(info[6])
-            views = [int(i) for i in info[8].split('-')]
-            phase_or_mag = info[9]
+            period = int(info[4])
+            views = [int(i) for i in info[6].split('-')]
+            phase_or_mag = info[7]
             l = None
 
             if phase_or_mag == 'phase':
@@ -508,6 +528,10 @@ class MVCCADTCWTRunner:
 
         return (Yls, Yhs)
 
+    def _get_sp_wavelet_transforms(self):
+
+        print 'Stuff' 
+
     def _get_resampled_data(self):
 
         p = Pool(len(self.servers))
@@ -522,6 +546,19 @@ class MVCCADTCWTRunner:
             resampled.append(process.get())
 
         return resampled
+
+    def _show_kmeans(self, title, labels):
+
+        print title, 'KMeans Labels'
+
+        for (subject, spud) in labels.items():
+            print '\tSubject:', subject
+
+            for ((i, j), timeline) in spud.items():
+                print '\t\tView Pair:', i, j
+
+                for (p, label) in enumerate(timeline):
+                    print '\t\t\tPeriod', p, 'label:', label
 
     def _show_cca(self):
 
@@ -549,9 +586,10 @@ class MVCCADTCWTRunner:
     def _plot_cca(self, key, timeline, phase_or_mag, subject):
 
         (i, j) = key
+        print timeline[0].keys()
         (nx, px) = timeline[0]['Xw'].shape
         (ny, py) = timeline[0]['Yw'].shape
-        names = [ds.name() for ds in self.servers]
+        names = [ds.name() for ds in self.servers[self.subjects[0]]]
         title = 'CCA decomposition of ' + phase_or_mag + \
             ' of views ' + \
             names[i] + ' and ' + names[j] + \
@@ -582,7 +620,7 @@ class MVCCADTCWTRunner:
             x_name,
             y_name,
             val_name,
-            width=50*X_t.shape[1],
+            width=150*X_t.shape[1],
             height=50*X_t.shape[0],
             pos_color_scheme=X_pos_color_scheme,
             neg_color_scheme=X_neg_color_scheme,
@@ -595,7 +633,7 @@ class MVCCADTCWTRunner:
             x_name,
             y_name,
             val_name,
-            width=50*X_t.shape[1],
+            width=150*X_t.shape[1],
             height=50*X_t.shape[0],
             norm_axis=0)
 
