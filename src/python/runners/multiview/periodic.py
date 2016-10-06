@@ -112,7 +112,7 @@ class MVCCADTCWTRunner:
         loaders = dles.get_hr_and_acc_all_subjects(
             self.hdf5_path, None, False)
         self.rates = [dl.get_status()['hertz']
-                      for dl in self.loaders.items()[0][1][0]]
+                      for dl in loaders.items()[0][1][0]]
         self.servers = {s : [BS(dl) for dl in dl_list]
                         for (s, dl_list) in loaders.items()}
         self.subjects = self.servers.keys()
