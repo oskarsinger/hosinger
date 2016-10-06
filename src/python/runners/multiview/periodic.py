@@ -397,6 +397,7 @@ class MVCCADTCWTRunner:
             print 'Computing correlation for subject', subject
 
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
+                print 'period', period
                 correlation = self._get_period_correlation(
                     Yhs, Yls)
 
