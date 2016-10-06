@@ -109,8 +109,11 @@ class MVCCADTCWTRunner:
 
         for (s, dl_list) in loaders.items():
             try:
-                self.servers[s] = [BS(dl, lazy=False) 
-                                  for dl in dl_list]
+                # First, check that the data can be loaded without error
+                [BS(dl, lazy=False) for dl in dl_list]
+
+                # Then, to save memory, recreate the servers with lazy=True
+                self.servers[s] = [BS(dl) for dl in dl_list]
             except Exception, e:
                 print 'Data for subject', s, 'could not be loaded.'
                 print e
@@ -442,8 +445,6 @@ class MVCCADTCWTRunner:
 
             (Yls, Yhs) = self._get_wavelet_transforms(subject)
 
-            print 'Rearranging wavelet transforms'
-
             for period in xrange(self.num_periods[subject]):
                 Yhs_period = [view[period] for view in Yhs]
                 Yls_period = [view[period] for view in Yls]
@@ -455,17 +456,13 @@ class MVCCADTCWTRunner:
 
     def _get_wavelet_transforms(self, subject):
 
-        print 'Getting data'
         data = [ds.get_data() for ds in self.servers[subject]]
-        print 'Calculating factors'
         factors = [int(self.period * r) for r in self.rates]
 
         if self.delay is not None:
-            print 'Enacting delay'
             data = [view[self.delay * r:] 
                     for (r,view) in zip(self.rates, data)]
 
-        print 'Calculating thresholds'
         thresholds  = [int(view.shape[0] * 1.0 / f)
                        for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
