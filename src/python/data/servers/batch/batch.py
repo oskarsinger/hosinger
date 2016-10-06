@@ -52,7 +52,7 @@ class BatchServer:
 
     def rows(self):
 
-        return self.dl.cols()
+        return self.dl.rows()
 
     def name(self):
 
