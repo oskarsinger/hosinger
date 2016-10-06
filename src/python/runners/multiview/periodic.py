@@ -120,7 +120,7 @@ class MVCCADTCWTRunner:
         subject_np = lambda s: min(
             [server_np(ds, r) 
              for (ds, r) in zip(self.servers[s], self.rates)])
-        self.num_periods = {s : subject_np(s) 
+        self.num_periods = {s : int(subject_np(s))
                             for s in self.subjects}
         self.num_views = len(self.servers.items()[0][1])
 
