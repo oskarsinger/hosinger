@@ -75,15 +75,7 @@ class MVCCADTCWTRunner:
     def run(self):
 
         if not self.load_correlation and not self.load_cca:
-            for subject in self.subjects:
-                (Yls, Yhs) = self._get_wavelet_transforms(subject)
-
-                for period in xrange(self.num_periods[subject]):
-                    Yhs_period = [view[period] for view in Yhs]
-                    Yls_period = [view[period] for view in Yls]
-
-                    self.wavelets[subject].append(
-                        (Yhs_period, Yls_period))
+            self._compute_wavelet_transforms()
 
         if self.load_correlation:
             self._load_correlation()
@@ -442,9 +434,26 @@ class MVCCADTCWTRunner:
 
         return correlation
 
-    def _get_wavelet_transforms(self, subject):
+    def _compute_wavelet_transforms(self):
 
-        print 'Computing wavelet transforms for subject', subject
+        for subject in self.subjects:
+
+            print 'Computing wavelet transforms for subject', subject
+
+            (Yls, Yhs) = self._get_wavelet_transforms(subject)
+
+            print 'Rearranging wavelet transforms'
+
+            for period in xrange(self.num_periods[subject]):
+                Yhs_period = [view[period] for view in Yhs]
+                Yls_period = [view[period] for view in Yls]
+
+                self.wavelets[subject].append(
+                    (Yhs_period, Yls_period))
+
+        print 'Completed preparing wavelet transforms'
+
+    def _get_wavelet_transforms(self, subject):
 
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
