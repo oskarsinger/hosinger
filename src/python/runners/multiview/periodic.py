@@ -455,13 +455,17 @@ class MVCCADTCWTRunner:
 
     def _get_wavelet_transforms(self, subject):
 
+        print 'Getting data'
         data = [ds.get_data() for ds in self.servers[subject]]
+        print 'Calculating factors'
         factors = [int(self.period * r) for r in self.rates]
 
         if self.delay is not None:
+            print 'Enacting delay'
             data = [view[self.delay * r:] 
                     for (r,view) in zip(self.rates, data)]
 
+        print 'Calculating thresholds'
         thresholds  = [int(view.shape[0] * 1.0 / f)
                        for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
@@ -470,6 +474,7 @@ class MVCCADTCWTRunner:
         k = 0
 
         while not complete:
+            print 'Round', k, 'of wavelet computation'
             exceeded = [(k+1) >= t for t in thresholds]
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
