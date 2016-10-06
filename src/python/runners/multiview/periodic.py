@@ -108,16 +108,15 @@ class MVCCADTCWTRunner:
         self.servers = {}
 
         for (s, dl_list) in loaders.items()[:3]:
+            # This is to ensure that all subjects have sufficient data
             try:
-                # First, check that the data can be loaded without error
-                [BS(dl, lazy=False) for dl in dl_list]
+                [dl.get_data() for dl in dl_list]
 
-                # Then, to save memory, recreate the servers with lazy=True
                 self.servers[s] = [BS(dl) for dl in dl_list]
             except Exception, e:
-                print 'Data for subject', s, 'could not be loaded.'
+                print 'Could not load data for subject', s
                 print e
-
+        
         self.rates = [dl.get_status()['hertz']
                       for dl in loaders.items()[0][1]]
         self.subjects = self.servers.keys()
@@ -152,6 +151,7 @@ class MVCCADTCWTRunner:
 
         if save and not load:
             if not os.path.isdir(save_load_dir):
+            # This is to ensure that all subjects have sufficient data
                 os.mkdir(save_load_dir)
 
             model_dir = get_ts('_'.join([
@@ -451,8 +451,6 @@ class MVCCADTCWTRunner:
 
                 self.wavelets[subject].append(
                     (Yhs_period, Yls_period))
-
-        print 'Completed preparing wavelet transforms'
 
     def _get_wavelet_transforms(self, subject):
 
