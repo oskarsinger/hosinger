@@ -126,7 +126,7 @@ class MVCCADTCWTRunner:
             self.hdf5_path, None, False)
         self.servers = {}
 
-        for (s, dl_list) in loaders.items():
+        for (s, dl_list) in loaders.items()[-7:]:
             # This is to ensure that all subjects have sufficient data
             try:
                 [dl.get_data() for dl in dl_list]
