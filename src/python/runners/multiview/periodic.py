@@ -116,8 +116,12 @@ class MVCCADTCWTRunner:
         self.servers = {s : [BS(dl) for dl in dl_list]
                         for (s, dl_list) in loaders.items()}
         self.subjects = self.servers.keys()
-        self.num_periods = [ds.rows() / (r * self.period) 
-                            for (ds, r) in zip(self.servers, self.rates)]
+        server_np = lambda ds, r: ds.rows() / (r * self.period)
+        subject_np = lambda s: min(
+            [server_np(ds, r) 
+             for (ds, r) in zip(self.servers[s], self.rates)])
+        self.num_periods = {s : subject_np(s) 
+                            for s in self.subjects}
         self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,
