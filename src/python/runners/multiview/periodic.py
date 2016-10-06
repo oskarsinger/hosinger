@@ -259,10 +259,10 @@ class MVCCADTCWTRunner:
             self.num_views, default=list, no_double=True)
 
         for subject in self.subjects:
-            mag = self.pw_cca_mag[subject].items()
-            phase = self.pw_cca_mag[subject].items()
+            mag = self.pw_cca_mag[subject]
+            phase = self.pw_cca_mag[subject]
 
-            for ((i, j), mag_pairs) in mag_data.items():
+            for ((i, j), mag_pairs) in mag.items():
                 phase_pairs = phase.get(i, j)
                 # TODO: Double check that the dimension manipulation is correct here
                 stack = lambda p: np.ravel(
