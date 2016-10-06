@@ -273,7 +273,7 @@ class MVCCADTCWTRunner:
                 mag_data.get(i, j).extend(mag_l)
                 phase_data.get(i, j).extend(phase_l)
                 subjects.get(i, j).extend(
-                    [subject] * len(l))
+                    [subject] * len(mag_l))
 
         mag = SPUD(self.num_views, no_double=True)
         phase = SPUD(self.num_views, no_double=True)
