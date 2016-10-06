@@ -126,7 +126,6 @@ class MVCCADTCWTRunner:
              for (ds, r) in zip(self.servers[s], self.rates)])
         self.num_periods = {s : int(subject_np(s))
                             for s in self.subjects}
-        print 'self.num_periods', self.num_periods
         self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,
@@ -408,7 +407,6 @@ class MVCCADTCWTRunner:
 
                 if self.save_correlation:
                     for (k, hm) in correlation.items():
-                        views_str = 'views_' + '-'.join([str(i) for i in k])
                         path = '_'.join([
                             'subject',
                             subject,
@@ -416,7 +414,6 @@ class MVCCADTCWTRunner:
                             str(period),
                             'views',
                             '-'.join([str(j) for j in k]),
-                            phase_or_mag,
                             'dtcwt_correlation_matrix.thang'])
 
                         path = os.path.join(self.correlation_dir, path)
