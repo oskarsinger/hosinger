@@ -117,7 +117,7 @@ class MVCCADTCWTRunner:
 
         for (s, dl_list) in loaders.items():
             try:
-                self.server[s] = [BS(dl, lazy=False) 
+                self.servers[s] = [BS(dl, lazy=False) 
                                   for dl in dl_list]
             except Exception, e:
                 print 'Data for subject', s, 'could not be loaded.'
