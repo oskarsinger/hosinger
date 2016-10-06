@@ -23,6 +23,7 @@ from datetime import datetime
 class MVCCADTCWTRunner:
 
     def __init__(self, 
+        hdf5_path,
         biorthogonal,
         qshift,
         period,
@@ -37,6 +38,7 @@ class MVCCADTCWTRunner:
         correlation_kmeans=None,
         cca_kmeans=None):
 
+        self.hdf5_path = hdf5_path
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.period = period

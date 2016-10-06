@@ -45,6 +45,7 @@ def run_it_all_day(
     qshift_b = wdtcwt.utils.get_wavelet_basis(
         'qshift_b')
     runner = MVCCADTCWTRunner(
+        data_path,
         near_sym_b,
         qshift_b,
         period,
