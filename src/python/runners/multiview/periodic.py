@@ -111,10 +111,17 @@ class MVCCADTCWTRunner:
 
         loaders = dles.get_hr_and_acc_all_subjects(
             self.hdf5_path, None, False)
+        self.servers = {}
+
+        for (s, dl_list) in loaders.item():
+            try:
+                self.server[s] = [BS(dl, lazy=False) 
+                                  for dl in dl_list]
+            except Exception:
+                pass
+
         self.rates = [dl.get_status()['hertz']
                       for dl in loaders.items()[0][1]]
-        self.servers = {s : [BS(dl) for dl in dl_list]
-                        for (s, dl_list) in loaders.items()}
         self.subjects = self.servers.keys()
         server_np = lambda ds, r: ds.rows() / (r * self.period)
         subject_np = lambda s: min(
