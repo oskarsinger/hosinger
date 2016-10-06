@@ -21,7 +21,7 @@ from bokeh.models.layouts import Column
 @click.option('--save-cca', default=False)
 @click.option('--show-cca', default=False)
 @click.option('--center', default=False)
-@click.option('--period', default=12*3600)
+@click.option('--period', default=24*3600)
 @click.option('--correlation-kmeans', default=None)
 @click.option('--cca-kmeans', default=None)
 def run_it_all_day(

@@ -239,7 +239,7 @@ class MVCCADTCWTRunner:
         mag = SPUD(self.num_views, no_double=True)
         phase = SPUD(self.num_views, no_double=True)
 
-        for ((i, j), mag_v) in mag_data.items()
+        for ((i, j), mag_v) in mag_data.items():
             mag_as_rows = np.vstack(mag_v)
             phase_as_rows = np.vstack(
                 phase_data.get(i, j))
