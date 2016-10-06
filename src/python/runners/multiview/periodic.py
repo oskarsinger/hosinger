@@ -355,9 +355,9 @@ class MVCCADTCWTRunner:
                 current_mag = _get_pw_cca(wms_mag)
                 current_phase = _get_pw_cca(wms_phase)
 
-                self.pw_cca_mag = _get_appended_spud(
+                self.pw_cca_mag[subject] = _get_appended_spud(
                     self.pw_cca_mag[subject], current_mag)
-                self.pw_cca_phase = _get_appended_spud(
+                self.pw_cca_phase[subject] = _get_appended_spud(
                     self.pw_cca_phase[subject], current_phase)
 
                 if self.save_cca:
