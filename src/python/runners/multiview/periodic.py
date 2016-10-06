@@ -60,7 +60,7 @@ class MVCCADTCWTRunner:
             self.hdf5_path, None, False)
         self.subjects = self.servers.keys()
         self.rates = [ds.get_status()['data_loader'].get_status()['hertz']
-                      for ds in self.servers]
+                      for ds in self.servers.items()[0][1]]
         self.num_periods = [ds.rows() / (r * self.period) 
                             for (ds, r) in zip(self.servers, self.rates)]
         self.num_views = len(self.servers[self.subjects[0]])
