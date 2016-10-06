@@ -56,7 +56,7 @@ class FixedRateLoader(AbstractDataLoader):
         elif self.data is None:
             batch = self._set_data()
 
-        if not isinstance(self.data, MissingData):
+        if self.online and not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
             self.num_real_data += 1
 
