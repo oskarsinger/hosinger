@@ -107,7 +107,7 @@ class MVCCADTCWTRunner:
             self.hdf5_path, None, False)
         self.servers = {}
 
-        for (s, dl_list) in loaders.items()[:3]:
+        for (s, dl_list) in loaders.items()[:2]:
             # This is to ensure that all subjects have sufficient data
             try:
                 [dl.get_data() for dl in dl_list]
@@ -467,7 +467,7 @@ class MVCCADTCWTRunner:
         factors = [int(self.period * r) for r in self.rates]
 
         if self.delay is not None:
-            data = [view[self.delay * r:] 
+            data = [view[int(self.delay * r):] 
                     for (r,view) in zip(self.rates, data)]
 
         thresholds  = [int(view.shape[0] * 1.0 / f)
@@ -529,23 +529,10 @@ class MVCCADTCWTRunner:
 
             print 'Producing CCA plots for subject', subject
 
-            timelines_mag = SPUD(
-                self.num_views, default=list, no_double=True)
-            timelines_phase = SPUD(
-                self.num_views, default=list, no_double=True)
-
-            for (i, period) in enumerate(self.pw_cca_mag[subject]):
-                for (k, xy_pair) in period.items():
-                    timelines_mag.get(k[0], k[1]).append(xy_pair)
-                    
-            for (i, period) in enumerate(self.pw_cca_phase[subject]):
-                for (k, xy_pair) in period.items():
-                    timelines_phase.get(k[0], k[1]).append(xy_pair)
-
-            for (k, l) in timelines_mag.items():
+            for (k, l) in self.pw_cca_mag[subject].items():
                 self._plot_cca(k, l, 'mag', subject)
 
-            for (k, l) in timelines_phase.items():
+            for (k, l) in self.pw_cca_phase[subject].items():
                 self._plot_cca(k, l, 'phase', subject)
 
     def _show_correlation(self):
@@ -556,10 +543,7 @@ class MVCCADTCWTRunner:
 
             print 'Producing correlation plots for subject', subject
 
-            for ((i, j), hm) in self.correlation[subject].items():
-                timelines.get(i, j).append(hm)
-
-            for (k, l) in timelines.items():
+            for (k, l) in self.correlation[subject].items():
                 self._plot_correlation(k, l, subject)
 
     def _plot_cca(self, key, timeline, phase_or_mag, subject):
@@ -635,7 +619,7 @@ class MVCCADTCWTRunner:
 
         (i, j) = key
         (n, p) = timeline[0].shape
-        names = [ds.name() for ds in self.servers]
+        names = [ds.name() for ds in self.servers[self.subjects[0]]]
         title = 'Correlation of views ' + \
             names[i] + ' and ' + names[j] + \
             ' by decimation level' + \
@@ -666,13 +650,12 @@ class MVCCADTCWTRunner:
             plots.append(hmp)
 
         plot = Column(*plots)
-        filename = get_ts(
-            'correlation_of_wavelet_coefficients_' +
+        filename = get_ts('_'.join([
+            'correlation_of_wavelet_coefficients',
             'subject',
             subject,
-            phase_or_mag,
             names[i], 
-            names[j]) + '.html'
+            names[j]])) + '.html'
         filepath = os.path.join(self.plot_dir, filename)
 
         output_file(
