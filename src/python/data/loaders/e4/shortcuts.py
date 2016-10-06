@@ -40,4 +40,4 @@ def get_hr_and_acc_all_subjects(hdf5_path, seconds, online):
     subjects = h5py.File(hdf5_path).keys()
 
     return {s : get_hr_and_acc(hdf5_path, s, seconds, online)
-            for s in subejcts}
+            for s in subjects}
