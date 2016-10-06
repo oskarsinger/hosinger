@@ -361,8 +361,8 @@ class MVCCADTCWTRunner:
                     self.pw_cca_phase[subject], current_phase)
 
                 if self.save_cca:
-                    self._save_cca(current_mag, period, 'mag')
-                    self._save_cca(current_phase, period, 'phase')
+                    self._save_cca(subject, current_mag, period, 'mag')
+                    self._save_cca(subject, current_phase, period, 'phase')
 
         # TODO: Do multi-view CCA on magnitude and phase of coefficients
         # Probably use CCALin
