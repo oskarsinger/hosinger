@@ -6,7 +6,6 @@ class BatchServer:
         data_loader, 
         reg=0.1, 
         center=False,
-        lazy=True, 
         num_coords=None):
 
         self.dl = data_loader
@@ -15,20 +14,15 @@ class BatchServer:
         self.center = center
         self.num_coords = num_coords
 
-        self.data = None if lazy else self.dl.get_data()
-
     def get_data(self):
 
-        if self.data is None:
-            self.data = self.dl.get_data()
+        if self.center:
+            self.data -= np.mean(self.data, axis=0)
 
-            if self.center:
-                self.data -= np.mean(self.data, axis=0)
+        if self.num_coords is not None:
+            self._avg_data()
 
-            if self.num_coords is not None:
-                self._avg_data()
-
-        return np.copy(self.data)
+        return self.dl.get_data()
 
     def _avg_data(self):
 
