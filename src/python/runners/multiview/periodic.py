@@ -185,7 +185,7 @@ class MVCCADTCWTRunner:
             self.save_load_dir,
             dir_name)
 
-        if save:
+        if save and not os.path.isdir(dir_path):
             os.mkdir(dir_path)
 
         return dir_path
@@ -210,6 +210,15 @@ class MVCCADTCWTRunner:
             with open(path) as f:
                 cca[fn] = np.load(f)
 
+        keys = self.pw_cca_mag[self.subjects[0]].keys()
+
+        for subject in self.subjects:
+            for (i, j) in keys:
+                self.pw_cca_mag[subject].insert(
+                    i, j, [{} for k in self.num_periods[subject]])
+                self.pw_cca_phase[subject].insert(
+                    i, j, [{} for k in self.num_periods[subject]])
+
         for (k, mat) in cca.items():
             info = k.split('_')
             name = info[0]
@@ -224,8 +233,8 @@ class MVCCADTCWTRunner:
             elif phase_or_mag == 'mag':
                 l = self.pw_cca_mag
 
-            l[subject][period].get(
-                views[0], views[1])[name] = mat
+            l[subject].get(
+                views[0], views[1])[period][name] = mat
     
     def _load_correlation(self):
 
@@ -241,11 +250,12 @@ class MVCCADTCWTRunner:
 
         for (k, hm) in correlation.items():
             info = k.split('_')
-            period = int(info[1])
-            views = [int(i) for i in info[3].split('-')]
+            subject = info[1]
+            period = int(info[3])
+            views = [int(i) for i in info[5].split('-')]
             
-            self.correlation[period].insert(
-                views[0], views[1], hm)
+            self.correlation[subject].get(
+                views[0], views[1]).append(hm)
 
     def _compute_cca_kmeans(self):
 
@@ -367,8 +377,6 @@ class MVCCADTCWTRunner:
         # Probably use CCALin
 
     def _save_cca(self, subject, current, period, phase_or_mag):
-
-        print 'Saving CCA'
 
         for (k, xy_pair) in current.items():
             path = '_'.join([
@@ -543,17 +551,13 @@ class MVCCADTCWTRunner:
     def _show_correlation(self):
 
         timelines = SPUD(self.num_views, default=list)
-        prev = None
 
         for subject in self.subjects:
 
-            print 'Prodcing correlation plots for subject', subject
+            print 'Producing correlation plots for subject', subject
 
-            for (i, period) in enumerate(self.correlation[subject]):
-                for (k, hm) in period.items():
-                    timelines.get(k[0], k[1]).append(hm)
-
-                prev = period
+            for ((i, j), hm) in self.correlation[subject].items():
+                timelines.get(i, j).append(hm)
 
             for (k, l) in timelines.items():
                 self._plot_correlation(k, l, subject)

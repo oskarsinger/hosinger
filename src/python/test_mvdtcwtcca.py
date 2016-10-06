@@ -45,6 +45,9 @@ def run_it_all_day(
     if cca_kmeans is not None:
         cca_kmeans = int(cca_kmeans)
 
+    if delay is not None:
+        delay = int(delay)
+
     # TODO: do it with different bases and shifts
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
