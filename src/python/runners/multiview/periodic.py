@@ -133,6 +133,13 @@ class MVCCADTCWTRunner:
         save_cca,
         show_cca):
 
+        self.load_correlation = load_correlation
+        self.save_correlation = save_correlation
+        self.show_correlation = show_correlation
+        self.load_cca = load_cca
+        self.save_cca = save_cca
+        self.show_cca = show_cca
+
         save = save_correlation or save_cca
         load = load_correlation or load_cca
 
