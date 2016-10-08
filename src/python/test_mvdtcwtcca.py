@@ -25,8 +25,11 @@ from bokeh.models.layouts import Column
 @click.option('--center', default=False)
 @click.option('--period', default=24*3600)
 @click.option('--sub-period', default=3600)
+@click.option('--do-phase', default=False)
 @click.option('--correlation-kmeans', default=None)
 @click.option('--cca-kmeans', default=None)
+@click.option('--show-kmeans', default=False)
+@click.option('--show-corr-subblocks', default=False)
 def run_it_all_day(
     data_path, 
     delay,
@@ -42,8 +45,11 @@ def run_it_all_day(
     center, 
     period,
     sub_period,
+    do_phase,
     correlation_kmeans,
-    cca_kmeans):
+    cca_kmeans,
+    show_kmeans,
+    show_corr_subblocks):
 
     if correlation_kmeans is not None:
         correlation_kmeans = int(correlation_kmeans)
@@ -65,6 +71,7 @@ def run_it_all_day(
         qshift_b,
         period,
         sub_period,
+        do_phase=do_phase,
         delay=delay,
         save_load_dir=save_load_dir,
         compute_correlation=compute_correlation,
@@ -76,7 +83,9 @@ def run_it_all_day(
         load_cca=load_cca,
         show_cca=show_cca,
         correlation_kmeans=correlation_kmeans,
-        cca_kmeans=cca_kmeans)
+        cca_kmeans=cca_kmeans,
+        show_kmeans=show_kmeans,
+        show_corr_subblocks=show_corr_subblocks)
 
     runner.run()
 

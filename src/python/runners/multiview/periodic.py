@@ -128,7 +128,13 @@ class MVCCADTCWTRunner:
                     self.pw_cca_phase_kmeans)
 
         if self.show_corr_subblocks:
-            self._show_corr_subblocks()
+            indexes = SPUD(self.num_views)
+
+            for (i, j) in indexes.keys():
+                indexes.insert(
+                    i, j, (-4, None, -4, None))
+
+            self._show_corr_subblocks(indexes)
 
     def _init_server_stuff(self):
 
