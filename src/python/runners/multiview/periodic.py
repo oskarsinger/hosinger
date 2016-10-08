@@ -40,7 +40,9 @@ class MVCCADTCWTRunner:
         correlation_kmeans=None,
         cca_kmeans=None,
         show_kmeans=False,
-        show_corr_subblocks=False):
+        show_corr_subblocks=False,
+        compute_sp_wavelets=False,
+        show_sp_correlation=False):
 
         self.hdf5_path = hdf5_path
         self.biorthogonal = biorthogonal
@@ -55,6 +57,8 @@ class MVCCADTCWTRunner:
         self.cca_kmeans = cca_kmeans
         self.show_kmeans = show_kmeans
         self.show_corr_subblocks = show_corr_subblocks
+        self.compute_sp_wavelets = compute_sp_wavelets 
+        self.show_sp_correlation = show_sp_correlation 
 
         self._init_dirs(
             save_load_dir,
@@ -588,7 +592,7 @@ class MVCCADTCWTRunner:
 
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
-        sp_factors = [int(self.subperiod * r) for r in self.rates]
+        sp_factors = [int(self.sub_period * r) for r in self.rates]
 
         if self.delay is not None:
             data = [view[int(self.delay * r):] 
