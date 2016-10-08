@@ -20,7 +20,8 @@ def plot_matrix_heat(
     neg_color_scheme=None,
     norm_axis=None,
     width=None,
-    height=None):
+    height=None,
+    do_phase=False):
 
     if pos_color_scheme is None:
         pos_color_scheme = list(reversed(YlGn9))
@@ -41,8 +42,10 @@ def plot_matrix_heat(
 
     if np.any(np.iscomplex(value_matrix)):
         value_matrices = {
-            'magnitude': np.absolute(value_matrix),
-            'phase': np.angle(value_matrix)}
+            'magnitude': np.absolute(value_matrix)}
+
+        if do_phase:
+            value_matrices['phase'] = np.angle(value_matrix)
     else:
         value_matrices = {
             'magnitude': value_matrix}
