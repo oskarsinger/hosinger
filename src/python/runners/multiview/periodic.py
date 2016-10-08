@@ -25,7 +25,7 @@ class MVCCADTCWTRunner:
         biorthogonal,
         qshift,
         period,
-        subperiod=None,,
+        subperiod=None,
         do_phase=False,
         delay=None,
         save_load_dir=None, 
