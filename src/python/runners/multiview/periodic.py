@@ -584,6 +584,8 @@ class MVCCADTCWTRunner:
 
     def _get_sp_wavelet_transforms(self, subject):
 
+        print 'Computing subperiod wavelet transforms'
+
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
         sp_factors = [int(self.subperiod * r) for r in self.rates]
@@ -604,7 +606,7 @@ class MVCCADTCWTRunner:
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
-            sp_thresholds = [int(view.shape[0] * 1.0 / sp_f
+            sp_thresholds = [int(view.shape[0] * 1.0 / sp_f)
                              for (view, sp_f) in zip(data, sp_factors)]
             j = 0
             
