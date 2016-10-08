@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-import pandas as pd
 import spancca as scca
 import data.loaders.e4.shortcuts as dles
 
@@ -18,8 +17,6 @@ from bokeh.models.layouts import Column, Row
 from sklearn.cross_decomposition import CCA
 from multiprocessing import Pool
 from math import log
-from time import mktime
-from datetime import datetime
 
 class MVCCADTCWTRunner:
 
@@ -498,6 +495,10 @@ class MVCCADTCWTRunner:
 
         return correlation
 
+    def _compute_sp_correlation(self):
+
+        print 'Stuff'
+
     def _compute_wavelet_transforms(self):
 
         for subject in self.subjects:
@@ -560,24 +561,74 @@ class MVCCADTCWTRunner:
 
         return (Yls, Yhs)
 
-    def _get_sp_wavelet_transforms(self):
+    def _compute_wavelet_transforms(self):
 
-        print 'Stuff' 
+        for subject in self.subjects:
 
-    def _get_resampled_data(self):
+            print 'Computing wavelet transforms for subject', subject
 
-        p = Pool(len(self.servers))
-        processes = []
-        resampled = []
+            (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
 
-        for (ds, rate) in zip(self.servers, self.rates):
-            processes.append(p.apply_async(
-                _get_resampled_view, (ds, rate)))
+            for period in xrange(self.num_periods[subject]):
+                Yhs_period = [view[period] for view in Yhs]
+                Yls_period = [view[period] for view in Yls]
 
-        for process in processes:
-            resampled.append(process.get())
+                self.sp_wavelets[subject].append(
+                    (Yhs_period, Yls_period))
 
-        return resampled
+    def _get_sp_wavelet_transforms(self, subject):
+
+        data = [ds.get_data() for ds in self.servers[subject]]
+        factors = [int(self.period * r) for r in self.rates]
+        sp_factors = [int(self.subperiod * r) for r in self.rates]
+
+        if self.delay is not None:
+            data = [view[int(self.delay * r):] 
+                    for (r,view) in zip(self.rates, data)]
+
+        thresholds = [int(view.shape[0] * 1.0 / f)
+                      for (view, f) in zip(data, factors)]
+        Yls = [[] for i in xrange(self.num_views)]
+        Yhs = [[] for i in xrange(self.num_views)]
+        complete = False
+        k = 0
+
+        while not complete:
+            exceeded = [(k+1) >= t for t in thresholds]
+            complete = any(exceeded)
+            current_data = [view[k*f:(k+1)*f]
+                            for (f, view) in zip(factors, data)]
+            sp_thresholds = [int(view.shape[0] * 1.0 / sp_f
+                             for (view, sp_f) in zip(data, sp_factors)]
+            j = 0
+            
+            # Add a list to each view for the current super period
+            for i in xrange(self.num_views):
+                Yls[i].append([])
+                Yhs[i].append([])
+
+            while not sp_complete: 
+                sp_exceeded = [(j+1) >= sp_t for sp_t in sp_thresholds]
+                sp_complete = any(sp_exceeded)
+                sp_current_data = [view[j*sp_f:(j+1)*sp_f]
+                                   for (sp_f, view) in zip(sp_factors, current_data)]
+
+                for (i, view) in enumerate(sp_current_data):
+                    (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
+                        view, 
+                        int(log(view.shape[0], 2)) - 2,
+                        self.biorthogonal,
+                        self.qshift)
+                    
+                    # Append the current subperiod's wavelets to the current period
+                    Yls[i][-1].append(Yl)
+                    Yhs[i][-1].append(Yh)
+               
+                j += 1
+
+            k += 1
+
+        return (Yls, Yhs)
 
     def _show_corr_subblocks(self, begin_end_spud):
 
@@ -622,8 +673,20 @@ class MVCCADTCWTRunner:
                     do_phase=self.do_phase)
 
                 plots[s].append(plot)
+            
+        col_plots = {s: Column(*ps)
+                     for (s, ps) in plots.items()}
 
-        #TODO: Put the plots into columns for each subject and show
+        for (s, cp) in col_plots.items():
+            filename = '_'.join([
+                'high_mag_correlation_of_wavelet_coefficient_magnitude',
+                'subject', s]) + '.html'
+            filepath = os.path.join(self.plot_dir, filename)
+
+            output_file(
+                filepath, 
+                'high_mag_correlation_of_wavelet_coefficient_magnitude')
+            show(plot)
 
     def _show_kmeans(self, title, labels):
 
@@ -747,13 +810,13 @@ class MVCCADTCWTRunner:
             do_phase=self.do_phase)
 
         plot = Column(*[X_plot, Y_plot])
-        filename = get_ts('_'.join([
+        filename = '_'.join([
             'cca_of_wavelet_coefficients',
             'subject',
             subject,
             phase_or_mag,
             self.names[i], 
-            self.names[j]])) + '.html'
+            self.names[j]]) + '.html'
         filepath = os.path.join(self.plot_dir, filename)
 
         output_file(
@@ -797,12 +860,12 @@ class MVCCADTCWTRunner:
             plots.append(hmp)
 
         plot = Column(*plots)
-        filename = get_ts('_'.join([
+        filename = '_'.join([
             'correlation_of_wavelet_coefficients',
             'subject',
             subject,
             self.names[i], 
-            self.names[j]])) + '.html'
+            self.names[j]]) + '.html'
         filepath = os.path.join(self.plot_dir, filename)
 
         output_file(
@@ -861,23 +924,3 @@ def _get_sampled_wavelets(Yh, Yl):
         basis[:,i] = np.copy(y[::2**power,0])
 
     return basis
-
-def _get_resampled_view(server, rate):
-
-    data = server.get_data()
-    loader = server.get_status()['data_loader']
-    dt = loader.get_status()['start_times'][0]
-    freq = 1.0 / rate
-    dt_index = pd.DatetimeIndex(
-        data=_get_dt_index(server.rows(), freq, dt))
-    series = pd.Series(data=data[:,0], index=dt_index)
-
-    return series.resample('S').pad().as_matrix()
-
-def _get_dt_index(num_rows, factor, datetime):
-
-    start = mktime(datetime.timetuple())
-    times = (np.arange(num_rows) * factor + start).tolist()
-
-    return [datetime.fromtimestamp(t)
-            for t in times]
