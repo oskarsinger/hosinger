@@ -140,7 +140,7 @@ class MVCCADTCWTRunner:
             self._show_corr_subblocks(indexes)
 
         if self.subperiod is not None:
-            self._compute_sp_wavelets()
+            self._compute_sp_wavelet_transforms()
             self._compute_sp_correlation()
 
             if self.show_sp_correlation:
@@ -577,11 +577,11 @@ class MVCCADTCWTRunner:
 
         return (Yls, Yhs)
 
-    def _compute_wavelet_transforms(self):
+    def _compute_sp_wavelet_transforms(self):
 
         for subject in self.subjects:
 
-            print 'Computing wavelet transforms for subject', subject
+            print 'Computing subperiod wavelet transforms for subject', subject
 
             (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
 
@@ -593,8 +593,6 @@ class MVCCADTCWTRunner:
                     (Yhs_period, Yls_period))
 
     def _get_sp_wavelet_transforms(self, subject):
-
-        print 'Computing subperiod wavelet transforms'
 
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
