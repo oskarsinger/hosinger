@@ -30,6 +30,8 @@ from bokeh.models.layouts import Column
 @click.option('--cca-kmeans', default=None)
 @click.option('--show-kmeans', default=False)
 @click.option('--show-corr-subblocks', default=False)
+@click.option('--compute-sp-wavelets', default=False)
+@click.option('--show-sp-correlation', default=False)
 def run_it_all_day(
     data_path, 
     delay,
@@ -49,7 +51,9 @@ def run_it_all_day(
     correlation_kmeans,
     cca_kmeans,
     show_kmeans,
-    show_corr_subblocks):
+    show_corr_subblocks,
+    compute_sp_wavelets,
+    show_sp_correlation):
 
     if correlation_kmeans is not None:
         correlation_kmeans = int(correlation_kmeans)
@@ -85,7 +89,9 @@ def run_it_all_day(
         correlation_kmeans=correlation_kmeans,
         cca_kmeans=cca_kmeans,
         show_kmeans=show_kmeans,
-        show_corr_subblocks=show_corr_subblocks)
+        show_corr_subblocks=show_corr_subblocks,
+        compute_sp_wavelets=compute_sp_wavelets,
+        show_sp_correlation=show_sp_correlation)
 
     runner.run()
 
