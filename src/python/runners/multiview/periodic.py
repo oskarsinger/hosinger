@@ -25,7 +25,7 @@ class MVCCADTCWTRunner:
         biorthogonal,
         qshift,
         period,
-        sub_period,
+        subperiod=None,,
         do_phase=False,
         delay=None,
         save_load_dir=None, 
@@ -41,13 +41,13 @@ class MVCCADTCWTRunner:
         cca_kmeans=None,
         show_kmeans=False,
         show_corr_subblocks=False,
-        compute_sp_wavelets=False,
         show_sp_correlation=False):
 
         self.hdf5_path = hdf5_path
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.period = period
+        self.subperiod = subperiod
         self.do_phase = do_phase
         self.delay = delay
         self.compute_correlation = compute_correlation
@@ -57,7 +57,6 @@ class MVCCADTCWTRunner:
         self.cca_kmeans = cca_kmeans
         self.show_kmeans = show_kmeans
         self.show_corr_subblocks = show_corr_subblocks
-        self.compute_sp_wavelets = compute_sp_wavelets 
         self.show_sp_correlation = show_sp_correlation 
 
         self._init_dirs(
@@ -139,6 +138,13 @@ class MVCCADTCWTRunner:
                     i, j, (-4, None, -4, None))
 
             self._show_corr_subblocks(indexes)
+
+        if self.subperiod is not None:
+            self._compute_sp_wavelets()
+            self._compute_sp_correlation()
+
+            if self.show_sp_correlation:
+                self._show_sp_correlation()
 
     def _init_server_stuff(self):
 
@@ -592,7 +598,7 @@ class MVCCADTCWTRunner:
 
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
-        sp_factors = [int(self.sub_period * r) for r in self.rates]
+        sp_factors = [int(self.subperiod * r) for r in self.rates]
 
         if self.delay is not None:
             data = [view[int(self.delay * r):] 

@@ -24,13 +24,12 @@ from bokeh.models.layouts import Column
 @click.option('--show-cca', default=False)
 @click.option('--center', default=False)
 @click.option('--period', default=24*3600)
-@click.option('--sub-period', default=3600)
+@click.option('--subperiod', default=None)
 @click.option('--do-phase', default=False)
 @click.option('--correlation-kmeans', default=None)
 @click.option('--cca-kmeans', default=None)
 @click.option('--show-kmeans', default=False)
 @click.option('--show-corr-subblocks', default=False)
-@click.option('--compute-sp-wavelets', default=False)
 @click.option('--show-sp-correlation', default=False)
 def run_it_all_day(
     data_path, 
@@ -46,13 +45,12 @@ def run_it_all_day(
     show_cca,
     center, 
     period,
-    sub_period,
+    subperiod,
     do_phase,
     correlation_kmeans,
     cca_kmeans,
     show_kmeans,
     show_corr_subblocks,
-    compute_sp_wavelets,
     show_sp_correlation):
 
     if correlation_kmeans is not None:
@@ -64,6 +62,9 @@ def run_it_all_day(
     if delay is not None:
         delay = int(delay)
 
+    if subperiod is not None:
+        subperiod = int(subperiod)
+
     # TODO: do it with different bases and shifts
     near_sym_b = wdtcwt.utils.get_wavelet_basis(
         'near_sym_b')
@@ -74,7 +75,7 @@ def run_it_all_day(
         near_sym_b,
         qshift_b,
         period,
-        sub_period,
+        subperiod=subperiod,
         do_phase=do_phase,
         delay=delay,
         save_load_dir=save_load_dir,
@@ -90,7 +91,6 @@ def run_it_all_day(
         cca_kmeans=cca_kmeans,
         show_kmeans=show_kmeans,
         show_corr_subblocks=show_corr_subblocks,
-        compute_sp_wavelets=compute_sp_wavelets,
         show_sp_correlation=show_sp_correlation)
 
     runner.run()
