@@ -422,13 +422,14 @@ class MVCCADTCWTRunner:
             pw_cca = {}
 
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
+                #TODO: what are all the different 'current's here for?
                 current = SPUD(self.num_views, no_double=True)
                 wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
                                     for (Yh, Yl) in zip(Yhs, Yls)]
 
                 wms = [np.absolute(wm) if mag else np.angle(wm)
                        for wm in wavelet_matrices]
-                current = _get_cca_spud(wms_mag)
+                current = _get_cca_spud(wms)
 
                 pw_cca[subject] = _get_appended_spud(
                     pw_cca[subject], current)
@@ -437,7 +438,7 @@ class MVCCADTCWTRunner:
                     name = 'mag' if mag else 'phase'
 
                     self._save_cca(
-                        subject, current_mag, period, name)
+                        subject, current, period, name)
 
         return pw_cca
 
