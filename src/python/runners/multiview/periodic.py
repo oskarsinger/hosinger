@@ -924,6 +924,7 @@ def _get_cca_spud(views):
         for j in xrange(i+1, num_views):
             X_data = views[i]
             Y_data = views[j]
+            print X_data, Y_data
             cca = CCA(n_components=1)
 
             cca.fit(X_data, Y_data)
