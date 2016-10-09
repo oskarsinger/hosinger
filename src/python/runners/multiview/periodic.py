@@ -74,6 +74,8 @@ class MVCCADTCWTRunner:
 
         self.correlation = self._get_list_spud_dict()
         self.sp_correlation = self._get_list_spud_dict()
+        self.autocorrelation = {s : [[] for i in xrange(self.num_views)]
+                                for s in self.subjects}
 
         self.pw_cca_mag = self._get_list_spud_dict(no_double=True)
         self.pw_cca_phase = self._get_list_spud_dict(no_double=True)
@@ -334,7 +336,6 @@ class MVCCADTCWTRunner:
             s_pw_cca = pw_cca[subject]
 
             for ((i, j), pairs) in s_pw_cca.items():
-                # TODO: Double check that the dimension manipulation is correct here
                 stack = lambda p: np.ravel(
                     np.vstack([p['Xw'], p['Yw']]))
                 l = [stack(p) for p in pairs]
@@ -462,6 +463,22 @@ class MVCCADTCWTRunner:
 
                 with open(current_path, 'w') as f:
                     np.save(f, mat)
+
+    def _compute_autocorrelation(self):
+
+        for subject in self.subjects:
+
+            print 'Computing autocorrelation for subject', subject
+
+            s_wavelets = self.wavelets[subject]
+            day_pairs = zip(
+                [None] + s_wavelets, 
+                s_wavelets + [None])[1:-1]
+
+            for (day1, day2) in day_pairs:
+                for view in xrange(self.num_views):
+                    self.autocorrelation[subject][view].append(
+                        np.dot(day1[view].T, day2[view])
 
     def _compute_correlation(self):
 
