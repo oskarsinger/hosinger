@@ -478,7 +478,7 @@ class MVCCADTCWTRunner:
             for (day1, day2) in day_pairs:
                 for view in xrange(self.num_views):
                     self.autocorrelation[subject][view].append(
-                        np.dot(day1[view].T, day2[view])
+                        np.dot(day1[view].T, day2[view]))
 
     def _compute_correlation(self):
 
