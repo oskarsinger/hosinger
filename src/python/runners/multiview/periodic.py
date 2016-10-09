@@ -420,9 +420,15 @@ class MVCCADTCWTRunner:
     def _get_cca(self, mag=True):
 
         for subject in self.subjects:
+
+            print 'Computing CCA for subject', subject
+
             pw_cca = self._get_list_spud_dict(no_double=True)
 
             for (period, (Yhs, Yls)) in enumerate(self.wavelets[subject]):
+
+                print 'Computing CCA for period', period
+
                 #TODO: what are all the different 'current's here for?
                 current = SPUD(self.num_views, no_double=True)
                 wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
