@@ -10,6 +10,7 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from data.servers.batch import BatchServer as BS
 from wavelets import dtcwt
 from multiprocessing import Pool
+:q
 from math import log
 
 class MVDTCWTRunner:
