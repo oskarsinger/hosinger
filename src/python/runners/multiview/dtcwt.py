@@ -184,7 +184,7 @@ class MVDTCWTRunner:
                 self.wavelets[subject].append(
                     (Yhs_period, Yls_period))
 
-                if self.save_wavelets:
+                if self.save:
                     for (view, Yl) in enumerate(Yls_period):
                         path = '_'.join([
                             'subject',
