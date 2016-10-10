@@ -1,3 +1,17 @@
+import os
+import json
+
+import numpy as np
+import data.loaders.e4.shortcuts as dles
+
+from drrobert.misc import unzip
+from drrobert.file_io import get_timestamped as get_ts
+from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from data.servers.batch import BatchServer as BS
+from wavelets import dtcwt
+from multiprocessing import Pool
+from math import log
+
 class MVDTCWTSPRunner:
 
     def __init__(self,
@@ -31,7 +45,7 @@ class MVDTCWTSPRunner:
         else:
             self._compute()
 
-    def _init_server_stuff(self, load):
+    def _init_server_stuff(self):
 
         print 'Initializing servers'
 
@@ -58,12 +72,31 @@ class MVDTCWTSPRunner:
              for dl in loaders.items()[0][1]])
                     
         self.subjects = self.servers.keys()
-        server_np = lambda ds, r: ds.rows() / (r * self.period)
-        subject_np = lambda s: min(
-            [server_np(ds, r) 
-             for (ds, r) in zip(self.servers[s], self.rates)])
-        self.num_periods = {s : int(subject_np(s))
-                            for s in self.subjects}
+        
+        # Avoids loading data if we don't need to
+        if not self.load:
+            server_np = lambda ds, r: ds.rows() / (r * self.period)
+            subject_np = lambda s: min(
+                [server_np(ds, r) 
+                 for (ds, r) in zip(self.servers[s], self.rates)])
+            self.num_periods = {s : int(subject_np(s))
+                                for s in self.subjects}
+            path = os.path.join(
+                self.save_load_dir,
+                'num_periods.json')
+            np_json = json.dumps(self.num_periods)
+
+            with open(path, 'w') as f:
+                f.write(np.json)
+        else:
+            path = os.path.join(
+                self.save_load_dir,
+                'num_periods.json')
+
+            with open(path) as f:
+                l = f.readline().strip()
+                self.num_periods = json.loads(l)
+
         self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,
@@ -105,9 +138,9 @@ class MVDTCWTSPRunner:
 
         for subject in self.subjects:
 
-            sp_wavelets = self.sp_wavelets[subject]
+            s_wavelets = self.wavelets[subject]
 
-            for (p, (Yhs, Yss)) in enumerate(sp_wavelets):
+            for (p, (Yhs, Yss)) in enumerate(s_wavelets):
                 print 'Stuff'
 
     def _compute(self):
@@ -122,7 +155,7 @@ class MVDTCWTSPRunner:
                 Yhs_period = [view[period] for view in Yhs]
                 Yls_period = [view[period] for view in Yls]
 
-                self.sp_wavelets[subject].append(
+                self.wavelets[subject].append(
                     (Yhs_period, Yls_period))
 
     def _get_sp_wavelet_transforms(self, subject):
@@ -148,7 +181,7 @@ class MVDTCWTSPRunner:
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
             sp_thresholds = [int(view.shape[0] * 1.0 / sp_f)
-                             for (view, sp_f) in zip(data, sp_factors)]
+                             for (view, f) in zip(data, sp_factors)]
             j = 0
             
             # Add a list to each view for the current super period
@@ -157,12 +190,13 @@ class MVDTCWTSPRunner:
                 Yhs[i].append([])
 
             while not sp_complete: 
-                sp_exceeded = [(j+1) >= sp_t for sp_t in sp_thresholds]
-                sp_complete = any(sp_exceeded)
-                sp_current_data = [view[j*sp_f:(j+1)*sp_f]
-                                   for (sp_f, view) in zip(sp_factors, current_data)]
+                exceeded = [(j+1) >= t for t in sp_thresholds]
+                sp_complete = any(exceeded)
+                iterable = zip(sp_factors, current_data)
+                sp_current_data = [view[j*f:(j+1)*f]
+                                   for (f, view) in iterable]
 
-                for (i, view) in enumerate(sp_current_data):
+                for (i, view) in enumerate(current_data):
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                         view, 
                         int(log(view.shape[0], 2)) - 2,
