@@ -128,7 +128,7 @@ class MVDTCWTRunner:
 
         self.wavelet_dir = rmu.init_dir(
             'wavelets',
-            save_wavelets,
+            save,
             self.save_load_dir)
 
     def _load(self):
