@@ -1,5 +1,4 @@
 import os
-import seaborn
 
 import numpy as np
 import spancca as scca
@@ -547,8 +546,6 @@ class MVCCADTCWTRunner:
                         day1[view].T, day2[view])
                     self.autocorrelation[subject][view].append(
                         autocorrelation)
-                    seaborn.heatmap(autocorrelation)
-                    seaborn.plt.show()
 
     def _compute_correlation(self):
 
@@ -822,11 +819,6 @@ class MVCCADTCWTRunner:
 
                 plots[s].append(plot)
                 """
-                seaborn.heatmap(
-                    matrix,
-                    xticklabels=x_labels,
-                    yticklabels=y_labels)
-                seaborn.plt.show()
             
         """
         col_plots = {s: Column(*ps)
