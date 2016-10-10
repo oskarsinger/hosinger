@@ -130,4 +130,8 @@ class DayPairwiseCorrelationRunner:
         
     def _show(self):
 
-        print 'Stuff'
+        for (s, views) in self.correlation.items():
+            for (view, periods) in enumerate(views):
+                for corr in periods:
+
+                    print 'Do some seaborn stuff here'
