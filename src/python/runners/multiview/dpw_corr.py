@@ -138,4 +138,4 @@ class DayPairwiseCorrelationRunner:
                 timeline = np.hstack(columns)
 
                 seaborn.heatmap(timeline)
-                    
+                seaborn.plt.show()   
