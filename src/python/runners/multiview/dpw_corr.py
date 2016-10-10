@@ -1,4 +1,5 @@
 import os
+import seaborn
 
 import numpy as np
 import utils as rmu
@@ -132,6 +133,9 @@ class DayPairwiseCorrelationRunner:
 
         for (s, views) in self.correlation.items():
             for (view, periods) in enumerate(views):
-                for corr in periods:
+                columns = [np.ravel(corr)[:,np.newaxis]
+                           for corr in periods]
+                timeline = np.hstack(columns)
 
-                    print 'Do some seaborn stuff here'
+                seaborn.heatmap(timeline)
+                    

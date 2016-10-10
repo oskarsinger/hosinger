@@ -69,7 +69,6 @@ class MVDTCWTRunner:
         (self.rates, self.names) = unzip(
             [(dl.get_status()['hertz'], dl.name())
              for dl in loaders.items()[0][1]])
-                    
         self.subjects = self.servers.keys()
 
         # Avoids loading data if we don't need to
@@ -261,6 +260,7 @@ class MVDTCWTRunner:
 
         return (Yls, Yhs)
 
+    """
     def _show_kmeans(self, title, labels):
 
         print title, 'KMeans Labels'
@@ -303,3 +303,4 @@ class MVDTCWTRunner:
                      for (subject, label) in labels.items()])
 
                 print '\t\t\t\t' + line
+    """
