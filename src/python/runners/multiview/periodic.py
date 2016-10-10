@@ -29,22 +29,29 @@ class MVCCADTCWTRunner:
         do_phase=False,
         delay=None,
         save_load_dir=None, 
-        compute_wavelets=True,
+        compute_wavelets=False,
         load_wavelets=False,
         save_wavelets=False,
-        compute_correlation=False,
-        load_correlation=False,
-        save_correlation=False,
-        show_correlation=False,
-        compute_cca=False,
-        load_cca=False,
-        save_cca=False,
-        show_cca=False,
-        correlation_kmeans=None,
-        cca_kmeans=None,
+        compute_sp_corr=False,
+        load_sp_corr=False,
+        save_sp_corr=False,
+        show_sp_corr=False,
+        compute_vpw_corr=False,
+        load_vpw_corr=False,
+        save_vpw_corr=False,
+        show_vpw_corr=False,
+        compute_dpw_corr=False,
+        load_dpw_corr=False,
+        save_dpw_corr=False,
+        show_dpw_corr=False,
+        compute_vpw_cca=False,
+        load_vpw_cca=False,
+        save_vpw_cca=False,
+        show_vpw_cca=False,
+        vpw_corr_kmeans=None,
+        vpw_cca_kmeans=None,
         show_kmeans=False,
-        show_corr_subblocks=False,
-        show_sp_correlation=False):
+        show_corr_subblocks=False):
 
         self.hdf5_path = hdf5_path
         self.biorthogonal = biorthogonal
@@ -66,12 +73,20 @@ class MVCCADTCWTRunner:
             save_load_dir,
             load_wavelets,
             save_wavelets,
-            load_correlation,
-            save_correlation,
-            show_correlation,
-            load_cca,
-            save_cca,
-            show_cca,
+            load_sp_wavelets,
+            save_sp_wavelets,
+            load_vpw_corr,
+            save_vpw_corr,
+            show_vpw_corr,
+            load_sp_corr,
+            save_sp_corr,
+            show_sp_corr,
+            load_dpw_corr,
+            save_dpw_corr,
+            show_dpw_corr,
+            load_vpw_cca,
+            save_vpw_cca,
+            show_vpw_cca,
             show_corr_subblocks)
         self._init_server_stuff()
 
@@ -190,31 +205,50 @@ class MVCCADTCWTRunner:
         save_load_dir,
         load_wavelets,
         save_wavelets,
-        load_correlation,
-        save_correlation,
-        show_correlation,
-        load_cca,
-        save_cca,
-        show_cca,
+        load_sp_wavelets,
+        save_sp_wavelets,
+        load_vpw_corr,
+        save_vpw_corr,
+        show_vpw_corr,
+        load_sp_corr,
+        save_sp_corr,
+        show_sp_corr,
+        load_dpw_corr,
+        save_dpw_corr,
+        show_dpw_corr,
+        load_vpw_cca,
+        save_vpw_cca,
+        show_vpw_cca,
         show_corr_subblocks):
 
         print 'Initializing directories'
 
-        self.load_wavelets = load_wavelets
-        self.save_wavelets = save_wavelets
-        self.load_correlation = load_correlation
-        self.save_correlation = save_correlation
-        self.show_correlation = show_correlation
-        self.load_cca = load_cca
-        self.save_cca = save_cca
-        self.show_cca = show_cca
-        self.show_corr_subblocks = show_corr_subblocks
+        self.save_load_dir = save_load_dir 
+        self.load_wavelets = load_wavelets 
+        self.save_wavelets = save_wavelets 
+        self.load_sp_wavelets = load_sp_wavelets 
+        self.save_sp_wavelets = save_sp_wavelets 
+        self.load_vpw_corr = load_vpw_corr 
+        self.save_vpw_corr = save_vpw_corr 
+        self.show_vpw_corr = show_vpw_corr 
+        self.load_sp_corr = load_sp_corr 
+        self.save_sp_corr = save_sp_corr 
+        self.show_sp_corr = show_sp_corr 
+        self.load_dpw_corr = load_dpw_corr 
+        self.save_dpw_corr = save_dpw_corr 
+        self.show_dpw_corr = show_dpw_corr 
+        self.load_vpw_cca = load_vpw_cca 
+        self.save_vpw_cca = save_vpw_cca 
+        self.show_vpw_cca = show_vpw_cca 
+        self.show_corr_subblocks = show_corr_subblocks 
 
         save = save_correlation or save_cca
         load = load_correlation or load_cca
         show = any([
-            show_cca,
-            show_correlation,
+            show_vpw_cca,
+            show_vpw_corr,
+            show_sp_corr,
+            show_dpw_corr,
             show_corr_subblocks])
 
         if save and not load:
@@ -236,12 +270,18 @@ class MVCCADTCWTRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.correlation_dir = self._init_dir(
-            'correlation',
+        self.vpw_corr_dir = self._init_dir(
+            'vpw_corr',
             save_correlation)
-        self.cca_dir = self._init_dir(
-            'cca',
+        self.vpw_vpw_cca_dir = self._init_dir(
+            'vpw_cca',
             save_cca)
+        self.dpw_corr_dir = self._init_dir(
+            'dpw_corr',
+            save_correlation)
+        self.sp_corr_dir = self._init_dir(
+            'sp_corr',
+            save_correlation)
         self.plot_dir = self._init_dir(
             'plots',
             show) 
@@ -310,8 +350,8 @@ class MVCCADTCWTRunner:
 
         cca = {}
 
-        for fn in os.listdir(self.cca_dir):
-            path = os.path.join(self.cca_dir, fn)
+        for fn in os.listdir(self.vpw_cca_dir):
+            path = os.path.join(self.vpw_cca_dir, fn)
 
             with open(path) as f:
                 cca[fn] = np.load(f)
@@ -352,8 +392,8 @@ class MVCCADTCWTRunner:
 
         correlation = {}
 
-        for fn in os.listdir(self.correlation_dir):
-            path = os.path.join(self.correlation_dir, fn)
+        for fn in os.listdir(self.vpw_corr_dir):
+            path = os.path.join(self.vpw_corr_dir, fn)
 
             with open(path) as f:
                 correlation[fn] = np.load(f)
@@ -519,9 +559,9 @@ class MVCCADTCWTRunner:
                 'dtcwt_cca_matrix.thang'])
 
             for (l, mat) in xy_pair.items():
-                if self.cca_dir is not None:
+                if self.vpw_cca_dir is not None:
                     current_path = os.path.join(
-                        self.cca_dir, l + '_' + path)
+                        self.vpw_cca_dir, l + '_' + path)
 
                 with open(current_path, 'w') as f:
                     np.save(f, mat)
@@ -571,7 +611,7 @@ class MVCCADTCWTRunner:
                             '-'.join([str(j) for j in k]),
                             'dtcwt_correlation_matrix.thang'])
 
-                        path = os.path.join(self.correlation_dir, path)
+                        path = os.path.join(self.vpw_corr_dir, path)
 
                         with open(path, 'w') as f:
                             np.save(f, hm)
