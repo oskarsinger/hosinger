@@ -299,7 +299,7 @@ class MVCCADTCWTRunner:
             if Yh_or_Yl == 'Yh':
                 coeffs = unzip(loaded.items())[1]
                 index = 0
-            elif Yh_or_Yl = 'Yl':
+            elif Yh_or_Yl == 'Yl':
                 coeffs = loaded
                 index = 1
 
