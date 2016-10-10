@@ -1,4 +1,5 @@
 import os
+import seaborn
 
 import numpy as np
 import spancca as scca
@@ -29,6 +30,9 @@ class MVCCADTCWTRunner:
         do_phase=False,
         delay=None,
         save_load_dir=None, 
+        compute_wavelets=True,
+        load_wavelets=False,
+        save_wavelets=False,
         compute_correlation=False,
         load_correlation=False,
         save_correlation=False,
@@ -50,23 +54,26 @@ class MVCCADTCWTRunner:
         self.subperiod = subperiod
         self.do_phase = do_phase
         self.delay = delay
+        self.compute_wavelets = compute_wavelets
         self.compute_correlation = compute_correlation
         self.compute_cca = compute_cca
         # TODO: k should probably be internally determined carefully
         self.correlation_kmeans = correlation_kmeans
         self.cca_kmeans = cca_kmeans
         self.show_kmeans = show_kmeans
-        self.show_corr_subblocks = show_corr_subblocks
         self.show_sp_correlation = show_sp_correlation 
 
         self._init_dirs(
             save_load_dir,
+            load_wavelets,
+            save_wavelets,
             load_correlation,
             save_correlation,
             show_correlation,
             load_cca,
             save_cca,
-            show_cca)
+            show_cca,
+            show_corr_subblocks)
         self._init_server_stuff()
 
         self.wavelets = {s : [] for s in self.subjects}
@@ -89,14 +96,14 @@ class MVCCADTCWTRunner:
 
     def run(self):
 
-        if not self.load_correlation and not self.load_cca:
+        if self.compute_wavelets:
             self._compute_wavelet_transforms()
 
         if self.load_correlation:
             self._load_correlation()
         elif self.compute_correlation:
             self._compute_correlation()
-
+        self._compute_autocorrelation()
         if self.load_cca:
             self._load_cca()
         elif self.compute_cca:
@@ -182,24 +189,34 @@ class MVCCADTCWTRunner:
 
     def _init_dirs(self,
         save_load_dir,
+        load_wavelets,
+        save_wavelets,
         load_correlation,
         save_correlation,
         show_correlation,
         load_cca,
         save_cca,
-        show_cca):
+        show_cca,
+        show_corr_subblocks):
 
         print 'Initializing directories'
 
+        self.load_wavelets = load_wavelets
+        self.save_wavelets = save_wavelets
         self.load_correlation = load_correlation
         self.save_correlation = save_correlation
         self.show_correlation = show_correlation
         self.load_cca = load_cca
         self.save_cca = save_cca
         self.show_cca = show_cca
+        self.show_corr_subblocks = show_corr_subblocks
 
         save = save_correlation or save_cca
         load = load_correlation or load_cca
+        show = any([
+            show_cca,
+            show_correlation,
+            show_corr_subblocks])
 
         if save and not load:
             if not os.path.isdir(save_load_dir):
@@ -228,7 +245,10 @@ class MVCCADTCWTRunner:
             save_cca)
         self.plot_dir = self._init_dir(
             'plots',
-            show_cca or show_correlation)
+            show) 
+        self.wavelet_dir = self._init_dir(
+            'wavelets',
+            save_wavelets)
 
     def _init_dir(self, dir_name, save):
 
@@ -248,6 +268,42 @@ class MVCCADTCWTRunner:
 
         return {s : get_list_spud(no_double)
                 for s in self.subjects}
+
+    def _load_wavelets(self):
+
+        print 'Loading wavelets'
+
+        wavelets = {}
+
+        for fn in os.listdir(self.wavelet_dir):
+            path = os.path.join(self.wavelet_dir, fn)
+
+            with open(path) as f:
+                wavelets[fn] = np.load(f)
+
+        get_p = lambda: [[None, None] for i in xrange(self.num_views)]
+        get_s = lambda s: [get_period() 
+                           for i in xrange(self.num_periods[s])]
+        self.wavelets = {s : get_s(s)
+                         for s in self.subjects}
+
+        for (k, loaded) in wavelets.items():
+            info = k.split('_')
+            s = info[1]
+            p = int(info[3])
+            v = int(info[5])
+            Yh_or_Yl = info[6]
+            coeffs = None
+            index = None
+
+            if Yh_or_Yl == 'Yh':
+                coeffs = unzip(loaded.items())[1]
+                index = 0
+            elif Yh_or_Yl = 'Yl':
+                coeffs = loaded
+                index = 1
+
+            self.wavelets[s][p][v][index] = coeffs
 
     def _load_cca(self):
 
@@ -433,9 +489,10 @@ class MVCCADTCWTRunner:
                 current = SPUD(self.num_views, no_double=True)
                 wavelet_matrices = [_get_sampled_wavelets(Yh, Yl)
                                     for (Yh, Yl) in zip(Yhs, Yls)]
-
+                print len(wavelet_matrices)
                 wms = [np.absolute(wm) if mag else np.angle(wm)
                        for wm in wavelet_matrices]
+                print len(wms)
                 current = _get_cca_spud(wms)
 
                 pw_cca[subject] = _get_appended_spud(
@@ -477,14 +534,21 @@ class MVCCADTCWTRunner:
             print 'Computing autocorrelation for subject', subject
 
             s_wavelets = self.wavelets[subject]
+            print len(s_wavelets)
             day_pairs = zip(
-                [None] + s_wavelets, 
-                s_wavelets + [None])[1:-1]
+                s_wavelets[:-1],
+                s_wavelets[1:])
+            print len(day_pairs)
 
             for (day1, day2) in day_pairs:
                 for view in xrange(self.num_views):
+                    print 'Inside thing'
+                    autocorrelation = np.dot(
+                        day1[view].T, day2[view])
                     self.autocorrelation[subject][view].append(
-                        np.dot(day1[view].T, day2[view]))
+                        autocorrelation)
+                    seaborn.heatmap(autocorrelation)
+                    seaborn.plt.show()
 
     def _compute_correlation(self):
 
@@ -537,7 +601,12 @@ class MVCCADTCWTRunner:
 
     def _compute_sp_correlation(self):
 
-        print 'Stuff'
+        for subject in self.subjects:
+
+            sp_wavelets = self.sp_wavelets[subject]
+
+            for (p, (Yhs, Yss)) in enumerate(sp_wavelets):
+                print 'Stuff'
 
     def _compute_wavelet_transforms(self):
 
@@ -553,6 +622,37 @@ class MVCCADTCWTRunner:
 
                 self.wavelets[subject].append(
                     (Yhs_period, Yls_period))
+
+                if self.save_wavelets:
+                    for (view, Yl) in enumerate(Yls_period):
+                        path = '_'.join([
+                            'subject',
+                            subject,
+                            'period',
+                            str(period),
+                            'view',
+                            str(view),
+                            'Yl_dtcwt_coefficients.thang'])
+
+                        path = os.path.join(self.wavelet_dir, path)
+
+                        with open(path, 'w') as f:
+                            np.save(f, Yl)
+
+                    for (view, Yh) in enumerate(Yhs_period):
+                        path = '_'.join([
+                            'subject',
+                            subject,
+                            'period',
+                            str(period),
+                            'view',
+                            str(view),
+                            'Yh_dtcwt_coefficients.thang'])
+
+                        path = os.path.join(self.wavelet_dir, path)
+
+                        with open(path, 'w') as f:
+                            np.savez(f, *Yh)
 
     def _get_wavelet_transforms(self, subject):
 
@@ -677,6 +777,13 @@ class MVCCADTCWTRunner:
         for (s, spud) in self.correlation.items():
             for ((i, j), corr_list) in spud.items():
                 (by, ey, bx, ex) = begin_end_spud.get(i, j)
+
+                if ey is None:
+                    ey = corr_list[0].shape[0]
+
+                if ex is None:
+                    ex = corr_list[0].shape[1]
+
                 subblocks = [np.ravel(
                                 corr[by:ey,bx:ex])[:,np.newaxis]
                              for corr in corr_list]
@@ -691,7 +798,7 @@ class MVCCADTCWTRunner:
                             for k in xrange(by, ey)
                             for l in xrange(bx, ex)]
                 x_labels = [str(k) 
-                            for k in xrange(self.num_periods(s))]
+                            for k in xrange(self.num_periods[s])]
                 title = ' '.join([
                     'High mag. corr. for freq. pair',
                     self.names[i], self.names[j],
@@ -699,6 +806,7 @@ class MVCCADTCWTRunner:
                 x_name = 'Time'
                 y_name = 'Frequency pairs'
                 val_name = 'Correlation'
+                """
                 plot = plot_matrix_heat(
                     matrix,
                     x_labels,
@@ -713,7 +821,14 @@ class MVCCADTCWTRunner:
                     do_phase=self.do_phase)
 
                 plots[s].append(plot)
+                """
+                seaborn.heatmap(
+                    matrix,
+                    xticklabels=x_labels,
+                    yticklabels=y_labels)
+                seaborn.plt.show()
             
+        """
         col_plots = {s: Column(*ps)
                      for (s, ps) in plots.items()}
 
@@ -727,6 +842,7 @@ class MVCCADTCWTRunner:
                 filepath, 
                 'high_mag_correlation_of_wavelet_coefficient_magnitude')
             show(plot)
+        """
 
     def _show_kmeans(self, title, labels):
 
@@ -924,6 +1040,7 @@ def _get_appended_spud(list_spud, item_spud):
 def _get_cca_spud(views):
 
     num_views = len(views)
+    print 'num_views', num_views
     current = SPUD(num_views, no_double=True)
 
     for i in xrange(num_views):
