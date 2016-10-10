@@ -11,13 +11,13 @@ from bokeh.models.layouts import Column, Row
 class DayPairwiseCorrelationRunner:
 
     def __init__(self,
-        dtcwt_obj,
+        dtcwt_runner,
         save_load_dir,
         save=False,
         load=False,
         show=False):
 
-        self.wavelets = dtcwt_obj.wavelets
+        self.wavelets = dtcwt_runner.wavelets
         self.save = save
         self.load = load
         self.show = show
@@ -28,9 +28,9 @@ class DayPairwiseCorrelationRunner:
             show, 
             save_load_dir)
 
-        self.subjects = self.dtcwt_obj.subjects
-        self.names = self.dtcwt_obj.names
-        self.num_views = self.dtcwt_obj.num_views
+        self.subjects = self.dtcwt_runner.subjects
+        self.names = self.dtcwt_runner.names
+        self.num_views = self.dtcwt_runner.num_views
         self.correlation = {s : [[] for i in xrange(self.num_views)]
                             for s in self.subjects}
 

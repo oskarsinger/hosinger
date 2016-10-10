@@ -3,6 +3,7 @@ import json
 
 import numpy as np
 import data.loaders.e4.shortcuts as dles
+import wavelets.dtcwt as wdtcwt
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
@@ -10,24 +11,23 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from data.servers.batch import BatchServer as BS
 from wavelets import dtcwt
 from multiprocessing import Pool
-:q
 from math import log
 
 class MVDTCWTRunner:
 
     def __init__(self, 
         hdf5_path,
-        biorthogonal,
-        qshift,
-        period,
         save_load_dir=None, 
         save=False,
         load=False):
 
         self.hdf5_path = hdf5_path
-        self.biorthogonal = biorthogonal
-        self.qshift = qshift
-        self.period = period
+        self.period = 24 * 3600
+
+        self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
+            'near_sym_b')
+        self.qshift = wdtcwt.utils.get_wavelet_basis(
+            'qshift_b')
 
         self._init_dirs(
             save_load_dir,
