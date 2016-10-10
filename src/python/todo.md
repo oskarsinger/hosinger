@@ -35,9 +35,8 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 * For raw data, plot average over days and compare subjects in the same plot
 * T-tests and p-values for spike in temperature vs reported symptoms
-* Truncate bad data at the beginning of each temp session
+* Truncate bad data at the beginning of each temperature session
 * Start switching relevant plotting code to use Seaborn instead of bokeh
 * Finish auto- and cross-correlation experiment and plotting code (good opportunity to practice Seaborn)
-* Rearrange dtcwt runner to act as input for other multiview runners.
 * Fix click tool for dtcwt runners
 * Consider making separate module for some of this stuff
