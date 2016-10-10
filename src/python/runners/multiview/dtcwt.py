@@ -1,19 +1,14 @@
 import os
+import json
 
 import numpy as np
-import spancca as scca
 import data.loaders.e4.shortcuts as dles
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
-from drrobert.ml import get_kmeans
 from data.servers.batch import BatchServer as BS
 from wavelets import dtcwt
-from lazyprojector import plot_matrix_heat
-from bokeh.palettes import BuPu9, Oranges9
-from bokeh.plotting import output_file, show
-from bokeh.models.layouts import Column, Row
 from multiprocessing import Pool
 from math import log
 
@@ -75,12 +70,31 @@ class MVDTCWTRunner:
              for dl in loaders.items()[0][1]])
                     
         self.subjects = self.servers.keys()
-        server_np = lambda ds, r: ds.rows() / (r * self.period)
-        subject_np = lambda s: min(
-            [server_np(ds, r) 
-             for (ds, r) in zip(self.servers[s], self.rates)])
-        self.num_periods = {s : int(subject_np(s))
-                            for s in self.subjects}
+
+        # Avoids loading data if we don't need to
+        if not self.load:
+            server_np = lambda ds, r: ds.rows() / (r * self.period)
+            subject_np = lambda s: min(
+                [server_np(ds, r) 
+                 for (ds, r) in zip(self.servers[s], self.rates)])
+            self.num_periods = {s : int(subject_np(s))
+                                for s in self.subjects}
+            path = os.path.join(
+                self.save_load_dir,
+                'num_periods.json')
+            np_json = json.dumps(self.num_periods)
+
+            with open(path, 'w') as f:
+                f.write(np.json)
+        else:
+            path = os.path.join(
+                self.save_load_dir,
+                'num_periods.json')
+
+            with open(path) as f:
+                l = f.readline().strip()
+                self.num_periods = json.loads(l)
+
         self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,
@@ -115,7 +129,7 @@ class MVDTCWTRunner:
             'wavelets',
             save_wavelets)
 
-    def _load_wavelets(self):
+    def _load(self):
 
         print 'Loading wavelets'
 
