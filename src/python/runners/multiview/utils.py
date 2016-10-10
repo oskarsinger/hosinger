@@ -44,7 +44,7 @@ def get_appended_spud(list_spud, item_spud):
 
     return list_spud
 
-def _init_dir(dir_name, save, sl_dir):
+def init_dir(dir_name, save, sl_dir):
 
     dir_path = os.path.join(
         sl_dir,

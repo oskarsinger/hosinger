@@ -4,6 +4,7 @@ import json
 import numpy as np
 import data.loaders.e4.shortcuts as dles
 import wavelets.dtcwt as wdtcwt
+import utils as rmu
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
@@ -125,9 +126,10 @@ class MVDTCWTRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.wavelet_dir = self._init_dir(
+        self.wavelet_dir = rmu.init_dir(
             'wavelets',
-            save_wavelets)
+            save_wavelets,
+            self.save_load_dir)
 
     def _load(self):
 
