@@ -10,13 +10,13 @@ from bokeh.models.layouts import Column, Row
 class DayPairwiseCorrelationRunner:
 
     def __init__(self,
-        wavelets,
+        dtcwt_obj,
         save_load_dir,
         save=False,
         load=False,
         show=False):
 
-        self.wavelets = wavelets
+        self.wavelets = dtcwt_obj.wavelets
         self.save = save
         self.load = load
         self.show = show
@@ -27,9 +27,9 @@ class DayPairwiseCorrelationRunner:
             show, 
             save_load_dir)
 
-        self.subjects = self.wavelets.subjects
-        self.names = self.wavelets.names
-        self.num_views = self.wavelets.num_views
+        self.subjects = self.dtcwt_obj.subjects
+        self.names = self.dtcwt_obj.names
+        self.num_views = self.dtcwt_obj.num_views
         self.correlation = {s : [[] for i in xrange(self.num_views)]
                             for s in self.subjects}
 
@@ -38,7 +38,6 @@ class DayPairwiseCorrelationRunner:
         if self.load:
             self._load()
         else:
-            self._load_wavelets()
             self._compute()
 
         if self.show:
@@ -80,18 +79,55 @@ class DayPairwiseCorrelationRunner:
                 s_wavelets[:-1],
                 s_wavelets[1:])
 
-            for (day1, day2) in day_pairs:
+            for (p, (d1, d2)) in enumerate(day_pairs):
                 for view in xrange(self.num_views):
-                    #TODO: make sure this does subsampled wavelets instead
+                    (Yh1, Yl1) =  d1
+                    (Yh2, Yl2) =  d2
+                    Yh1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
+                    Yh2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
                     correlation = np.dot(
-                        day1[view].T, day2[view])
+                        Yh1_mat[view].T, Yh2_mat[view])
+
                     self.correlation[subject][view].append(
-                        autocorrelation)
+                        correlation)
+
+                    if self.save:
+                        path = '_'.join([
+                            'subject',
+                            subject,
+                            'view',
+                            self.names[view], 
+                            'periods',
+                            '-'.join([str(p), str(p+1)]) 
+                        path = os.path.join(self.corr_dir, path)
+
+                        with open(path, 'w') as f:
+                            np.save(f, correlation)
 
     def _load(self):
 
-        print 'Stuff'
+        correlation = {}
 
+        for fn in os.listdir(self.corr_dir):
+            path = os.path.join(self.corr_dir, fn)
+
+            with open(path) as f:
+                correlation[fn] = np.load(f)
+
+        for (s, views) in self.correlation.items():
+            for i in xrange(len(views)):
+                l = [None] * (self.num_periods[s] - 1)
+
+                self.correlation[s][i] = l
+
+        for (k, m) in correlation.items():
+            info = k.split('_')
+            s = info[1]
+            v = info[3]
+            ps = [int(i) for i in info[5].split('-')]
+
+            self.correlation[s][v][ps[0]] = m
+        
     def _show(self):
 
         print 'Stuff'

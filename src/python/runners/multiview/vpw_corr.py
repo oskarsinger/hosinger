@@ -88,14 +88,19 @@ class ViewPairwiseCorrelationRunner:
             with open(path) as f:
                 correlation[fn] = np.load(f)
 
+        for (s, spud) in self.correlation.items():
+            for k in spud.keys():
+                l = [None] * self.num_periods[subject]
+
+                spud.insert(k[0], k[1], l)
+
         for (k, hm) in correlation.items():
             info = k.split('_')
-            subject = info[1]
-            period = int(info[3])
-            views = [int(i) for i in info[5].split('-')]
+            s = info[1]
+            p = int(info[3])
+            vs = [int(i) for i in info[5].split('-')]
             
-            self.correlation[subject].get(
-                views[0], views[1]).append(hm)
+            self.correlation[s].get(vs[0], vs[1])[p] = hm
 
     def _compute(self):
 
@@ -109,7 +114,7 @@ class ViewPairwiseCorrelationRunner:
                 for ((i, j), corr) in correlation.items():
                     self.correlation[subject].get(i, j).append(corr)
 
-                if self.save_correlation:
+                if self.save:
                     for (k, hm) in correlation.items():
                         path = '_'.join([
                             'subject',
@@ -119,7 +124,6 @@ class ViewPairwiseCorrelationRunner:
                             'views',
                             '-'.join([str(j) for j in k]),
                             'dtcwt_correlation_matrix.thang'])
-
                         path = os.path.join(self.corr_dir, path)
 
                         with open(path, 'w') as f:

@@ -24,60 +24,29 @@ class MVDTCWTRunner:
         biorthogonal,
         qshift,
         period,
-        subperiod=None,
-        do_phase=False,
-        delay=None,
         save_load_dir=None, 
-        compute_wavelets=False,
-        load_wavelets=False,
-        save_wavelets=False,
-        compute_sp_corr=False,
-        load_sp_corr=False,
-        save_sp_corr=False,
-        show_sp_corr=False,
-        vpw_corr_kmeans=None,
-        vpw_cca_kmeans=None,
-        show_kmeans=False):
+        save=False,
+        load=False):
 
         self.hdf5_path = hdf5_path
         self.biorthogonal = biorthogonal
         self.qshift = qshift
         self.period = period
-        self.subperiod = subperiod
-        self.compute_wavelets = compute_wavelets
-        # TODO: k should probably be internally determined carefully
-        self.show_kmeans = show_kmeans
-        self.show_sp_correlation = show_sp_correlation 
 
         self._init_dirs(
             save_load_dir,
-            load_wavelets,
-            save_wavelets,
-            load_sp_wavelets,
-            save_sp_wavelets,
-            load_sp_corr,
-            save_sp_corr,
-            show_sp_corr)
+            load,
+            save)
         self._init_server_stuff()
 
         self.wavelets = {s : [] for s in self.subjects}
-        self.sp_wavelets = {s : [] for s in self.subjects}
-
-        self.sp_correlation = self._get_list_spud_dict()
-        self.mv_cca_mag = self._get_list_spud_dict(no_double=True)
-        self.mv_cca_phase = self._get_list_spud_dict(no_double=True)
 
     def run(self):
 
-        if self.compute_wavelets:
-            self._compute_wavelet_transforms()
-
-        if self.subperiod is not None:
-            self._compute_sp_wavelet_transforms()
-            self._compute_sp_correlation()
-
-            if self.show_sp_correlation:
-                self._show_sp_correlation()
+        if self.load:
+            self._load()
+        else:
+            self._compute()
 
     def _init_server_stuff(self):
 
@@ -88,10 +57,13 @@ class MVDTCWTRunner:
         self.servers = {}
 
         for (s, dl_list) in loaders.items():
-            # This is to ensure that all subjects have sufficient data
             s = s[-2:]
+
+            # This is to ensure that all subjects have sufficient data
+            # Only necessary if we have to recompute wavelets
             try:
-                [dl.get_data() for dl in dl_list]
+                if not self.load:
+                    [dl.get_data() for dl in dl_list]
 
                 self.servers[s] = [BS(dl) for dl in dl_list]
             except Exception, e:
@@ -113,26 +85,14 @@ class MVDTCWTRunner:
 
     def _init_dirs(self,
         save_load_dir,
-        load_wavelets,
-        save_wavelets,
-        load_sp_wavelets,
-        save_sp_wavelets,
-        load_sp_corr,
-        save_sp_corr,
-        show_sp_corr)
+        load,
+        save):
 
         print 'Initializing directories'
 
         self.save_load_dir = save_load_dir 
-        self.load_wavelets = load_wavelets 
-        self.save_wavelets = save_wavelets 
-        self.load_sp_wavelets = load_sp_wavelets 
-        self.save_sp_wavelets = save_sp_wavelets 
-        self.load_sp_corr = load_sp_corr 
-        self.save_sp_corr = save_sp_corr 
-        self.show_sp_corr = show_sp_corr 
-
-        show = show_sp_corr
+        self.load= load
+        self.save= save
 
         if save and not load:
             if not os.path.isdir(save_load_dir):
@@ -151,9 +111,6 @@ class MVDTCWTRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.sp_corr_dir = self._init_dir(
-            'sp_corr',
-            save_correlation)
         self.wavelet_dir = self._init_dir(
             'wavelets',
             save_wavelets)
@@ -196,16 +153,7 @@ class MVDTCWTRunner:
 
     # TODO: Do multi-view CCA on magnitude and phase of coefficients
     # Probably use CCALin
-    def _compute_sp_correlation(self):
-
-        for subject in self.subjects:
-
-            sp_wavelets = self.sp_wavelets[subject]
-
-            for (p, (Yhs, Yss)) in enumerate(sp_wavelets):
-                print 'Stuff'
-
-    def _compute_wavelet_transforms(self):
+    def _compute(self):
 
         for subject in self.subjects:
 
@@ -293,75 +241,6 @@ class MVDTCWTRunner:
 
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
-
-            k += 1
-
-        return (Yls, Yhs)
-
-    def _compute_sp_wavelet_transforms(self):
-
-        for subject in self.subjects:
-
-            print 'Computing subperiod wavelet transforms for subject', subject
-
-            (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
-
-            for period in xrange(self.num_periods[subject]):
-                Yhs_period = [view[period] for view in Yhs]
-                Yls_period = [view[period] for view in Yls]
-
-                self.sp_wavelets[subject].append(
-                    (Yhs_period, Yls_period))
-
-    def _get_sp_wavelet_transforms(self, subject):
-
-        data = [ds.get_data() for ds in self.servers[subject]]
-        factors = [int(self.period * r) for r in self.rates]
-        sp_factors = [int(self.subperiod * r) for r in self.rates]
-
-        if self.delay is not None:
-            data = [view[int(self.delay * r):] 
-                    for (r,view) in zip(self.rates, data)]
-
-        thresholds = [int(view.shape[0] * 1.0 / f)
-                      for (view, f) in zip(data, factors)]
-        Yls = [[] for i in xrange(self.num_views)]
-        Yhs = [[] for i in xrange(self.num_views)]
-        complete = False
-        k = 0
-
-        while not complete:
-            exceeded = [(k+1) >= t for t in thresholds]
-            complete = any(exceeded)
-            current_data = [view[k*f:(k+1)*f]
-                            for (f, view) in zip(factors, data)]
-            sp_thresholds = [int(view.shape[0] * 1.0 / sp_f)
-                             for (view, sp_f) in zip(data, sp_factors)]
-            j = 0
-            
-            # Add a list to each view for the current super period
-            for i in xrange(self.num_views):
-                Yls[i].append([])
-                Yhs[i].append([])
-
-            while not sp_complete: 
-                sp_exceeded = [(j+1) >= sp_t for sp_t in sp_thresholds]
-                sp_complete = any(sp_exceeded)
-                sp_current_data = [view[j*sp_f:(j+1)*sp_f]
-                                   for (sp_f, view) in zip(sp_factors, current_data)]
-
-                for (i, view) in enumerate(sp_current_data):
-                    (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
-                        view, 
-                        int(log(view.shape[0], 2)) - 2,
-                        self.biorthogonal,
-                        self.qshift)
-                    
-                    # Append the current subperiod's wavelets to the current period
-                    Yls[i][-1].append(Yl)
-                    Yhs[i][-1].append(Yh)
-               
-                j += 1
 
             k += 1
 
