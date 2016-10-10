@@ -38,3 +38,6 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * Truncate bad data at the beginning of each temp session
 * Start switching relevant plotting code to use Seaborn instead of bokeh
 * Finish auto- and cross-correlation experiment and plotting code (good opportunity to practice Seaborn)
+* Rearrange dtcwt runner to act as input for other multiview runners.
+* Fix click tool for dtcwt runners
+* Consider making separate module for some of this stuff
