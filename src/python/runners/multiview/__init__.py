@@ -1,1 +1,3 @@
-from periodic import MVCCADTCWTRunner
+from dtcwt import MVDTCWTRunner
+from vpw_cca import ViewPairwiseCCARunner
+from vpw_corr import ViewPairwiseCorrelationRunner
