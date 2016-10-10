@@ -14,6 +14,8 @@ from bokeh.models.layouts import Column
     default='/home/oskar/Data/VirusGenomeData/FullE4/20160503_BIOCHRON_E4.hdf5')
 @click.option('--delay', default=None)
 @click.option('--save-load-dir', default='.')
+@click.option('--compute-wavelets', default=True)
+@click.option('--save-wavelets', default=False)
 @click.option('--compute-correlation', default=False)
 @click.option('--load-correlation', default=False)
 @click.option('--save-correlation', default=False)
@@ -35,6 +37,8 @@ def run_it_all_day(
     data_path, 
     delay,
     save_load_dir,
+    compute_wavelets,
+    save_wavelets,
     compute_correlation,
     load_correlation,
     save_correlation, 
@@ -79,6 +83,8 @@ def run_it_all_day(
         do_phase=do_phase,
         delay=delay,
         save_load_dir=save_load_dir,
+        compute_wavelets=compute_wavelets,
+        save_wavelets=save_wavelets,
         compute_correlation=compute_correlation,
         save_correlation=save_correlation,
         load_correlation=load_correlation,
