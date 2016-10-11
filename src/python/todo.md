@@ -33,8 +33,5 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 #Random (reorganize later)
 * Linear regression between accelerometer and heart rate via scatter plot
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
-* For raw data, plot average over days and compare subjects in the same plot
 * T-tests and p-values for spike in temperature vs reported symptoms
-* Truncate bad data at the beginning of each temperature session
-* Start switching relevant plotting code to use Seaborn instead of bokeh
 * Finish cross-correlation experiment and plotting code (good opportunity to practice Seaborn)

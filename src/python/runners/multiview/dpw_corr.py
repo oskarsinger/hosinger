@@ -2,6 +2,7 @@ import os
 import seaborn
 
 import numpy as np
+import pandas as pd
 import utils as rmu
 
 from drrobert.file_io import get_timestamped as get_ts
@@ -30,7 +31,10 @@ class DayPairwiseCorrelationRunner:
 
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
+        self.names2indices = {name : i 
+                              for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
+        self.num_periods = dtcwt_runner.num_periods
         self.correlation = {s : [[] for i in xrange(self.num_views)]
                             for s in self.subjects}
 
@@ -72,8 +76,6 @@ class DayPairwiseCorrelationRunner:
     def _compute(self):
 
         for subject in self.subjects:
-
-            print 'Computing autocorrelation for subject', subject
 
             s_wavelets = self.wavelets[subject]
             day_pairs = zip(
@@ -124,7 +126,7 @@ class DayPairwiseCorrelationRunner:
         for (k, m) in correlation.items():
             info = k.split('_')
             s = info[1]
-            v = info[3]
+            v = self.names2indices[info[3]]
             ps = [int(i) for i in info[5].split('-')]
 
             self.correlation[s][v][ps[0]] = m
@@ -133,9 +135,30 @@ class DayPairwiseCorrelationRunner:
 
         for (s, views) in self.correlation.items():
             for (view, periods) in enumerate(views):
-                columns = [np.ravel(corr)[:,np.newaxis]
-                           for corr in periods]
-                timeline = np.hstack(columns)
+                freq_pairs = []
+                period_pairs = []
+                correlation = []
+                
+                for (p, corr) in enumerate(periods):
+                    (n, m) = corr.shape
+                    period_pair = str(p) + ', ' + str(p+1)
 
-                seaborn.heatmap(timeline)
+                    for i in xrange(n):
+                        freq_i = '2^' + str(i)
+                        for j in xrange(m):
+                            correlation.append(corr[i,j])
+                            period_pairs.append(period_pair)
+                            freq_pairs.append(
+                                freq_i + ', ' + '2^' + str(j))
+                d = {
+                    'freq_pairs': freq_pairs,
+                    'period_pairs': period_pairs,
+                    'correlation': correlation}
+                plot = seaborn.heatmap(
+                    pd.DataFrame(data=d), 
+                    yticklabels=8)
+
+                for label in plot.get_yticklabels():
+                    label.set_rotation(45)
+
                 seaborn.plt.show()   

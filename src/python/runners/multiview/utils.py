@@ -22,8 +22,6 @@ def get_sampled_wavelets(Yh, Yl):
         (hi_and_lo[-1].shape[0], k),
         dtype=complex)
 
-    print [y.shape for y in hi_and_lo]
-    
     for (i, y) in enumerate(hi_and_lo):
         power = k - i - 1
         basis[:,i] = np.copy(y[::2**power,0])
