@@ -1,7 +1,7 @@
 import click
 
-from runners.multiview import DayPairwiseCorrelationRunner as DPCR
-from runners.multiview import MVDTCWTRunner
+from runners.multiview import SubperiodCorrelationRunner as SPCR
+from runners.multiview import MVDTCWTSPRunner
 
 @click.command()
 @click.option('--data-path')
@@ -18,7 +18,7 @@ def run_it_all_day_bb(
     load,
     show):
 
-    dtcwt_runner = MVDTCWTRunner(
+    dtcwt_runner = MVDTCWTSPRunner(
         data_path,
         save_load_dir=wavelet_dir,
         load=True)
@@ -26,7 +26,7 @@ def run_it_all_day_bb(
     if not load:
         dtcwt_runner.run()
 
-    runner = DPCR(
+    runner = SPCR(
         dtcwt_runner,
         save_load_dir,
         save=save,

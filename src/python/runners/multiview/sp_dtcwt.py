@@ -3,8 +3,6 @@ import json
 
 import numpy as np
 import data.loaders.e4.shortcuts as dles
-import wavelets.dtcwt as wdtcwt
-import utils as rmu
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
@@ -14,7 +12,7 @@ from wavelets import dtcwt
 from multiprocessing import Pool
 from math import log
 
-class MVDTCWTRunner:
+class MVDTCWTSPRunner:
 
     def __init__(self, 
         hdf5_path,
@@ -24,6 +22,8 @@ class MVDTCWTRunner:
 
         self.hdf5_path = hdf5_path
         self.period = 24 * 3600
+        self.subperiod = 3600
+        self.num_sps = self.period / self.subperiod
 
         self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
             'near_sym_b')
@@ -70,8 +70,9 @@ class MVDTCWTRunner:
         (self.rates, self.names) = unzip(
             [(dl.get_status()['hertz'], dl.name())
              for dl in loaders.items()[0][1]])
+                    
         self.subjects = self.servers.keys()
-
+        
         # Avoids loading data if we don't need to
         if not self.load:
             server_np = lambda ds, r: ds.rows() / (r * self.period)
@@ -86,7 +87,7 @@ class MVDTCWTRunner:
             np_json = json.dumps(self.num_periods)
 
             with open(path, 'w') as f:
-                f.write(np_json)
+                f.write(np.json)
         else:
             path = os.path.join(
                 self.save_load_dir,
@@ -113,9 +114,11 @@ class MVDTCWTRunner:
                 os.mkdir(save_load_dir)
 
             model_dir = get_ts('_'.join([
-                'MVDTCWTR',
+                'MVDTCWTSPR',
                 'period',
-                str(self.period)]))
+                str(self.period),
+                'subperiod',
+                str(self.subperiod)]))
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
@@ -125,7 +128,7 @@ class MVDTCWTRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.wavelet_dir = rmu.init_dir(
+        self.wavelet_dir = self._init_dir(
             'wavelets',
             save,
             self.save_load_dir)
@@ -134,8 +137,10 @@ class MVDTCWTRunner:
 
         print 'Loading wavelets'
 
-        get_p = lambda: [[None, None] 
-                         for i in xrange(self.num_views)]
+        get_sp = lambda: [[None, None] 
+                          for i in xrange(self.num_views)]
+        get_p = lambda: [get_sp() 
+                         for i in xrange(self.num_sps)]
         get_s = lambda s: [get_p() 
                            for i in xrange(self.num_periods[s])]
         self.wavelets = {s : get_s(s)
@@ -146,8 +151,9 @@ class MVDTCWTRunner:
             info = fn.split('_')
             s = info[1]
             p = int(info[3])
-            v = int(info[5])
-            Yh_or_Yl = info[6]
+            sp = int(info[5])
+            v = int(info[7])
+            Yh_or_Yl = info[8]
             index = None
             coeffs = None
 
@@ -165,54 +171,66 @@ class MVDTCWTRunner:
                     index = 1
                     coeffs = loaded
 
-            self.wavelets[s][p][v][index] = coeffs
+            self.wavelets[s][p][sp][v][index] = coeffs
 
     def _compute(self):
 
         for subject in self.subjects:
 
-            print 'Computing wavelet transforms for subject', subject
+            print 'Computing subperiod wavelet transforms for subject', subject
 
-            (Yls, Yhs) = self._get_wavelet_transforms(subject)
+            (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
 
             if self.save:
-                for (view, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
-                    for (period, Yl) in enumerate(v_Yls):
-                        path = '_'.join([
-                            'subject',
-                            subject,
-                            'period',
-                            str(period),
-                            'view',
-                            str(view),
-                            'Yl_dtcwt_coefficients.thang'])
+                for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
+                    for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yhs)):
+                        for (sp, Yl) in enumerate(p_Yls):
+                            path = '_'.join([
+                                'subject',
+                                subject,
+                                'period',
+                                str(p),
+                                'subperiod',
+                                str(sp),
+                                'view',
+                                str(v),
+                                'Yl_dtcwt_coefficients.thang'])
 
-                        path = os.path.join(self.wavelet_dir, path)
+                            path = os.path.join(self.wavelet_dir, path)
 
-                        with open(path, 'w') as f:
-                            np.save(f, Yl)
+                            with open(path, 'w') as f:
+                                np.save(f, Yl)
 
-                    for (period, Yh) in enumerate(v_Yhs):
-                        path = '_'.join([
-                            'subject',
-                            subject,
-                            'period',
-                            str(period),
-                            'view',
-                            str(view),
-                            'Yh_dtcwt_coefficients.thang'])
+                        for (sp, Yh) in enumerate(p_Yhs):
+                            path = '_'.join([
+                                'subject',
+                                subject,
+                                'period',
+                                str(p),
+                                'subperiod',
+                                str(sp),
+                                'view',
+                                str(v),
+                                'Yh_dtcwt_coefficients.thang'])
 
-                        path = os.path.join(self.wavelet_dir, path)
+                            path = os.path.join(self.wavelet_dir, path)
 
-                        with open(path, 'w') as f:
-                            np.savez(f, *Yh)
+                            with open(path, 'w') as f:
+                                np.savez(f, *Yh)
 
-    def _get_wavelet_transforms(self, subject):
+
+    def _get_sp_wavelet_transforms(self, subject):
 
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
-        thresholds  = [int(view.shape[0] * 1.0 / f)
-                       for (view, f) in zip(data, factors)]
+        sp_factors = [int(self.subperiod * r) for r in self.rates]
+
+        if self.delay is not None:
+            data = [view[int(self.delay * r):] 
+                    for (r,view) in zip(self.rates, data)]
+
+        thresholds = [int(view.shape[0] * 1.0 / f)
+                      for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
         complete = False
@@ -223,73 +241,34 @@ class MVDTCWTRunner:
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
-            p = Pool(len(current_data))
-            processes = []
+            sp_thresholds = [int(view.shape[0] * 1.0 / sp_f)
+                             for (view, f) in zip(data, sp_factors)]
+            j = 0
+            
+            # Add a list to each view for the current super period
+            for i in xrange(self.num_views):
+                Yls[i].append([])
+                Yhs[i].append([])
 
-            for (i, view) in enumerate(current_data):
-                biorthogonal = {k : np.copy(v) 
-                                for (k,v) in self.biorthogonal.items()}
-                qshift = {k : np.copy(v) 
-                          for (k,v) in self.qshift.items()}
+            while not sp_complete: 
+                exceeded = [(j+1) >= t for t in sp_thresholds]
+                sp_complete = any(exceeded)
+                iterable = zip(sp_factors, current_data)
+                sp_current_data = [view[j*f:(j+1)*f]
+                                   for (f, view) in iterable]
 
-                processes.append(p.apply_async(
-                    dtcwt.oned.dtwavexfm,
-                    (view, 
-                    int(log(view.shape[0], 2)) - 2,
-                    biorthogonal, 
-                    qshift)))
-
-            for (i, process) in enumerate(processes):
-                (Yl, Yh, _) = process.get()
-
-                Yls[i].append(Yl)
-                Yhs[i].append(Yh)
+                for (i, view) in enumerate(current_data):
+                    (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
+                        view, 
+                        int(log(view.shape[0], 2)) - 2,
+                        self.biorthogonal,
+                        self.qshift)
+                    
+                    Yls[i][-1].append(Yl)
+                    Yhs[i][-1].append(Yh)
+               
+                j += 1
 
             k += 1
 
         return (Yls, Yhs)
-
-    """
-    def _show_kmeans(self, title, labels):
-
-        print title, 'KMeans Labels'
-
-        max_periods = max(self.num_periods.values())
-        default = lambda: [{} for i in xrange(max_periods)]
-        by_period = SPUD(self.num_views, default=default)
-
-        print '\tBy Subject'
-        for subject in self.subjects:
-            print '\t\tSubject:', subject
-            spud = labels[subject]
-
-            for ((i, j), timeline) in spud.items():
-                print '\t\t\tView Pair:', i, j
-
-                line = '\t'.join(
-                    [str(p) + ': ' + str(label)
-                     for (p, label) in enumerate(timeline)])
-
-                print '\t\t\t\t' + line
-
-                for p in xrange(max_periods):
-                    if len(timeline) - 1 < p:
-                        label = 'X'
-                    else:
-                        label = timeline[p]
-
-                    by_period.get(i, j)[p][subject] = label
-
-        print '\tBy Period'
-        for ((i, j), timeline) in by_period.items():
-            print '\t\tViews', i, j
-
-            for (p, labels) in enumerate(timeline):
-                print '\t\t\tPeriod', p
-
-                line = '\t'.join(
-                    [subject + ': ' + str(label)
-                     for (subject, label) in labels.items()])
-
-                print '\t\t\t\t' + line
-    """
