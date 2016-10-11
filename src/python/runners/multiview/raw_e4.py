@@ -29,6 +29,7 @@ class E4RawDataPlotRunner:
 
         for (s, dls) in self.loaders.items():
             for view in dls: 
+                print 'Poop'
 
     def _get_t_tests(self):
 
