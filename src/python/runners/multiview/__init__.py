@@ -1,3 +1,4 @@
 from dtcwt import MVDTCWTRunner
 from vpw_cca import ViewPairwiseCCARunner
 from vpw_corr import ViewPairwiseCorrelationRunner
+from dpw_corr import DayPairwiseCorrelationRunner
