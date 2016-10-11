@@ -89,7 +89,7 @@ class MVDTCWTSPRunner:
             np_json = json.dumps(self.num_periods)
 
             with open(path, 'w') as f:
-                f.write(np.json)
+                f.write(np_json)
         else:
             path = os.path.join(
                 self.save_load_dir,
