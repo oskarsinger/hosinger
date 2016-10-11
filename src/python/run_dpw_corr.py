@@ -1,6 +1,7 @@
 import click
 
 from runners.multiview import DayPairwiseCorrelationRunner as DPCR
+from runners.multiview import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path')
