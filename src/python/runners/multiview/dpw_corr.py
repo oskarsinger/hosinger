@@ -28,9 +28,9 @@ class DayPairwiseCorrelationRunner:
             show, 
             save_load_dir)
 
-        self.subjects = self.dtcwt_runner.subjects
-        self.names = self.dtcwt_runner.names
-        self.num_views = self.dtcwt_runner.num_views
+        self.subjects = dtcwt_runner.subjects
+        self.names = dtcwt_runner.names
+        self.num_views = dtcwt_runner.num_views
         self.correlation = {s : [[] for i in xrange(self.num_views)]
                             for s in self.subjects}
 
