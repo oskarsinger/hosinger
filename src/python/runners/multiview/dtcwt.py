@@ -135,14 +135,6 @@ class MVDTCWTRunner:
 
         print 'Loading wavelets'
 
-        wavelets = {}
-
-        for fn in os.listdir(self.wavelet_dir):
-            path = os.path.join(self.wavelet_dir, fn)
-
-            with open(path) as f:
-                wavelets[fn] = np.load(f)
-
         get_p = lambda: [[None, None] 
                          for i in xrange(self.num_views)]
         get_s = lambda s: [get_p() 
@@ -150,26 +142,28 @@ class MVDTCWTRunner:
         self.wavelets = {s : get_s(s)
                          for s in self.subjects}
 
-        for (k, loaded) in wavelets.items():
-            info = k.split('_')
+        for fn in os.listdir(self.wavelet_dir):
+            path = os.path.join(self.wavelet_dir, fn)
+            info = fn.split('_')
             s = info[1]
             p = int(info[3])
             v = int(info[5])
             Yh_or_Yl = info[6]
-            coeffs = None
             index = None
+            coeffs = None
 
-            if Yh_or_Yl == 'Yh':
-                coeffs = unzip(loaded.items())[1]
-                index = 0
-            elif Yh_or_Yl == 'Yl':
-                coeffs = loaded
-                index = 1
+            with open(path) as f:
+                loaded = np.load(f)
+
+                if Yh_or_Yl == 'Yh':
+                    index = 0
+                    coeffs = unzip(loaded.items())[1]
+                elif Yh_or_Yl == 'Yl':
+                    index = 1
+                    coeffs = loaded
 
             self.wavelets[s][p][v][index] = coeffs
 
-    # TODO: Do multi-view CCA on magnitude and phase of coefficients
-    # Probably use CCALin
     def _compute(self):
 
         for subject in self.subjects:
