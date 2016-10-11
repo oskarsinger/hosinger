@@ -84,8 +84,6 @@ class DayPairwiseCorrelationRunner:
                 for view in xrange(self.num_views):
                     (Yh1, Yl1) =  d1[view]
                     (Yh2, Yl2) =  d2[view]
-                    print 'Yh1', Yh1
-                    print 'Yl1', Yl1
                     Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                     Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
                     correlation = np.dot(
