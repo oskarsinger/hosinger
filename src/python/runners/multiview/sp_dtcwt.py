@@ -3,6 +3,8 @@ import json
 
 import numpy as np
 import data.loaders.e4.shortcuts as dles
+import wavelets.dtcwt as wdtcwt
+import utils as rmu
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
