@@ -37,6 +37,4 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Truncate bad data at the beginning of each temperature session
 * Start switching relevant plotting code to use Seaborn instead of bokeh
-* Finish auto- and cross-correlation experiment and plotting code (good opportunity to practice Seaborn)
-* Fix click tool for dtcwt runners
-* Consider making separate module for some of this stuff
+* Finish cross-correlation experiment and plotting code (good opportunity to practice Seaborn)
