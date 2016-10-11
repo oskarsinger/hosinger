@@ -143,8 +143,9 @@ class MVDTCWTRunner:
             with open(path) as f:
                 wavelets[fn] = np.load(f)
 
-        get_p = lambda: [[None, None] for i in xrange(self.num_views)]
-        get_s = lambda s: [get_period() 
+        get_p = lambda: [[None, None] 
+                         for i in xrange(self.num_views)]
+        get_s = lambda s: [get_p() 
                            for i in xrange(self.num_periods[s])]
         self.wavelets = {s : get_s(s)
                          for s in self.subjects}
