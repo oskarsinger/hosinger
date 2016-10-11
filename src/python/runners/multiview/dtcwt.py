@@ -157,6 +157,7 @@ class MVDTCWTRunner:
 
                 if Yh_or_Yl == 'Yh':
                     index = 0
+                    print unzip(loaded.items())[0]
                     coeffs = unzip(loaded.items())[1]
                 elif Yh_or_Yl == 'Yl':
                     index = 1
