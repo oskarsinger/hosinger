@@ -7,8 +7,11 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 
 def get_sampled_wavelets(Yh, Yl):
 
+    print 'Yh', Yh
+    print 'Yl', Yl
     # TODO: figure out what to do with Yl
     hi_and_lo = Yh# + [Yl]
+    print 'hi_and_lo', hi_and_lo
 
     # Truncate for full-rank down-sampled coefficient matrix
     threshold = log(hi_and_lo[0].shape[0], 2)
