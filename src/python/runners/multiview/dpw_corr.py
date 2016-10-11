@@ -99,7 +99,7 @@ class DayPairwiseCorrelationRunner:
                             'view',
                             self.names[view], 
                             'periods',
-                            '-'.join([str(p), str(p+1)]))
+                            '-'.join([str(p), str(p+1)])])
                         path = os.path.join(self.corr_dir, path)
 
                         with open(path, 'w') as f:
