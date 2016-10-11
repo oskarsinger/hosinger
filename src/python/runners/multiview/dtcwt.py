@@ -157,8 +157,11 @@ class MVDTCWTRunner:
 
                 if Yh_or_Yl == 'Yh':
                     index = 0
-                    print unzip(loaded.items())[0]
-                    coeffs = unzip(loaded.items())[1]
+                    loaded = {int(fn.split('_')[1]) : a
+                              for (fn, a) in loaded.items()}
+                    num_coeffs = len(loaded)
+                    coeffs = [loaded[i] 
+                              for i in xrange(num_coeffs)]
                 elif Yh_or_Yl == 'Yl':
                     index = 1
                     coeffs = loaded
