@@ -4,10 +4,9 @@ import seaborn
 import numpy as np
 import pandas as pd
 import utils as rmu
+import matplotlib.pyplot as plt
 
 from drrobert.file_io import get_timestamped as get_ts
-from lazyprojector import plot_matrix_heat
-from bokeh.models.layouts import Column, Row
 
 class DayPairwiseCorrelationRunner:
 
@@ -144,19 +143,38 @@ class DayPairwiseCorrelationRunner:
                     period_pair = str(p) + ', ' + str(p+1)
 
                     for i in xrange(n):
-                        freq_i = '2^' + str(i)
+                        exp = str(i)
+                        exp = '0' + exp if len(exp) == 1 else exp
+                        freq_i = '2^' + exp
+
                         for j in xrange(m):
                             correlation.append(corr[i,j])
                             period_pairs.append(period_pair)
+                            
+                            exp = str(j)
+                            exp = '0' + exp if len(exp) == 1 else exp
+                            freq_j = '2^' + exp
+
                             freq_pairs.append(
-                                freq_i + ', ' + '2^' + str(j))
+                                freq_i + ', ' + freq_j)
                 d = {
                     'freq_pairs': freq_pairs,
                     'period_pairs': period_pairs,
                     'correlation': correlation}
+                df = pd.DataFrame(data=d)
+                df = df.pivot(
+                    'freq_pairs',
+                    'period_pairs',
+                    'correlation')
+                ax = plt.axes()
                 plot = seaborn.heatmap(
-                    pd.DataFrame(data=d), 
-                    yticklabels=8)
+                    df,
+                    yticklabels=8,
+                    ax=ax)
+                ax.set_title(
+                    'Day-pair autocorrelation of view ' + 
+                    self.names[view] + 
+                    ' for subject ' + s)
 
                 for label in plot.get_yticklabels():
                     label.set_rotation(45)
