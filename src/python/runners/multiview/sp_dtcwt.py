@@ -239,7 +239,7 @@ class MVDTCWTSPRunner:
             current_data = [view[k*f:(k+1)*f]
                             for (f, view) in zip(factors, data)]
             sp_thresholds = [int(view.shape[0] * 1.0 / sp_f)
-                             for (view, f) in zip(data, sp_factors)]
+                             for (view, sp_f) in zip(data, sp_factors)]
             j = 0
             
             # Add a list to each view for the current super period
