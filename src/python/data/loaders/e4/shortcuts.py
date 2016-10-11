@@ -35,6 +35,15 @@ def get_hr_and_acc(hdf5_path, subject, seconds, online):
         FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
         FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
 
+def get_e4_loaders_all_subjects(hdf5_path, seconds, online):
+
+    subjects = h5py.File(hdf5_path).keys()
+    bad = {'HRV15-0' + n for n in ['15', '07', '08']}
+
+    return {s : get_e4_loaders(hdf5_path, s, seconds, online)
+            for s in subjects
+            if s not in bad}
+
 def get_hr_and_acc_all_subjects(hdf5_path, seconds, online):
 
     subjects = h5py.File(hdf5_path).keys()
