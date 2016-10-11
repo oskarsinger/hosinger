@@ -226,11 +226,6 @@ class MVDTCWTSPRunner:
         data = [ds.get_data() for ds in self.servers[subject]]
         factors = [int(self.period * r) for r in self.rates]
         sp_factors = [int(self.subperiod * r) for r in self.rates]
-
-        if self.delay is not None:
-            data = [view[int(self.delay * r):] 
-                    for (r,view) in zip(self.rates, data)]
-
         thresholds = [int(view.shape[0] * 1.0 / f)
                       for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
