@@ -234,6 +234,7 @@ class MVDTCWTSPRunner:
         k = 0
 
         while not complete:
+            print '\tComputing subperiod wavelets for period', k
             exceeded = [(k+1) >= t for t in thresholds]
             complete = any(exceeded)
             current_data = [view[k*f:(k+1)*f]
@@ -249,6 +250,7 @@ class MVDTCWTSPRunner:
                 Yhs[i].append([])
 
             while not sp_complete: 
+                print '\t\tComputing subperiod wavelets for subperiod', j
                 exceeded = [(j+1) >= t for t in sp_thresholds]
                 sp_complete = any(exceeded)
                 iterable = zip(sp_factors, current_data)
@@ -256,6 +258,7 @@ class MVDTCWTSPRunner:
                                    for (f, view) in iterable]
 
                 for (i, view) in enumerate(current_data):
+                    print '\t\t\tComputing subperiod wavelets for view', i
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                         view, 
                         int(log(view.shape[0], 2)) - 2,
