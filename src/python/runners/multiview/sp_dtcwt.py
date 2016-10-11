@@ -130,7 +130,7 @@ class MVDTCWTSPRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.wavelet_dir = self._init_dir(
+        self.wavelet_dir = rmu.init_dir(
             'wavelets',
             save,
             self.save_load_dir)
