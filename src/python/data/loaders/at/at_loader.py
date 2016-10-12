@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 
 class AlTestLoader:
@@ -11,7 +9,7 @@ class AlTestLoader:
         self.data_path = data_path
         self.online = online
         sub_and_name = data_path.split('/')[-1][:-4]
-        (self.subject, self.name) = sub_and_name.split('_')
+        (self.subject, self.label) = sub_and_name.split('_')
         self.hertz = 1
         self.window = 1
         self.data = None
@@ -25,7 +23,7 @@ class AlTestLoader:
             line = f.readline().strip().split('\t')
 
             self.data = np.array(
-                    [float(num) for num in line])[:,np.newaxis]
+                [float(num) for num in line])[:,np.newaxis]
 
     def get_data(self):
 
@@ -53,7 +51,7 @@ class AlTestLoader:
             
     def name(self):
 
-        return self.name
+        return self.label
 
     def rows(self):
 
@@ -79,10 +77,9 @@ class AlTestLoader:
     def get_status(self):
 
         return {
-            'data_path': self.hdf5_path,
+            'data_path': self.data_path,
             'subject': self.subject,
             'hertz': self.hertz,
-            'seconds': self.seconds,
             'window': self.window,
             'num_rounds': self.num_rounds,
             'data': self.data,

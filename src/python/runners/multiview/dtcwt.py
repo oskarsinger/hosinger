@@ -3,6 +3,7 @@ import json
 
 import numpy as np
 import data.loaders.e4.shortcuts as dles
+import data.loaders.at.shortcuts as dlas
 import wavelets.dtcwt as wdtcwt
 import utils as rmu
 
@@ -17,12 +18,14 @@ from math import log
 class MVDTCWTRunner:
 
     def __init__(self, 
-        hdf5_path,
+        data_path,
+        test_data=False,
         save_load_dir=None, 
         save=False,
         load=False):
 
-        self.hdf5_path = hdf5_path
+        self.data_path = data_path
+        self.test_data = test_data
         self.period = 24 * 3600
 
         self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
@@ -49,8 +52,14 @@ class MVDTCWTRunner:
 
         print 'Initializing servers'
 
-        loaders = dles.get_hr_and_acc_all_subjects(
-            self.hdf5_path, None, False)
+        loaders = None
+
+        if self.test_data:
+            loaders = dlas.get_at_loaders_all_subjects(
+                self.data_path)
+        else:
+            loaders = dles.get_hr_and_acc_all_subjects(
+                self.data_path, None, False)
         self.servers = {}
 
         for (s, dl_list) in loaders.items():
@@ -67,6 +76,7 @@ class MVDTCWTRunner:
                 print 'Could not load data for subject', s
                 print e
         
+        print loaders.items()[0][1]
         (self.rates, self.names) = unzip(
             [(dl.get_status()['hertz'], dl.name())
              for dl in loaders.items()[0][1]])
