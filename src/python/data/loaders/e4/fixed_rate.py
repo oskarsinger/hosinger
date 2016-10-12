@@ -205,7 +205,7 @@ class FixedRateLoader(AbstractDataLoader):
     def get_status(self):
 
         return {
-            'hdf5_path': self.hdf5_path,
+            'data_path': self.hdf5_path,
             'subject': self.subject,
             'sensor': self.sensor,
             'hertz': self.hertz,

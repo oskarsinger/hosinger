@@ -35,3 +35,6 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Finish cross-correlation experiment and plotting code (good opportunity to practice Seaborn)
+* Make averaged-data plotting script faster
+* Improve 'autocorrelation'
+    * Do it over hours instead of days
