@@ -68,7 +68,7 @@ class AlTestLoader:
 
         return rows
 
-    def cols(self);
+    def cols(self):
 
         return 1
 
