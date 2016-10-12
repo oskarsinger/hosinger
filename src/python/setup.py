@@ -23,6 +23,7 @@ setup(
         'data.errors',
         'data.loaders',
         'data.loaders.e4',
+        'data.loaders.at',
         'data.loaders.synthetic',
         'data.loaders.readers',
         'data.servers',
