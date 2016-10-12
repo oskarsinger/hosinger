@@ -32,7 +32,7 @@ class AlTestLoader:
         data = None
         
         if self.online:
-            data self.data[self.num_rounds][:,np.newaxis]
+            data = self.data[self.num_rounds][:,np.newaxis]
         else:
             data = self.data
 
