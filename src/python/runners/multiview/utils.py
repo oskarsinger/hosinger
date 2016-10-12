@@ -5,6 +5,14 @@ import numpy as np
 from math import log
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 
+def get_normed_correlation(X1, X2):
+
+    #TODO: consider normalizing with inverted Gram
+    normed_X1 = np.std(X1, axis=1)
+    normed_X2 = np.std(X2, axis=1)
+
+    return np.dot(normed_X1.T, normed_X2)
+
 def get_sampled_wavelets(Yh, Yl):
 
     # TODO: figure out what to do with Yl

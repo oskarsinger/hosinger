@@ -139,7 +139,7 @@ class ViewPairwiseCorrelationRunner:
                  for Y in Yh_matrices]
         subsamples = [m[::r,:]
                       for (m, r) in zip(Yh_matrices, rates)]
-        get_matrix = lambda i,j: np.dot(
+        get_matrix = lambda i,j: rmu.get_normed_correlation(
             subsamples[i].T, subsamples[j])
         correlation = SPUD(self.num_views)
 
