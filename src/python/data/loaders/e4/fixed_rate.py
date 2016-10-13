@@ -85,6 +85,10 @@ class FixedRateLoader(AbstractDataLoader):
         for (ts, session) in repo.items():
             new_data = self._get_rows(ts, session)
 
+            if isinstance(new_data, MissingData):
+                num_rows = new_data.get_status()['num_missing_rows']
+                new_data = np.ones((num_rows, self.window)) * np.NaN
+
             if data is None:
                 data = new_data
             elif self.on_deck_data is not None:
@@ -93,8 +97,8 @@ class FixedRateLoader(AbstractDataLoader):
 
                 self.on_deck_data = None
             else:
-                    data = np.vstack(
-                        [data, new_data])
+                data = np.vstack(
+                    [data, new_data])
 
         return data
 
