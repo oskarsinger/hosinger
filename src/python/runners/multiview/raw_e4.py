@@ -3,9 +3,10 @@ import seaborn
 import numpy as np
 import pandas as pd
 import data.loaders.e4.shortcuts as dles
+import matplotlib.pyplot as plt
 
 from data.pseudodata import MissingData as MD
-from data.servers.minibatch import Minibatch2Minibatch as M2M
+from data.servers.batch import BatchServer as BS
 from drrobert.arithmetic import get_running_avg as get_ra
 
 class E4RawDataPlotRunner:
@@ -18,8 +19,8 @@ class E4RawDataPlotRunner:
         self.period = period
 
         self.loaders = dles.get_e4_loaders_all_subjects(
-            hdf5_path, None, True)
-        self.servers = {s: [M2M(dl, 1) for dl in dls]
+            hdf5_path, None, False)
+        self.servers = {s: [BS(dl) for dl in dls]
             for (s, dls) in self.loaders.items()}
 
         sample_dls = self.loaders.values()[0]
@@ -43,12 +44,19 @@ class E4RawDataPlotRunner:
                       for s in self.servers.keys()]
 
         for (i, view) in enumerate(averages):
+            ax = plt.axes()
             seaborn.pointplot(
                 x='period', 
                 y='value', 
                 hue='subject',
                 data=view,
-                linestyles=linestyles)
+                linestyles=linestyles,
+                ax=ax)
+            ax.set_title(
+                'Mean value of view ' + 
+                self.names[i] + 
+                ' for period length ' + 
+                self.period + ' seconds')
             seaborn.plt.show()
 
     def _get_averages(self):
@@ -60,57 +68,54 @@ class E4RawDataPlotRunner:
             print 'Computing averages for subject', s
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
                 print '\tComputing averages for view', self.names[i]
-                view_avg = [0]
-                num_real_data = 0
+                window = int(r * self.period)
+                view_avg = []
                 truncate = self.names[i] == 'TEMP'
+                data = view.get_data()
+                f_num_periods = float(data.shape[0]) / window
+                i_num_periods = int(f_num_periods)
 
-                while not view.finished():
-                    data = view.get_data()
-                    threshold = self.period * len(view_avg)
-                    quantity = view.rows() / r
+                if f_num_periods - i_num_periods > 0:
+                    i_num_periods += 1
 
-                    if quantity >= threshold:
-                        print '\t\tComputing average for period', len(view_avg)
-                        view_avg.append(0)
-                        num_real_data = 0
+                for j in xrange(i_num_periods):
+                    data_j = data[j * window: (j+1) * window]
 
-                    if not isinstance(data, MD):
-                        num_real_data += 1
-                        data = data[0][0]
-                        
-                        if truncate and data > 40:
-                            data = 40
+                    if truncate:
+                        data_j[data_j > 40] = 40
 
-                        view_avg[-1] = get_ra(
-                            view_avg[-1], data, num_real_data)
+                    avg = np.mean(
+                        data[np.logical_not(np.isnan(data))])
+
+                    view_avg.append(avg)
 
                 views[i][s] = view_avg
+
+        dfs = [None] * self.num_views
 
         for (i, view) in enumerate(views):
             periods = []
             subjects = []
             values = []
 
+            max_p = max(
+                [len(l) for l in view.values()])
+
             for (s, l) in view.items():
-                periods.extend(list(xrange(len(l))))
-                subjects.extend([s] * len(l))
+                l = l + [0] * (max_p - len(l))
+                print 'len(l)', len(l)
+                print 'max_p', max_p
+                periods.extend(list(range(max_p)))
+                subjects.extend([s] * max_p)
                 values.extend(l)
 
             d = {
                 'period': periods,
                 'subject': subjects, 
                 'value': values}
-            views[i] = pd.DataFrame(data=d)
+            dfs[i] = pd.DataFrame(data=d)
 
-            """
-            max_periods = max(
-                [len(l) for l in view.values()])
-            extended = [l + [0] * (max_periods - len(l))
-                        for l in view.values()]
-            views[i] = [np.array(l) for l in extended]
-            """
-
-        return views
+        return dfs
 
     def _get_t_tests(self):
 
