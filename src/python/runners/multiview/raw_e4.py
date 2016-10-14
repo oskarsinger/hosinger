@@ -56,7 +56,7 @@ class E4RawDataPlotRunner:
                 'Mean value of view ' + 
                 self.names[i] + 
                 ' for period length ' + 
-                self.period + ' seconds')
+                str(self.period) + ' seconds')
             seaborn.plt.show()
 
     def _get_averages(self):
@@ -85,7 +85,7 @@ class E4RawDataPlotRunner:
                         data_j[data_j > 40] = 40
 
                     avg = np.mean(
-                        data[np.logical_not(np.isnan(data))])
+                        data_j[np.logical_not(np.isnan(data_j))])
 
                     view_avg.append(avg)
 
@@ -103,8 +103,6 @@ class E4RawDataPlotRunner:
 
             for (s, l) in view.items():
                 l = l + [0] * (max_p - len(l))
-                print 'len(l)', len(l)
-                print 'max_p', max_p
                 periods.extend(list(range(max_p)))
                 subjects.extend([s] * max_p)
                 values.extend(l)
