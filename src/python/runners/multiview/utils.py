@@ -5,6 +5,16 @@ import numpy as np
 from math import log
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 
+def get_cca_vecs(X1, X2):
+
+    cca = CCA(n_components=1)
+
+    cca.fit(X1, X2)
+
+    return np.hstack([
+        cca.x_weights_,
+        cca.y_weights_])
+
 def get_normed_correlation(X1, X2):
 
     sd1 = np.std(X1, axis=0)
