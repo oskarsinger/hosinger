@@ -19,6 +19,7 @@ def get_sampled_wavelets(Yh, Yl):
     # TODO: figure out what to do with Yl
     hi_and_lo = Yh# + [Yl]
 
+    print [Y.shape for Y in hi_and_lo]
     # Truncate for full-rank down-sampled coefficient matrix
     threshold = log(hi_and_lo[0].shape[0], 2)
     k = 1

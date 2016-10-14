@@ -19,6 +19,7 @@ class MVDTCWTRunner:
 
     def __init__(self, 
         data_path,
+        period=24*3600,
         test_data=False,
         save_load_dir=None, 
         save=False,
@@ -26,7 +27,7 @@ class MVDTCWTRunner:
 
         self.data_path = data_path
         self.test_data = test_data
-        self.period = 24 * 3600
+        self.period = period
 
         self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
             'near_sym_b')
@@ -229,18 +230,17 @@ class MVDTCWTRunner:
             window = int(r * self.period)
             truncate = self.names[i] == 'TEMP'
             data = ds.get_data()
-            num_periods = int(data.shape[0] / window)
 
-            for p in xrange(num_periods):
-                data_p = = data[p * window: (p+1) * window]
-                data_p = get_non_nan(data_p)
+            for p in xrange(self.num_periods[subject]):
+                data_p = data[p * window: (p+1) * window]
+                data_p = get_non_nan(data_p)[:,np.newaxis]
 
                 if truncate:
                     data_p[data_p > 40] = 40
 
                 (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                     data_p, 
-                    int(log(view.shape[0], 2)) - 2,
+                    int(log(data_p.shape[0], 2)) - 2,
                     biorthogonal, 
                     qshift)
 

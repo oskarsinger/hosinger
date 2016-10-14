@@ -7,6 +7,7 @@ from runners.multiview import MVDTCWTSPRunner
 @click.option('--data-path')
 @click.option('--save-load-dir')
 @click.option('--wavelet-dir')
+@click.option('--test-data', default=False)
 @click.option('--save', default=False)
 @click.option('--load', default=False)
 @click.option('--show', default=False)
@@ -14,12 +15,14 @@ def run_it_all_day_bb(
     data_path,
     save_load_dir,
     wavelet_dir,
+    test_data,
     save,
     load,
     show):
 
     dtcwt_runner = MVDTCWTSPRunner(
         data_path,
+        test_data=test_data,
         save_load_dir=wavelet_dir,
         load=True)
 

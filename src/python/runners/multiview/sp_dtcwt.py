@@ -19,6 +19,8 @@ class MVDTCWTSPRunner:
 
     def __init__(self, 
         data_path,
+        period=24*3600,
+        subperiod=3600,
         test_data=False,
         save_load_dir=None, 
         save=False,
@@ -26,8 +28,8 @@ class MVDTCWTSPRunner:
 
         self.data_path = data_path
         self.test_data = test_data
-        self.period = 24 * 3600
-        self.subperiod = 3600
+        self.period = period
+        self.subperiod = subperiod
         self.num_sps = self.period / self.subperiod
 
         self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
@@ -194,9 +196,9 @@ class MVDTCWTSPRunner:
             (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
 
             if self.save:
-                self._save(Yls, Yhs)
+                self._save(Yls, Yhs, subject)
 
-    def _save(self, Yls, Yhs):
+    def _save(self, Yls, Yhs, subject):
         for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
             for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yhs)):
                 for (sp, Yl) in enumerate(p_Yls):
@@ -244,29 +246,28 @@ class MVDTCWTSPRunner:
         for (i, (r, ds)) in iterable:
             window = int(r * self.period)
             sp_window = int(self.subperiod * r)
-            truncate = self.names[i] == 'TEMP'
+            threshold = self.names[i] == 'TEMP'
             data = ds.get_data()
-            num_periods = int(data.shape[0] / window)
 
-            for p in xrange(num_periods):
+            for p in xrange(self.num_periods[subject]):
                 data_p = data[p * window: (p+1) * window]
 
                 Yls[i].append([])
                 Yhs[i].append([])
 
                 for sp in xrange(self.num_sps):
-                    data_sp = data_p[sp * sp_window: (sp +1) * sp_window]
-                    data_sp = get_non_nan(data_sp)
+                    data_sp = data_p[sp * sp_window : (sp +1) * sp_window]
+                    data_sp = get_non_nan(data_sp)[:,np.newaxis]
 
-                    if truncate:
+                    if threshold:
                         data_sp[data_sp > 40] = 40
 
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                         data_sp, 
-                        int(log(view.shape[0], 2)) - 2,
+                        int(log(data_sp.shape[0], 2)) - 2,
                         self.biorthogonal,
                         self.qshift)
-                    
+
                     Yls[i][-1].append(Yl)
                     Yhs[i][-1].append(Yh)
 

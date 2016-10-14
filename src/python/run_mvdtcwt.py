@@ -4,12 +4,14 @@ from runners.multiview import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path')
+@click.option('--period', default=24*3600)
 @click.option('--test-data', default=False)
 @click.option('--save-load-dir', default='.')
 @click.option('--save', default=False)
 @click.option('--load', default=False)
 def run_it_all_day_bb(
     data_path, 
+    period,
     test_data,
     save_load_dir,
     save,
@@ -17,6 +19,7 @@ def run_it_all_day_bb(
 
     runner = MVDTCWTRunner(
         data_path,
+        period=period,
         test_data=test_data,
         save_load_dir=save_load_dir,
         save=save,

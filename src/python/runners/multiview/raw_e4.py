@@ -77,7 +77,7 @@ class E4RawDataPlotRunner:
                     i_num_periods += 1
 
                 for p in xrange(i_num_periods):
-                    data_p = data[p * window: (p+1) * window]
+                    data_p = data[p * window : (p+1) * window]
                     data_p = get_non_nan(data_p)
 
                     if truncate:
