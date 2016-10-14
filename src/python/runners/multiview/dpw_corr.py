@@ -88,8 +88,8 @@ class DayPairwiseCorrelationRunner:
 
                 for (sp, (sp1, sp2)) in iterable:
                     for v in xrange(self.num_views):
-                        (Yh1, Yl1) =  sp1[view]
-                        (Yh2, Yl2) =  sp2[view]
+                        (Yh1, Yl1) = sp1[view]
+                        (Yh2, Yl2) = sp2[view]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
                         correlation = rmu.get_normed_correlation(

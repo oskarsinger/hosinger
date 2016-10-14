@@ -77,7 +77,7 @@ class SubperiodCorrelationRunner:
         for (s, s_wavelets) in self.wavelets.items():
             spud = self.correlation[s]
 
-            for (p, day) in s_wavelets:
+            for (p, day) in enumerate(s_wavelets):
                 for (sp, subperiod) in enumerate(day):
                     for k in spud.keys():
                         (Yh1, Yl1) =  subperiod[k[0]]
@@ -141,3 +141,4 @@ class SubperiodCorrelationRunner:
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
                 for (sp, periods) in enumerate(subperiods):
+                    print 'Poop'
