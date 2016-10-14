@@ -31,11 +31,11 @@ class DayPairwiseCorrelationRunner:
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.num_periods = dtcwt_runner.num_periods
-        self.num_subperiods = dtcwt.num_sps
+        self.num_subperiods = dtcwt_runner.num_sps
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
-        self.correlation = {s : [[None] * self.num_subperiods
+        self.correlation = {s : [[[] for i in xrange(self.num_subperiods)]
                                  for i in xrange(self.num_views)]
                             for s in self.subjects}
 
@@ -88,14 +88,14 @@ class DayPairwiseCorrelationRunner:
 
                 for (sp, (sp1, sp2)) in iterable:
                     for v in xrange(self.num_views):
-                        (Yh1, Yl1) = sp1[view]
-                        (Yh2, Yl2) = sp2[view]
+                        (Yh1, Yl1) = sp1[v]
+                        (Yh2, Yl2) = sp2[v]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
                         correlation = rmu.get_normed_correlation(
                             Y1_mat, Y2_mat)
 
-                        self.correlation[subject][view][sp].append(
+                        self.correlation[subject][v][sp].append(
                             correlation)
 
                         if self.save:
@@ -145,6 +145,8 @@ class DayPairwiseCorrelationRunner:
         
     def _show(self):
 
+        get_2_digit = lambda x: '0' + x if len(x) == 1 else x
+
         for (s, views) in self.correlation.items():
             for (view, subperiods) in enumerate(views):
                 for (sp, periods) in enumerate(subperiods):
@@ -154,7 +156,9 @@ class DayPairwiseCorrelationRunner:
                     
                     for (p, corr) in enumerate(periods):
                         (n, m) = corr.shape
-                        period_pair = str(p) + ', ' + str(p+1)
+
+                        period_pair = get_2_digit(str(p)) + \
+                            ', ' + get_2_digit(str(p+1))
 
                         for i in xrange(n):
                             exp = str(i)
@@ -165,8 +169,7 @@ class DayPairwiseCorrelationRunner:
                                 correlation.append(corr[i,j])
                                 period_pairs.append(period_pair)
                                 
-                                exp = str(j)
-                                exp = '0' + exp if len(exp) == 1 else exp
+                                exp = get_2_digit(str(j))
                                 freq_j = '2^' + exp
 
                                 freq_pairs.append(

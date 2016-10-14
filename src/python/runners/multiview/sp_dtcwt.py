@@ -111,6 +111,11 @@ class MVDTCWTSPRunner:
                 l = f.readline().strip()
                 self.num_periods = json.loads(l)
 
+            info = self.save_load_dir.split('_')
+            self.subperiod = int(info[-1])
+            self.period = int(info[-3])
+            self.num_sps = self.period / self.subperiod
+
         self.num_views = len(self.servers.items()[0][1])
 
     def _init_dirs(self,

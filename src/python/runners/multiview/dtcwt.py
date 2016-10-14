@@ -78,7 +78,6 @@ class MVDTCWTRunner:
                 print 'Could not load data for subject', s
                 print e
         
-        print loaders.items()[0][1]
         (self.rates, self.names) = unzip(
             [(dl.get_status()['hertz'], dl.name())
              for dl in loaders.items()[0][1]])
@@ -107,6 +106,9 @@ class MVDTCWTRunner:
             with open(path) as f:
                 l = f.readline().strip()
                 self.num_periods = json.loads(l)
+
+            info = self.save_load_dir.split('_')
+            self.period = int(info[-1])
 
         self.num_views = len(self.servers.items()[0][1])
 
