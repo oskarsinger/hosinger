@@ -9,8 +9,8 @@ import utils as rmu
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
-from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from data.servers.batch import BatchServer as BS
+from linal.utils.misc import get_non_nan
 from wavelets import dtcwt
 from multiprocessing import Pool
 from math import log
@@ -194,92 +194,80 @@ class MVDTCWTSPRunner:
             (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
 
             if self.save:
-                for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
-                    for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yhs)):
-                        for (sp, Yl) in enumerate(p_Yls):
-                            path = '_'.join([
-                                'subject',
-                                subject,
-                                'period',
-                                str(p),
-                                'subperiod',
-                                str(sp),
-                                'view',
-                                str(v),
-                                'Yl_dtcwt_coefficients.thang'])
+                self._save(Yls, Yhs)
 
-                            path = os.path.join(self.wavelet_dir, path)
+    def _save(self, Yls, Yhs):
+        for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
+            for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yhs)):
+                for (sp, Yl) in enumerate(p_Yls):
+                    path = '_'.join([
+                        'subject',
+                        subject,
+                        'period',
+                        str(p),
+                        'subperiod',
+                        str(sp),
+                        'view',
+                        str(v),
+                        'Yl_dtcwt_coefficients.thang'])
 
-                            with open(path, 'w') as f:
-                                np.save(f, Yl)
+                    path = os.path.join(self.wavelet_dir, path)
 
-                        for (sp, Yh) in enumerate(p_Yhs):
-                            path = '_'.join([
-                                'subject',
-                                subject,
-                                'period',
-                                str(p),
-                                'subperiod',
-                                str(sp),
-                                'view',
-                                str(v),
-                                'Yh_dtcwt_coefficients.thang'])
+                    with open(path, 'w') as f:
+                        np.save(f, Yl)
 
-                            path = os.path.join(self.wavelet_dir, path)
+                for (sp, Yh) in enumerate(p_Yhs):
+                    path = '_'.join([
+                        'subject',
+                        subject,
+                        'period',
+                        str(p),
+                        'subperiod',
+                        str(sp),
+                        'view',
+                        str(v),
+                        'Yh_dtcwt_coefficients.thang'])
 
-                            with open(path, 'w') as f:
-                                np.savez(f, *Yh)
+                    path = os.path.join(self.wavelet_dir, path)
+
+                    with open(path, 'w') as f:
+                        np.savez(f, *Yh)
 
 
     def _get_sp_wavelet_transforms(self, subject):
 
-        data = [ds.get_data() for ds in self.servers[subject]]
-        factors = [int(self.period * r) for r in self.rates]
-        sp_factors = [int(self.subperiod * r) for r in self.rates]
-        thresholds = [int(view.shape[0] * 1.0 / f)
-                      for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
-        complete = False
-        k = 0
+        iterable = enumerate(zip(
+            self.rates, self.servers[subject]))
 
-        while not complete:
-            print '\tComputing subperiod wavelets for period', k
-            exceeded = [(k+1) >= t for t in thresholds]
-            complete = any(exceeded)
-            current_data = [view[k*f:(k+1)*f]
-                            for (f, view) in zip(factors, data)]
-            sp_thresholds = [int(view.shape[0] * 1.0 / sp_f)
-                             for (view, sp_f) in zip(data, sp_factors)]
-            sp_complete = False
-            j = 0
-            
-            # Add a list to each view for the current super period
-            for i in xrange(self.num_views):
+        for (i, (r, ds)) in iterable:
+            window = int(r * self.period)
+            sp_window = int(self.subperiod * r)
+            truncate = self.names[i] == 'TEMP'
+            data = ds.get_data()
+            num_periods = int(data.shape[0] / window)
+
+            for p in xrange(num_periods):
+                data_p = data[p * window: (p+1) * window]
+
                 Yls[i].append([])
                 Yhs[i].append([])
 
-            while not sp_complete: 
-                print '\t\tComputing subperiod wavelets for subperiod', j
-                exceeded = [(j+1) >= t for t in sp_thresholds]
-                sp_complete = any(exceeded)
-                iterable = zip(sp_factors, current_data)
-                sp_current_data = [view[j*f:(j+1)*f]
-                                   for (f, view) in iterable]
+                for sp in xrange(self.num_sps):
+                    data_sp = data_p[sp * sp_window: (sp +1) * sp_window]
+                    data_sp = get_non_nan(data_sp)
 
-                for (i, view) in enumerate(current_data):
-                    print '\t\t\tComputing subperiod wavelets for view', i
+                    if truncate:
+                        data_sp[data_sp > 40] = 40
+
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
-                        view, 
+                        data_sp, 
                         int(log(view.shape[0], 2)) - 2,
                         self.biorthogonal,
                         self.qshift)
                     
                     Yls[i][-1].append(Yl)
                     Yhs[i][-1].append(Yh)
-               
-                j += 1
-
-            k += 1
 
         return (Yls, Yhs)

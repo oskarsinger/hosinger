@@ -1,6 +1,12 @@
 import numpy as np
 import drrobert.debug as drdb
 
+def get_non_nan(X):
+
+    non_nan_indexes = np.logical_not(np.isnan(X))
+
+    return X[non_nan_indexes]
+
 def get_largest_entries(s, energy=None, k=None):
 
     n = s.shape[0]
