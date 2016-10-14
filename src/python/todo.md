@@ -16,7 +16,7 @@ However, your approach uses a model that may be overly restrictive for the follo
 
     2. Use of the entire day for correlation averaging will be fine when view 1 and view 2 have common patterns that are localized at the same times and occur repeatedly across the entire day. If temporally localized common patterns in the views only occur once or twice per day the intervening non-common "noise" will significantly degrade the high correlation that would occur if there were no such noise.
 
-    3. Since you are computing correlation and canonical correlation over a single day at a time it is difficult to draw conclusions about repeated patterns over different days (biochronicity) from your analysis. Indeed, a finding of similar correlation matrices or the canonical vectors (SVD)  over all the days will tell us that there is a periodic occurrence of common patterns in the views but these are not necessarily the same pattern every day.
+    3. Since you are computing correlation and canonical correlation over a single day at a time it is difficult to draw conclusions about repeated patterns over different days (biochronicity) from your analysis. Indeed, a finding of similar correlation matrices or the canonical vectors (SVD) over all the days will tell us that there is a periodic occurrence of common patterns in the views but these are not necessarily the same pattern every day.
 
 #Biochronicity-related Stuff
 As we have discussed throughout the past year, our primary objective should be to explore biochronicity and its perturbation by inoculation or infection. Specifically, to find
@@ -39,3 +39,4 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
     * Do it over hours instead of days
         * Question: should I calculate wavelets for full day, then split or apply wavelets just to the hour window? Will this affect the matrix rank? Is that a problem for just correlation matrices? I know I will need to do sparse CCA.
         * Answer: do both
+* Split APE file of Trio of Doom album into individual tracks

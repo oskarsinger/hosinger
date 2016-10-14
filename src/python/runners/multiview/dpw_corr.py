@@ -81,30 +81,39 @@ class DayPairwiseCorrelationRunner:
                 s_wavelets[:-1],
                 s_wavelets[1:])
 
-            for (p, (d1, d2)) in enumerate(day_pairs):
-                for view in xrange(self.num_views):
-                    (Yh1, Yl1) =  d1[view]
-                    (Yh2, Yl2) =  d2[view]
-                    Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
-                    Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                    correlation = rmu.get_normed_correlation(
-                        Y1_mat, Y2_mat)
+            for (p, (day1, day2)) in enumerate(day_pairs):
+                iterable = enumerate(zip(day1, day2))
 
-                    self.correlation[subject][view].append(
-                        correlation)
+                for (sp, (sp1, sp2)) in iterable:
+                    for v in xrange(self.num_views):
+                        (Yh1, Yl1) =  sp1[view]
+                        (Yh2, Yl2) =  sp2[view]
+                        Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
+                        Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
+                        correlation = rmu.get_normed_correlation(
+                            Y1_mat, Y2_mat)
 
-                    if self.save:
-                        path = '_'.join([
-                            'subject',
-                            subject,
-                            'view',
-                            self.names[view], 
-                            'periods',
-                            '-'.join([str(p), str(p+1)])])
-                        path = os.path.join(self.corr_dir, path)
+                        self.correlation[subject][view].append(
+                            correlation)
 
-                        with open(path, 'w') as f:
-                            np.save(f, correlation)
+                        if self.save:
+                            self._save(
+                                correlation,
+                                subject,
+                                view,
+                                p,
+                                sp)
+
+    def _save(self, c, s, v, p, sp):
+        path = '_'.join([
+            'subject', s,
+            'view', self.names[v],
+            'periods', str(p) + '-' + str(p+1),
+            'subperiod', str(sp)])
+        path = os.path.join(self.corr_dir, path)
+
+        with open(path, 'w') as f:
+            np.save(f, c)
 
     def _load(self):
 
@@ -127,8 +136,9 @@ class DayPairwiseCorrelationRunner:
             s = info[1]
             v = self.names2indices[info[3]]
             ps = [int(i) for i in info[5].split('-')]
+            sp = int(info[7])
 
-            self.correlation[s][v][ps[0]] = m
+            self.correlation[s][v][ps[0]][sp] = m
         
     def _show(self):
 
