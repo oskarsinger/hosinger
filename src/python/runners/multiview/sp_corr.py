@@ -1,7 +1,10 @@
 import os
+import seaborn
 
 import numpy as np
 import utils as rmu
+import pandas as pd
+import matplotlib.pyplot as plt
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
@@ -143,7 +146,7 @@ class SubperiodCorrelationRunner:
             for (k, subperiods) in spud.items():
                 for (sp, periods) in enumerate(subperiods):
                     freq_pairs = []
-                    periods = []
+                    period_strings = []
                     correlation = []
 
                     for (p, corr) in enumerate(periods):
@@ -156,7 +159,7 @@ class SubperiodCorrelationRunner:
 
                             for j in xrange(m):
                                 correlation.append(corr[i,j])
-                                periods.append(period)
+                                period_strings.append(period)
 
                                 exp = get_2_digit(str(j))
                                 freq_j = '2^' + exp
@@ -166,7 +169,7 @@ class SubperiodCorrelationRunner:
 
                     _show_single_plot(
                         freq_pairs,
-                        periods,
+                        period_strings,
                         correlation,
                         sp,
                         s,
