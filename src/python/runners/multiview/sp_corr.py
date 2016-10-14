@@ -33,7 +33,7 @@ class SubperiodCorrelationRunner:
         self.num_views = dtcwt_runner.num_views
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
-        default = lambda: [None for i in xrange(self.num_subperiods)]
+        default = lambda: [[] for i in xrange(self.num_subperiods)]
         self.correlation = {s : SPUD(self.num_views, default=default)
                             for s in self.subjects}
 
@@ -110,7 +110,6 @@ class SubperiodCorrelationRunner:
 
         with open(path, 'w') as f:
             np.save(f, c)
-
 
     def _load(self):
 

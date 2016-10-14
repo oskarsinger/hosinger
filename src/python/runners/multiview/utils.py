@@ -16,10 +16,10 @@ def get_normed_correlation(X1, X2):
 
 def get_sampled_wavelets(Yh, Yl):
 
+    # TODO: figure out why this doesn't work for short time series
     # TODO: figure out what to do with Yl
     hi_and_lo = Yh# + [Yl]
 
-    print [Y.shape for Y in hi_and_lo]
     # Truncate for full-rank down-sampled coefficient matrix
     threshold = log(hi_and_lo[0].shape[0], 2)
     k = 1
@@ -34,7 +34,8 @@ def get_sampled_wavelets(Yh, Yl):
 
     for (i, y) in enumerate(hi_and_lo):
         power = k - i - 1
-        basis[:,i] = np.copy(y[::2**power,0])
+        sample = np.copy(y[::2**power,0])
+        basis[:,i] = sample
 
     return basis
 
