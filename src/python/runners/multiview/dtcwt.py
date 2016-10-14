@@ -60,6 +60,7 @@ class MVDTCWTRunner:
         else:
             loaders = dles.get_hr_and_acc_all_subjects(
                 self.data_path, None, False)
+
         self.servers = {}
 
         for (s, dl_list) in loaders.items():
