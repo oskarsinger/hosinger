@@ -32,7 +32,9 @@ class SubperiodCorrelationRunner:
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
         self.num_periods = dtcwt_runner.num_periods
-        self.correlation = {s : [[] for i in xrange(self.num_views)]
+        self.num_subperiods = dtcwt_runner.num_sps
+        default = lambda: [None for i in xrange(self.num_subperiods)]
+        self.correlation = {s : SPUD(self.num_views, default=default)
                             for s in self.subjects}
 
     def run(self):
@@ -72,10 +74,70 @@ class SubperiodCorrelationRunner:
 
     def _compute(self):
 
-        for subject in self.subjects:
+        for (s, s_wavelets) in self.wavelets.items():
+            spud = self.correlation[s]
 
-            s_wavelets = self.wavelets[subject]
+            for (p, day) in s_wavelets:
+                for (sp, subperiod) in enumerate(day):
+                    for k in spud.keys():
+                        (Yh1, Yl1) =  subperiod[k[0]]
+                        (Yh2, Yl2) =  subperiod[k[1]]
+                        Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
+                        Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
+                        correlation = rmu.get_normed_correlation(
+                            Y1_mat, Y2_mat)
 
-            for (p, (Yhs, Yss)) in enumerate(s_wavelets):
-                print 'Stuff'
+                        self.correlation[s].get(k[0], k[1])[sp].append(
+                            correlation)
+                     
+                        if self.save:
+                            self._save(
+                                correlation,
+                                s,
+                                k,
+                                p,
+                                sp)
 
+    def _save(self, c, s, v, p, sp):
+
+        views = self.names[v[0]] + '-' + self.names[v[1]]
+        path = '_'.join([
+            'subject', s,
+            'views', views,
+            'period', str(p),
+            'subperiod', str(sp)])
+        path = os.path.join(self.corr_dir, path)
+
+        with open(path, 'w') as f:
+            np.save(f, c)
+
+
+    def _load(self):
+
+        correlation = {} 
+
+        for fn in os.listdir(self.corr_dir):
+            path = os.path.join(self.corr_dir, fn)
+
+            with open(path) as f:
+                correlation[fn] = np.load(f)
+
+        for (s, spud) in self.correlation.items():
+            for (k, subperiods) in spud.items():
+                for i in xrange(self.num_subperiods):
+                    subperiods[i] = [None] * self.num_periods[l] 
+                
+        for (k, m) in correlation.items():
+            info = k.split('_')
+            s = info[1]
+            v = [int(i) for i in info[3].split('-')]
+            p = self.names2indices[info[5]]
+            sp = int(info[7])
+
+            self.correlation[s].get(v[0], v[1])[sp][p] = m
+
+    def _show(self):
+
+        for (s, spud) in self.correlation.items():
+            for (k, subperiods) in spud.items():
+                for (sp, periods) in enumerate(subperiods):

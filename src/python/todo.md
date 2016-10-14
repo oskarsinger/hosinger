@@ -34,9 +34,5 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * Linear regression between accelerometer and heart rate via scatter plot
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 * T-tests and p-values for spike in temperature vs reported symptoms
-* Finish cross-correlation experiment and plotting code (good opportunity to practice Seaborn)
-* Improve 'autocorrelation'
-    * Do it over hours instead of days
-        * Question: should I calculate wavelets for full day, then split or apply wavelets just to the hour window? Will this affect the matrix rank? Is that a problem for just correlation matrices? I know I will need to do sparse CCA.
-        * Answer: do both
+* Prepare code to deal with new NaNs that represent missing data
 * Split APE file of Trio of Doom album into individual tracks

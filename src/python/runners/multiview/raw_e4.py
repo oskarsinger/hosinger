@@ -65,9 +65,7 @@ class E4RawDataPlotRunner:
                  for i in xrange(self.num_views)]
 
         for (s, dss) in self.servers.items():
-            print 'Computing averages for subject', s
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
-                print '\tComputing averages for view', self.names[i]
                 window = int(r * self.period)
                 view_avg = []
                 truncate = self.names[i] == 'TEMP'
@@ -78,14 +76,14 @@ class E4RawDataPlotRunner:
                 if f_num_periods - i_num_periods > 0:
                     i_num_periods += 1
 
-                for j in xrange(i_num_periods):
-                    data_j = data[j * window: (j+1) * window]
+                for p in xrange(i_num_periods):
+                    data_p = data[p * window: (p+1) * window]
+                    data_p = get_non_nan(data_p)
 
                     if truncate:
-                        data_j[data_j > 40] = 40
+                        data_p[data_p > 40] = 40
 
-                    avg = np.mean(
-                        data_j[np.logical_not(np.isnan(data_j))])
+                    avg = np.mean(data_p)
 
                     view_avg.append(avg)
 

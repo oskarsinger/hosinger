@@ -17,7 +17,6 @@ class DayPairwiseCorrelationRunner:
         load=False,
         show=False):
 
-        self.wavelets = dtcwt_runner.wavelets
         self.save = save
         self.load = load
         self.show = show
@@ -28,13 +27,16 @@ class DayPairwiseCorrelationRunner:
             show, 
             save_load_dir)
 
+        self.wavelets = dtcwt_runner.wavelets
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
+        self.num_periods = dtcwt_runner.num_periods
+        self.num_subperiods = dtcwt.num_sps
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
-        self.num_periods = dtcwt_runner.num_periods
-        self.correlation = {s : [[] for i in xrange(self.num_views)]
+        self.correlation = {s : [[None] * self.num_subperiods
+                                 for i in xrange(self.num_views)]
                             for s in self.subjects}
 
     def run(self):
@@ -93,7 +95,7 @@ class DayPairwiseCorrelationRunner:
                         correlation = rmu.get_normed_correlation(
                             Y1_mat, Y2_mat)
 
-                        self.correlation[subject][view].append(
+                        self.correlation[subject][view][sp].append(
                             correlation)
 
                         if self.save:
@@ -127,7 +129,8 @@ class DayPairwiseCorrelationRunner:
 
         for (s, views) in self.correlation.items():
             for i in xrange(len(views)):
-                l = [None] * (self.num_periods[s] - 1)
+                l = [[None] * self.num_periods[s]
+                     for i in xrange(self.num_subperiods)]
 
                 self.correlation[s][i] = l
 
@@ -138,55 +141,74 @@ class DayPairwiseCorrelationRunner:
             ps = [int(i) for i in info[5].split('-')]
             sp = int(info[7])
 
-            self.correlation[s][v][ps[0]][sp] = m
+            self.correlation[s][v][sp][ps[0]] = m
         
     def _show(self):
 
         for (s, views) in self.correlation.items():
-            for (view, periods) in enumerate(views):
-                freq_pairs = []
-                period_pairs = []
-                correlation = []
-                
-                for (p, corr) in enumerate(periods):
-                    (n, m) = corr.shape
-                    period_pair = str(p) + ', ' + str(p+1)
+            for (view, subperiods) in enumerate(views):
+                for (sp, periods) in enumerate(subperiods):
+                    freq_pairs = []
+                    period_pairs = []
+                    correlation = []
+                    
+                    for (p, corr) in enumerate(periods):
+                        (n, m) = corr.shape
+                        period_pair = str(p) + ', ' + str(p+1)
 
-                    for i in xrange(n):
-                        exp = str(i)
-                        exp = '0' + exp if len(exp) == 1 else exp
-                        freq_i = '2^' + exp
-
-                        for j in xrange(m):
-                            correlation.append(corr[i,j])
-                            period_pairs.append(period_pair)
-                            
-                            exp = str(j)
+                        for i in xrange(n):
+                            exp = str(i)
                             exp = '0' + exp if len(exp) == 1 else exp
-                            freq_j = '2^' + exp
+                            freq_i = '2^' + exp
 
-                            freq_pairs.append(
-                                freq_i + ', ' + freq_j)
-                d = {
-                    'freq_pairs': freq_pairs,
-                    'period_pairs': period_pairs,
-                    'correlation': correlation}
-                df = pd.DataFrame(data=d)
-                df = df.pivot(
-                    'freq_pairs',
-                    'period_pairs',
-                    'correlation')
-                ax = plt.axes()
-                plot = seaborn.heatmap(
-                    df,
-                    yticklabels=8,
-                    ax=ax)
-                ax.set_title(
-                    'Day-pair autocorrelation of view ' + 
-                    self.names[view] + 
-                    ' for subject ' + s)
+                            for j in xrange(m):
+                                correlation.append(corr[i,j])
+                                period_pairs.append(period_pair)
+                                
+                                exp = str(j)
+                                exp = '0' + exp if len(exp) == 1 else exp
+                                freq_j = '2^' + exp
 
-                for label in plot.get_yticklabels():
-                    label.set_rotation(45)
+                                freq_pairs.append(
+                                    freq_i + ', ' + freq_j)
 
-                seaborn.plt.show()   
+                    _show_single_plot(
+                        freq_pairs,
+                        period_pairs,
+                        correlation,
+                        sp,
+                        s,
+                        self.names[view])
+
+def _show_single_plot(
+    freq_pairs, 
+    period_pairs, 
+    correlation,
+    sp,
+    s,
+    name):
+
+    d = {
+        'freq_pairs': freq_pairs,
+        'period_pairs': period_pairs,
+        'correlation': correlation}
+    df = pd.DataFrame(data=d)
+    df = df.pivot(
+        'freq_pairs',
+        'period_pairs',
+        'correlation')
+    ax = plt.axes()
+    plot = seaborn.heatmap(
+        df,
+        yticklabels=8,
+        ax=ax)
+    ax.set_title(
+        'Day-pair autocorrelation of view ' + 
+        name + 
+        ' for subject ' + s + 
+        ' subperiod ' + str(sp))
+
+    for label in plot.get_yticklabels():
+        label.set_rotation(45)
+
+    seaborn.plt.show()   

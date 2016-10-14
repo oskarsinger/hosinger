@@ -9,8 +9,8 @@ import utils as rmu
 
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
-from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from data.servers.batch import BatchServer as BS
+from linal.utils.misc import get_non_nan
 from wavelets import dtcwt
 from multiprocessing import Pool
 from math import log
@@ -220,43 +220,32 @@ class MVDTCWTRunner:
 
     def _get_wavelet_transforms(self, subject):
 
-        data = [ds.get_data() for ds in self.servers[subject]]
-        factors = [int(self.period * r) for r in self.rates]
-        thresholds  = [int(view.shape[0] * 1.0 / f)
-                       for (view, f) in zip(data, factors)]
         Yls = [[] for i in xrange(self.num_views)]
         Yhs = [[] for i in xrange(self.num_views)]
-        complete = False
-        k = 0
+        iterable = enumerate(zip(
+            self.rates, self.servers[subject]))
 
-        while not complete:
-            exceeded = [(k+1) >= t for t in thresholds]
-            complete = any(exceeded)
-            current_data = [view[k*f:(k+1)*f]
-                            for (f, view) in zip(factors, data)]
-            p = Pool(len(current_data))
-            processes = []
+        for (i, (r, ds)) in iterable:
+            window = int(r * self.period)
+            truncate = self.names[i] == 'TEMP'
+            data = ds.get_data()
+            num_periods = int(data.shape[0] / window)
 
-            for (i, view) in enumerate(current_data):
-                biorthogonal = {k : np.copy(v) 
-                                for (k,v) in self.biorthogonal.items()}
-                qshift = {k : np.copy(v) 
-                          for (k,v) in self.qshift.items()}
+            for p in xrange(num_periods):
+                data_p = = data[p * window: (p+1) * window]
+                data_p = get_non_nan(data_p)
 
-                processes.append(p.apply_async(
-                    dtcwt.oned.dtwavexfm,
-                    (view, 
+                if truncate:
+                    data_p[data_p > 40] = 40
+
+                (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
+                    data_p, 
                     int(log(view.shape[0], 2)) - 2,
                     biorthogonal, 
-                    qshift)))
-
-            for (i, process) in enumerate(processes):
-                (Yl, Yh, _) = process.get()
+                    qshift)
 
                 Yls[i].append(Yl)
                 Yhs[i].append(Yh)
-
-            k += 1
 
         return (Yls, Yhs)
 
