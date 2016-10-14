@@ -280,17 +280,7 @@ def _get_cca_spud(views):
 
     for i in xrange(num_views):
         for j in xrange(i+1, num_views):
-            X_data = views[i]
-            Y_data = views[j]
-            print X_data, Y_data
-            cca = CCA(n_components=1)
-
-            cca.fit(X_data, Y_data)
-
-            xy_pair = {
-                'Xw': cca.x_weights_,
-                'Yw': cca.y_weights_}
-
-            current.insert(i, j, xy_pair)
+            current.insert(i, j, 
+                rmu.get_cca_vecs(views[i], views[j]))
 
     return current

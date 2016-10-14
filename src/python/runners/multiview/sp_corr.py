@@ -14,11 +14,12 @@ class SubperiodCorrelationRunner:
     def __init__(self,
         dtcwt_runner,
         save_load_dir,
+        cca=False,
         save=False,
         load=False,
         show=False):
 
-        self.wavelets = dtcwt_runner.wavelets
+        self.cca = cca
         self.save = save
         self.load = load
         self.show = show
@@ -29,6 +30,7 @@ class SubperiodCorrelationRunner:
             show, 
             save_load_dir)
 
+        self.wavelets = dtcwt_runner.wavelets
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
@@ -56,7 +58,8 @@ class SubperiodCorrelationRunner:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('DPWCR')
+            corr_or_cca = 'cca' if self.cca else 'corr'
+            model_dir = get_ts('VPWSPCR' + corr_or_cca)
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
@@ -87,8 +90,14 @@ class SubperiodCorrelationRunner:
                         (Yh2, Yl2) =  subperiod[k[1]]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                        correlation = rmu.get_normed_correlation(
-                            Y1_mat, Y2_mat)
+                        correlation = None
+
+                        if self.cca:
+                            correlation = rmu.get_cca_vecs(
+                                Y1_mat, Y2_mat)
+                        else:
+                            correlation = rmu.get_normed_correlation(
+                                Y1_mat, Y2_mat)
 
                         self.correlation[s].get(k[0], k[1])[sp].append(
                             correlation)
@@ -138,74 +147,29 @@ class SubperiodCorrelationRunner:
 
             self.correlation[s].get(v[0], v[1])[sp][p] = m
 
-    def _show(self):
+    def _show_corr(self):
 
         get_2_digit = lambda x: '0' + x if len(x) == 1 else x
+        get_2_digit_pair = lambda i,j: '2^' + get_2_digit(str(i)) + \
+            ', 2^' + get_2_digit(str(j))
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
+                (n, m) = subperiod[0][0].shape
+                y_labels = [get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [get_2_digit(str(p))
+                            for p in xrange(self.num_periods[s])]
                 for (sp, periods) in enumerate(subperiods):
-                    freq_pairs = []
-                    period_strings = []
-                    correlation = []
-
-                    for (p, corr) in enumerate(periods):
-                        (n, m) = corr.shape
-                        period = get_2_digit(str(p))
-
-                        for i in xrange(n):
-                            exp = get_2_digit(str(i))
-                            freq_i = '2^' + exp
-
-                            for j in xrange(m):
-                                correlation.append(corr[i,j])
-                                period_strings.append(period)
-
-                                exp = get_2_digit(str(j))
-                                freq_j = '2^' + exp
-
-                                freq_pairs.append(
-                                    freq_i + ', ' + freq_j)
-
-                    _show_single_plot(
-                        freq_pairs,
-                        period_strings,
-                        correlation,
-                        sp,
-                        s,
-                        self.names[k[0]],
-                        self.names[k[1]])
-
-def _show_single_plot(
-    freq_pairs, 
-    periods, 
-    correlation,
-    sp,
-    s,
-    name1,
-    name2):
-
-    d = {
-        'freq_pairs': freq_pairs,
-        'periods': periods,
-        'correlation': correlation}
-    df = pd.DataFrame(data=d)
-    df = df.pivot(
-        'freq_pairs',
-        'periods',
-        'correlation')
-    ax = plt.axes()
-    plot = seaborn.heatmap(
-        df,
-        yticklabels=8,
-        ax=ax)
-    ax.set_title(
-        'View-pair cross-correlation of views ' + 
-        name1 + ', ' + name2 +
-        ' for subject ' + s + 
-        ' subperiod ' + str(sp))
-
-    for label in plot.get_yticklabels():
-        label.set_rotation(45)
-
-    seaborn.plt.show()   
+                    title = 'View-pairwise correlation over days for views ' + \
+                        self.names[k[0]] + ' ' + self.names[k[1]] + \
+                        ' of subject ' + s + ' at subperiod ' + str(sp)
+                    plot_matrix_heat(
+                        corr,
+                        x_labels,
+                        y_labels,
+                        title,
+                        'period',
+                        'frequency pair',
+                        'correlation')

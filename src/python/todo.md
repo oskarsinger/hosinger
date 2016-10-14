@@ -35,3 +35,4 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Split APE file of Trio of Doom album into individual tracks
+* Plot cross-correlation over 24 hours as well as over days.
