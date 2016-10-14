@@ -13,10 +13,12 @@ class DayPairwiseCorrelationRunner:
     def __init__(self,
         dtcwt_runner,
         save_load_dir,
+        cca=False,
         save=False,
         load=False,
         show=False):
 
+        self.cca = cca
         self.save = save
         self.load = load
         self.show = show
@@ -55,7 +57,8 @@ class DayPairwiseCorrelationRunner:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('DPWCR')
+            corr_or_cca = 'cca' if self.cca else 'corr'
+            model_dir = get_ts('DPWCR' + corr_or_cca)
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
@@ -92,8 +95,13 @@ class DayPairwiseCorrelationRunner:
                         (Yh2, Yl2) = sp2[v]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                        correlation = rmu.get_normed_correlation(
-                            Y1_mat, Y2_mat)
+                        correlation = None
+
+                        if self.cca:
+                            correlation = rmu.get_cca_vecs 
+                        else:
+                            correlation = rmu.get_normed_correlation(
+                                Y1_mat, Y2_mat)
 
                         self.correlation[subject][v][sp].append(
                             correlation)
@@ -102,7 +110,7 @@ class DayPairwiseCorrelationRunner:
                             self._save(
                                 correlation,
                                 subject,
-                                view,
+                                v,
                                 p,
                                 sp)
 
