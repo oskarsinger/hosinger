@@ -161,8 +161,7 @@ class DayPairwiseCorrelationRunner:
                             ', ' + get_2_digit(str(p+1))
 
                         for i in xrange(n):
-                            exp = str(i)
-                            exp = '0' + exp if len(exp) == 1 else exp
+                            exp = get_2_digit(str(i))
                             freq_i = '2^' + exp
 
                             for j in xrange(m):

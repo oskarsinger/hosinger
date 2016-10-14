@@ -137,7 +137,72 @@ class SubperiodCorrelationRunner:
 
     def _show(self):
 
+        get_2_digit = lambda x: '0' + x if len(x) == 1 else x
+
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
                 for (sp, periods) in enumerate(subperiods):
-                    print 'Poop'
+                    freq_pairs = []
+                    periods = []
+                    correlation = []
+
+                    for (p, corr) in enumerate(periods):
+                        (n, m) = corr.shape
+                        period = get_2_digit(str(p))
+
+                        for i in xrange(n):
+                            exp = get_2_digit(str(i))
+                            freq_i = '2^' + exp
+
+                            for j in xrange(m):
+                                correlation.append(corr[i,j])
+                                periods.append(period)
+
+                                exp = get_2_digit(str(j))
+                                freq_j = '2^' + exp
+
+                                freq_pairs.append(
+                                    freq_i + ', ' + freq_j)
+
+                    _show_single_plot(
+                        freq_pairs,
+                        periods,
+                        correlation,
+                        sp,
+                        s,
+                        self.names[k[0]],
+                        self.names[k[1]])
+
+def _show_single_plot(
+    freq_pairs, 
+    periods, 
+    correlation,
+    sp,
+    s,
+    name1,
+    name2):
+
+    d = {
+        'freq_pairs': freq_pairs,
+        'periods': periods,
+        'correlation': correlation}
+    df = pd.DataFrame(data=d)
+    df = df.pivot(
+        'freq_pairs',
+        'periods',
+        'correlation')
+    ax = plt.axes()
+    plot = seaborn.heatmap(
+        df,
+        yticklabels=8,
+        ax=ax)
+    ax.set_title(
+        'View-pair autocorrelation of views ' + 
+        name1 + ', ' + name2 +
+        ' for subject ' + s + 
+        ' subperiod ' + str(sp))
+
+    for label in plot.get_yticklabels():
+        label.set_rotation(45)
+
+    seaborn.plt.show()   
