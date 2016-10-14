@@ -200,7 +200,7 @@ def _show_single_plot(
         yticklabels=8,
         ax=ax)
     ax.set_title(
-        'View-pair autocorrelation of views ' + 
+        'View-pair cross-correlation of views ' + 
         name1 + ', ' + name2 +
         ' for subject ' + s + 
         ' subperiod ' + str(sp))
