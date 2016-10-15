@@ -151,7 +151,35 @@ class SubperiodCorrelationRunner:
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
-                print 'Poop'
+                for periods in subperiods:
+                    for (p, corr) in enumerate(periods):
+                        period_corrs.get(k[0], k[1])[p].append(corr)
+
+            for (k, periods) in enumerate(period_corrs):
+                (n, m) = periods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(str(sp))
+                            for sp in xrange(self.num_subperiods)]
+                name1 = self.names[k[0]]
+                name2 = self.names[k[1]]
+
+                for (p, subperiods) in enumerate(periods):
+                    timeline = rmu.get_ravel_hstack(subperiods)
+                    title = 'View-pairwise correlation over hours ' + \
+                        ' for views ' + name1 + ' ' + name2 + \
+                        ' of subject ' + s + ' and day ' + \
+                        rmu.get_2_digit(p)
+
+                    plot_matrix_heat(
+                        timeline,
+                        x_labels,
+                        y_labels,
+                        title,
+                        'hour',
+                        'frequency pair',
+                        'correlation')
 
     def _show_corr_over_periods(self):
 
