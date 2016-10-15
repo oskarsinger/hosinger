@@ -118,10 +118,9 @@ def get_2_digit_pair(i, j):
 
 def get_2_digit(i):
 
-    x_str = str(x)
+    i_str = str(i)
 
-    if int(x) / 10 == 0:
-        x_str = '0' + x_str
+    if int(i) / 10 == 0:
+        i_str = '0' + i_str
 
-    return x_str
-    
+    return i_str

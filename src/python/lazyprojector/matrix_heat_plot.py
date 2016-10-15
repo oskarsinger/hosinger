@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import linal.utils.misc as lum
-import matplotlub.pyplot as plt
+import matplotlib.pyplot as plt
 
 from math import pi
 from utils import get_plot_path
@@ -31,32 +31,38 @@ def plot_matrix_heat(
         value_matrices = {
             'magnitude': value_matrix}
 
+    plots = []
+
     for k, matrix in value_matrices.items():
         source = _populate_data_source(
             matrix, 
             x_labels, 
             y_labels,
             x_name,
-            y_name)
+            y_name,
+            val_name)
         ax = plt.axes()
         plot = sns.heatmap(
-            df,
-            yticklabels=8,
+            source,
+            yticklabels=4,
             ax=ax)
 
-        ax.set_title(title + k)
+        ax.set_title(title + ' ' + k)
 
         for label in plot.get_yticklabels():
             label.set_rotation(45)
 
-        sns.plt.show()
+        plots.append(plot)
+        
+    return plots
 
 def _populate_data_source(
     value_matrix, 
     x_labels, 
     y_labels,
     x_name,
-    y_name):
+    y_name,
+    val_name):
 
     (n, p) = value_matrix.shape
     x_element = []
@@ -72,10 +78,10 @@ def _populate_data_source(
             d = {
                 x_name: x_element,
                 y_name: y_element,
-                value_name: values}
+                val_name: values}
             df = pd.DataFrame(data=d).pivot(
                 x_name,
                 y_name,
-                value_name)
+                val_name)
 
     return df

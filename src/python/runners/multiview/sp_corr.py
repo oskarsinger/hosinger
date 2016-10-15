@@ -1,13 +1,11 @@
 import os
-import seaborn
 
 import numpy as np
 import utils as rmu
-import pandas as pd
-import matplotlib.pyplot as plt
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
+from lazyprojector import plot_matrix_heat
 
 class SubperiodCorrelationRunner:
 
@@ -50,11 +48,12 @@ class SubperiodCorrelationRunner:
             self._compute()
 
         if self.show:
-            self._show()
+            self._show_corr_over_periods()
+            self._show_corr_over_subperiods()
 
     def _init_dirs(self, save, load, show, save_load_dir):
 
-        if save and not load:
+        if (show or save) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -150,12 +149,15 @@ class SubperiodCorrelationRunner:
     def _show_corr_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
+            default = lambda: [[] for p in xrange(self.num_periods[s])]
+            period_corrs = SPUD(self.num_views, default=default)
+
             for (k, subperiods) in spud.items():
                 for periods in subperiods:
                     for (p, corr) in enumerate(periods):
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
-            for (k, periods) in enumerate(period_corrs):
+            for (k, periods) in period_corrs.items():
                 (n, m) = periods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
@@ -166,12 +168,14 @@ class SubperiodCorrelationRunner:
                 name2 = self.names[k[1]]
 
                 for (p, subperiods) in enumerate(periods):
+                    print 'subject', s, 'pair', k, 'period', p
                     timeline = rmu.get_ravel_hstack(subperiods)
                     title = 'View-pairwise correlation over hours ' + \
                         ' for views ' + name1 + ' ' + name2 + \
                         ' of subject ' + s + ' and day ' + \
                         rmu.get_2_digit(p)
-
+                    fn = '_'.join(title.split()) + '.png'
+                    path = os.path.join(self.plot_dir, fn)
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -179,13 +183,13 @@ class SubperiodCorrelationRunner:
                         title,
                         'hour',
                         'frequency pair',
-                        'correlation')
+                        'correlation')[0].get_figure().savefig(path)
 
     def _show_corr_over_periods(self):
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
-                (n, m) = subperiod[0][0].shape
+                (n, m) = subperiods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
@@ -193,11 +197,13 @@ class SubperiodCorrelationRunner:
                             for p in xrange(self.num_periods[s])]
 
                 for (sp, periods) in enumerate(subperiods):
+                    print 'subject', s, 'pair', k, 'subperiod', sp
                     timeline = rmu.get_ravel_hstack(periods)
                     title = 'View-pairwise correlation over days for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s + ' at hour ' + str(sp)
-
+                    fn = '_'.join(title.split()) + '.png'
+                    path = os.path.join(self.plot_dir, fn)
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -205,4 +211,4 @@ class SubperiodCorrelationRunner:
                         title,
                         'day',
                         'frequency pair',
-                        'correlation')
+                        'correlation')[0].get_figure().savefig(path)
