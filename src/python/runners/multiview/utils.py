@@ -100,3 +100,28 @@ def get_kmeans_spud_dict(
             label_spud[s].get(i, j).append(l)
 
     return label_spud
+
+def get_ravel_hstack(matrices):
+
+    cols = [np.ravel(m)[:,np.newaxis]
+            for m in matrices]
+
+    return np.hstack(cols)
+
+def get_2_digit_pair(i, j):
+
+    get_2_digit = lambda x: '0' + str(x) \
+        if int(x)/10 == 0 else \
+        str(x)
+
+    return '2^' + get_2_digit(i) + ', 2^' + get_2_digit(j)
+
+def get_2_digit(i):
+
+    x_str = str(x)
+
+    if int(x) / 10 == 0:
+        x_str = '0' + x_str
+
+    return x_str
+    

@@ -147,29 +147,34 @@ class SubperiodCorrelationRunner:
 
             self.correlation[s].get(v[0], v[1])[sp][p] = m
 
-    def _show_corr(self):
+    def _show_corr_over_subperiods(self):
 
-        get_2_digit = lambda x: '0' + x if len(x) == 1 else x
-        get_2_digit_pair = lambda i,j: '2^' + get_2_digit(str(i)) + \
-            ', 2^' + get_2_digit(str(j))
+        for (s, spud) in self.correlation.items():
+            for (k, subperiods) in spud.items():
+                print 'Poop'
+
+    def _show_corr_over_periods(self):
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
                 (n, m) = subperiod[0][0].shape
-                y_labels = [get_2_digit_pair(i,j)
+                y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [get_2_digit(str(p))
+                x_labels = [rmu.get_2_digit(str(p))
                             for p in xrange(self.num_periods[s])]
+
                 for (sp, periods) in enumerate(subperiods):
+                    timeline = rmu.get_ravel_hstack(periods)
                     title = 'View-pairwise correlation over days for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
-                        ' of subject ' + s + ' at subperiod ' + str(sp)
+                        ' of subject ' + s + ' at hour ' + str(sp)
+
                     plot_matrix_heat(
-                        corr,
+                        timeline,
                         x_labels,
                         y_labels,
                         title,
-                        'period',
+                        'day',
                         'frequency pair',
                         'correlation')
