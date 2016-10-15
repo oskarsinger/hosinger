@@ -7,6 +7,7 @@ import utils as rmu
 import matplotlib.pyplot as plt
 
 from drrobert.file_io import get_timestamped as get_ts
+from lazyprojector import plot_matrix_heat
 
 class DayPairwiseCorrelationRunner:
 
@@ -49,7 +50,8 @@ class DayPairwiseCorrelationRunner:
             self._compute()
 
         if self.show:
-            self._show()
+            self._show_corr_over_periods()
+            self._show_corr_over_subperiods()
 
     def _init_dirs(self, save, load, show, save_load_dir):
 
@@ -151,7 +153,7 @@ class DayPairwiseCorrelationRunner:
 
             self.correlation[s][v][sp][ps[0]] = m
 
-    def _show_corr_over_subperiods(self):
+    def _save_corr_over_subperiods(self):
 
         for (s, views) in self.correlation.items():
             period_corrs = [[[] for p in xrange(self.num_periods[s])] 
@@ -176,7 +178,8 @@ class DayPairwiseCorrelationRunner:
                         ' for view ' + self.names[v] + \
                         ' of subject ' + s + ' and day pair ' + \
                         rmu.get_2_digit_pair(p, p+1)
-
+                    fn = '_'.join(title.split()) + '.png'
+                    path = os.path.join(self.plot_dir, fn)
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -184,9 +187,9 @@ class DayPairwiseCorrelationRunner:
                         title,
                         'hour',
                         'frequency pair',
-                        'correlation')
+                        'correlation')[0].get_figure().savefig(path)
         
-    def _show_corr_over_periods(self):
+    def _save_corr_over_periods(self):
 
         for (s, views) in self.correlation.items():
             for (v, subperiods) in enumerate(views):
@@ -202,6 +205,8 @@ class DayPairwiseCorrelationRunner:
                     title = 'Day-pairwise correlation over day pairs ' + \
                         ' for view ' + self.names[v] + \
                         ' of subject ' + s + ' at subperiod ' + str(sp)
+                    fn = '_'.join(title.split()) + '.png'
+                    path = os.path.join(self.plot_dir, fn)
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -209,4 +214,4 @@ class DayPairwiseCorrelationRunner:
                         title,
                         'period pair',
                         'frequency pair',
-                        'correlation')
+                        'correlation')[0].get_figure().savefig(path)
