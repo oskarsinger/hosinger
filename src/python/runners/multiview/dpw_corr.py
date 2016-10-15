@@ -150,75 +150,63 @@ class DayPairwiseCorrelationRunner:
             sp = int(info[7])
 
             self.correlation[s][v][sp][ps[0]] = m
-        
-    def _show(self):
 
-        get_2_digit = lambda x: '0' + x if len(x) == 1 else x
+    def _show_corr_over_subperiods(self):
 
         for (s, views) in self.correlation.items():
-            for (view, subperiods) in enumerate(views):
-                for (sp, periods) in enumerate(subperiods):
-                    freq_pairs = []
-                    period_pairs = []
-                    correlation = []
-                    
+            period_corrs = [[[] for p in xrange(self.num_periods[s])] 
+                            for v in xrange(self.num_views)]
+
+            for (v, subperiods) in enumerate(views):
+                for periods in subperiods:
                     for (p, corr) in enumerate(periods):
-                        (n, m) = corr.shape
+                        period_corrs[v][p].append(corr)
 
-                        period_pair = get_2_digit(str(p)) + \
-                            ', ' + get_2_digit(str(p+1))
+            for (v, periods) in enumerate(periods_corrs):
+                (n, m) = periods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(str(sp))
+                            for sp in xrange(self.num_subperiods)]
 
-                        for i in xrange(n):
-                            exp = get_2_digit(str(i))
-                            freq_i = '2^' + exp
+                for (p, subperiods) in enumerate(periods):
+                    timeline = rmu.get_ravel_hstack(subperiods)
+                    title = 'Day-pairwise correlation over hours ' + \
+                        ' for view ' + self.names[v] + \
+                        ' of subject ' + s + ' and day pair ' + \
+                        rmu.get_2_digit_pair(p, p+1)
 
-                            for j in xrange(m):
-                                correlation.append(corr[i,j])
-                                period_pairs.append(period_pair)
-                                
-                                exp = get_2_digit(str(j))
-                                freq_j = '2^' + exp
+                    plot_matrix_heat(
+                        timeline,
+                        x_labels,
+                        y_labels,
+                        title,
+                        'hour',
+                        'frequency pair',
+                        'correlation')
+        
+    def _show_corr_over_periods(self):
 
-                                freq_pairs.append(
-                                    freq_i + ', ' + freq_j)
+        for (s, views) in self.correlation.items():
+            for (v, subperiods) in enumerate(views):
+                (n, m) = subperiods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit_pair(p, p+1)
+                            for p in xrange(self.num_periods[s]-1)]
 
-                    _show_single_plot(
-                        freq_pairs,
-                        period_pairs,
-                        correlation,
-                        sp,
-                        s,
-                        self.names[view])
-
-def _show_single_plot(
-    freq_pairs, 
-    period_pairs, 
-    correlation,
-    sp,
-    s,
-    name):
-
-    d = {
-        'freq_pairs': freq_pairs,
-        'period_pairs': period_pairs,
-        'correlation': correlation}
-    df = pd.DataFrame(data=d)
-    df = df.pivot(
-        'freq_pairs',
-        'period_pairs',
-        'correlation')
-    ax = plt.axes()
-    plot = seaborn.heatmap(
-        df,
-        yticklabels=8,
-        ax=ax)
-    ax.set_title(
-        'Day-pair autocorrelation of view ' + 
-        name + 
-        ' for subject ' + s + 
-        ' subperiod ' + str(sp))
-
-    for label in plot.get_yticklabels():
-        label.set_rotation(45)
-
-    seaborn.plt.show()   
+                for (sp, periods) in enumerate(subperiods):
+                    timeline = rmu.get_ravel_hstack(periods)
+                    title = 'Day-pairwise correlation over day pairs ' + \
+                        ' for view ' + self.names[v] + \
+                        ' of subject ' + s + ' at subperiod ' + str(sp)
+                    plot_matrix_heat(
+                        timeline,
+                        x_labels,
+                        y_labels,
+                        title,
+                        'period pair',
+                        'frequency pair',
+                        'correlation')
