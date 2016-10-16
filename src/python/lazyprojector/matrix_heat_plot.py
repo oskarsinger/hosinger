@@ -80,8 +80,8 @@ def _populate_data_source(
                 y_name: y_element,
                 val_name: values}
             df = pd.DataFrame(data=d).pivot(
-                x_name,
                 y_name,
+                x_name,
                 val_name)
 
     return df

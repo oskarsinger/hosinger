@@ -1,10 +1,8 @@
 import os
-import seaborn
+import seaborn as sns
 
 import numpy as np
-import pandas as pd
 import utils as rmu
-import matplotlib.pyplot as plt
 
 from drrobert.file_io import get_timestamped as get_ts
 from lazyprojector import plot_matrix_heat
@@ -55,7 +53,7 @@ class DayPairwiseCorrelationRunner:
 
     def _init_dirs(self, save, load, show, save_load_dir):
 
-        if save and not load:
+        if (save or show) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -180,6 +178,7 @@ class DayPairwiseCorrelationRunner:
                         rmu.get_2_digit_pair(p, p+1)
                     fn = '_'.join(title.split()) + '.png'
                     path = os.path.join(self.plot_dir, fn)
+
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -188,6 +187,7 @@ class DayPairwiseCorrelationRunner:
                         'hour',
                         'frequency pair',
                         'correlation')[0].get_figure().savefig(path)
+                    sns.plt.clf()
         
     def _save_corr_over_periods(self):
 
@@ -207,6 +207,7 @@ class DayPairwiseCorrelationRunner:
                         ' of subject ' + s + ' at subperiod ' + str(sp)
                     fn = '_'.join(title.split()) + '.png'
                     path = os.path.join(self.plot_dir, fn)
+
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -215,3 +216,4 @@ class DayPairwiseCorrelationRunner:
                         'period pair',
                         'frequency pair',
                         'correlation')[0].get_figure().savefig(path)
+                    sns.plt.clf()

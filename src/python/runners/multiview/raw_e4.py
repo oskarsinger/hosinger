@@ -1,4 +1,4 @@
-import seaborn
+import seaborn as sns
 
 import numpy as np
 import pandas as pd
@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from data.pseudodata import MissingData as MD
 from data.servers.batch import BatchServer as BS
 from drrobert.arithmetic import get_running_avg as get_ra
+from linal.utils.misc import get_non_nan
 
 class E4RawDataPlotRunner:
 
@@ -38,33 +39,43 @@ class E4RawDataPlotRunner:
     def _plot_averages(self):
 
         averages = self._get_averages()
-        asymp = {'HRV15-0' + s
-                 for s in ['06', '07', '13', '21', '24']}
+        asymp = {'06', '07', '13', '21', '24'}
         linestyles = ['--' if s in asymp else '-'
                       for s in self.servers.keys()]
 
         for (i, view) in enumerate(averages):
             ax = plt.axes()
-            seaborn.pointplot(
+            sns.pointplot(
                 x='period', 
                 y='value', 
                 hue='subject',
                 data=view,
                 linestyles=linestyles,
-                ax=ax)
-            ax.set_title(
-                'Mean value of view ' + 
-                self.names[i] + 
-                ' for period length ' + 
-                str(self.period) + ' seconds')
-            seaborn.plt.show()
+                ax=ax,
+                legend=False)
+            sns.plt.legend(
+                bbox_to_anchor=(1, 1.05), 
+                loc=2, 
+                borderaxespad=0.)
+            title = \
+                'Mean value of view ' + \
+                self.names[i] + \
+                ' for period length ' + \
+                str(self.period) + ' seconds'
+            ax.set_title(title)
+
+            ax.get_figure().savefig(
+                '_'.join(title.split()) + '.png')
+
+            sns.plt.clf()
 
     def _get_averages(self):
 
-        views = [{s : None for s in self.servers.keys()}
+        views = [{s[-2:] : None for s in self.servers.keys()}
                  for i in xrange(self.num_views)]
 
         for (s, dss) in self.servers.items():
+            s = s[-2:]
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
                 view_avg = []
@@ -100,7 +111,7 @@ class E4RawDataPlotRunner:
                 [len(l) for l in view.values()])
 
             for (s, l) in view.items():
-                l = l + [0] * (max_p - len(l))
+                l = l + [None] * (max_p - len(l))
                 periods.extend(list(range(max_p)))
                 subjects.extend([s] * max_p)
                 values.extend(l)

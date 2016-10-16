@@ -10,7 +10,7 @@ class AlTestLoader:
         self.online = online
         sub_and_name = data_path.split('/')[-1][:-4]
         (self.subject, self.label) = sub_and_name.split('_')
-        self.hertz = 1
+        self.hertz = 1.0/60
         self.window = 1
         self.data = None
         self.num_rounds = 0
