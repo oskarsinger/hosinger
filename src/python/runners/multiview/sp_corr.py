@@ -16,17 +16,20 @@ class SubperiodCorrelationRunner:
         cca=False,
         save=False,
         load=False,
-        show=False):
+        show=False,
+        show_max=False):
 
         self.cca = cca
         self.save = save
         self.load = load
         self.show = show
+        self.show_max = show_max
 
         self._init_dirs(
             save, 
             load, 
             show, 
+            show_max,
             save_load_dir)
 
         self.wavelets = dtcwt_runner.wavelets
@@ -52,9 +55,13 @@ class SubperiodCorrelationRunner:
             self._show_corr_over_periods()
             self._show_corr_over_subperiods()
 
-    def _init_dirs(self, save, load, show, save_load_dir):
+        if self.show_max:
+            self._show_corr_max_over_periods()
+            self._show_corr_max_over_subperiods()
 
-        if (show or save) and not load:
+    def _init_dirs(self, save, load, show, show_max, save_load_dir):
+
+        if (show_max or show or save) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -75,7 +82,7 @@ class SubperiodCorrelationRunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show,
+            show or show_max,
             self.save_load_dir) 
 
     def _compute(self):
@@ -147,6 +154,46 @@ class SubperiodCorrelationRunner:
 
             self.correlation[s].get(v[0], v[1])[sp][p] = m
 
+    def _show_corr_max_over_subperiods(self):
+
+        for (s, spud) in self.correlation.items():
+            default = lambda: [[] for p in xrange(self.num_periods[s])]
+            period_corrs = SPUD(self.num_views, default=default)
+
+            for (k, subperiods) in spud.items():
+                for periods in subperiods:
+                    for (p, corr) in enumerate(periods):
+                        period_corrs.get(k[0], k[1])[p].append(corr)
+
+            for (k, periods) in period_corrs.items():
+                (n, m) = periods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(str(sp))
+                            for sp in xrange(self.num_periods[s])]
+                timelines = [rmu.get_ravel_hstack(subperiods)
+                             for subperiods in periods]
+                timeline = np.hstack(
+                    [np.max(tl, axis=1)[:,np.newaxis] 
+                     for tl in timelines])
+                title = 'View-pairwise max-over-hours correlation' + \
+                    ' over days for views ' + \
+                    self.names[k[0]] + ' ' + self.names[k[1]] + \
+                    ' of subject ' + s
+                fn = '_'.join(title.split()) + '.png'
+                path = os.path.join(self.plot_dir, fn)
+
+                plot_matrix_heat(
+                    timeline,
+                    x_labels,
+                    y_labels,
+                    title,
+                    'day',
+                    'frequency pair',
+                    'correlation')[0].get_figure().savefig(path)
+                sns.plt.clf()
+
     def _show_corr_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
@@ -187,6 +234,38 @@ class SubperiodCorrelationRunner:
                         'correlation')[0].get_figure().savefig(path)
                     sns.plt.clf()
 
+    def _show_corr_max_over_periods(self):
+
+        for (s, spud) in self.correlation.items():
+            for (k, subperiods) in spud.items():
+                (n, m) = subperiods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(str(p))
+                            for p in xrange(self.num_subperiods)]
+                timelines = [rmu.get_ravel_hstack(periods)
+                             for periods in subperiods]
+                timeline = np.hstack(
+                    [np.max(tl, axis=1)[:,np.newaxis] 
+                     for tl in timelines])
+                title = 'View-pairwise max-over-days correlation' + \
+                    ' over hours for views ' + \
+                    self.names[k[0]] + ' ' + self.names[k[1]] + \
+                    ' of subject ' + s
+                fn = '_'.join(title.split()) + '.png'
+                path = os.path.join(self.plot_dir, fn)
+
+                plot_matrix_heat(
+                    timeline,
+                    x_labels,
+                    y_labels,
+                    title,
+                    'hour',
+                    'frequency pair',
+                    'correlation')[0].get_figure().savefig(path)
+                sns.plt.clf()
+
     def _show_corr_over_periods(self):
 
         for (s, spud) in self.correlation.items():
@@ -199,7 +278,6 @@ class SubperiodCorrelationRunner:
                             for p in xrange(self.num_periods[s])]
 
                 for (sp, periods) in enumerate(subperiods):
-                    print 'subject', s, 'pair', k, 'subperiod', sp
                     timeline = rmu.get_ravel_hstack(periods)
                     title = 'View-pairwise correlation over days for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \

@@ -14,10 +14,17 @@ class E4RawDataPlotRunner:
 
     def __init__(self, 
         hdf5_path,
-        period=24*3600):
+        period=24*3600,
+        missing=False,
+        complete=False,
+        std=False):
 
         self.hdf5_path = hdf5_path
         self.period = period
+        self.missing = missing
+        self.complete = complete
+        self.std = std
+        self.name = 'Std' if self.std else 'Mean'
 
         self.loaders = dles.get_e4_loaders_all_subjects(
             hdf5_path, None, False)
@@ -34,17 +41,18 @@ class E4RawDataPlotRunner:
 
     def run(self):
 
-        self._plot_averages()
+        self._plot_stats()
 
-    def _plot_averages(self):
+    def _plot_stats(self):
 
-        averages = self._get_averages()
+        averages = self._get_stats()
         asymp = {'06', '07', '13', '21', '24'}
-        linestyles = ['--' if s in asymp else '-'
+        linestyles = ['--' if s[-2:] in asymp else '-'
                       for s in self.servers.keys()]
 
         for (i, view) in enumerate(averages):
             ax = plt.axes()
+
             sns.pointplot(
                 x='period', 
                 y='value', 
@@ -57,19 +65,26 @@ class E4RawDataPlotRunner:
                 bbox_to_anchor=(1, 1.05), 
                 loc=2, 
                 borderaxespad=0.)
+
             title = \
-                'Mean value of view ' + \
+                self.name + ' value of view ' + \
                 self.names[i] + \
                 ' for period length ' + \
                 str(self.period) + ' seconds'
-            ax.set_title(title)
 
+            if self.missing:
+                title = 'Missing only ' + \
+                    title[0].lower() + title[1:]
+            elif self.complete:
+                title = 'Complete only ' + \
+                    title[0].lower() + title[1:]
+
+            ax.set_title(title)
             ax.get_figure().savefig(
                 '_'.join(title.split()) + '.png')
-
             sns.plt.clf()
 
-    def _get_averages(self):
+    def _get_stats(self):
 
         views = [{s[-2:] : None for s in self.servers.keys()}
                  for i in xrange(self.num_views)]
@@ -78,7 +93,7 @@ class E4RawDataPlotRunner:
             s = s[-2:]
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
-                view_avg = []
+                view_stat = []
                 truncate = self.names[i] == 'TEMP'
                 data = view.get_data()
                 f_num_periods = float(data.shape[0]) / window
@@ -94,11 +109,11 @@ class E4RawDataPlotRunner:
                     if truncate:
                         data_p[data_p > 40] = 40
 
-                    avg = np.mean(data_p)
+                    stat = np.std(data_p) if self.std else np.mean(data_p)
 
-                    view_avg.append(avg)
+                    view_stat.append(stat)
 
-                views[i][s] = view_avg
+                views[i][s] = view_stat
 
         dfs = [None] * self.num_views
 
@@ -111,10 +126,25 @@ class E4RawDataPlotRunner:
                 [len(l) for l in view.values()])
 
             for (s, l) in view.items():
-                l = l + [None] * (max_p - len(l))
-                periods.extend(list(range(max_p)))
-                subjects.extend([s] * max_p)
-                values.extend(l)
+                ll = len(l)
+                l = l + [None] * (max_p - ll)
+                s_periods = list(range(max_p))
+                s_subjects = [s] * max_p
+
+                if self.missing:
+                    if ll < max_p:
+                        periods.extend(s_periods)
+                        subjects.extend(s_subjects)
+                        values.extend(l)
+                elif self.complete:
+                    if ll == max_p:
+                        periods.extend(s_periods)
+                        subjects.extend(s_subjects)
+                        values.extend(l)
+                else:
+                    periods.extend(s_periods)
+                    subjects.extend(s_subjects)
+                    values.extend(l)
 
             d = {
                 'period': periods,
