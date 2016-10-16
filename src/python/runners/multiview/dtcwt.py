@@ -29,6 +29,9 @@ class MVDTCWTRunner:
         self.test_data = test_data
         self.period = period
 
+        if self.test_data:
+            self.period = 60 * 3600
+
         self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
             'near_sym_b')
         self.qshift = wdtcwt.utils.get_wavelet_basis(

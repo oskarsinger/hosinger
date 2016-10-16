@@ -74,7 +74,7 @@ class MVDTCWTSPRunner:
             # Only necessary if we have to recompute wavelets
             try:
                 if not self.load:
-                    [dl.get_data() for dl in dl_list]
+                    data = [dl.get_data() for dl in dl_list]
 
                 self.servers[s] = [BS(dl) for dl in dl_list]
             except Exception, e:

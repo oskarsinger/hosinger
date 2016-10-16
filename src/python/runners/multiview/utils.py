@@ -19,8 +19,8 @@ def get_normed_correlation(X1, X2):
 
     sd1 = np.std(X1, axis=0)
     sd2 = np.std(X2, axis=0)
-    normed_X1 = X1 / sd1
-    normed_X2 = X2 / sd2
+    normed_X1 = X1 / (sd1 * X1.shape[0])
+    normed_X2 = X2 / (sd2 * X2.shape[0])
 
     return np.dot(normed_X1.T, normed_X2)
 
@@ -38,8 +38,10 @@ def get_sampled_wavelets(Yh, Yl):
         k += 1
 
     hi_and_lo = hi_and_lo[:k]
+    num_rows = hi_and_lo[-1].shape[0]
+    k = len(hi_and_lo) # In case there are fewer freq. components than k
     basis = np.zeros(
-        (hi_and_lo[-1].shape[0], k),
+        (num_rows, k),
         dtype=complex)
 
     for (i, y) in enumerate(hi_and_lo):

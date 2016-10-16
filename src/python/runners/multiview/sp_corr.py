@@ -1,4 +1,5 @@
 import os
+import seaborn as sns
 
 import numpy as np
 import utils as rmu
@@ -168,7 +169,6 @@ class SubperiodCorrelationRunner:
                 name2 = self.names[k[1]]
 
                 for (p, subperiods) in enumerate(periods):
-                    print 'subject', s, 'pair', k, 'period', p
                     timeline = rmu.get_ravel_hstack(subperiods)
                     title = 'View-pairwise correlation over hours ' + \
                         ' for views ' + name1 + ' ' + name2 + \
@@ -176,6 +176,7 @@ class SubperiodCorrelationRunner:
                         rmu.get_2_digit(p)
                     fn = '_'.join(title.split()) + '.png'
                     path = os.path.join(self.plot_dir, fn)
+
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -184,6 +185,7 @@ class SubperiodCorrelationRunner:
                         'hour',
                         'frequency pair',
                         'correlation')[0].get_figure().savefig(path)
+                    sns.plt.clf()
 
     def _show_corr_over_periods(self):
 
@@ -204,6 +206,7 @@ class SubperiodCorrelationRunner:
                         ' of subject ' + s + ' at hour ' + str(sp)
                     fn = '_'.join(title.split()) + '.png'
                     path = os.path.join(self.plot_dir, fn)
+
                     plot_matrix_heat(
                         timeline,
                         x_labels,
@@ -212,3 +215,4 @@ class SubperiodCorrelationRunner:
                         'day',
                         'frequency pair',
                         'correlation')[0].get_figure().savefig(path)
+                    sns.plt.clf()
