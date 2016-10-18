@@ -4,8 +4,8 @@ import wavelets.dtcwt as wdtcwt
 import numpy as np
 
 @click.command()
-@click.option('--oned', default=False)
-@click.option('--twod', default=True)
+@click.option('--oned', default=True)
+@click.option('--twod', default=False)
 @click.option('--lenna-path', 
     default='/home/oskar/Data/DTCWTSample/lennaX.csv')
 def run_it_all_day(
@@ -29,6 +29,8 @@ def run_it_all_day(
 
         (Yl, Yh, Y_scale) = wdtcwt.oned.dtwavexfm(
             X, 5, near_sym_b, qshift_b)
+        print 'Yh', Yh
+        print 'Yl', Yl
         Z = wdtcwt.oned.dtwaveifm(
             Yl, Yh, near_sym_b, qshift_b)
         error = np.abs(Z-X).max()
