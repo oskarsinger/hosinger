@@ -47,7 +47,8 @@ def get_column_i_filtered(X, ha, hb):
     hae = ha[1:m:2]
     hbo = hb[0:m:2]
     hbe = hb[1:m:2]
-    s = np.arange(0, n*2, 4)
+    begin_s = 0
+    end_s = n*2
 
     if m2 % 2 == 0:
 
@@ -62,10 +63,18 @@ def get_column_i_filtered(X, ha, hb):
             begin_a = 3
             end_a = n + m
 
-        Y[s,:] = conv2(X[xe[begin_b-2:end_b-2:2],:], hae, 'valid')
-        Y[s+1,:] = conv2(X[xe[begin_a-2:end_a-2:2],:], hbe, 'valid')
-        Y[s+2,:] = conv2(X[xe[begin_b:end_b:2],:], hao, 'valid')
-        Y[s+3,:] = conv2(X[xe[begin_a:end_a:2],:], hbo, 'valid')
+        Y[begin_s:end_s:4,:] = conv2(
+            X[xe[begin_b-2:end_b-2:2],:], hae, 'valid')
+        #print 'Y[begin_s:end_s:4,:]', Y[begin_s:end_s:4,:]
+        Y[begin_s+1:end_s+1:4,:] = conv2(
+            X[xe[begin_a-2:end_a-2:2],:], hbe, 'valid')
+        #print 'Y[begin_s+1:end_s+1:4,:]', Y[begin_s+1:end_s+1:4,:]
+        Y[begin_s+2:end_s+2:4,:] = conv2(
+            X[xe[begin_b:end_b:2],:], hao, 'valid')
+        #print 'Y[begin_s+2:end_s+2:4,:]', Y[begin_s+2:end_s+2:4,:]
+        Y[begin_s+3:end_s+3:4,:] = conv2(
+            X[xe[begin_a:end_a:2],:], hbo, 'valid')
+        #print 'Y[begin_s+3:end_s+3:4,:]', Y[begin_s+3:end_s+3:4,:]
     else:
 
         begin_b = 2
@@ -79,12 +88,20 @@ def get_column_i_filtered(X, ha, hb):
             begin_b = 1
             end_b = n + m - 2
 
-        Y[s,:] = conv2(X[xe[begin_b:end_b:2],:], hao, 'valid')
-        Y[s+1,:] = conv2(X[xe[begin_a:end_a:2],:], hbo, 'valid')
-        Y[s+2,:] = conv2(X[xe[begin_b:end_b:2],:], hae, 'valid')
-        Y[s+3,:] = conv2(X[xe[begin_a:end_a:2],:], hbe, 'valid')
+        Y[begin_s:end_s:4,:] = conv2(
+            X[xe[begin_b:end_b:2],:], hao, 'valid')
+        #print 'Y[begin_s:end_s:4,:]', Y[begin_s:end_s:4,:]
+        Y[begin_s+1:end_s+1:4,:] = conv2(
+            X[xe[begin_a:end_a:2],:], hbo, 'valid')
+        #print 'Y[begin_s+1:end_s+1:4,:]', Y[begin_s+1:end_s+1:4,:]
+        Y[begin_s+2:end_s+2:4,:] = conv2(
+            X[xe[begin_b:end_b:2],:], hae, 'valid')
+        #print 'Y[begin_s+2:end_s+2:4,:]', Y[begin_s+2:end_s+2:4,:]
+        Y[begin_s+3:end_s+3:4,:] = conv2(
+            X[xe[begin_a:end_a:2],:], hbe, 'valid')
+        #print 'Y[begin_s+3:end_s+3:4,:]', Y[begin_s+3:end_s+3:4,:]
 
-    return np.copy(Y)
+    return Y
 
 def get_column_d_filtered(X, ha, hb):
 
