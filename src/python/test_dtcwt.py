@@ -29,8 +29,6 @@ def run_it_all_day(
 
         (Yl, Yh, Y_scale) = wdtcwt.oned.dtwavexfm(
             X, 5, near_sym_b, qshift_b)
-        print 'Yh', Yh
-        print 'Yl', Yl
         Z = wdtcwt.oned.dtwaveifm(
             Yl, Yh, near_sym_b, qshift_b)
         error = np.abs(Z-X).max()

@@ -56,8 +56,6 @@ def dtwaveifm(
     Yl, Yh, biorthogonal, q_shift, 
     gain_mask=None):
 
-    print 'WARNING: this function is buggy, don\'t use.'
-
     nlevels = len(Yh)
 
     if gain_mask is None:
@@ -75,10 +73,9 @@ def dtwaveifm(
 
     for level in reversed(xrange(1,nlevels)): 
         Hi = c2q1d(Yh[level] * gain_mask[:,level])
-        #print 'Hi', Hi.shape, '\n', Hi
-        Lo = filters.get_column_i_filtered(Lo, g0b, g0a) + \
-            filters.get_column_i_filtered(Hi, g1b, g1a)
-        #print 'Lo', Lo.shape, '\n', Lo 
+        Lo_filt = filters.get_column_i_filtered(Lo, g0b, g0a)
+        Hi_filt = filters.get_column_i_filtered(Hi, g1b, g1a)
+        Lo = Lo_filt + Hi_filt
 
         (Lo_n, Lo_p) = Lo.shape
         (Yh_n, Yh_p) = Yh[level-1].shape
