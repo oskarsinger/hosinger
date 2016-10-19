@@ -1,13 +1,10 @@
-import seaborn as sns
-
 import numpy as np
 import pandas as pd
-import data.loaders.e4.shortcuts as dles
+import seaborn as sns
 import matplotlib.pyplot as plt
+import data.loaders.e4.shortcuts as dles
 
-from data.pseudodata import MissingData as MD
 from data.servers.batch import BatchServer as BS
-from drrobert.arithmetic import get_running_avg as get_ra
 from linal.utils.misc import get_non_nan
 
 class E4RawDataPlotRunner:
@@ -29,7 +26,7 @@ class E4RawDataPlotRunner:
         self.loaders = dles.get_e4_loaders_all_subjects(
             hdf5_path, None, False)
         self.servers = {s: [BS(dl) for dl in dls]
-            for (s, dls) in self.loaders.items()}
+                        for (s, dls) in self.loaders.items()}
 
         sample_dls = self.loaders.values()[0]
 
