@@ -156,14 +156,11 @@ class MVDTCWTSPRunner:
 
         print 'Loading wavelets'
 
-        get_sp = lambda: [[None, None] 
-                          for i in xrange(self.num_views)]
-        get_p = lambda: [get_sp() 
-                         for i in xrange(self.num_sps)]
-        get_s = lambda s: [get_p() 
-                           for i in xrange(self.num_periods[s])]
-        self.wavelets = {s : get_s(s)
-                         for s in self.subjects}
+        self.wavelets = rmu.get_wavelet_storage(
+            self.num_views,
+            self.num_sps,
+            self.num_periods,
+            self.subjects)
 
         for fn in os.listdir(self.wavelet_dir):
             path = os.path.join(self.wavelet_dir, fn)

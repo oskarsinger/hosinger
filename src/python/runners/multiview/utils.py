@@ -5,6 +5,23 @@ import numpy as np
 from math import log
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 
+def get_wavelet_storage(
+    num_views,
+    num_subperiods,
+    num_periods,
+    subjects):
+
+    get_sp = lambda: [[None, None] 
+                      for i in xrange(num_views)]
+    get_p = lambda: [get_sp() 
+                     for i in xrange(num_sps)]
+    get_s = lambda s: [get_p() 
+                       for i in xrange(num_periods[s])]
+    wavelets = {s : get_s(s)
+                for s in subjects}
+
+    return wavelets
+
 def get_cca_vecs(X1, X2):
 
     cca = CCA(n_components=1)
