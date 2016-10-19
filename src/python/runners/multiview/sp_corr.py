@@ -1,8 +1,8 @@
-import os
-import seaborn as sns
-
 import numpy as np
+import seaborn as sns
 import utils as rmu
+
+import os
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
@@ -40,7 +40,9 @@ class SubperiodCorrelationRunner:
         self.num_views = dtcwt_runner.num_views
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
+
         default = lambda: [[] for i in xrange(self.num_subperiods)]
+
         self.correlation = {s : SPUD(self.num_views, default=default)
                             for s in self.subjects}
 
