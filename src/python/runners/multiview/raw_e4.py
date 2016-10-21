@@ -150,7 +150,3 @@ class E4RawDataPlotRunner:
             dfs[i] = pd.DataFrame(data=d)
 
         return dfs
-
-    def _get_t_tests(self):
-
-        print 'Poop'

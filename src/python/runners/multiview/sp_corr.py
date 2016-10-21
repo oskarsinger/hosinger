@@ -145,7 +145,7 @@ class SubperiodCorrelationRunner:
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
                 for i in xrange(self.num_subperiods):
-                    subperiods[i] = [None] * self.num_periods[l] 
+                    subperiods[i] = [None] * self.num_periods[s] 
                 
         for (k, m) in correlation.items():
             info = k.split('_')
