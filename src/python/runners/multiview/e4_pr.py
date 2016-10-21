@@ -15,7 +15,15 @@ class E4DTCWTPartialReconstructionRunner:
         save_load_dir,
         missing=False,
         complete=False,
-        std=False):
+        std=False,
+        save=False,
+        load=False,
+        show=False):
+
+        # TODO: init directories
+        self.save = save
+        self.load = load
+        self.show = show
 
         # TODO: should this be by periods or subperiods?
         self.wavelets = dtcwt_runner.wavelets
@@ -52,7 +60,6 @@ class E4DTCWTPartialReconstructionRunner:
                         self.recons[s][p][sp][v][0] = His
                         self.recons[s][p][sp][v][1] = Lo
 
-    # TODO: almost no confidence that this is correct
     def _get_reconstructed_view_sp(self, Yh, Yl):
 
         Lo = np.copy(Yl)
