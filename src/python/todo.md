@@ -35,5 +35,5 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Split APE file of Trio of Doom album into individual tracks
-* Try daily (and maybe hourly) averages of partial reconstruction
-    * Do I need to do this on the server or can I just do it on my laptop? Try laptop and see what happens.
+* Fix partial reconstruction to subtract previous level's Lo reconstruction
+* Plot with subperiod 10 minutes instead of one hour on test signal
