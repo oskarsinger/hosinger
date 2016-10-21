@@ -196,22 +196,21 @@ class E4DTCWTPartialReconstructionRunner:
 
         return self._get_completed_and_filtered(views)
 
-    # TODO: farm this out to utils when I get a chance
     def _get_completed_and_filtered(self, view_stats):
 
         dfs = [[None] * len(view)
                for view in view_stats]
 
         for (i, view) in enumerate(view_stats):
-            for (f, freq) in enumerate(view):
-                periods = []
-                subjects = []
-                values = []
+            max_p = max(
+                [len(l[0]) for l in view.values()])
+            num_lists = len(view.values()[0])
+            periods = [[] for f in xrange(num_lists)]
+            subjects = [[] for f in xrange(num_lists)]
+            values = [[] for f in xrange(num_lists)]
 
-                max_p = max(
-                    [len(l) for l in view.values()])
-
-                for (s, l) in view.items():
+            for (s, freqs) in view.items():
+                for (f, freq) in enumerate(freqs):
                     ll = len(l)
                     l = l + [None] * (max_p - ll)
                     s_periods = list(range(max_p))
@@ -219,23 +218,24 @@ class E4DTCWTPartialReconstructionRunner:
 
                     if self.missing:
                         if ll < max_p:
-                            periods.extend(s_periods)
-                            subjects.extend(s_subjects)
-                            values.extend(l)
+                            periods[f].extend(s_periods)
+                            subjects[f].extend(s_subjects)
+                            values[f].extend(l)
                     elif self.complete:
                         if ll == max_p:
-                            periods.extend(s_periods)
-                            subjects.extend(s_subjects)
-                            values.extend(l)
+                            periods[f].extend(s_periods)
+                            subjects[f].extend(s_subjects)
+                            values[f].extend(l)
                     else:
-                        periods.extend(s_periods)
-                        subjects.extend(s_subjects)
-                        values.extend(l)
+                        periods[f].extend(s_periods)
+                        subjects[f].extend(s_subjects)
+                        values[f].extend(l)
 
+            for f in len(view.values[0])
                 d = {
-                    'period': periods,
-                    'subject': subjects, 
-                    'value': values}
+                    'period': periods[f],
+                    'subject': subjects[f], 
+                    'value': values[f]}
                 dfs[i][f] = pd.DataFrame(data=d)
 
         return dfs
