@@ -6,6 +6,7 @@ import data.loaders.e4.shortcuts as dles
 import wavelets.dtcwt as wdtcwt
 
 from data.servers.batch import BatchServer as BS
+from drrobert.file_io import get_timestamped as get_ts
 from linal.utils.misc import get_non_nan
 
 class E4DTCWTPartialReconstructionRunner:
@@ -21,11 +22,18 @@ class E4DTCWTPartialReconstructionRunner:
         show=False):
 
         # TODO: init directories
+        self.std = std
         self.save = save
         self.load = load
         self.show = show
 
-        # TODO: should this be by periods or subperiods?
+        self._init_dirs(
+            self.save,
+            self.load,
+            self.show,
+            save_load_dir)
+
+        self.name = 'Std' if self.std else 'Mean'
         self.wavelets = dtcwt_runner.wavelets
         self.g1a = dtcwt_runner.qshift['g1a']
         self.g1b = dtcwt_runner.qshift['g1b']
@@ -34,6 +42,8 @@ class E4DTCWTPartialReconstructionRunner:
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.num_views = dtcwt_runner.num_views
+        self.period = dtcwt_runner.period
+        self.subperiod = dtcwt_runner.subperiod
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
 
@@ -48,12 +58,41 @@ class E4DTCWTPartialReconstructionRunner:
         if self.load:
             self._load()
         else:
-            self._reconstruct()
+            self._compute()
 
         if self.show:
             self._show()
 
-    def _reconstruct(self):
+    def _init_dirs(self,
+        save,
+        load,
+        show,
+        save_load_dir):
+
+        if (show or save) and not load:
+            if not os.path.isdir(save_load_dir):
+                os.mkdir(save_load_dir)
+
+            model_dir = get_ts('E4DTCWTPRR')
+
+            self.save_load_dir = os.path.join(
+                save_load_dir,
+                model_dir)
+
+            os.mkdir(self.save_load_dir)
+        else:
+            self.save_load_dir = save_load_dir
+
+        self.pr_dir = rmu.init_dir(
+            'pr',
+            save,
+            self.save_load_dir)
+        self.plot_dir = rmu.init_dir(
+            'plots',
+            show,
+            self.save_load_dir)
+
+    def _compute(self):
 
         for (s, periods) in self.wavelets.items():
             for (p, subperiods) in enumerate(periods):
@@ -102,7 +141,7 @@ class E4DTCWTPartialReconstructionRunner:
                     x='period', 
                     y='value', 
                     hue='subject',
-                    data=view,
+                    data=freq,
                     linestyles=linestyles,
                     ax=ax,
                     legend=False)
@@ -115,7 +154,9 @@ class E4DTCWTPartialReconstructionRunner:
                     self.name + ' value of view ' + \
                     self.names[i] + \
                     ' for period length ' + \
-                    str(self.period) + ' seconds'
+                    str(self.subperiod) + ' seconds' + \
+                    ' reconstructed with decimation level' + \
+                    ' 2^' + str(f)
 
                 if self.missing:
                     title = 'Missing only ' + \
