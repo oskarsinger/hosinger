@@ -231,7 +231,7 @@ class E4DTCWTPartialReconstructionRunner:
                         subjects[f].extend(s_subjects)
                         values[f].extend(l)
 
-            for f in len(view.values[0])
+            for f in len(view.values[0]):
                 d = {
                     'period': periods[f],
                     'subject': subjects[f], 
