@@ -36,4 +36,4 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Split APE file of Trio of Doom album into individual tracks
 * Try daily (and maybe hourly) averages of partial reconstruction
-    * Do I need to do this on the server or can I just do it on my laptop?
+    * Do I need to do this on the server or can I just do it on my laptop? Try laptop and see what happens.

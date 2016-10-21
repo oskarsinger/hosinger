@@ -22,6 +22,14 @@ def get_wavelet_storage(
 
     return wavelets
 
+def get_correlation_storage(
+    num_views,
+    num_subperiods,
+    num_periods,
+    subjects):
+
+    print 'Poop'
+
 def get_cca_vecs(X1, X2):
 
     cca = CCA(n_components=1)
