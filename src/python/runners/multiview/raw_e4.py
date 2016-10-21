@@ -38,11 +38,8 @@ class E4RawDataPlotRunner:
 
     def run(self):
 
-        self._plot_stats()
-
-    def _plot_stats(self):
-
-        averages = self._get_stats()
+        averages = self._get_completed_and_filtered(
+            self._get_stats())
         asymp = {'06', '07', '13', '21', '24'}
         linestyles = ['--' if s[-2:] in asymp else '-'
                       for s in self.servers.keys()]
@@ -85,6 +82,7 @@ class E4RawDataPlotRunner:
 
         views = [{s[-2:] : None for s in self.servers.keys()}
                  for i in xrange(self.num_views)]
+        stat = np.std if self.std else np.mean
 
         for (s, dss) in self.servers.items():
             s = s[-2:]
@@ -100,21 +98,23 @@ class E4RawDataPlotRunner:
                     i_num_periods += 1
 
                 for p in xrange(i_num_periods):
-                    data_p = data[p * window : (p+1) * window]
-                    data_p = get_non_nan(data_p)
+                    data_p = get_non_nan(
+                        data[p * window : (p+1) * window])
 
                     if truncate:
                         data_p[data_p > 40] = 40
 
-                    stat = np.std(data_p) if self.std else np.mean(data_p)
-
-                    view_stat.append(stat)
+                    view_stat.append(stat(data_p))
 
                 views[i][s] = view_stat
 
+        return views
+
+    def _get_completed_and_filtered(self, view_stats):
+
         dfs = [None] * self.num_views
 
-        for (i, view) in enumerate(views):
+        for (i, view) in enumerate(view_stats):
             periods = []
             subjects = []
             values = []

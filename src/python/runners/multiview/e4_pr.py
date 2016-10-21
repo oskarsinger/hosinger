@@ -88,7 +88,116 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _show(self):
 
-        print 'Poop'  
+        averages = self._get_stats()
+        asymp = {'06', '07', '13', '21', '24'}
+        linestyles = ['--' if s[-2:] in asymp else '-'
+                      for s in self.servers.keys()]
+
+        for (i, view) in enumerate(averages):
+            for (f, freq) in enumerate(view):
+                # TODO: plot each freq component separately
+                ax = plt.axes()
+
+                sns.pointplot(
+                    x='period', 
+                    y='value', 
+                    hue='subject',
+                    data=view,
+                    linestyles=linestyles,
+                    ax=ax,
+                    legend=False)
+                sns.plt.legend(
+                    bbox_to_anchor=(1, 1.05), 
+                    loc=2, 
+                    borderaxespad=0.)
+
+                title = \
+                    self.name + ' value of view ' + \
+                    self.names[i] + \
+                    ' for period length ' + \
+                    str(self.period) + ' seconds'
+
+                if self.missing:
+                    title = 'Missing only ' + \
+                        title[0].lower() + title[1:]
+                elif self.complete:
+                    title = 'Complete only ' + \
+                        title[0].lower() + title[1:]
+
+                ax.set_title(title)
+                ax.get_figure().savefig(
+                    '_'.join(title.split()) + '.png')
+                sns.plt.clf()
+
+    def _get_stats(self):
+
+        views = [{s[-2:] : None for s in self.subjects}
+                 for i in xrange(self.num_views)]
+        stat = np.std if self.std else np.mean
+
+        for (s, view_list) in self.wavelets.items():
+            s = s[-2:]
+
+            for (v, periods) in enumerate(view_list):
+                (Yh, Yl) = periods[0][0]
+                num_freqs = len(Yh) + 1
+                view_stat = [[] for i in xrange(num_freqs)]
+
+                for (p, subperiods) in enumerate(periods):
+                    for (sp, (Yh, Yl)) in enumerate(subperiods):
+                        Yh_stats = [stat(yh) for yh in Yh]
+                        Yl_stat = stat(Yl)
+
+                        for (f, ys) in Yh_stats + [Yl_stat]:
+                            view_stat[f].append(ys)
+
+                views[v][s] = view_stat
+
+        return self._get_completed_and_filtered(views)
+
+    # TODO: farm this out to utils when I get a chance
+    def _get_completed_and_filtered(self, view_stats):
+
+        dfs = [[None] * len(view)
+               for view in view_stats]
+
+        for (i, view) in enumerate(view_stats):
+            for (f, freq) in enumerate(view):
+                periods = []
+                subjects = []
+                values = []
+
+                max_p = max(
+                    [len(l) for l in view.values()])
+
+                for (s, l) in view.items():
+                    ll = len(l)
+                    l = l + [None] * (max_p - ll)
+                    s_periods = list(range(max_p))
+                    s_subjects = [s] * max_p
+
+                    if self.missing:
+                        if ll < max_p:
+                            periods.extend(s_periods)
+                            subjects.extend(s_subjects)
+                            values.extend(l)
+                    elif self.complete:
+                        if ll == max_p:
+                            periods.extend(s_periods)
+                            subjects.extend(s_subjects)
+                            values.extend(l)
+                    else:
+                        periods.extend(s_periods)
+                        subjects.extend(s_subjects)
+                        values.extend(l)
+
+                d = {
+                    'period': periods,
+                    'subject': subjects, 
+                    'value': values}
+                dfs[i][f] = pd.DataFrame(data=d)
+
+        return dfs
 
     def _load(self):
 
