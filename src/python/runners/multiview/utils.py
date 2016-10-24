@@ -14,7 +14,7 @@ def get_wavelet_storage(
     get_sp = lambda: [[None, None] 
                       for i in xrange(num_views)]
     get_p = lambda: [get_sp() 
-                     for i in xrange(num_sps)]
+                     for i in xrange(num_subperiods)]
     get_s = lambda s: [get_p() 
                        for i in xrange(num_periods[s])]
     wavelets = {s : get_s(s)
