@@ -105,6 +105,9 @@ class E4DTCWTPartialReconstructionRunner:
                         sp_v_prs = self._get_reconstructed_view_sp(
                             view[0], view[1])
 
+                        print 'view[0]', view[0]
+                        print 'view[1]', view[1]
+
                         if self.save:
                             self._save(
                                 sp_v_prs,
@@ -117,7 +120,8 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _get_reconstructed_view_sp(self, Yl, Yh):
 
-        print 'Yl', Yl
+        print 'len(Yl)', len(Yl)
+        print 'len(Yh)', len(Yh)
         Lo_prev = np.copy(Yl)[:,np.newaxis]
         prs = [Lo_prev]
 
