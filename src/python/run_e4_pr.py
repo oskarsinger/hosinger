@@ -9,6 +9,7 @@ from runners.multiview import MVDTCWTSPRunner
 @click.option('--wavelet-dir')
 @click.option('--missing', default=False)
 @click.option('--complete', default=False)
+@click.option('--std', default=False)
 @click.option('--save', default=False)
 @click.option('--load', default=False)
 @click.option('--show', default=False)
@@ -18,6 +19,7 @@ def run_it_all_day_bb(
     wavelet_dir,
     missing,
     complete,
+    std,
     save,
     load,
     show):
