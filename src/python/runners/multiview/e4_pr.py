@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import utils as rmu
 import matplotlib.pyplot as plt
 import data.loaders.e4.shortcuts as dles
 import wavelets.dtcwt as wdtcwt
