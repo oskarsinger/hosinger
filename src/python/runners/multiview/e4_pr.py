@@ -122,7 +122,6 @@ class E4DTCWTPartialReconstructionRunner:
 
         for level in reversed(xrange(1, len(Yh))):
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
-            print Lo_prev.shape
             Lo_filt = wdtcwt.filters.get_column_i_filtered(
                 Lo_prev, self.g0b, self.g0a)
             Hi_filt = wdtcwt.filters.get_column_i_filtered(
