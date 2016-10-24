@@ -117,13 +117,14 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _get_reconstructed_view_sp(self, Yh, Yl):
 
-        Lo_prev = np.copy(Yl)[:,np.newaxis]
+        Lo_prev = np.copy(Yl)
         prs = [Lo_prev]
 
         for level in reversed(xrange(1, len(Yh))):
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
             Lo_filt = wdtcwt.filters.get_column_i_filtered(
                 Lo_prev, self.g0b, self.g0a)
+            print Lo_prev.shape
             Hi_filt = wdtcwt.filters.get_column_i_filtered(
                 Hi, self.g1b, self.g1a)
             Lo_prev = Lo_filt + Hi_filt - Lo_prev
