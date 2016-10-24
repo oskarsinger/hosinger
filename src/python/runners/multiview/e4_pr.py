@@ -41,6 +41,8 @@ class E4DTCWTPartialReconstructionRunner:
         self.g1b = dtcwt_runner.qshift['g1b']
         self.g0a = dtcwt_runner.qshift['g0a']
         self.g0b = dtcwt_runner.qshift['g0b']
+        self.g0o = dtcwt_runner.biorthogonal['g0o']
+        self.g1o = dtcwt_runner.biorthogonal['g1o']
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.num_views = dtcwt_runner.num_views
@@ -121,18 +123,18 @@ class E4DTCWTPartialReconstructionRunner:
         for level in reversed(xrange(1, len(Yh))):
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
             Lo_filt = wdtcwt.filters.get_column_i_filtered(
-                Lo_prev, g0b, g0a)
+                Lo_prev, self.g0b, self.g0a)
             Hi_filt = wdtcwt.filters.get_column_i_filtered(
-                Hi, g1b, g1a)
+                Hi, self.g1b, self.g1a)
             Lo_prev = Lo_filt + Hi_filt - Lo_prev
 
             prs.append(Lo_prev)
 
         Hi = wdtcwt.oned.c2q1d(Yh[0])
         Lo_filt = wdtcwt.filters.get_column_filtered(
-            Lo_prev, g0o)
+            Lo_prev, self.g0o)
         Hi_filt = wdtcwt.filters.get_column_filtered(
-            Hi, g1o)
+            Hi, self.g1o)
 
         prs.append(Lo_filt + Hi_filt - Lo_prev)
 
