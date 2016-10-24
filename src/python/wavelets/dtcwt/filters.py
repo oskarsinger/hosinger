@@ -92,7 +92,7 @@ def get_column_i_filtered(X, ha, hb):
         print 'X[xe[begin_b:end_b:2],:]', X[xe[begin_b:end_b:2],:]
         #print 'hao', hao
         Y[begin_s:end_s:4,:] = conv2(
-            X[xe[begin_b:end_b:2],:], hao, 'valid')
+            X[xe[np.arange(begin_b,end_b,2)]], hao, 'valid')#begin_b:end_b:2],:], hao, 'valid')
         #print 'Y[begin_s:end_s:4,:]', Y[begin_s:end_s:4,:]
         Y[begin_s+1:end_s+1:4,:] = conv2(
             X[xe[begin_a:end_a:2],:], hbo, 'valid')
