@@ -89,7 +89,7 @@ def dtwaveifm(
             raise ValueError(
                 'Yh sizes are not valid for DTWAVEIFM')
 
-    Hi = c2q1d(Yh[level] * gain_mask[:,level])
+    Hi = c2q1d(Yh[0] * gain_mask[:,0])
 
     return filters.get_column_filtered(Lo, g0o) + \
         filters.get_column_filtered(Hi, g1o)
