@@ -184,6 +184,7 @@ class MVDTCWTSPRunner:
                     coeffs = [loaded[i] 
                               for i in xrange(num_coeffs)]
                 elif Yh_or_Yl == 'Yl':
+                    print 'Yl loaded', loaded
                     index = 1
                     coeffs = loaded
 
@@ -201,6 +202,7 @@ class MVDTCWTSPRunner:
                 self._save(Yls, Yhs, subject)
 
     def _save(self, Yls, Yhs, subject):
+
         for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
             for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yhs)):
                 for (sp, Yl) in enumerate(p_Yls):
