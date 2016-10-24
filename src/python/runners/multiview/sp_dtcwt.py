@@ -237,7 +237,6 @@ class MVDTCWTSPRunner:
                     with open(path, 'w') as f:
                         np.savez(f, *Yh)
 
-
     def _get_sp_wavelet_transforms(self, subject):
 
         Yls = [[] for i in xrange(self.num_views)]
