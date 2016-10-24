@@ -73,8 +73,10 @@ def dtwaveifm(
 
     for level in reversed(xrange(1,nlevels)): 
         Hi = c2q1d(Yh[level] * gain_mask[:,level])
-        Lo_filt = filters.get_column_i_filtered(Lo, g0b, g0a)
-        Hi_filt = filters.get_column_i_filtered(Hi, g1b, g1a)
+        Lo_filt = filters.get_column_i_filtered(
+            Lo, g0b, g0a)
+        Hi_filt = filters.get_column_i_filtered(
+            Hi, g1b, g1a)
         Lo = Lo_filt + Hi_filt
 
         (Lo_n, Lo_p) = Lo.shape

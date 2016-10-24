@@ -21,7 +21,6 @@ class E4DTCWTPartialReconstructionRunner:
         load=False,
         show=False):
 
-        # TODO: init directories
         self.std = std
         self.save = save
         self.load = load
@@ -47,7 +46,7 @@ class E4DTCWTPartialReconstructionRunner:
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
 
-        self.pr = rmu.get_wavelet_storage(
+        self.prs = rmu.get_wavelet_storage(
             self.num_views,
             self.num_subperiods,
             self.num_periods,
@@ -98,32 +97,35 @@ class E4DTCWTPartialReconstructionRunner:
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, view) in enumerate(views):
-                        (His, Lo) = self._get_reconstructed_view_sp(
+                        sp_v_prs = self._get_reconstructed_view_sp(
                             view[0], view[1])
 
                         if self.save:
                             self._save(
-                                His,
-                                Lo,
+                                sp_v_prs,
                                 s,
                                 v,
                                 p,
                                 sp)
 
-                        self.pr[s][p][sp][v][0] = His
-                        self.pr[s][p][sp][v][1] = Lo
+                        self.prs[s][p][sp][v] = sp_v_prs
 
     def _get_reconstructed_view_sp(self, Yh, Yl):
 
-        Lo = np.copy(Yl)
-        His = [wdtcwt.oned.c2q1d(Y) for Y in Yh]
-        Lo_filt = dtcwt.filters.get_column_i_filtered(
-            Lo, self.g0b, self.g0a)
-        Hi_filts = [dtcwt.filters.get_column_i_filtered(
-                        Hi, self.g1b, self.g1a)
-                    for Hi in His]
+        Lo_prev = np.copy(Yl)
+        prs = [Lo_prev]
 
-        return (Hi_filts, Lo_filt)
+        for level in reversed(xrange(len(Yh))):
+            Hi = c2q1d(Yh[level]) 
+            Lo_filt = filters.get_column_i_filtered(
+                Lo_prev, g0b, g0a)
+            Hi_filt = filters.get_column_i_filtered(
+                Hi, g1b, g1a)
+            Lo_prev = Lo_filt + Hi_filt - Lo_prev
+
+            prs.append(Lo_prev)
+
+        return prs
 
     def _show(self):
 
@@ -134,7 +136,6 @@ class E4DTCWTPartialReconstructionRunner:
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
-                # TODO: plot each freq component separately
                 ax = plt.axes()
 
                 sns.pointplot(
@@ -185,12 +186,11 @@ class E4DTCWTPartialReconstructionRunner:
                 view_stat = [[] for i in xrange(num_freqs)]
 
                 for (p, subperiods) in enumerate(periods):
-                    for (sp, (Yh, Yl)) in enumerate(subperiods):
-                        Yh_stats = [stat(yh) for yh in Yh]
-                        Yl_stat = stat(Yl)
+                    for (sp, prs) in enumerate(subperiods):
+                        pr_stats = [stat(pr) for pr in prs]
 
-                        for (f, ys) in Yh_stats + [Yl_stat]:
-                            view_stat[f].append(ys)
+                        for (f, pr) in enumerate(pr_stats):
+                            view_stat[f].append(pr)
 
                 views[v][s] = view_stat
 
@@ -244,28 +244,22 @@ class E4DTCWTPartialReconstructionRunner:
 
         for fn in os.listdir(self.pr_dir):
             path = os.path.join(self.pr_dir, fn)
-
-            pr = None
+            prs = None
 
             with open(path) as f:
-                pr = np.load(f)
+                loaded = np.load(f)
+                prs = [loaded[i] 
+                       for i in xrange(len(loaded))]
 
             info = fn.split('_')
             s = info[1]
             v = int(info[3])
             p = int(info[5])
             sp = int(info[7])
-            Hi_or_Lo = info[8]
-            index = None
 
-            if Hi_or_Lo == 'Hi':
-                index = 0
-            elif Hi_or_Lo == 'Lo':
-                index = 1
-            
-            self.pr[s][v][p][sp][index] = pr
+            self.prs[s][v][p][sp] = prs
 
-    def _save(self, His, Lo, s, v, p, sp):
+    def _save(self, prs, s, v, p, sp):
 
         path = '_'.join([
             'subject', s,
@@ -274,8 +268,5 @@ class E4DTCWTPartialReconstructionRunner:
             'subperiod', str(sp)])
         path = os.path.join(self.pr_dir, path)
 
-            with open(path + '_His', 'w') as f:
-                np.savez(f, His)
-
-            with open(path + '_Lo', 'w') as f:
-                np.save(f, Lo)
+        with open(path, 'w') as f:
+            np.savez(f, prs)
