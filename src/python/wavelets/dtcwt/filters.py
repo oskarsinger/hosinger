@@ -91,6 +91,7 @@ def get_column_i_filtered(X, ha, hb):
 
         #print 'X[xe[begin_b:end_b:2],:]', X[xe[begin_b:end_b:2],:]
         #print 'hao', hao
+        print 'xe[begin_b:end_b:2,:]', xe[begin_b:end_b:2,:]
         Y[begin_s:end_s:4,:] = conv2(
             X[xe[begin_b:end_b:2],:], hao, 'valid')
         #print 'Y[begin_s:end_s:4,:]', Y[begin_s:end_s:4,:]
