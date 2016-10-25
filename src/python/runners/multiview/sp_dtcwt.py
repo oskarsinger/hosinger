@@ -206,6 +206,7 @@ class MVDTCWTSPRunner:
         for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
             for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yhs)):
                 for (sp, Yl) in enumerate(p_Yls):
+                    print 'Yl saved', Yl
                     path = '_'.join([
                         'subject',
                         subject,
