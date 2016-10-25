@@ -91,7 +91,6 @@ def get_column_i_filtered(X, ha, hb):
             begin_b = 1
             end_b = n + m - 2
 
-        print 'X', X
         print 'X[xe[begin_b:end_b:2],:]', X[xe[begin_b:end_b:2],:]
         #print 'hao', hao
         Y[begin_s:end_s:4,:] = conv2(
