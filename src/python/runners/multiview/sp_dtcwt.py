@@ -271,8 +271,8 @@ class MVDTCWTSPRunner:
                         self.biorthogonal,
                         self.qshift)
 
-                    print 'Yl right after computation', Yl
-                    print 'Yh right after computation', Yh
+                    print 'Yl right after computation', Yl.shape
+                    print 'Yh right after computation', Yh.shape
 
                     Yls[i][-1].append(Yl)
                     Yhs[i][-1].append(Yh)
