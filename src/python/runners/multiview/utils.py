@@ -42,12 +42,15 @@ def get_cca_vecs(X1, X2):
 
 def get_normed_correlation(X1, X2):
 
-    sd1 = np.std(X1, axis=0)
-    sd2 = np.std(X2, axis=0)
-    normed_X1 = X1 / (sd1 * X1.shape[0])
-    normed_X2 = X2 / (sd2 * X2.shape[0])
+    # TODO: center it, data or wavelets?
+    centered_X1 = X1 - np.mean(X1, axis=0)
+    centered_X2 = X2 - np.mean(X2, axis=0)
+    unnormed = np.dot(centered_X1.T, centered_X2)
+    sd1 = np.std(centered_X1, axis=0)
+    sd2 = np.std(centered_X2, axis=0)
+    sd_op = np.dot(sd1, sd2.T) * X1.shape[0]
 
-    return np.dot(normed_X1.T, normed_X2)
+    return unnormed / sd_op
 
 def get_sampled_wavelets(Yh, Yl):
 

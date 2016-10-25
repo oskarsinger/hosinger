@@ -13,7 +13,8 @@ def get_column_filtered(X, h):
     Y = None
     
     if np.count_nonzero(X) > 0:
-        xe = dtcwtu.reflect(np.arange(1-m2, n+m2+1), 0.5, n+0.5)
+        xe = dtcwtu.reflect(
+            np.arange(1-m2, n+m2+1), 0.5, n+0.5)
 
         Y = conv2(X[xe,:], h, mode='valid')
     else:
@@ -42,7 +43,8 @@ def get_column_i_filtered(X, ha, hb):
     m2 = int(m/2)
     Y = np.zeros((n*2, p))
 
-    xe = dtcwtu.reflect(np.arange(1-m2, n+m2+1), 0.5, n+0.5)
+    xe = dtcwtu.reflect(
+        np.arange(1-m2, n+m2+1), 0.5, n+0.5)
     hao = ha[0:m:2]
     hae = ha[1:m:2]
     hbo = hb[0:m:2]
