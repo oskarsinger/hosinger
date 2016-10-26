@@ -268,7 +268,8 @@ class E4DTCWTPartialReconstructionRunner:
             prs = None
 
             with open(path) as f:
-                loaded = np.load(f)
+                loaded = {int(h_fn.split('_')[1]) : a
+                          for (h_fn, a) in np.load(f).items()}
                 prs = [loaded[i] 
                        for i in xrange(len(loaded))]
 
