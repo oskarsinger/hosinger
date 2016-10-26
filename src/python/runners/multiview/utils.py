@@ -4,6 +4,7 @@ import numpy as np
 
 from math import log
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from scipy.stats import pearsonr as ssp
 
 def get_wavelet_storage(
     num_views,
@@ -42,15 +43,30 @@ def get_cca_vecs(X1, X2):
 
 def get_normed_correlation(X1, X2):
 
-    # TODO: center it, data or wavelets?
-    centered_X1 = X1 - np.mean(X1, axis=0)
-    centered_X2 = X2 - np.mean(X2, axis=0)
+    abs_X1 = np.absolute(X1)
+    abs_X2 = np.absolute(X2)
+
+    """
+    centered_X1 = abs_X1 - np.mean(abs_X1, axis=0)
+    centered_X2 = abs_X2 - np.mean(abs_X2, axis=0)
     unnormed = np.dot(centered_X1.T, centered_X2)
-    sd1 = np.std(centered_X1, axis=0)
-    sd2 = np.std(centered_X2, axis=0)
-    sd_op = np.dot(sd1, sd2.T) * X1.shape[0]
+    sd1 = np.std(abs_X1, axis=0)
+    sd2 = np.std(abs_X2, axis=0)
+    sd_op = np.dot(sd1, sd2.T) * (X1.shape[0] - 1)
 
     return unnormed / sd_op
+    """
+
+    p1 = X1.shape[1]
+    p2 = X1.shape[1]
+    corr = np.zeros((p1, p2))
+
+    for i in xrange(p1):
+        for j in xrange(p2):
+            corr[i,j] = ssp(
+                abs_X1[:,i], abs_X2[:,j])[0]
+
+    return corr
 
 def get_sampled_wavelets(Yh, Yl):
 

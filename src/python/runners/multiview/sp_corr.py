@@ -183,7 +183,7 @@ class SubperiodCorrelationRunner:
                     ' over days for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]] + \
                     ' of subject ' + s
-                fn = '_'.join(title.split()) + '.png'
+                fn = '_'.join(title.split()) + '.pdf'
                 path = os.path.join(self.plot_dir, fn)
 
                 plot_matrix_heat(
@@ -193,7 +193,8 @@ class SubperiodCorrelationRunner:
                     title,
                     'day',
                     'frequency pair',
-                    'correlation')[0].get_figure().savefig(path)
+                    'correlation')[0].get_figure().savefig(
+                        path, format='pdf')
                 sns.plt.clf()
 
     def _show_corr_over_subperiods(self):
@@ -223,7 +224,7 @@ class SubperiodCorrelationRunner:
                         ' for views ' + name1 + ' ' + name2 + \
                         ' of subject ' + s + ' and day ' + \
                         rmu.get_2_digit(p)
-                    fn = '_'.join(title.split()) + '.png'
+                    fn = '_'.join(title.split()) + '.pdf'
                     path = os.path.join(self.plot_dir, fn)
 
                     plot_matrix_heat(
@@ -233,7 +234,8 @@ class SubperiodCorrelationRunner:
                         title,
                         'hour',
                         'frequency pair',
-                        'correlation')[0].get_figure().savefig(path)
+                        'correlation')[0].get_figure().savefig(
+                            path, format='pdf')
                     sns.plt.clf()
 
     def _show_corr_max_over_periods(self):
@@ -255,7 +257,7 @@ class SubperiodCorrelationRunner:
                     ' over hours for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]] + \
                     ' of subject ' + s
-                fn = '_'.join(title.split()) + '.png'
+                fn = '_'.join(title.split()) + '.pdf'
                 path = os.path.join(self.plot_dir, fn)
 
                 plot_matrix_heat(
@@ -265,7 +267,8 @@ class SubperiodCorrelationRunner:
                     title,
                     'hour',
                     'frequency pair',
-                    'correlation')[0].get_figure().savefig(path)
+                    'correlation')[0].get_figure().savefig(
+                        path, format='pdf')
                 sns.plt.clf()
 
     def _show_corr_over_periods(self):
@@ -284,7 +287,7 @@ class SubperiodCorrelationRunner:
                     title = 'View-pairwise correlation over days for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s + ' at hour ' + str(sp)
-                    fn = '_'.join(title.split()) + '.png'
+                    fn = '_'.join(title.split()) + '.pdf'
                     path = os.path.join(self.plot_dir, fn)
 
                     plot_matrix_heat(
@@ -294,5 +297,6 @@ class SubperiodCorrelationRunner:
                         title,
                         'day',
                         'frequency pair',
-                        'correlation')[0].get_figure().savefig(path)
+                        'correlation')[0].get_figure().savefig(
+                            path, format='pdf')
                     sns.plt.clf()

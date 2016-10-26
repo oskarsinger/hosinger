@@ -59,7 +59,8 @@ class ATRawDataPlotRunner:
 
             ax.set_title(title)
             ax.get_figure().savefig(
-                '_'.join(title.split()) + '.png')
+                '_'.join(title.split()) + '.pdf',
+                format='pdf')
             sns.plt.clf()
 
     def _get_stats(self):
