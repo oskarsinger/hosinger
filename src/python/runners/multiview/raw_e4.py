@@ -86,6 +86,7 @@ class E4RawDataPlotRunner:
 
         for (s, dss) in self.servers.items():
             s = s[-2:]
+
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
                 view_stat = []
