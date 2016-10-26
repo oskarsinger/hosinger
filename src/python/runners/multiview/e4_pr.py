@@ -264,6 +264,12 @@ class E4DTCWTPartialReconstructionRunner:
     def _load(self):
 
         for fn in os.listdir(self.pr_dir):
+            info = fn.split('_')
+            s = info[1]
+            v = int(info[3])
+            p = int(info[5])
+            sp = int(info[7])
+
             path = os.path.join(self.pr_dir, fn)
             prs = None
 
@@ -272,12 +278,6 @@ class E4DTCWTPartialReconstructionRunner:
                           for (h_fn, a) in np.load(f).items()}
                 prs = [loaded[i] 
                        for i in xrange(len(loaded))]
-
-            info = fn.split('_')
-            s = info[1]
-            v = int(info[3])
-            p = int(info[5])
-            sp = int(info[7])
 
             self.prs[s][v][p][sp] = prs
 
