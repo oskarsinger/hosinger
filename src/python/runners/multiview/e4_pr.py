@@ -146,7 +146,7 @@ class E4DTCWTPartialReconstructionRunner:
 
         prs.append(Lo_filt + Hi_filt - Lo_prev)
 
-        return prs
+        return list(reversed(prs))
 
     def _show(self):
 
