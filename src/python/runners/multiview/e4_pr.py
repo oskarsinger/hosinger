@@ -133,7 +133,7 @@ class E4DTCWTPartialReconstructionRunner:
             (Yh_n, Yh_p) = Yh[level-1].shape
 
             if not Lo_n == 2 * Yh_n:
-                Lo = Lo[1:-1,:]
+                Lo_prev = Lo_prev[1:-1,:]
 
             prs.append(Lo_prev)
 
