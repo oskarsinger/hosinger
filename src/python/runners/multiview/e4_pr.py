@@ -126,8 +126,14 @@ class E4DTCWTPartialReconstructionRunner:
                 Lo_prev, self.g0b, self.g0a)
             Hi_filt = wdtcwt.filters.get_column_i_filtered(
                 Hi, self.g1b, self.g1a)
-            # TODO: verify correctness of _get_doubled_vector
-            Lo_prev = Lo_filt + Hi_filt - _get_doubled_vector(Lo_prev)
+            doubled = _get_doubled_vector(Lo_prev)
+            Lo_prev = Lo_filt + Hi_filt - doubled
+
+            (Lo_n, Lo_p) = Lo_prev.shape
+            (Yh_n, Yh_p) = Yh[level-1].shape
+
+            if not Lo_n == 2 * Yh_n:
+                Lo = Lo[1:-1,:]
 
             prs.append(Lo_prev)
 
