@@ -105,9 +105,6 @@ class E4DTCWTPartialReconstructionRunner:
                         sp_v_prs = self._get_reconstructed_view_sp(
                             view[0], view[1])
 
-                        print 'view[0]', view[0]
-                        print 'view[1]', view[1]
-
                         if self.save:
                             self._save(
                                 sp_v_prs,
@@ -124,6 +121,7 @@ class E4DTCWTPartialReconstructionRunner:
         prs = [Lo_prev]
 
         for level in reversed(xrange(1, len(Yh))):
+            print 'Lo_prev.shape', Lo_prev.shape
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
             Lo_filt = wdtcwt.filters.get_column_i_filtered(
                 Lo_prev, self.g0b, self.g0a)
