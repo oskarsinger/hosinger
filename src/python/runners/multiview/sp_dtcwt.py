@@ -256,7 +256,7 @@ class MVDTCWTSPRunner:
 
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                         data_sp, 
-                        int(log(data_sp.shape[0], 2)) - 2,
+                        int(log(data_sp.shape[0], 2)) - 1,
                         self.biorthogonal,
                         self.qshift)
 
