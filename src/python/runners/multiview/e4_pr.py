@@ -194,28 +194,25 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _get_stats(self):
 
-        views = [{s[-2:] : None for s in self.subjects}
-                 for i in xrange(self.num_views)]
+        view_stats = [{s[-2:] : [] for s in self.subjects}
+                      for i in xrange(self.num_views)]
         stat = np.std if self.std else np.mean
 
-        for (s, view_list) in self.wavelets.items():
+        for (s, periods) in self.prs.items():
             s = s[-2:]
+            sample_views = periods[0][0]
 
-            for (v, periods) in enumerate(view_list):
-                (Yh, Yl) = periods[0][0]
-                num_freqs = len(Yh) + 1
-                view_stat = [[] for i in xrange(num_freqs)]
+            for (v, prs) in enumerate(sample_views):
+                view_stats[v][s] = [[] for f in xrange(len(prs))]
 
-                for (p, subperiods) in enumerate(periods):
-                    for (sp, prs) in enumerate(subperiods):
-                        pr_stats = [stat(pr) for pr in prs]
+            for (p, subperiods) in enumerate(periods):
+                for (sp, views) in enumerate(subperiods):
+                    for (v, prs) in enumerate(views):
+                        for (f, pr) in enumerate(prs):
+                            view_stats[v][s][f].append(
+                                stat(pr))
 
-                        for (f, pr) in enumerate(pr_stats):
-                            view_stat[f].append(pr)
-
-                views[v][s] = view_stat
-
-        return self._get_completed_and_filtered(views)
+        return self._get_completed_and_filtered(view_stats)
 
     def _get_completed_and_filtered(self, view_stats):
 
@@ -279,7 +276,7 @@ class E4DTCWTPartialReconstructionRunner:
                 prs = [loaded[i] 
                        for i in xrange(len(loaded))]
 
-            self.prs[s][v][p][sp] = prs
+            self.prs[s][p][sp][v] = prs
 
     def _save(self, prs, s, v, p, sp):
 
