@@ -204,31 +204,29 @@ class MVDTCWTSPRunner:
 
         for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
             for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yls)):
-                path = '_'.join([
-                    'subject',
-                    subject,
-                    'period',
-                    str(p),
-                    'subperiod',
-                    str(sp),
-                    'view',
-                    str(v)])
-
-                for (sp, Yl) in enumerate(p_Yls):
-                    f_path = path + '_Yl_dtcwt_coefficients.thang'
+                for sp in xrange(self.num_sps):
+                    path = '_'.join([
+                        'subject',
+                        subject,
+                        'period',
+                        str(p),
+                        'subperiod',
+                        str(sp),
+                        'view',
+                        str(v)])
+                    l_fname = path + '_Yl_dtcwt_coefficients.thang'
                     l_path = os.path.join(
-                        self.wavelet_dir, f_path)
+                        self.wavelet_dir, l_fname)
 
                     with open(l_path, 'w') as f:
-                        np.save(f, Yl)
+                        np.save(f, p_Yls[sp])
 
-                for (sp, Yh) in enumerate(p_Yhs):
-                    f_path = path + '_Yh_dtcwt_coefficients.thang'
+                    h_fname = path + '_Yh_dtcwt_coefficients.thang'
                     h_path = os.path.join(
-                        self.wavelet_dir, f_path)
+                        self.wavelet_dir, h_fname)
 
                     with open(h_path, 'w') as f:
-                        np.savez(f, *Yh)
+                        np.savez(f, *p_Yhs[sp])
 
     def _get_sp_wavelet_transforms(self, subject):
 
