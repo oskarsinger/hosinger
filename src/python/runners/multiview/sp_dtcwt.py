@@ -178,8 +178,8 @@ class MVDTCWTSPRunner:
 
                 if Yh_or_Yl == 'Yh':
                     index = 0
-                    loaded = {int(fn.split('_')[1]) : a
-                              for (fn, a) in loaded.items()}
+                    loaded = {int(h_fn.split('_')[1]) : a
+                              for (h_fn, a) in loaded.items()}
                     num_coeffs = len(loaded)
                     coeffs = [loaded[i] 
                               for i in xrange(num_coeffs)]
