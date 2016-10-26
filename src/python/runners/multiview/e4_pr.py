@@ -104,6 +104,7 @@ class E4DTCWTPartialReconstructionRunner:
                     for (v, view) in enumerate(views):
                         sp_v_prs = self._get_reconstructed_view_sp(
                             view[0], view[1])
+                        print 'Computed prs', sp_v_prs
 
                         if self.save:
                             self._save(
@@ -129,8 +130,8 @@ class E4DTCWTPartialReconstructionRunner:
             doubled = _get_doubled_vector(Lo_prev)
             Lo_prev = Lo_filt + Hi_filt - doubled
 
-            (Lo_n, Lo_p) = Lo_prev.shape
-            (Yh_n, Yh_p) = Yh[level-1].shape
+            Lo_n = Lo_prev.shape[0]
+            Yh_n = Yh[level-1].shape[0]
 
             if not Lo_n == 2 * Yh_n:
                 Lo_prev = Lo_prev[1:-1,:]
@@ -209,8 +210,6 @@ class E4DTCWTPartialReconstructionRunner:
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
                         for (f, pr) in enumerate(prs):
-                            print 'f', f
-                            print 'pr', pr
                             view_stats[v][s][f].append(
                                 stat(pr))
 
@@ -278,9 +277,13 @@ class E4DTCWTPartialReconstructionRunner:
                 prs = [loaded[i] 
                        for i in xrange(len(loaded))]
 
+            print 'Loaded prs', prs
+
             self.prs[s][p][sp][v] = prs
 
     def _save(self, prs, s, v, p, sp):
+
+        print 'Saved prs', prs
 
         fname = '_'.join([
             'subject', s,
