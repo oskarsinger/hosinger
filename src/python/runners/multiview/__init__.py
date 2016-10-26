@@ -5,4 +5,5 @@ from vpw_corr import ViewPairwiseCorrelationRunner
 from dpw_corr import DayPairwiseCorrelationRunner
 from sp_corr import SubperiodCorrelationRunner
 from raw_e4 import E4RawDataPlotRunner
+from raw_at import ATRawDataPlotRunner
 from e4_pr import E4DTCWTPartialReconstructionRunner
