@@ -281,12 +281,12 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _save(self, prs, s, v, p, sp):
 
-        path = '_'.join([
+        fname = '_'.join([
             'subject', s,
             'view', str(v),
             'period', str(p),
             'subperiod', str(sp)])
-        path = os.path.join(self.pr_dir, path)
+        path = os.path.join(self.pr_dir, fname)
 
         with open(path, 'w') as f:
             np.savez(f, prs)
