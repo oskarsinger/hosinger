@@ -121,13 +121,13 @@ class E4DTCWTPartialReconstructionRunner:
         prs = [Lo_prev]
 
         for level in reversed(xrange(1, len(Yh))):
-            print 'Lo_prev.shape', Lo_prev.shape
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
             Lo_filt = wdtcwt.filters.get_column_i_filtered(
                 Lo_prev, self.g0b, self.g0a)
             Hi_filt = wdtcwt.filters.get_column_i_filtered(
                 Hi, self.g1b, self.g1a)
-            Lo_prev = Lo_filt + Hi_filt - Lo_prev
+            # TODO: verify correctness of _get_doubled_vector
+            Lo_prev = Lo_filt + Hi_filt - _get_doubled_vector(Lo_prev)
 
             prs.append(Lo_prev)
 
@@ -284,3 +284,12 @@ class E4DTCWTPartialReconstructionRunner:
 
         with open(path, 'w') as f:
             np.savez(f, prs)
+
+def _get_doubled_vector(v):
+
+    n = v.shape[0]
+    doubled = np.zeros((n*2, 1))
+    doubled[0::2,:] = np.copy(v)
+    doubled[1::2,:] = np.copy(v)
+
+    return doubled
