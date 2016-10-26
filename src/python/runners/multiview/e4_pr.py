@@ -117,7 +117,7 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _get_reconstructed_view_sp(self, Yh, Yl):
 
-        Lo_prev = np.copy(Yl)[:,np.newaxis]
+        Lo_prev = np.copy(Yl)
         prs = [Lo_prev]
 
         for level in reversed(xrange(1, len(Yh))):
