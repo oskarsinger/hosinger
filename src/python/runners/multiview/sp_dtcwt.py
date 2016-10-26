@@ -184,7 +184,6 @@ class MVDTCWTSPRunner:
                     coeffs = [loaded[i] 
                               for i in xrange(num_coeffs)]
                 elif Yh_or_Yl == 'Yl':
-                    print 'Yl loaded', loaded
                     index = 1
                     coeffs = loaded
 
@@ -205,39 +204,30 @@ class MVDTCWTSPRunner:
 
         for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
             for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yls)):
+                path = '_'.join([
+                    'subject',
+                    subject,
+                    'period',
+                    str(p),
+                    'subperiod',
+                    str(sp),
+                    'view',
+                    str(v)])
+
                 for (sp, Yl) in enumerate(p_Yls):
-                    print 'Yl saved', Yl
-                    path = '_'.join([
-                        'subject',
-                        subject,
-                        'period',
-                        str(p),
-                        'subperiod',
-                        str(sp),
-                        'view',
-                        str(v),
-                        'Yl_dtcwt_coefficients.thang'])
+                    f_path = path + '_Yl_dtcwt_coefficients.thang'
+                    l_path = os.path.join(
+                        self.wavelet_dir, f_path)
 
-                    path = os.path.join(self.wavelet_dir, path)
-
-                    with open(path, 'w') as f:
+                    with open(l_path, 'w') as f:
                         np.save(f, Yl)
 
                 for (sp, Yh) in enumerate(p_Yhs):
-                    path = '_'.join([
-                        'subject',
-                        subject,
-                        'period',
-                        str(p),
-                        'subperiod',
-                        str(sp),
-                        'view',
-                        str(v),
-                        'Yh_dtcwt_coefficients.thang'])
+                    f_path = path + '_Yh_dtcwt_coefficients.thang'
+                    h_path = os.path.join(
+                        self.wavelet_dir, f_path)
 
-                    path = os.path.join(self.wavelet_dir, path)
-
-                    with open(path, 'w') as f:
+                    with open(h_path, 'w') as f:
                         np.savez(f, *Yh)
 
     def _get_sp_wavelet_transforms(self, subject):
