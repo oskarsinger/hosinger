@@ -277,8 +277,6 @@ class E4DTCWTPartialReconstructionRunner:
                 prs = [loaded[i] 
                        for i in xrange(len(loaded))]
 
-            print 'Loaded prs', prs
-
             self.prs[s][p][sp][v] = prs
 
     def _save(self, prs, s, v, p, sp):
@@ -293,7 +291,7 @@ class E4DTCWTPartialReconstructionRunner:
         path = os.path.join(self.pr_dir, fname)
 
         with open(path, 'w') as f:
-            np.savez(f, prs)
+            np.savez(f, *prs)
 
 def _get_doubled_vector(v):
 
