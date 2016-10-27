@@ -1,6 +1,9 @@
 import os
-import seaborn as sns
+import matplotlib
 
+matplotlib.use('Agg')
+
+import seaborn as sns
 import numpy as np
 import utils as rmu
 
