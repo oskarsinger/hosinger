@@ -210,6 +210,7 @@ class E4DTCWTPartialReconstructionRunner:
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
                         for (f, pr) in enumerate(prs):
+                            print pr
                             view_stats[v][s][f].append(
                                 stat(pr))
 
