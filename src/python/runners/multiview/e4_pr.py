@@ -24,6 +24,8 @@ class E4DTCWTPartialReconstructionRunner:
         load=False,
         show=False):
 
+        self.missing = missing
+        self.complete = complete
         self.std = std
         self.save = save
         self.load = load
