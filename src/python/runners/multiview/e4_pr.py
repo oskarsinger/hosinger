@@ -39,6 +39,7 @@ class E4DTCWTPartialReconstructionRunner:
 
         self.name = 'Std' if self.std else 'Mean'
         self.wavelets = dtcwt_runner.wavelets
+        self.servers = dtcwt_runner.servers
         self.g1a = dtcwt_runner.qshift['g1a']
         self.g1b = dtcwt_runner.qshift['g1b']
         self.g0a = dtcwt_runner.qshift['g0a']
