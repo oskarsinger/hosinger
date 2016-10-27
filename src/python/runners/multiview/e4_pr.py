@@ -104,7 +104,6 @@ class E4DTCWTPartialReconstructionRunner:
                     for (v, view) in enumerate(views):
                         sp_v_prs = self._get_reconstructed_view_sp(
                             view[0], view[1])
-                        print 'Computed prs', sp_v_prs
 
                         if self.save:
                             self._save(
@@ -209,8 +208,9 @@ class E4DTCWTPartialReconstructionRunner:
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
+                        print 'prs', prs
                         for (f, pr) in enumerate(prs):
-                            print pr
+                            print 'pr', pr
                             view_stats[v][s][f].append(
                                 stat(pr))
 
