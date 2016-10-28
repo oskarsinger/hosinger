@@ -238,29 +238,29 @@ class E4DTCWTPartialReconstructionRunner:
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
                     print 'freq', freq
-                    ll = len(l)
-                    l = l + [None] * (max_p - ll)
+                    l_freq = len(freq)
+                    freq = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
 
-                    print 'l', l
+                    print 'freq', freq
                     print 's_periods', s_periods
                     print 's_subjects', s_subjects
 
                     if self.missing:
-                        if ll < max_p:
+                        if l_freq < max_p:
                             periods[f].extend(s_periods)
                             subjects[f].extend(s_subjects)
-                            values[f].extend(l)
+                            values[f].extend(freq)
                     elif self.complete:
-                        if ll == max_p:
+                        if l_freq == max_p:
                             periods[f].extend(s_periods)
                             subjects[f].extend(s_subjects)
-                            values[f].extend(l)
+                            values[f].extend(freq)
                     else:
                         periods[f].extend(s_periods)
                         subjects[f].extend(s_subjects)
-                        values[f].extend(l)
+                        values[f].extend(freq)
 
             for f in xrange(len(view.values()[0])):
                 d = {
