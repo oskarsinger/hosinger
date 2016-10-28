@@ -162,7 +162,7 @@ class E4DTCWTPartialReconstructionRunner:
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
-                print freq
+                print 'freq DataFrame', freq is None
                 ax = plt.axes()
 
                 sns.pointplot(
@@ -216,7 +216,6 @@ class E4DTCWTPartialReconstructionRunner:
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
                         for (f, pr) in enumerate(prs):
-                            print 'stat(pr)', stat(pr)
                             view_stats[v][s][f].append(
                                 stat(pr))
 
@@ -237,15 +236,10 @@ class E4DTCWTPartialReconstructionRunner:
 
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
-                    print 'freq', freq
                     l_freq = len(freq)
                     freq = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
-
-                    print 'freq', freq
-                    print 's_periods', s_periods
-                    print 's_subjects', s_subjects
 
                     if self.missing:
                         if l_freq < max_p:
@@ -268,6 +262,8 @@ class E4DTCWTPartialReconstructionRunner:
                     'subject': subjects[f], 
                     'value': values[f]}
                 dfs[i][f] = pd.DataFrame(data=d)
+
+            print 'dfs None?', [df is None for df in dfs[i]]
 
         return dfs
 
