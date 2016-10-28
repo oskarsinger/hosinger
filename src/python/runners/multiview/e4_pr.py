@@ -162,7 +162,6 @@ class E4DTCWTPartialReconstructionRunner:
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
-                print 'freq DataFrame', freq is None
                 ax = plt.axes()
 
                 sns.pointplot(
@@ -263,8 +262,6 @@ class E4DTCWTPartialReconstructionRunner:
                     'value': values[f]}
                 dfs[i][f] = pd.DataFrame(data=d)
 
-            print 'dfs None?', [df is None for df in dfs[i]]
-
         return dfs
 
     def _load(self):
@@ -288,8 +285,6 @@ class E4DTCWTPartialReconstructionRunner:
             self.prs[s][p][sp][v] = prs
 
     def _save(self, prs, s, v, p, sp):
-
-        print 'Saved prs', prs
 
         fname = '_'.join([
             'subject', s,
