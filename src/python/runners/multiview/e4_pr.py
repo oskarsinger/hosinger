@@ -108,7 +108,7 @@ class E4DTCWTPartialReconstructionRunner:
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, view) in enumerate(views):
-                        sp_v_prs = self._get_reconstructed_view_sp(
+                        sp_v_prs = self._get_view_sp_pr(
                             view[0], view[1])
 
                         if self.save:
@@ -121,7 +121,7 @@ class E4DTCWTPartialReconstructionRunner:
 
                         self.prs[s][p][sp][v] = sp_v_prs
 
-    def _get_reconstructed_view_sp(self, Yh, Yl):
+    def _get_view_sp_pr(self, Yh, Yl):
 
         Lo_prev = np.copy(Yl)
         prs = [Lo_prev]
@@ -223,7 +223,7 @@ class E4DTCWTPartialReconstructionRunner:
 
     def _get_completed_and_filtered(self, view_stats):
 
-        dfs = [[None] * len(view)
+        dfs = [[None] * len(view.values()[0])
                for view in view_stats]
 
         for (i, view) in enumerate(view_stats):
