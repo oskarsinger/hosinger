@@ -162,6 +162,7 @@ class E4DTCWTPartialReconstructionRunner:
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
+                print freq
                 ax = plt.axes()
 
                 sns.pointplot(
@@ -216,7 +217,7 @@ class E4DTCWTPartialReconstructionRunner:
                     for (v, prs) in enumerate(views):
                         print 'prs', prs
                         for (f, pr) in enumerate(prs):
-                            print 'pr', pr
+                            print 'stat(pr)', pr
                             view_stats[v][s][f].append(
                                 stat(pr))
 
