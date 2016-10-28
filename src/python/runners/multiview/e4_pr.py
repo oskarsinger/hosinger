@@ -215,9 +215,8 @@ class E4DTCWTPartialReconstructionRunner:
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
-                        print 'prs', prs
                         for (f, pr) in enumerate(prs):
-                            print 'stat(pr)', pr
+                            print 'stat(pr)', stat(pr)
                             view_stats[v][s][f].append(
                                 stat(pr))
 
@@ -238,10 +237,15 @@ class E4DTCWTPartialReconstructionRunner:
 
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
+                    print 'freq', freq
                     ll = len(l)
                     l = l + [None] * (max_p - ll)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
+
+                    print 'l', l
+                    print 's_periods', s_periods
+                    print 's_subjects', s_subjects
 
                     if self.missing:
                         if ll < max_p:
