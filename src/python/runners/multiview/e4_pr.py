@@ -162,7 +162,7 @@ class E4DTCWTPartialReconstructionRunner:
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
-                #ax = plt.axes()
+                ax = plt.axes()
 
                 sns.tsplot(
                     time='period', 
