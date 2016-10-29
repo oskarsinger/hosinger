@@ -153,19 +153,21 @@ def get_ravel_hstack(matrices):
 
     return np.hstack(cols)
 
-def get_2_digit_pair(i, j):
+def get_2_digit_pair(i, j, power=True):
 
-    get_2_digit = lambda x: '0' + str(x) \
-        if int(x)/10 == 0 else \
-        str(x)
+    i_str = get_2_digit(i, power=power)
+    j_str = get_2_digit(j, power=power)
 
-    return '2^' + get_2_digit(i) + ', 2^' + get_2_digit(j)
+    return i_str + ',' + j_str
 
-def get_2_digit(i):
+def get_2_digit(i, power=True):
 
     i_str = str(i)
 
     if int(i) / 10 == 0:
         i_str = '0' + i_str
+
+    if power:
+        i_str = '2^' + i_str
 
     return i_str
