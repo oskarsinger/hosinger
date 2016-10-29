@@ -64,7 +64,12 @@ class SubperiodCorrelationRunner:
             self._show_corr_max_over_periods()
             self._show_corr_max_over_subperiods()
 
-    def _init_dirs(self, save, load, show, show_max, save_load_dir):
+    def _init_dirs(self, 
+        save, 
+        load, 
+        show, 
+        show_max, 
+        save_load_dir):
 
         if (show_max or show or save) and not load:
             if not os.path.isdir(save_load_dir):

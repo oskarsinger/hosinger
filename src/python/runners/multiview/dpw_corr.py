@@ -18,17 +18,20 @@ class DayPairwiseCorrelationRunner:
         cca=False,
         save=False,
         load=False,
-        show=False):
+        show=False,
+        show_max=False):
 
         self.cca = cca
         self.save = save
         self.load = load
         self.show = show
+        self.show_max = show_max
 
         self._init_dirs(
             save, 
             load, 
             show, 
+            show_max,
             save_load_dir)
 
         self.wavelets = dtcwt_runner.wavelets
@@ -54,9 +57,18 @@ class DayPairwiseCorrelationRunner:
             self._show_corr_over_periods()
             self._show_corr_over_subperiods()
 
-    def _init_dirs(self, save, load, show, save_load_dir):
+        if self.show_max:
+            self._show_corr_max_over_periods()
+            self._show_corr_max_over_subperiods()
 
-        if (save or show) and not load:
+    def _init_dirs(self, 
+        save, 
+        load, 
+        show, 
+        show_max,
+        save_load_dir):
+
+        if (show_max or show or save) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -77,7 +89,7 @@ class DayPairwiseCorrelationRunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show,
+            show or show_max,
             self.save_load_dir) 
 
     def _compute(self):
@@ -98,13 +110,8 @@ class DayPairwiseCorrelationRunner:
                         (Yh2, Yl2) = sp2[v]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                        correlation = None
-
-                        if self.cca:
-                            correlation = rmu.get_cca_vecs 
-                        else:
-                            correlation = rmu.get_normed_correlation(
-                                Y1_mat, Y2_mat)
+                        correlation = rmu.get_normed_correlation(
+                            Y1_mat, Y2_mat)
 
                         self.correlation[subject][v][sp].append(
                             correlation)
@@ -154,7 +161,48 @@ class DayPairwiseCorrelationRunner:
 
             self.correlation[s][v][sp][ps[0]] = m
 
-    def _save_corr_over_subperiods(self):
+    def _show_corr_max_over_subperiods(self):
+
+        for (s, views) in self.correlation.items():
+            period_corrs = [[[] for p in xrange(self.num_periods[s])] 
+                            for v in xrange(self.num_views)]
+
+            for (v, subperiods) in enumerate(views):
+                for periods in subperiods:
+                    for (p, corr) in enumerate(periods):
+                        period_corrs[v][p].append(corr)
+
+            for (v, periods) in enumerate(periods_corrs):
+                (n, m) = periods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(str(sp))
+                            for sp in xrange(self.num_subperiods)]
+                timelines = [rmu.get_ravel_hstack(subperiods)
+                             for subperiods in periods]
+                timeline = np.hstack(
+                    [np.max(tl, axis=1)[:,np.newaxis] 
+                     for tl in timelines])
+                title = 'Day-pwise max-over-hours corr' + \
+                    ' over days for view ' + \
+                    self.names[v] + \
+                    ' of subject ' + s
+                fn = '_'.join(title.split()) + '.pdf'
+                path = os.path.join(self.plot_dir, fn)
+
+                plot_matrix_heat(
+                    timeline,
+                    x_labels,
+                    y_labels,
+                    title,
+                    'day pair',
+                    'frequency pair',
+                    'correlation')[0].get_figure().savefig(
+                        path, format='pdf')
+                sns.plt.clf()
+
+    def _show_corr_over_subperiods(self):
 
         for (s, views) in self.correlation.items():
             period_corrs = [[[] for p in xrange(self.num_periods[s])] 
@@ -192,7 +240,40 @@ class DayPairwiseCorrelationRunner:
                         'correlation')[0].get_figure().savefig(path)
                     sns.plt.clf()
         
-    def _save_corr_over_periods(self):
+    def _show_corr_max_over_periods(self):
+
+        for (s, views) in self.correlation.items():
+            for (v, subperiods) in enumerate(views):
+                (n, m) = subperiods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit_pair(p, p+1)
+                            for p in xrange(self.num_periods[s]-1)]
+                timelines = [rmu.get_ravel_hstack(periods)
+                             for periods in subperiods]
+                timeline = np.hstack(
+                    [np.max(tl, axis=1)[:,np.newaxis] 
+                     for tl in timelines])
+                title = 'Day-pwise max-over-days correlation' + \
+                    ' over hours for view ' + \
+                    self.names[v] + \
+                    ' of subject ' + s
+                fn = '_'.join(title.split()) + '.pdf'
+                path = os.path.join(self.plot_dir, fn)
+
+                plot_matrix_heat(
+                    timeline,
+                    x_labels,
+                    y_labels,
+                    title,
+                    'hour',
+                    'frequency pair',
+                    'correlation')[0].get_figure().savefig(
+                        path, format='pdf')
+                sns.plt.clf()
+
+    def _show_corr_over_periods(self):
 
         for (s, views) in self.correlation.items():
             for (v, subperiods) in enumerate(views):
