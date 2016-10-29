@@ -169,8 +169,8 @@ class E4DTCWTPartialReconstructionRunner:
                     value='value', 
                     condition='subject',
                     data=freq,
-                    linestyles=linestyles,
-                    #ax=ax,
+                    #linestyles=linestyles,
+                    ax=ax,
                     legend=False)
                 sns.plt.legend(
                     bbox_to_anchor=(1, 1.05), 
