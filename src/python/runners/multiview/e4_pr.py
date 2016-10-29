@@ -255,26 +255,29 @@ class E4DTCWTPartialReconstructionRunner:
                     freq = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
+                    if self.avg:
+                        s_units = [s in asymp] * l_freq
+                    else:
+                        s_units = [1] * l_freq
+
 
                     if self.missing:
                         if l_freq < max_p:
                             periods[f].extend(s_periods)
                             subjects[f].extend(s_subjects)
                             values[f].extend(freq)
+                            units[f].extend(s_units)
                     elif self.complete:
                         if l_freq == max_p:
                             periods[f].extend(s_periods)
                             subjects[f].extend(s_subjects)
                             values[f].extend(freq)
+                            units[f].extend(s_units)
                     else:
                         periods[f].extend(s_periods)
                         subjects[f].extend(s_subjects)
                         values[f].extend(freq)
-
-                    if self.avg:
-                        units[f].extend([s in asymp] * l_freq)
-                    else:
-                        units[f].extend([1] * l_freq)
+                        units[f].extend(s_units)
 
             for f in xrange(len(view.values()[0])):
                 d = {
