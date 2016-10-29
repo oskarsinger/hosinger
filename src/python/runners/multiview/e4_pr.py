@@ -164,7 +164,7 @@ class E4DTCWTPartialReconstructionRunner:
             for (f, freq) in enumerate(view):
                 ax = plt.axes()
 
-                sns.plot(
+                plt.plot(
                     x='period', 
                     y='value', 
                     hue='subject',
