@@ -162,7 +162,7 @@ class E4DTCWTPartialReconstructionRunner:
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
-                ax = plt.axes()
+                #ax = plt.axes()
 
                 plt.plot(
                     x='period', 
@@ -170,7 +170,7 @@ class E4DTCWTPartialReconstructionRunner:
                     hue='subject',
                     data=freq,
                     linestyles=linestyles,
-                    ax=ax,
+                    #ax=ax,
                     legend=False)
                 sns.plt.legend(
                     bbox_to_anchor=(1, 1.05), 
