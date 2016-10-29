@@ -182,7 +182,7 @@ class DayPairwiseCorrelationRunner:
                 timelines = [rmu.get_ravel_hstack(subperiods)
                              for subperiods in periods]
                 timeline = np.hstack(
-                    [np.max(tl, axis=1)[:,np.newaxis] 
+                    [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
                 title = 'Day-pwise max-over-hours corr' + \
                     ' over days for view ' + \
@@ -253,7 +253,7 @@ class DayPairwiseCorrelationRunner:
                 timelines = [rmu.get_ravel_hstack(periods)
                              for periods in subperiods]
                 timeline = np.hstack(
-                    [np.max(tl, axis=1)[:,np.newaxis] 
+                    [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
                 title = 'Day-pwise max-over-days correlation' + \
                     ' over hours for view ' + \
