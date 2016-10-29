@@ -164,10 +164,10 @@ class E4DTCWTPartialReconstructionRunner:
             for (f, freq) in enumerate(view):
                 #ax = plt.axes()
 
-                plt.plot(
-                    x='period', 
-                    y='value', 
-                    hue='subject',
+                sns.tsplot(
+                    time='period', 
+                    value='value', 
+                    condition='subject',
                     data=freq,
                     linestyles=linestyles,
                     #ax=ax,
