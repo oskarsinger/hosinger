@@ -147,8 +147,8 @@ class DayPairwiseCorrelationRunner:
 
         for (s, views) in self.correlation.items():
             for i in xrange(len(views)):
-                l = [[None] * self.num_periods[s]
-                     for i in xrange(self.num_subperiods)]
+                l = [[None] * (self.num_periods[s] - 1)
+                     for j in xrange(self.num_subperiods)]
 
                 self.correlation[s][i] = l
 
