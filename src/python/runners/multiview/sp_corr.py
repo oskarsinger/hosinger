@@ -180,7 +180,7 @@ class SubperiodCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(str(sp))
+                x_labels = [rmu.get_2_digit(sp, power=False)
                             for sp in xrange(self.num_periods[s])]
                 timelines = [rmu.get_ravel_hstack(subperiods)
                              for subperiods in periods]
@@ -221,7 +221,7 @@ class SubperiodCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(str(sp))
+                x_labels = [rmu.get_2_digit(sp, power=False)
                             for sp in xrange(self.num_subperiods)]
                 name1 = self.names[k[0]]
                 name2 = self.names[k[1]]
@@ -254,7 +254,7 @@ class SubperiodCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(str(p))
+                x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_subperiods)]
                 timelines = [rmu.get_ravel_hstack(periods)
                              for periods in subperiods]
@@ -287,7 +287,7 @@ class SubperiodCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(str(p))
+                x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
 
                 for (sp, periods) in enumerate(subperiods):

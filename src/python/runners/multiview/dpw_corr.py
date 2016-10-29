@@ -164,7 +164,7 @@ class DayPairwiseCorrelationRunner:
     def _show_corr_max_over_subperiods(self):
 
         for (s, views) in self.correlation.items():
-            period_corrs = [[[] for p in xrange(self.num_periods[s])] 
+            period_corrs = [[[] for p in xrange(self.num_periods[s] - 1)] 
                             for v in xrange(self.num_views)]
 
             for (v, subperiods) in enumerate(views):
@@ -172,13 +172,13 @@ class DayPairwiseCorrelationRunner:
                     for (p, corr) in enumerate(periods):
                         period_corrs[v][p].append(corr)
 
-            for (v, periods) in enumerate(periods_corrs):
+            for (v, periods) in enumerate(period_corrs):
                 (n, m) = periods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(str(sp))
-                            for sp in xrange(self.num_subperiods)]
+                x_labels = [rmu.get_2_digit_pair(p, p+1, power=False)
+                            for p in xrange(self.num_periods[s] - 1)]
                 timelines = [rmu.get_ravel_hstack(subperiods)
                              for subperiods in periods]
                 timeline = np.hstack(
@@ -218,7 +218,7 @@ class DayPairwiseCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(str(sp))
+                x_labels = [rmu.get_2_digit(sp, power=False)
                             for sp in xrange(self.num_subperiods)]
 
                 for (p, subperiods) in enumerate(periods):
@@ -248,8 +248,8 @@ class DayPairwiseCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit_pair(p, p+1)
-                            for p in xrange(self.num_periods[s]-1)]
+                x_labels = [rmu.get_2_digit(sp, power=False)
+                            for sp in xrange(self.num_subperiods)]
                 timelines = [rmu.get_ravel_hstack(periods)
                              for periods in subperiods]
                 timeline = np.hstack(
@@ -281,7 +281,7 @@ class DayPairwiseCorrelationRunner:
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
-                x_labels = [rmu.get_2_digit_pair(p, p+1)
+                x_labels = [rmu.get_2_digit_pair(p, p+1, power=False)
                             for p in xrange(self.num_periods[s]-1)]
 
                 for (sp, periods) in enumerate(subperiods):
