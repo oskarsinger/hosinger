@@ -170,12 +170,12 @@ class E4DTCWTPartialReconstructionRunner:
                     unit='subject',
                     data=freq,
                     #linestyles=linestyles,
-                    ax=ax)#,
-                #    legend=False)
-                #sns.plt.legend(
-                #    bbox_to_anchor=(1, 1.05), 
-                #    loc=2, 
-                #    borderaxespad=0.)
+                    ax=ax,
+                    legend=False)
+                sns.plt.legend(
+                    bbox_to_anchor=(1, 1.05), 
+                    loc=2, 
+                    borderaxespad=0.)
 
                 title = \
                     self.name + ' value of view ' + \
@@ -194,7 +194,7 @@ class E4DTCWTPartialReconstructionRunner:
 
                 ax.set_title(title)
                 path = os.path.join(
-                    self.plot_path,
+                    self.plot_dir,
                     '_'.join(title.split()) + '.pdf')
                 ax.get_figure().savefig(
                     path,
