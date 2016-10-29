@@ -167,7 +167,8 @@ class E4DTCWTPartialReconstructionRunner:
                 sns.tsplot(
                     time='period', 
                     value='value', 
-                    unit='subject',
+                    condition='subject',
+                    unit='unit',
                     data=freq,
                     #linestyles=linestyles,
                     ax=ax,
@@ -262,7 +263,8 @@ class E4DTCWTPartialReconstructionRunner:
                 d = {
                     'period': periods[f],
                     'subject': subjects[f], 
-                    'value': values[f]}
+                    'value': values[f],
+                    'unit': [1] * len(values[f])}
                 dfs[i][f] = pd.DataFrame(data=d)
 
         return dfs
