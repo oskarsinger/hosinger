@@ -186,13 +186,12 @@ class E4DTCWTPartialReconstructionRunner:
                 title = \
                     self.name + ' of view ' + \
                     self.names[i] + \
-                    ' for period length ' + \
-                    str(self.subperiod) + ' scnds' + \
-                    ' rcnstrctd with dec. level' + \
+                    ' for ' + str(self.subperiod) + ' scnds' + \
+                    ' rcnstrctd with dec. lvl' + \
                     ' 2^' + str(f)
 
                 if self.avg:
-                    title = 'Average over subjects of ' + \
+                    title = 'Mean over sbjcts of ' + \
                             title[0].lower() + title[1:]
 
                 if self.missing:
