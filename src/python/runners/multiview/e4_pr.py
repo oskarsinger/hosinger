@@ -167,7 +167,7 @@ class E4DTCWTPartialReconstructionRunner:
                 sns.tsplot(
                     time='period', 
                     value='value', 
-                    condition='subject',
+                    unit='subject',
                     data=freq,
                     #linestyles=linestyles,
                     ax=ax)#,
@@ -193,8 +193,11 @@ class E4DTCWTPartialReconstructionRunner:
                         title[0].lower() + title[1:]
 
                 ax.set_title(title)
+                path = os.path.join(
+                    self.plot_path,
+                    '_'.join(title.split()) + '.pdf')
                 ax.get_figure().savefig(
-                    '_'.join(title.split()) + '.pdf',
+                    path,
                     format='pdf')
                 sns.plt.clf()
 
