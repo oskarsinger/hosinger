@@ -38,6 +38,7 @@ def plot_matrix_heat(
     plots = []
 
     for k, matrix in value_matrices.items():
+        (n, p) = matrix.shape
         source = _populate_data_source(
             matrix, 
             x_labels, 
@@ -48,12 +49,20 @@ def plot_matrix_heat(
         ax = plt.axes()
         plot = sns.heatmap(
             source,
-            yticklabels=4,
             ax=ax)
+
+        if n > 10:
+            plot.yticklabels = n / 10
+
+        if p > 10:
+            plot.xticklabels = n / 10
 
         ax.set_title(title + ' ' + k)
 
         for label in plot.get_yticklabels():
+            label.set_rotation(45)
+
+        for label in plot.get_xticklabels():
             label.set_rotation(45)
 
         plots.append(plot)
