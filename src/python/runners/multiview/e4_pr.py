@@ -255,9 +255,9 @@ class E4DTCWTPartialReconstructionRunner:
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
                     if self.avg:
-                        s_units = [s in asymp] * l_freq
+                        s_units = [s in asymp] * max_p
                     else:
-                        s_units = [1] * l_freq
+                        s_units = [1] * max_p
 
 
                     if self.missing:
