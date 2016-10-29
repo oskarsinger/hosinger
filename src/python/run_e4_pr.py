@@ -13,6 +13,7 @@ from runners.multiview import MVDTCWTSPRunner
 @click.option('--save', default=False)
 @click.option('--load', default=False)
 @click.option('--show', default=False)
+@click.option('--avg', default=False)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
@@ -22,7 +23,8 @@ def run_it_all_day_bb(
     std,
     save,
     load,
-    show):
+    show,
+    avg):
 
     dtcwt_runner = MVDTCWTSPRunner(
         data_path,
@@ -40,7 +42,8 @@ def run_it_all_day_bb(
         std=std,
         save=save,
         load=load,
-        show=show)
+        show=show,
+        avg=avg)
 
     runner.run()
 
