@@ -25,14 +25,16 @@ class E4DTCWTPartialReconstructionRunner:
         std=False,
         save=False,
         load=False,
-        show=False):
+        show=False,
+        avg=False):
 
-        self.missing = missing
-        self.complete = complete
+        self.missing = False if avg else missing
+        self.complete = True if avg else complete
         self.std = std
         self.save = save
         self.load = load
         self.show = show
+        self.avg = avg
 
         self._init_dirs(
             self.save,
@@ -164,11 +166,14 @@ class E4DTCWTPartialReconstructionRunner:
             for (f, freq) in enumerate(view):
                 ax = plt.axes()
 
+                condition  = 'Symptomatic?' if self.avg else 'Subject'
+                unit = 'Subject' if self.avg else 'unit'
+
                 sns.tsplot(
                     time='period', 
                     value='value', 
-                    condition='subject',
-                    unit='unit',
+                    condition=condition,
+                    unit=unit,
                     data=freq,
                     #linestyles=linestyles,
                     ax=ax,
@@ -179,12 +184,16 @@ class E4DTCWTPartialReconstructionRunner:
                     borderaxespad=0.)
 
                 title = \
-                    self.name + ' value of view ' + \
+                    self.name + ' of view ' + \
                     self.names[i] + \
                     ' for period length ' + \
-                    str(self.subperiod) + ' seconds' + \
-                    ' reconstructed with decimation level' + \
+                    str(self.subperiod) + ' scnds' + \
+                    ' rcnstrctd with dec. level' + \
                     ' 2^' + str(f)
+
+                if self.avg:
+                    title = 'Average over subjects of ' + \
+                            title[0].lower() + title[1:]
 
                 if self.missing:
                     title = 'Missing only ' + \
@@ -228,6 +237,8 @@ class E4DTCWTPartialReconstructionRunner:
 
         dfs = [[None] * len(view.values()[0])
                for view in view_stats]
+        unit_key = 'Symptomatic?' if self.avg else 'unit'
+        asymp = {'06', '07', '13', '21', '24'}
 
         for (i, view) in enumerate(view_stats):
             max_p = max(
@@ -236,6 +247,7 @@ class E4DTCWTPartialReconstructionRunner:
             periods = [[] for f in xrange(num_lists)]
             subjects = [[] for f in xrange(num_lists)]
             values = [[] for f in xrange(num_lists)]
+            units = [[] for f in xrange(num_lists)]
 
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
@@ -259,12 +271,17 @@ class E4DTCWTPartialReconstructionRunner:
                         subjects[f].extend(s_subjects)
                         values[f].extend(freq)
 
+                    if self.avg:
+                        units[f].extend([s in asymp] * l_freq)
+                    else:
+                        units[f].extend([1] * l_freq)
+
             for f in xrange(len(view.values()[0])):
                 d = {
                     'period': periods[f],
-                    'subject': subjects[f], 
+                    'Subject': subjects[f], 
                     'value': values[f],
-                    'unit': [1] * len(values[f])}
+                    unit_key: units[f]}
                 dfs[i][f] = pd.DataFrame(data=d)
 
         return dfs
