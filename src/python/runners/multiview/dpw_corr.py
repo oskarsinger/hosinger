@@ -198,7 +198,9 @@ class DayPairwiseCorrelationRunner:
                     title,
                     'day pair',
                     'frequency pair',
-                    'correlation')[0].get_figure().savefig(
+                    'correlation',
+                    vmax=1,
+                    vmin=-1)[0].get_figure().savefig(
                         path, format='pdf')
                 sns.plt.clf()
 
@@ -237,7 +239,9 @@ class DayPairwiseCorrelationRunner:
                         title,
                         'hour',
                         'frequency pair',
-                        'correlation')[0].get_figure().savefig(path)
+                        'correlation',
+                        vmax=1,
+                        vmin=-1)[0].get_figure().savefig(path)
                     sns.plt.clf()
         
     def _show_corr_max_over_periods(self):
@@ -269,7 +273,9 @@ class DayPairwiseCorrelationRunner:
                     title,
                     'hour',
                     'frequency pair',
-                    'correlation')[0].get_figure().savefig(
+                    'correlation',
+                    vmax=1,
+                    vmin=-1)[0].get_figure().savefig(
                         path, format='pdf')
                 sns.plt.clf()
 
@@ -299,5 +305,7 @@ class DayPairwiseCorrelationRunner:
                         title,
                         'period pair',
                         'frequency pair',
-                        'correlation')[0].get_figure().savefig(path)
+                        'correlation',
+                        vmax=1,
+                        vmin=-1)[0].get_figure().savefig(path)
                     sns.plt.clf()

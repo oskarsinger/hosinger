@@ -201,7 +201,9 @@ class SubperiodCorrelationRunner:
                     title,
                     'day',
                     'frequency pair',
-                    'correlation')[0].get_figure().savefig(
+                    'correlation',
+                    vmax=1,
+                    vmin=-1)[0].get_figure().savefig(
                         path, format='pdf')
                 sns.plt.clf()
 
@@ -242,7 +244,9 @@ class SubperiodCorrelationRunner:
                         title,
                         'hour',
                         'frequency pair',
-                        'correlation')[0].get_figure().savefig(
+                        'correlation',
+                        vmax=1,
+                        vmin=-1)[0].get_figure().savefig(
                             path, format='pdf')
                     sns.plt.clf()
 
@@ -275,7 +279,9 @@ class SubperiodCorrelationRunner:
                     title,
                     'hour',
                     'frequency pair',
-                    'correlation')[0].get_figure().savefig(
+                    'correlation',
+                    vmax=1,
+                    vmin=-1)[0].get_figure().savefig(
                         path, format='pdf')
                 sns.plt.clf()
 
@@ -305,6 +311,8 @@ class SubperiodCorrelationRunner:
                         title,
                         'day',
                         'frequency pair',
-                        'correlation')[0].get_figure().savefig(
+                        'correlation',
+                        vmax=1,
+                        vmin=-1)[0].get_figure().savefig(
                             path, format='pdf')
                     sns.plt.clf()

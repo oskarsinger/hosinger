@@ -19,6 +19,8 @@ def plot_matrix_heat(
     x_name,
     y_name,
     val_name,
+    vmax=None,
+    vmin=None,
     do_phase=False):
 
     (n, m) = value_matrix.shape
@@ -49,7 +51,9 @@ def plot_matrix_heat(
         ax = plt.axes()
         plot = sns.heatmap(
             source,
-            ax=ax)
+            ax=ax,
+            vmax=vmax,
+            vmin=vmin)
 
         if n > 10:
             plot.yticklabels = n / 10
