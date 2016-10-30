@@ -21,13 +21,13 @@ class MVDTCWTSPRunner:
         data_path,
         period=24*3600,
         subperiod=3600,
-        test_data=False,
+        dataset='e4',
         save_load_dir=None, 
         save=False,
         load=False):
 
         self.data_path = data_path
-        self.test_data = test_data
+        self.dataset = dataset
         self.period = period
         self.subperiod = subperiod
         self.num_sps = self.period / self.subperiod
@@ -58,12 +58,17 @@ class MVDTCWTSPRunner:
 
         loaders = None
 
-        if self.test_data:
+        if self.dataset == 'at':
             loaders = dlas.get_at_loaders_all_subjects(
                 self.data_path)
-        else:
+        elif self.dataset == 'e4':
             loaders = dles.get_hr_and_acc_all_subjects(
                 self.data_path, None, False)
+        elif self.dataset == 'gr':
+            loaders = dlrs.get_gr_loaders(
+                2, 2)
+        else:
+            raise ValueError('Argument to dataset parameter not valid.')
 
         self.servers = {}
 
