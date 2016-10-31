@@ -17,7 +17,7 @@ def get_symptom_status(subject):
         subject = int(subject)
 
     # Symptomatic
-    Sx = {2, 5, 9, 11, 17, 18, 19, 20 23}
+    Sx = {2, 5, 9, 11, 17, 18, 19, 20, 23}
 
     # Asymptomatic
     Asx = {7, 8, 12, 21, 22, 24}
