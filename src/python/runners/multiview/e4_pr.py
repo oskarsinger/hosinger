@@ -237,7 +237,6 @@ class E4DTCWTPartialReconstructionRunner:
         dfs = [[None] * len(view.values()[0])
                for view in view_stats]
         unit_key = 'Symptomatic?' if self.avg else 'unit'
-        asymp = {'06', '07', '13', '21', '24'}
 
         for (i, view) in enumerate(view_stats):
             max_p = max(
@@ -254,8 +253,11 @@ class E4DTCWTPartialReconstructionRunner:
                     freq = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
+                    s_units = None
+
                     if self.avg:
-                        s_units = [s in asymp] * max_p
+                        status = rmu.get_symptom_status(s)
+                        s_units = [status] * max_p
                     else:
                         s_units = [1] * max_p
 
