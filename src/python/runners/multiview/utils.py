@@ -10,7 +10,7 @@ def get_symptom_status(subject):
 
     status = None
 
-    if type(subject) is str:
+    if type(subject) in {str, unicode}:
         if len(subject) > 2:
             subject = subject[-2:]
         
