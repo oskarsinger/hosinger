@@ -37,8 +37,9 @@ def get_symptom_status(subject):
     elif subject in W:
         status = 'W'
     else:
-        raise ValueError(
-            'Not a valid subject: ' + str(subject))
+        #raise ValueError(
+        #    'Not a valid subject: ' + str(subject))
+        status = 'U'
 
     return status
 
