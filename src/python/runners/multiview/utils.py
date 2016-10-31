@@ -25,6 +25,11 @@ def get_symptom_status(subject):
     # Wild type
     W = {3, 4, 6, 13}
 
+    print 'type(subject)', type(subject)
+    print 'subject in Sx', subject in Sx
+    print 'subject in Asx', subject in Asx
+    print 'subject in W', subject in W
+
     if subject in Sx:
         status = 'Sx'
     elif subject in Asx:
@@ -32,7 +37,8 @@ def get_symptom_status(subject):
     elif subject in W:
         status = 'W'
     else:
-        raise ValueError('Not a valid subject: ' + str(subject))
+        raise ValueError(
+            'Not a valid subject: ' + str(subject))
 
     return status
 
