@@ -6,6 +6,36 @@ from math import log
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from scipy.stats import pearsonr as ssp
 
+def get_symptom_status(subject):
+
+    status = None
+
+    if type(subject) is str:
+        if len(subject) > 2:
+            subject = subject[-2:]
+        
+        subject = int(subject)
+
+    # Symptomatic
+    Sx = {2, 5, 9, 11, 17, 18, 19, 20 23}
+
+    # Asymptomatic
+    Asx = {7, 8, 12, 21, 22, 24}
+
+    # Wild type
+    W = {3, 4, 6, 13}
+
+    if subject in Sx:
+        status = 'Sx'
+    elif subject in Asx:
+        status = 'Asx'
+    elif subject in W:
+        status = 'W'
+    else:
+        raise ValueError('Not a valid subject.')
+
+    return status
+
 def get_wavelet_storage(
     num_views,
     num_subperiods,

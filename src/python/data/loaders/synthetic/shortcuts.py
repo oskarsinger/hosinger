@@ -1,5 +1,11 @@
 from data.loaders.readers import from_num as fn
 from periodic import CosineLoader as CL
+from gaussian import GaussianLoader as GL
+
+def get_gaussian_loaders(n, ps):
+
+    return [GL(n, p) for p in ps]
+
 
 def get_cosine_loaders(
     ps,
