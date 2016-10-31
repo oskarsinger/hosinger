@@ -129,7 +129,7 @@ class SubperiodCorrelationRunner:
 
     def _save(self, c, s, v, p, sp):
 
-        views = self.names[v[0]] + '-' + self.names[v[1]]
+        views = str(v[0]) + '-' + str(v[1])
         path = '_'.join([
             'subject', s,
             'views', views,
@@ -159,7 +159,7 @@ class SubperiodCorrelationRunner:
             info = k.split('_')
             s = info[1]
             v = [int(i) for i in info[3].split('-')]
-            p = self.names2indices[info[5]]
+            p = int(info[5])
             sp = int(info[7])
 
             self.correlation[s].get(v[0], v[1])[sp][p] = m

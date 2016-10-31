@@ -1,7 +1,5 @@
 from dtcwt import MVDTCWTRunner
 from sp_dtcwt import MVDTCWTSPRunner
-from vpw_cca import ViewPairwiseCCARunner
-from vpw_corr import ViewPairwiseCorrelationRunner
 from dpw_corr import DayPairwiseCorrelationRunner
 from sp_corr import SubperiodCorrelationRunner
 from raw_e4 import E4RawDataPlotRunner
