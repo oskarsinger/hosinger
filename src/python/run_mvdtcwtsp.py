@@ -3,7 +3,7 @@ import click
 from runners.multiview import MVDTCWTSPRunner
 
 @click.command()
-@click.option('--data-path')
+@click.option('--data-path', default=None)
 @click.option('--period', default=24*3600)
 @click.option('--subperiod', default=3600)
 @click.option('--dataset', default='e4')
@@ -20,7 +20,7 @@ def run_it_all_day_bb(
     load):
 
     runner = MVDTCWTSPRunner(
-        data_path,
+        data_path=data_path,
         period=period,
         subperiod=subperiod,
         dataset=dataset,

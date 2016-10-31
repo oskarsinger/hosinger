@@ -1,11 +1,11 @@
 from data.loaders.readers import from_num as fn
 from periodic import CosineLoader as CL
-from gaussian import GaussianLoader as GL
+from gaussian import FakePeriodicGaussianLoader as FPGL
 
-def get_gaussian_loaders(n, ps):
+def get_FPGL(n, ps, hertzes):
 
-    return [GL(n, p) for p in ps]
-
+    return [FPGL(n, p, h) 
+            for (p, h) in zip(ps, hertzes)]
 
 def get_cosine_loaders(
     ps,

@@ -19,7 +19,7 @@ from math import log
 class MVDTCWTSPRunner:
 
     def __init__(self, 
-        data_path,
+        data_path=None,
         period=24*3600,
         subperiod=3600,
         dataset='e4',
@@ -66,9 +66,10 @@ class MVDTCWTSPRunner:
             loaders = dles.get_hr_and_acc_all_subjects(
                 self.data_path, None, False)
         elif self.dataset == 'gr':
-            ps = [100, 200]
-            n = 1000
-            loaders = {'e' + str(i): dlss.get_gr_loaders(n, ps)
+            ps = [1] * 2
+            hertzes = [1.0/60] * 2
+            n = 60 * 24 * 8
+            loaders = {'e' + str(i): dlss.get_FPGL(n, ps, hertzes)
                        for i in xrange(2)}
         else:
             raise ValueError('Argument to dataset parameter not valid.')
@@ -92,6 +93,10 @@ class MVDTCWTSPRunner:
         (self.rates, self.names) = unzip(
             [(dl.get_status()['hertz'], dl.name())
              for dl in loaders.items()[0][1]])
+
+        if self.dataset == 'gr':
+            self.names = [n + str(i) 
+                          for (i, n) in enumerate(self.names)]
                     
         self.subjects = self.servers.keys()
         

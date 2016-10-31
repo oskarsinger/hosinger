@@ -1,11 +1,60 @@
-from data.loaders import AbstractDataLoader
 from linal.svd_funcs import get_svd_power
 from linal.random.utils import get_rank_k
 from drrobert.misc import get_checklist
 
 import numpy as np
 
-class GaussianLoader(AbstractDataLoader):
+class FakePeriodicGaussianLoader:
+
+    def __init__(self, 
+        n, p, hertz,
+        lazy=True,
+        batch_size=None, 
+        k=None, 
+        mean=None):
+
+        self.hertz = hertz
+        self.loader = GaussianLoader(
+            n,
+            p, 
+            lazy=lazy, 
+            batch_size=batch_size, 
+            k=k, 
+            mean=None)
+
+    def get_data(self):
+
+        return self.loader.get_data()
+
+    def name(self):
+
+        return 'FakePeriodicGaussianLoader'
+
+    def get_status(self):
+
+        info = self.loader.get_status()
+
+        info['hertz'] = self.hertz
+
+        return info
+
+    def finished(self):
+
+        return self.loader.finished()
+
+    def refresh(self):
+
+        self.loader.refresh()
+
+    def cols(self):
+        
+        return self.loader.cols()
+
+    def rows(self):
+        
+        return self.loader.rows()
+
+class GaussianLoader:
 
     def __init__(self, 
         n, p, 
@@ -138,7 +187,7 @@ class GaussianLoader(AbstractDataLoader):
         
         return self.n
 
-class ShiftingMeanGaussianLoader(AbstractDataLoader):
+class ShiftingMeanGaussianLoader:
 
     def __init__(self, 
         p, mean, rate, 

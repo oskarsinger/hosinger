@@ -158,9 +158,6 @@ class E4DTCWTPartialReconstructionRunner:
     def _show(self):
 
         averages = self._get_stats()
-        asymp = {'06', '07', '13', '21', '24'}
-        linestyles = ['--' if s[-2:] in asymp else '-'
-                      for s in self.servers.keys()]
 
         for (i, view) in enumerate(averages):
             for (f, freq) in enumerate(view):
@@ -175,7 +172,6 @@ class E4DTCWTPartialReconstructionRunner:
                     condition=condition,
                     unit=unit,
                     data=freq,
-                    #linestyles=linestyles,
                     ax=ax)#,
                 #    legend=False)
                 #sns.plt.legend(
