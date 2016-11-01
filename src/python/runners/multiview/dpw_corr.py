@@ -15,13 +15,11 @@ class DayPairwiseCorrelationRunner:
     def __init__(self,
         dtcwt_runner,
         save_load_dir,
-        cca=False,
         save=False,
         load=False,
         show=False,
         show_mean=False):
 
-        self.cca = cca
         self.save = save
         self.load = load
         self.show = show
@@ -72,8 +70,7 @@ class DayPairwiseCorrelationRunner:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            corr_or_cca = 'cca' if self.cca else 'corr'
-            model_dir = get_ts('DPWCR' + corr_or_cca)
+            model_dir = get_ts('DPWCR')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
