@@ -67,7 +67,7 @@ def get_cca_vecs(X1, X2):
 
     cca.fit(X1, X2)
 
-    return np.hstack([
+    return np.vstack([
         cca.x_weights_,
         cca.y_weights_])
 

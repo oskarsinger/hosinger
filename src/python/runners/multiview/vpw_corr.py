@@ -16,13 +16,11 @@ class ViewPairwiseCorrelationRunner:
     def __init__(self,
         dtcwt_runner,
         save_load_dir,
-        cca=False,
         save=False,
         load=False,
         show=False,
         show_mean=False):
 
-        self.cca = cca
         self.save = save
         self.load = load
         self.show = show
@@ -75,8 +73,7 @@ class ViewPairwiseCorrelationRunner:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            corr_or_cca = 'cca' if self.cca else 'corr'
-            model_dir = get_ts('VPWSPCR' + corr_or_cca)
+            model_dir = get_ts('VPWCR')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
@@ -107,14 +104,8 @@ class ViewPairwiseCorrelationRunner:
                         (Yh2, Yl2) =  subperiod[k[1]]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                        correlation = None
-
-                        if self.cca:
-                            correlation = rmu.get_cca_vecs(
-                                Y1_mat, Y2_mat)
-                        else:
-                            correlation = rmu.get_normed_correlation(
-                                Y1_mat, Y2_mat)
+                        correlation = rmu.get_normed_correlation(
+                            Y1_mat, Y2_mat)
 
                         self.correlation[s].get(k[0], k[1])[sp].append(
                             correlation)
