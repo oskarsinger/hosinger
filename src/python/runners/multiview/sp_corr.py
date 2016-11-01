@@ -20,19 +20,19 @@ class SubperiodCorrelationRunner:
         save=False,
         load=False,
         show=False,
-        show_max=False):
+        show_mean=False):
 
         self.cca = cca
         self.save = save
         self.load = load
         self.show = show
-        self.show_max = show_max
+        self.show_mean = show_mean
 
         self._init_dirs(
             save, 
             load, 
             show, 
-            show_max,
+            show_mean,
             save_load_dir)
 
         self.wavelets = dtcwt_runner.wavelets
@@ -60,18 +60,18 @@ class SubperiodCorrelationRunner:
             self._show_corr_over_periods()
             self._show_corr_over_subperiods()
 
-        if self.show_max:
-            self._show_corr_max_over_periods()
-            self._show_corr_max_over_subperiods()
+        if self.show_mean:
+            self._show_corr_mean_over_periods()
+            self._show_corr_mean_over_subperiods()
 
     def _init_dirs(self, 
         save, 
         load, 
         show, 
-        show_max, 
+        show_mean, 
         save_load_dir):
 
-        if (show_max or show or save) and not load:
+        if (show_mean or show or save) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -92,7 +92,7 @@ class SubperiodCorrelationRunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show or show_max,
+            show or show_mean,
             self.save_load_dir) 
 
     def _compute(self):
@@ -164,7 +164,7 @@ class SubperiodCorrelationRunner:
 
             self.correlation[s].get(v[0], v[1])[sp][p] = m
 
-    def _show_corr_max_over_subperiods(self):
+    def _show_corr_mean_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
             default = lambda: [[] for p in xrange(self.num_periods[s])]
@@ -187,7 +187,7 @@ class SubperiodCorrelationRunner:
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
-                title = 'View-pairwise max-over-hours correlation' + \
+                title = 'View-pairwise mean-over-hours correlation' + \
                     ' over days for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]] + \
                     ' of subject ' + s
@@ -250,7 +250,7 @@ class SubperiodCorrelationRunner:
                             path, format='pdf')
                     sns.plt.clf()
 
-    def _show_corr_max_over_periods(self):
+    def _show_corr_mean_over_periods(self):
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
@@ -265,7 +265,7 @@ class SubperiodCorrelationRunner:
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
-                title = 'View-pairwise max-over-days correlation' + \
+                title = 'View-pairwise mean-over-days correlation' + \
                     ' over hours for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]] + \
                     ' of subject ' + s
