@@ -39,12 +39,23 @@ class ViewPairwiseCCARunner:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
+        
+        print len(self.wavelets.values())
+        print len(self.wavelets.values()[0])
+        print len(self.wavelets.values()[0][0])
+        sample = self.wavelets.values()[0][0][0]
+
+        self.num_freqs = [len(sample[i][0]) + 1
+                          for i in xrange(self.num_views)]
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
 
-        self.ccas = {s : SPUD(self.num_views, default=default)
+        self.ccas = {s : SPUD(
+                        self.num_views, 
+                        default=default, 
+                        no_double=True)
                     for s in self.subjects}
 
 
@@ -158,7 +169,10 @@ class ViewPairwiseCCARunner:
 
         for (s, spud) in self.ccas.items():
             default = lambda: [[] for p in xrange(self.num_periods[s])]
-            period_ccas = SPUD(self.num_views, default=default)
+            period_ccas = SPUD(
+                self.num_views, 
+                default=default,
+                no_double=True)
 
             for (k, subperiods) in spud.items():
                 for periods in subperiods:
@@ -166,8 +180,8 @@ class ViewPairwiseCCARunner:
                         period_ccas.get(k[0], k[1])[p].append(cca)
 
             for (k, periods) in period_ccas.items():
-                n1 = self.servers[k[0]].cols()
-                n2 = self.servers[k[1]].cols()
+                n1 = self.num_freqs[k[0]]
+                n2 = self.num_freqs[k[1]]
                 y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
                              for i in xrange(n1)]
                 y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
@@ -204,7 +218,10 @@ class ViewPairwiseCCARunner:
 
         for (s, spud) in self.correlation.items():
             default = lambda: [[] for p in xrange(self.num_periods[s])]
-            period_corrs = SPUD(self.num_views, default=default)
+            period_corrs = SPUD(
+                self.num_views, 
+                default=default,
+                no_double=True)
 
             for (k, subperiods) in spud.items():
                 for periods in subperiods:
@@ -212,8 +229,8 @@ class ViewPairwiseCCARunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
-                n1 = self.servers[k[0]].cols()
-                n2 = self.servers[k[1]].cols()
+                n1 = self.num_freqs[k[0]]
+                n2 = self.num_freqs[k[1]]
                 y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
                              for i in xrange(n1)]
                 y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
@@ -248,17 +265,19 @@ class ViewPairwiseCCARunner:
 
     def _show_cca_mean_over_periods(self):
 
-        for (s, spud) in self.cca.items():
+        for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
-                n1 = self.servers[k[0]].cols()
-                n2 = self.servers[k[1]].cols()
+                n1 = self.num_freqs[k[0]]
+                n2 = self.num_freqs[k[1]]
                 y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
                              for i in xrange(n1)]
                 y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
                              for i in xrange(n2)]
                 y_labels = y1_labels + y2_labels
+                print 'y_labels', y_labels
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
+                print 'x_labels', x_labels
                 timelines = [np.hstack(periods)
                              for periods in subperiods]
                 timeline = np.hstack(
@@ -286,10 +305,10 @@ class ViewPairwiseCCARunner:
 
     def _show_cca_over_periods(self):
 
-        for (s, spud) in self.cca.items():
+        for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
-                n1 = self.servers[k[0]].cols()
-                n2 = self.servers[k[1]].cols()
+                n1 = len(self.wavelets.values()[0][0][0][k[0]][0]) + 1
+                n2 = len(self.wavelets.values()[0][0][0][k[1]][0]) + 1
                 y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
                              for i in xrange(n1)]
                 y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
