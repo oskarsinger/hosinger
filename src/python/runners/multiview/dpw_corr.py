@@ -19,19 +19,19 @@ class DayPairwiseCorrelationRunner:
         save=False,
         load=False,
         show=False,
-        show_max=False):
+        show_mean=False):
 
         self.cca = cca
         self.save = save
         self.load = load
         self.show = show
-        self.show_max = show_max
+        self.show_mean = show_mean
 
         self._init_dirs(
             save, 
             load, 
             show, 
-            show_max,
+            show_mean,
             save_load_dir)
 
         self.wavelets = dtcwt_runner.wavelets
@@ -57,18 +57,18 @@ class DayPairwiseCorrelationRunner:
             self._show_corr_over_periods()
             self._show_corr_over_subperiods()
 
-        if self.show_max:
-            self._show_corr_max_over_periods()
-            self._show_corr_max_over_subperiods()
+        if self.show_mean:
+            self._show_corr_mean_over_periods()
+            self._show_corr_mean_over_subperiods()
 
     def _init_dirs(self, 
         save, 
         load, 
         show, 
-        show_max,
+        show_mean,
         save_load_dir):
 
-        if (show_max or show or save) and not load:
+        if (show_mean or show or save) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -89,7 +89,7 @@ class DayPairwiseCorrelationRunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show or show_max,
+            show or show_mean,
             self.save_load_dir) 
 
     def _compute(self):
@@ -161,7 +161,7 @@ class DayPairwiseCorrelationRunner:
 
             self.correlation[s][v][sp][ps[0]] = m
 
-    def _show_corr_max_over_subperiods(self):
+    def _show_corr_mean_over_subperiods(self):
 
         for (s, views) in self.correlation.items():
             period_corrs = [[[] for p in xrange(self.num_periods[s] - 1)] 
@@ -184,7 +184,7 @@ class DayPairwiseCorrelationRunner:
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
-                title = 'Day-pwise max-over-hours corr' + \
+                title = 'Day-pwise mean-over-hours corr' + \
                     ' over days for view ' + \
                     self.names[v] + \
                     ' of subject ' + s
@@ -244,7 +244,7 @@ class DayPairwiseCorrelationRunner:
                         vmin=-1)[0].get_figure().savefig(path)
                     sns.plt.clf()
         
-    def _show_corr_max_over_periods(self):
+    def _show_corr_mean_over_periods(self):
 
         for (s, views) in self.correlation.items():
             for (v, subperiods) in enumerate(views):
@@ -259,7 +259,7 @@ class DayPairwiseCorrelationRunner:
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
-                title = 'Day-pwise max-over-days correlation' + \
+                title = 'Day-pwise mean-over-days correlation' + \
                     ' over hours for view ' + \
                     self.names[v] + \
                     ' of subject ' + s
