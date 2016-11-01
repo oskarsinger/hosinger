@@ -11,7 +11,7 @@ from runners.multiview import MVDTCWTRunner
 @click.option('--save', default=False)
 @click.option('--load', default=False)
 @click.option('--show', default=False)
-@click.option('--show-max', default=False)
+@click.option('--show-mean', default=False)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
@@ -20,7 +20,7 @@ def run_it_all_day_bb(
     save,
     load,
     show,
-    show_max):
+    show_mean):
 
     dtcwt_runner = MVDTCWTRunner(
         data_path=data_path,
@@ -37,7 +37,7 @@ def run_it_all_day_bb(
         save=save,
         load=load,
         show=show,
-        show_max=show_max)
+        show_mean=show_mean)
 
     runner.run()
 
