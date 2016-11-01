@@ -1,7 +1,7 @@
 import click
 
-from runners.multiview import DayPairwiseCorrelationRunner as DPCR
-from runners.multiview import MVDTCWTSPRunner
+from runners.multiview import DayPairwiseCorrelationRunner as DPWCR
+from runners.multiview import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path', default=None)
@@ -22,7 +22,7 @@ def run_it_all_day_bb(
     show,
     show_max):
 
-    dtcwt_runner = MVDTCWTSPRunner(
+    dtcwt_runner = MVDTCWTRunner(
         data_path=data_path,
         dataset=dataset,
         save_load_dir=wavelet_dir,
@@ -31,7 +31,7 @@ def run_it_all_day_bb(
     if not load:
         dtcwt_runner.run()
 
-    runner = DPCR(
+    runner = DPWCR(
         dtcwt_runner,
         save_load_dir,
         save=save,

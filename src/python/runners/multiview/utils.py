@@ -32,8 +32,6 @@ def get_symptom_status(subject):
     elif subject in W:
         status = 'W'
     else:
-        #raise ValueError(
-        #    'Not a valid subject: ' + str(subject))
         status = 'U'
 
     return status
@@ -77,18 +75,6 @@ def get_normed_correlation(X1, X2):
 
     abs_X1 = np.absolute(X1)
     abs_X2 = np.absolute(X2)
-
-    """
-    centered_X1 = abs_X1 - np.mean(abs_X1, axis=0)
-    centered_X2 = abs_X2 - np.mean(abs_X2, axis=0)
-    unnormed = np.dot(centered_X1.T, centered_X2)
-    sd1 = np.std(abs_X1, axis=0)
-    sd2 = np.std(abs_X2, axis=0)
-    sd_op = np.dot(sd1, sd2.T) * (X1.shape[0] - 1)
-
-    return unnormed / sd_op
-    """
-
     p1 = X1.shape[1]
     p2 = X1.shape[1]
     corr = np.zeros((p1, p2))

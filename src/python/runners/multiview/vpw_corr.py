@@ -11,7 +11,7 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
 from lazyprojector import plot_matrix_heat
 
-class SubperiodCorrelationRunner:
+class ViewPairwiseCorrelationRunner:
 
     def __init__(self,
         dtcwt_runner,
