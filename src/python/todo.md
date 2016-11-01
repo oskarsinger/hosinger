@@ -36,4 +36,5 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Split APE file of Trio of Doom album into individual tracks
 * Do CCA plotting
+    * Seems to be an issue with loading. Should figure out why the wavelet coefficient storage seems to be empty
 * Run correlation on full HR+ACC data
