@@ -146,7 +146,7 @@ class MVDTCWTRunner:
                 os.mkdir(save_load_dir)
 
             model_dir = get_ts('_'.join([
-                'MVDTCWTSPR',
+                'MVDTCWTR',
                 'period',
                 str(self.period),
                 'subperiod',
