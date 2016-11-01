@@ -76,7 +76,7 @@ def get_normed_correlation(X1, X2):
     abs_X1 = np.absolute(X1)
     abs_X2 = np.absolute(X2)
     p1 = X1.shape[1]
-    p2 = X1.shape[1]
+    p2 = X2.shape[1]
     corr = np.zeros((p1, p2))
 
     for i in xrange(p1):
