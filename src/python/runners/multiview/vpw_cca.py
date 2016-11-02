@@ -334,7 +334,9 @@ class ViewPairwiseCCARunner:
         n2 = self.num_freqs[view2]
         y1_labels = [' view ' + str(view1) + rmu.get_2_digit(i)
                      for i in xrange(n1)]
+        print 'y1_labels', y1_labels
         y2_labels = [' view ' + str(view2) + rmu.get_2_digit(i)
                      for i in xrange(n2)]
+        print 'y2_labels', y2_labels
 
         return y1_labels + y2_labels
