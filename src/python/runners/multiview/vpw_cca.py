@@ -1,4 +1,5 @@
 import os
+import json
 import matplotlib
 
 matplotlib.use('Agg')
@@ -10,6 +11,7 @@ import utils as rmu
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
 from lazyprojector import plot_matrix_heat
+from math import log
 
 class ViewPairwiseCCARunner:
 
@@ -26,29 +28,22 @@ class ViewPairwiseCCARunner:
         self.show = show
         self.show_mean = show_mean
 
-        self._init_dirs(
-            save, 
-            load, 
-            show, 
-            show_mean,
-            save_load_dir)
-
         self.wavelets = dtcwt_runner.wavelets
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
-        
-        print len(self.wavelets.values())
-        print len(self.wavelets.values()[0])
-        print len(self.wavelets.values()[0][0])
-        sample = self.wavelets.values()[0][0][0]
-
-        self.num_freqs = [len(sample[i][0]) + 1
-                          for i in xrange(self.num_views)]
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
+        self.num_freqs = [None] * self.num_views
+
+        self._init_dirs(
+            save, 
+            load, 
+            show, 
+            show_mean,
+            save_load_dir)
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
 
@@ -94,6 +89,14 @@ class ViewPairwiseCCARunner:
             os.mkdir(self.save_load_dir)
         else:
             self.save_load_dir = save_load_dir
+            freqs_path = os.path.join(
+                self.save_load_dir,
+                'num_freqs.json')
+
+            with open(freqs_path) as f:
+                line = f.readline()
+
+                self.num_freqs = json.loads(line)
 
         self.ccas_dir = rmu.init_dir(
             'cca',
@@ -112,11 +115,15 @@ class ViewPairwiseCCARunner:
             for (p, day) in enumerate(s_wavelets):
                 for (sp, subperiod) in enumerate(day):
                     for k in spud.keys():
-                        (Yh1, Yl1) =  subperiod[k[0]]
-                        (Yh2, Yl2) =  subperiod[k[1]]
+                        (Yh1, Yl1) = subperiod[k[0]]
+                        (Yh2, Yl2) = subperiod[k[1]]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
                         cca = rmu.get_cca_vecs(Y1_mat, Y2_mat)
+
+                        if p == 0:
+                            self.num_freqs[k[0]] = Y1_mat.shape[1] 
+                            self.num_freqs[k[1]] = Y2_mat.shape[1]
 
                         self.ccas[s].get(k[0], k[1])[sp].append(cca)
                      
@@ -127,6 +134,15 @@ class ViewPairwiseCCARunner:
                                 k,
                                 p,
                                 sp)
+
+        if self.save:
+            num_freqs_json = json.dumps(self.num_freqs)
+            path = os.path.join(
+                self.save_load_dir, 
+                'num_freqs.json')
+
+            with open(path, 'w') as f:
+                f.write(num_freqs_json)
 
     def _save(self, c, s, v, p, sp):
 
@@ -180,13 +196,7 @@ class ViewPairwiseCCARunner:
                         period_ccas.get(k[0], k[1])[p].append(cca)
 
             for (k, periods) in period_ccas.items():
-                n1 = self.num_freqs[k[0]]
-                n2 = self.num_freqs[k[1]]
-                y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
-                             for i in xrange(n1)]
-                y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
-                             for i in xrange(n2)]
-                y_labels = y1_labels + y2_labels
+                y_labels = self._get_y_labels(k[0], k[1])
                 x_labels = [rmu.get_2_digit(sp, power=False)
                             for sp in xrange(self.num_periods[s])]
                 timelines = [np.hstack(subperiods)
@@ -229,13 +239,7 @@ class ViewPairwiseCCARunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
-                n1 = self.num_freqs[k[0]]
-                n2 = self.num_freqs[k[1]]
-                y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
-                             for i in xrange(n1)]
-                y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
-                             for i in xrange(n2)]
-                y_labels = y1_labels + y2_labels
+                y_labels = self._get_y_labels(k[0], k[1])
                 x_labels = [rmu.get_2_digit(sp, power=False)
                             for sp in xrange(self.num_subperiods)]
                 name1 = self.names[k[0]]
@@ -267,17 +271,9 @@ class ViewPairwiseCCARunner:
 
         for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
-                n1 = self.num_freqs[k[0]]
-                n2 = self.num_freqs[k[1]]
-                y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
-                             for i in xrange(n1)]
-                y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
-                             for i in xrange(n2)]
-                y_labels = y1_labels + y2_labels
-                print 'y_labels', y_labels
+                y_labels = self._get_y_labels(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.num_periods[s])]
-                print 'x_labels', x_labels
+                            for p in xrange(self.num_subperiods)]
                 timelines = [np.hstack(periods)
                              for periods in subperiods]
                 timeline = np.hstack(
@@ -307,12 +303,7 @@ class ViewPairwiseCCARunner:
 
         for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
-                n1 = len(self.wavelets.values()[0][0][0][k[0]][0]) + 1
-                n2 = len(self.wavelets.values()[0][0][0][k[1]][0]) + 1
-                y1_labels = [rmu.get_2_digit(i) + ' view ' + str(k[0])
-                             for i in xrange(n1)]
-                y2_labels = [rmu.get_2_digit(i) + ' view ' + str(k[1])
-                             for i in xrange(n2)]
+                y_labels = self._get_y_labels(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
 
@@ -336,3 +327,14 @@ class ViewPairwiseCCARunner:
                         vmin=-1)[0].get_figure().savefig(
                             path, format='pdf')
                     sns.plt.clf()
+
+    def _get_y_labels(self, view1, view2):
+
+        n1 = self.num_freqs[view1]
+        n2 = self.num_freqs[view2]
+        y1_labels = [rmu.get_2_digit(i) + ' view ' + str(view1)
+                     for i in xrange(n1)]
+        y2_labels = [rmu.get_2_digit(i) + ' view ' + str(view2)
+                     for i in xrange(n2)]
+
+        return y1_labels + y2_labels
