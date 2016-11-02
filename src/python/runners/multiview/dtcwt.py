@@ -165,6 +165,17 @@ class MVDTCWTRunner:
             save,
             self.save_load_dir)
 
+    def _compute(self):
+
+        for subject in self.subjects:
+
+            print 'Computing subperiod wavelet transforms for subject', subject
+
+            (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
+
+            if self.save:
+                self._save(Yls, Yhs, subject)
+
     def _load(self):
 
         print 'Loading wavelets'
@@ -201,17 +212,6 @@ class MVDTCWTRunner:
                     coeffs = loaded
 
             self.wavelets[s][p][sp][v][index] = coeffs
-
-    def _compute(self):
-
-        for subject in self.subjects:
-
-            print 'Computing subperiod wavelet transforms for subject', subject
-
-            (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
-
-            if self.save:
-                self._save(Yls, Yhs, subject)
 
     def _save(self, Yls, Yhs, subject):
 
