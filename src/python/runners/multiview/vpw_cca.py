@@ -21,12 +21,14 @@ class ViewPairwiseCCARunner:
         save=False,
         load=False,
         show=False,
-        show_mean=False):
+        show_mean=False,
+        subject_mean=False):
 
         self.save = save
         self.load = load
         self.show = show
         self.show_mean = show_mean
+        self.subject_mean = subject_mean
 
         self.wavelets = dtcwt_runner.wavelets
         self.subjects = dtcwt_runner.subjects
@@ -196,9 +198,8 @@ class ViewPairwiseCCARunner:
                         period_ccas.get(k[0], k[1])[p].append(cca)
 
             for (k, periods) in period_ccas.items():
-                y_labels = self._get_y_labels(k[0], k[1])
-                x_labels = [rmu.get_2_digit(sp, power=False)
-                            for sp in xrange(self.num_periods[s])]
+                (y_labels, x_labels) = self._get_labels(
+                    k[0], k[1], self.num_periods[s])
                 timelines = [np.hstack(subperiods)
                              for subperiods in periods]
                 timeline = np.hstack(
@@ -208,21 +209,13 @@ class ViewPairwiseCCARunner:
                     ' over days for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]] + \
                     ' of subject ' + s
-                fn = '_'.join(title.split()) + '.pdf'
-                path = os.path.join(self.plot_dir, fn)
 
-                plot_matrix_heat(
+                self._plot_save_clear(
                     timeline,
                     x_labels,
                     y_labels,
                     title,
-                    'day',
-                    'frequency component and view',
-                    'cca parameters',
-                    vmax=1,
-                    vmin=-1)[0].get_figure().savefig(
-                        path, format='pdf')
-                sns.plt.clf()
+                    'day')
 
     def _show_cca_over_subperiods(self):
 
@@ -239,9 +232,8 @@ class ViewPairwiseCCARunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
-                y_labels = self._get_y_labels(k[0], k[1])
-                x_labels = [rmu.get_2_digit(sp, power=False)
-                            for sp in xrange(self.num_subperiods)]
+                (y_labels, x_labels) = self._get_labels(
+                    k[0], k[1], self.num_subperiods)
                 name1 = self.names[k[0]]
                 name2 = self.names[k[1]]
 
@@ -251,29 +243,20 @@ class ViewPairwiseCCARunner:
                         ' for views ' + name1 + ' ' + name2 + \
                         ' of subject ' + s + ' and day ' + \
                         rmu.get_2_digit(p)
-                    fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
 
-                    plot_matrix_heat(
+                    self._plot_save_clear(
                         timeline,
                         x_labels,
                         y_labels,
                         title,
-                        'hour',
-                        'frequency component and view',
-                        'cca',
-                        vmax=1,
-                        vmin=-1)[0].get_figure().savefig(
-                            path, format='pdf')
-                    sns.plt.clf()
+                        'hour')
 
     def _show_cca_mean_over_periods(self):
 
         for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
-                y_labels = self._get_y_labels(k[0], k[1])
-                x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.num_subperiods)]
+                (y_labels, x_labels) = self._get_labels(
+                    k[0], k[1], self.num_subperiods)
                 timelines = [np.hstack(periods)
                              for periods in subperiods]
                 timeline = np.hstack(
@@ -283,60 +266,67 @@ class ViewPairwiseCCARunner:
                     ' over hours for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]] + \
                     ' of subject ' + s
-                fn = '_'.join(title.split()) + '.pdf'
-                path = os.path.join(self.plot_dir, fn)
 
-                plot_matrix_heat(
+                self._plot_save_clear(
                     timeline,
                     x_labels,
                     y_labels,
                     title,
-                    'hour',
-                    'frequency component and view',
-                    'cca',
-                    vmax=1,
-                    vmin=-1)[0].get_figure().savefig(
-                        path, format='pdf')
-                sns.plt.clf()
+                    'hour')
 
     def _show_cca_over_periods(self):
 
         for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
-                y_labels = self._get_y_labels(k[0], k[1])
-                x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.num_periods[s])]
+                (y_labels, x_labels) = self._get_labels(
+                    k[0], k[1], self.num_periods[s])
 
                 for (sp, periods) in enumerate(subperiods):
                     timeline = np.hstack(periods)
                     title = 'View-pairwise cca over days for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s + ' at hour ' + str(sp)
-                    fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
 
-                    plot_matrix_heat(
+                    self._plot_save_clear(
                         timeline,
                         x_labels,
                         y_labels,
                         title,
-                        'day',
-                        'frequency component and view',
-                        'cca',
-                        vmax=1,
-                        vmin=-1)[0].get_figure().savefig(
-                            path, format='pdf')
-                    sns.plt.clf()
+                        'day')
 
-    def _get_y_labels(self, view1, view2):
+    def _plot_save_clear(self, 
+        timeline, 
+        x_labels, 
+        y_labels, 
+        title,
+        day_or_hour):
+
+        fn = '_'.join(title.split()) + '.pdf'
+        path = os.path.join(self.plot_dir, fn)
+
+        plot_matrix_heat(
+            timeline,
+            x_labels,
+            y_labels,
+            title,
+            day_or_hour,
+            'frequency component and view',
+            'cca',
+            vmax=1,
+            vmin=-1)[0].get_figure().savefig(
+                path, format='pdf')
+        sns.plt.clf()
+
+    def _get_labels(self, view1, view2, x_len):
 
         n1 = self.num_freqs[view1]
         n2 = self.num_freqs[view2]
         y1_labels = ['view ' + str(view1) + ' ' + rmu.get_2_digit(i)
                      for i in xrange(n1)]
-        print 'y1_labels', y1_labels
         y2_labels = ['view ' + str(view2) + ' ' + rmu.get_2_digit(i)
                      for i in xrange(n2)]
-        print 'y2_labels', y2_labels
+        y_labels = y1_labels + y2_labels
+        x_labels = [rmu.get_2_digit(p, power=False)
+                    for p in xrange(x_len)]
 
-        return y1_labels + y2_labels
+        return (y_labels, x_labels)

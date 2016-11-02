@@ -64,8 +64,6 @@ def get_correlation_storage(
 
 def get_cca_vecs(X1, X2):
 
-    abs_X1 = np.absolute(X1)
-    abs_X2 = np.absolute(X2)
     cca = CCA(n_components=1)
 
     cca.fit(abs_X1, abs_X2)
