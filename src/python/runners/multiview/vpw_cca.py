@@ -257,7 +257,7 @@ class ViewPairwiseCCARunner:
                         title,
                         'day')
 
-        for (status, spud) in means:
+        for (status, spud) in means.items():
             for (k, avg) in spud.items():
                 (y_labels, x_labels) = self._get_labels(
                     k[0], k[1], self.num_periods[s])
@@ -370,7 +370,7 @@ class ViewPairwiseCCARunner:
                         title,
                         'hour')
 
-        for (status, spud) in means:
+        for (status, spud) in means.items():
             for (k, avg) in spud.items():
                 (y_labels, x_labels) = self._get_labels(
                     k[0], k[1], self.num_subperiods)
