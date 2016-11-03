@@ -208,6 +208,7 @@ class ViewPairwiseCCARunner:
                     spud.insert(k1, k2, np.zeros((n, p)))
 
         for (s, spud) in self.ccas.items():
+            status = rmu.get_symptom_status(s)
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_ccas = SPUD(
                 self.num_views, 
