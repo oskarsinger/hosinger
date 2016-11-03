@@ -186,9 +186,10 @@ class ViewPairwiseCCARunner:
 
     def _show_cca_mean_over_subperiods(self):
 
-        subject_means = None
+        means = None
+        counts = None
 
-        if self.subject_means:
+        if self.subject_mean:
             keys = {rmu.get_symptom_status(s)
                     for s in self.subjects}
             means = {k: SPUD(self.num_views, no_double=True)
@@ -307,9 +308,10 @@ class ViewPairwiseCCARunner:
 
     def _show_cca_mean_over_periods(self):
 
-        subject_means = None
+        means = None
+        counts = None
 
-        if self.subject_means:
+        if self.subject_mean:
             keys = {rmu.get_symptom_status(s)
                     for s in self.subjects}
             means = {k: SPUD(self.num_views, no_double=True)
