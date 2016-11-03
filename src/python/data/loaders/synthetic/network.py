@@ -25,14 +25,17 @@ class VertexWithExposureLoader:
 
         self.neighbors = neighbors
 
+    def set_action(self, action):
+
+        self.action = action
+
     def get_action(self):
 
         return self.action
 
-    def get_data(self, action):
+    def get_data(self):
 
         self.num_rounds += 1
-        self.action = action
 
         n_actions = [n.get_action() 
                      for n in self.neighbors]

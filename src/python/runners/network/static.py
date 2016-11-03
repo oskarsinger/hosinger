@@ -22,7 +22,11 @@ class StaticStructureRunner:
 
         for i in xrange(self.num_rounds):
             actions = [l.get_action() for l in self.learners]
-            feedback = [s.get_data(a) for s in self.servers]
+
+            for (s, a) in zip(self.servers, actions):
+                s.set_action(a)
+
+            feedback = [s.get_data() for s in self.servers]
 
             for (l, f) in zip(self.learners, feedback):
                 l.set_feedback(f)
