@@ -230,12 +230,14 @@ class ViewPairwiseCCARunner:
                     avg_shape = means[status].get(k[0], k[1]).shape
 
                     if tl_shape == avg_shape:
-                        counts[status].get(k[0], k[1]) += 1
+                        count = counts[status].get(k[0], k[1]) + 1
+                        counts[status].insert(
+                            k[0], k[1], count)
 
                         avg = get_ra(
                             means[status].get(k[0], k[1]),
                             timeline,
-                            counts[status].get(k[0], k[1]))
+                            count)
 
                         means[status].insert(
                             k[0], k[1], avg)
