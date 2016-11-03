@@ -8,8 +8,7 @@ class VertexWithExposureLoader:
         phi,
         F,
         G,
-        theta,
-        neighbors):
+        theta):
 
         self.v = v
         self.gamma = gamma
@@ -17,17 +16,28 @@ class VertexWithExposureLoader:
         self.F = F
         self.G = G
         self.theta = theta
-        self.neigbors = neighbors
 
+        self.neighbors = None
+        self.action = None
         self.num_rounds = 0
 
-    def get_data(self, actions):
+    def set_neighbors(self, neighbors):
+
+        self.neighbors = neighbors
+
+    def get_action(self):
+
+        return self.action
+
+    def get_data(self, action):
 
         self.num_rounds += 1
+        self.action = action
 
-        d_e = float(sum(
-            [a in self.neighbors for a in actions]))
-        exposure = self.phi(d_e / len(self.neighbors))
+        n_actions = [n.get_action() 
+                     for n in self.neighbors]
+        exposure = self.phi(
+            float(sum(n_actions)) / len(self.neighbors))
         Y_0 = self.F(self.theta)
         tau = self.G(self.theta) if self.v in actions else 0
 
