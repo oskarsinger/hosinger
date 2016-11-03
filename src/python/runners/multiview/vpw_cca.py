@@ -330,7 +330,7 @@ class ViewPairwiseCCARunner:
                     spud.insert(k1, k2, np.zeros((n, p)))
 
         for (s, spud) in self.ccas.items():
-            status = rmu.get_sympton_status(s)
+            status = rmu.get_symptom_status(s)
 
             for (k, subperiods) in spud.items():
                 timelines = [np.hstack(periods)
