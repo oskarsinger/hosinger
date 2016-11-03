@@ -235,7 +235,7 @@ class ViewPairwiseCCARunner:
                         avg = get_ra(
                             means[status].get(k[0], k[1]),
                             timeline,
-                            counts[status].get([k[0], k[1]))
+                            counts[status].get(k[0], k[1]))
 
                         means[status].insert(
                             k[0], k[1], avg)
