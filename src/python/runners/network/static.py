@@ -1,16 +1,17 @@
 import numpy as np
+from drrobert.network import get_erdos_renyi as get_er
 
-class StaticStructureRunner:
+class SyntheticStaticStructureRunner:
 
-    def __init__(self,
-        servers,
-        adj_lists,
-        learners):
+    def __init__(self):
 
-        self.servers = servers
-        self.adj_lists = adj_lists
-        self.learners = learners
+        num_nodes = 50
+        self.servers = ['Poop' for i in xrange(num_nodes)]
+        # TODO: consider converting input adj_matrix to adj lists
+        self.adj_matrix = get_er(nodes, 0.05)
+        self.learners = ['Poop' for i in xrange(num_nodes)]
 
+    # TODO: change this to reflect adj_matrix instead of lists
     def run(self):
 
         adj_stuff = zip(self.servers, self.adj_lists)
