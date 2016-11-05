@@ -16,8 +16,9 @@ class NetworkInterferenceLearner:
         self.burn_in = burn_in
         self.phi = phi
 
-        self.mu = np.random.randn()
-        self.p = np.random.uniform()
+        self.num_nodes = self.adj_matrix.shape[0]
+        self.mus = np.random.randn(self.num_nodes)
+        self.ps = np.random.uniform(size=self.num_nodes)
         self.optimizer = FDO()
         self.num_rounds = 0
         self.action_history = []
