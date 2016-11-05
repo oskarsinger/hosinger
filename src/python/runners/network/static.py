@@ -1,17 +1,22 @@
 import numpy as np
-from drrobert.network import get_erdos_renyi as get_er
+import drrobert.network as dn
+
+from data.loaders.synthetic import VertexWithExposureLoader as VWEL
+from learners.network import NetworkInterferenceLearner as NIFL
 
 class SyntheticStaticStructureRunner:
 
     def __init__(self):
 
-        num_nodes = 50
-        self.servers = ['Poop' for i in xrange(num_nodes)]
-        # TODO: consider converting input adj_matrix to adj lists
-        self.adj_matrix = get_er(nodes, 0.05)
-        self.learners = ['Poop' for i in xrange(num_nodes)]
+        num_nodes = 20
+        self.burn_in = 100
+        self.servers = [VWEL() 
+                        for i in xrange(num_nodes)]
+        self.adj_matrix = dn.get_erdos_renyi(nodes, 0.05, sym=True)
+        self.adj_lists = dn.get_adj_lists(self.adj_matrix)
+        self.learners = [NIFL(i, self.adj_matrix, self.burn_in)
+                         for i in xrange(num_nodes)]
 
-    # TODO: change this to reflect adj_matrix instead of lists
     def run(self):
 
         adj_stuff = zip(self.servers, self.adj_lists)

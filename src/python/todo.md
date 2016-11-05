@@ -36,3 +36,11 @@ To test your analysis I have prepared a pair of test signals in tab delimited fi
 * T-tests and p-values for spike in temperature vs reported symptoms
 * Split APE file of Trio of Doom album into individual tracks
 * Write up shortcuts, experiments, and click tool for network interference stuff
+* Write simple, preliminary learners for network interference stuff.
+    * Need to come up with incremental alternating updates to each node's parameters.
+    * Should I start with a global model at each node? Yes. So I need to tell each learner about network structure at the beginning.
+    * How should I simulate limited availability of nodes? The learners should be communicating with each other internally rather than having availability fed into them. So they should loop through the other nodes checking for availability
+* Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper.
+* I should try federated optimization, but I need to be quite cautious how I define A and S. I think the definitions given in the paper are pretty close to what I need, maybe exactly, but need to double check.
+    * Since the coordinates may not be as independent as assumed in the McMahan paper, it may be a good idea to use that sketching for online second-order methods paper. Yay! Will have to run experiments with both.
+* Need to make visualization to assess convergence of the algorithm on the local parameters. Should I also be assessing convergence on global model, or does that matter?
