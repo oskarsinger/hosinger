@@ -3,6 +3,7 @@ import drrobert.network as dn
 
 from data.loaders.synthetic import VertexWithExposureLoader as VWEL
 from learners.network import NetworkInterferenceLearner as NIFL
+from drrobert.random import rademacher
 
 class SyntheticStaticStructureRunner:
 
@@ -10,7 +11,7 @@ class SyntheticStaticStructureRunner:
 
         num_nodes = 20
         self.burn_in = 100
-        self.servers = [VWEL() 
+        self.servers = [VWEL(i, rademacher()) 
                         for i in xrange(num_nodes)]
         self.adj_matrix = dn.get_erdos_renyi(nodes, 0.05, sym=True)
         self.adj_lists = dn.get_adj_lists(self.adj_matrix)
