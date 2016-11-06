@@ -20,8 +20,11 @@
 * Need to make visualization to assess convergence of the algorithm on the local parameters. Should I also be assessing convergence on global model, or does that matter? Make that a later step? Maybe I should show the max error over all nodes for each coordinate.
 
 ##Optimization
-* Consider some natural gradient-ish methods since we are optimizing parameters of a probabilistic model.
 
+###Online EM
+* Need to figure out how to fit the E step into federated optimization. Probably can just separately implement federated optimization, figure out the search direction of the E step, then plug into federated as if it were a gradient.
+
+###Federated
 * Carefully consider how to define A and S in my implementation of federated optimization. Should I make separate A and S for $\mu$'s and $p$'s or the same one? Its going to double my number of parameters, but is that really so bad?
 
 * Since the coordinates may not be as independent as assumed in the McMahan paper, it may be a good idea to use that sketching for online second-order methods paper. Yay! Will have to run experiments with both.
