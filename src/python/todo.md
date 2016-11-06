@@ -24,6 +24,8 @@
 ###Online EM
 * Need to figure out how to fit the E step into federated optimization. Probably can just separately implement federated optimization, figure out the search direction of the E step, then plug into federated as if it were a gradient.
 
+* Now that I think about it, the M step may also need to involve federated optimization, although the M step sort of gets the federated part via the E step because its working with the FDO-reweighted estimates of the $p$s.
+
 ###Federated
 * Carefully consider how to define A and S in my implementation of federated optimization. Should I make separate A and S for $\mu$'s and $p$'s or the same one? Its going to double my number of parameters, but is that really so bad?
 
