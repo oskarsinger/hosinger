@@ -6,6 +6,9 @@ class FederatedOptimizer:
 
         self.num_rounds = 0
 
+        self.A = None
+        self.S = None
+
     def get_update(self, parameters, gradient, eta):
 
         self.num_rounds += 1

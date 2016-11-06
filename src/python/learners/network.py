@@ -1,6 +1,7 @@
 import numpy as np
 
 from optimization.optimizers import FederatedOptimizer as FDO
+from optimization.stepsize import FixedScheduler as FXS
 from math import sqrt
 
 class NetworkInterferenceLearner:
@@ -17,9 +18,11 @@ class NetworkInterferenceLearner:
         self.phi = phi
 
         self.num_nodes = self.adj_matrix.shape[0]
-        self.mus = np.random.randn(self.num_nodes)
+        self.mus = np.random.randn(self.num_nodes, 2)
+        self.sigmas = np.abs(np.random.randn(self.num_nodes, 2))
         self.ps = np.random.uniform(size=self.num_nodes)
         self.optimizer = FDO()
+        self.eta_scheduler = FXS(0.1)
         self.num_rounds = 0
         self.action_history = []
         self.feedback_history = []
@@ -50,4 +53,17 @@ class NetworkInterferenceLearner:
 
         f = self.feedback_history[-1]
 
-        # TODO: make a call to my federated optimizer
+        self._perform_E_step()
+        self._perform_M_step()
+
+    def _get_E_step(self):
+
+        eta = self.eta_scheduler.get_stepsize()
+        E_step = None
+
+        self.ps = self.optimizer.get_update(
+            self.ps, E_step, eta)
+
+    def _get_M_step(self):
+
+        self.mus =
