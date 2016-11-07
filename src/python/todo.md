@@ -23,14 +23,14 @@
 * I should just write out the actual prox operator with the dual averaging. Otherwise, I am never going to figure this out.
 
 ###Online EM
+* Just write out the distribution of $Y_v^{(t)}$ in terms of the parameters known from the burn-in time so you can account for the baseline effects when doing the EM updates. Also make sure to account for the exposure effects by either adding or subtracting according to $j$ when finding the weighted empirical moments.
+
 * Need to figure out how to fit the E step into federated optimization. Probably can just separately implement federated optimization, figure out the search direction of the E step, then plug into federated as if it were a gradient.
 
 * Now that I think about it, the M step may also need to involve federated optimization, although the M step sort of gets the federated part via the E step because its working with the FDO-reweighted estimates of the $p$s.
 
 ###Federated
-* Carefully consider how to define A and S in my implementation of federated optimization. Should I make separate A and S for $\mu$'s and $p$'s or the same one? Its going to double my number of parameters, but is that really so bad?
-
-* Since the coordinates may not be as independent as assumed in the McMahan paper, it may be a good idea to use that sketching for online second-order methods paper. Yay! Will have to run experiments with both.
+* Need to figure out best way to share information from other GMMs with federated optimizer. Now that I understand this part, will hopefully be much easier to define A and S.
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
