@@ -32,6 +32,9 @@
 ###Federated
 * Need to figure out best way to share information from other GMMs with federated optimizer. Now that I understand this part, will hopefully be much easier to define A and S.
 
+###Bandit Feedback
+* The bandit feedback comes from the fact that we won't be making treatment on our subjects at each round. However, even without treatment-related feedback, we are still getting feedback from the deterministic exposure effects, but I guess this update just applies to the Rademacher variables. Wait, ew, how do I just update the Rademachers?
+
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 
