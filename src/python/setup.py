@@ -4,6 +4,7 @@ setup(
     name='OskarResearchCode',
     version='0.01',
     packages=[
+        'em',
         'learners',
         'wavelets',
         'wavelets.dtcwt',

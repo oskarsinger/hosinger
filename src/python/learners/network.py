@@ -53,8 +53,8 @@ class NetworkInterferenceLearner:
 
         f = self.feedback_history[-1]
 
-        self._perform_E_step()
-        self._perform_M_step()
+        self._compute_E_step()
+        self._compute_M_step()
 
     def _get_E_step(self):
 
@@ -66,4 +66,4 @@ class NetworkInterferenceLearner:
 
     def _get_M_step(self):
 
-        self.mus =
+        self.mus = 
