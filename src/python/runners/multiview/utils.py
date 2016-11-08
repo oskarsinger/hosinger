@@ -1,4 +1,5 @@
 import os
+import spancca
 
 import numpy as np
 
@@ -62,18 +63,26 @@ def get_correlation_storage(
 
     print 'Poop'
 
-def get_cca_vecs(X1, X2, sparse=False):
+def get_cca_vecs(X1, X2, num_nonzero=None):
 
     (x_weights, y_weights) = [None] * 2
 
-    if sparse:
-        print 'poop'
-    else:
+    if num_nonzero is None:
         cca = CCA(n_components=1)
 
         cca.fit(abs_X1, abs_X2)
         x_weights = cca.x_weights_
         y_weights = cca.y_weights_
+    else:
+        x_project = spancca.projections.setup_sparse(
+            nnz=num_nonzero[0])
+        y_project = spancca.projections.setup_sparse(
+            nnz=num_nonzero[1])
+        A = np.dot(X1.T, X2)
+        rank = min(X1.shape + X2.shape)
+        T = 5 * X1.shape
+        (x_weights, y_weights) = spancca.cca(
+            A, rank, T, x_project, y_project)
 
     return np.vstack([
         x_weights,

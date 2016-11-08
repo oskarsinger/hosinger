@@ -45,3 +45,7 @@
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
+
+* Relabel CCA plots to be more clear on Y axis exactly what the heat quantities mean
+
+* Plot canonical correlation over time
