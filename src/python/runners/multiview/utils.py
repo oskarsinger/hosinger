@@ -62,15 +62,22 @@ def get_correlation_storage(
 
     print 'Poop'
 
-def get_cca_vecs(X1, X2):
+def get_cca_vecs(X1, X2, sparse=False):
 
-    cca = CCA(n_components=1)
+    (x_weights, y_weights) = [None] * 2
 
-    cca.fit(abs_X1, abs_X2)
+    if sparse:
+        print 'poop'
+    else:
+        cca = CCA(n_components=1)
+
+        cca.fit(abs_X1, abs_X2)
+        x_weights = cca.x_weights_
+        y_weights = cca.y_weights_
 
     return np.vstack([
-        cca.x_weights_,
-        cca.y_weights_])
+        x_weights,
+        y_weights])
 
 def get_normed_correlation(X1, X2):
 
