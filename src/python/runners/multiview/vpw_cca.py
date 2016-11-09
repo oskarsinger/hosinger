@@ -23,13 +23,17 @@ class ViewPairwiseCCARunner:
         load=False,
         show=False,
         show_mean=False,
-        subject_mean=False):
+        subject_mean=False,
+        show_transpose=False,
+        show_cc=False):
 
         self.save = save
         self.load = load
         self.show = show
         self.show_mean = show_mean
         self.subject_mean = subject_mean
+        self.show_transpose = show_transpose
+        self.show_cc = show_cc
 
         self.wavelets = dtcwt_runner.wavelets
         self.subjects = dtcwt_runner.subjects
@@ -56,7 +60,6 @@ class ViewPairwiseCCARunner:
                         no_double=True)
                     for s in self.subjects}
 
-
     def run(self):
 
         if self.load:
@@ -71,6 +74,9 @@ class ViewPairwiseCCARunner:
         if self.show_mean:
             self._show_cca_mean_over_periods()
             self._show_cca_mean_over_subperiods()
+
+        if self.show_cc:
+            self._show_cc()
 
     def _init_dirs(self, 
         save, 
@@ -122,17 +128,30 @@ class ViewPairwiseCCARunner:
                         (Yh2, Yl2) = subperiod[k[1]]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                        cca = rmu.get_cca_vecs(Y1_mat, Y2_mat)
+                        cca_over_time = rmu.get_cca_vecs(
+                            Y1_mat, Y2_mat)
+                        cca_dim = min([Y1_mat.shape[1], Y2_mat.shape[1]])
+                        cca_over_freqs = rmu.get_cca_vecs(
+                            Y1_mat[:,cca_dim].T,
+                            Y2_mat[:,cca_dim].T,
+                            num_nonzero=cca_dim)
+                        cc_over_time = np.dot(
+                            np.hstack([Y1_mat, Y2_mat]), 
+                            cca_over_time)
+                        stuff = (
+                            cca_over_time,
+                            cca_over_freqs,
+                            cc_over_time)
 
                         if p == 0:
                             self.num_freqs[k[0]] = Y1_mat.shape[1] 
                             self.num_freqs[k[1]] = Y2_mat.shape[1]
 
-                        self.ccas[s].get(k[0], k[1])[sp].append(cca)
+                        self.ccas[s].get(k[0], k[1])[sp].append(stuff)
                      
                         if self.save:
                             self._save(
-                                cca,
+                                stuff,
                                 s,
                                 k,
                                 p,
@@ -147,7 +166,7 @@ class ViewPairwiseCCARunner:
             with open(path, 'w') as f:
                 f.write(num_freqs_json)
 
-    def _save(self, c, s, v, p, sp):
+    def _save(self, cs, s, v, p, sp):
 
         views = str(v[0]) + '-' + str(v[1])
         path = '_'.join([
@@ -158,7 +177,7 @@ class ViewPairwiseCCARunner:
         path = os.path.join(self.ccas_dir, path)
 
         with open(path, 'w') as f:
-            np.save(f, c)
+            np.savez(f, *cs)
 
     def _load(self):
 
@@ -175,14 +194,27 @@ class ViewPairwiseCCARunner:
                 for i in xrange(self.num_subperiods):
                     subperiods[i] = [None] * self.num_periods[s] 
                 
-        for (k, m) in cca.items():
+        for (k, l) in cca.items():
             info = k.split('_')
             s = info[1]
             v = [int(i) for i in info[3].split('-')]
             p = int(info[5])
             sp = int(info[7])
+            loaded = {int(h_fn.split('_')[1]) : a
+                      for (h_fn, a) in loaded.items()}
+            num_coeffs = len(loaded)
+            coeffs = [loaded[i] 
+                      for i in xrange(num_coeffs)]
 
-            self.ccas[s].get(v[0], v[1])[sp][p] = m
+            self.ccas[s].get(v[0], v[1])[sp][p] = tuple(coeffs)
+
+    def _show_cc(self):
+
+        for (s, spud) in self.ccas.items():
+            cc_over_time = SPUD(self.num_views, no_double=True)
+            for (k, subperiods) in spud.items():
+                for (sp, periods) in subperiods:
+                    print 'Poop'
 
     def _show_cca_mean_over_subperiods(self):
 
@@ -221,7 +253,7 @@ class ViewPairwiseCCARunner:
                         period_ccas.get(k[0], k[1])[p].append(cca)
 
             for (k, periods) in period_ccas.items():
-                timelines = [np.hstack(subperiods)
+                timelines = [np.hstack([sp[0] for sp in subperiods])
                              for subperiods in periods]
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
@@ -294,7 +326,7 @@ class ViewPairwiseCCARunner:
                 name2 = self.names[k[1]]
 
                 for (p, subperiods) in enumerate(periods):
-                    timeline = np.hstack(subperiods)
+                    timeline = np.hstack([sp[0] for sp in subperiods])
                     title = 'View-pairwise cca over hours ' + \
                         ' for views ' + name1 + ' ' + name2 + \
                         ' of subject ' + s + ' and day ' + \
@@ -334,7 +366,7 @@ class ViewPairwiseCCARunner:
             status = rmu.get_symptom_status(s)
 
             for (k, subperiods) in spud.items():
-                timelines = [np.hstack(periods)
+                timelines = [np.hstack([p[0] for p in periods])
                              for periods in subperiods]
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
@@ -394,7 +426,7 @@ class ViewPairwiseCCARunner:
                     k[0], k[1], self.num_periods[s])
 
                 for (sp, periods) in enumerate(subperiods):
-                    timeline = np.hstack(periods)
+                    timeline = np.hstack([p[0] for p in periods])
                     title = 'View-pairwise cca over days for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s + ' at hour ' + str(sp)
@@ -422,7 +454,7 @@ class ViewPairwiseCCARunner:
             y_labels,
             title,
             day_or_hour,
-            'frequency component and view',
+            'frequency component canonical basis value and view',
             'cca',
             vmax=1,
             vmin=-1)[0].get_figure().savefig(

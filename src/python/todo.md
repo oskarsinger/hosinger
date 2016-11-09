@@ -41,11 +41,11 @@
 ##Experiments
 * T-tests and p-values for spike in temperature vs reported symptoms
 
-* Transpose the frequency component matrices and apply sparse CCA to find events.
+* Transpose the frequency component matrices and apply sparse CCA to find events. What will these plots look like?
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
 
 * Relabel CCA plots to be more clear on Y axis exactly what the heat quantities mean
 
-* Plot canonical correlation over time
+* Plot canonical correlation over time; should I also save the canonical correlation
