@@ -211,10 +211,21 @@ class ViewPairwiseCCARunner:
     def _show_cc(self):
 
         for (s, spud) in self.ccas.items():
-            cc_over_time = SPUD(self.num_views, no_double=True)
+            cc_over_time = SPUD(
+                self.num_views, 
+                default=lambda: [None] * self.num_periods[s],
+                no_double=True)
             for (k, subperiods) in spud.items():
-                for (sp, periods) in subperiods:
-                    print 'Poop'
+                for (sp, periods) in enumerate(subperiods):
+                    for (p, period) in enumerate(periods):
+                        tl = cc_over_time.get(k[0], k[1])
+
+                        if tl[p] is None:
+                            tl[p] = period
+                        else:
+                            tl[p] = np.vstack([tl[p], period])
+
+        # TODO: finish this
 
     def _show_cca_mean_over_subperiods(self):
 

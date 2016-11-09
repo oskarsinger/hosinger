@@ -1,8 +1,11 @@
-import numpy as np
+import matplotlib
 
-from bokeh.models import HoverTool
-from bokeh.plotting import figure
-from bokeh.palettes import Spectral11
+matplotlib.use('Agg')
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from utils import get_plot_path
 
@@ -11,9 +14,7 @@ def plot_lines(
     x_label,
     y_label,
     title,
-    colors=Spectral11,
-    width=900,
-    height=400):
+    colors=Spectral11):
 
     p = figure(
         title=title,
@@ -35,3 +36,28 @@ def plot_lines(
         count += 1
 
     return p
+
+def _get_dataframe(data_map):
+
+    names = []
+    xs = None
+    ys = None
+    units = []
+
+    for name, (x_data, y_data) in data_map.items():
+        names.extend(
+            [name for i in xrange(x_data.shape[0])])
+
+        if xs is None:
+            xs = x_data
+        else:
+            xs = np.vstack([xs, x_data])
+
+        if ys is None:
+            ys = y_data
+        else:
+            ys = np.vstack([ys, y_data])
+
+        units = [1] * x_data.shape[0]
+
+    # TODO: finish putting this into a dataframe
