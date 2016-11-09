@@ -172,12 +172,7 @@ class E4DTCWTPartialReconstructionRunner:
                     condition=condition,
                     unit=unit,
                     data=freq,
-                    ax=ax)#,
-                #    legend=False)
-                #sns.plt.legend(
-                #    bbox_to_anchor=(1, 1.05), 
-                #    loc=2, 
-                #    borderaxespad=0.)
+                    ax=ax)
 
                 title = \
                     self.name + ' of view ' + \
