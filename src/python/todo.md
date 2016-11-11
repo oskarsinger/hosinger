@@ -22,6 +22,11 @@
 ##Optimization
 * I should just write out the actual prox operator with the dual averaging. Otherwise, I am never going to figure this out.
 
+###Particle MCMC
+* Try to find a way to propagate particle MCMC info efficiently across the network. Could just use some basic communication algs since the local parameters themselves don't actually need the information propagation.
+
+* Figure out exactly how to do particle MCMC and try to do some writing.
+
 ###Online EM
 * Just write out the distribution of $Y_v^{(t)}$ in terms of the parameters known from the burn-in time so you can account for the baseline effects when doing the EM updates. Also make sure to account for the exposure effects by either adding or subtracting according to $j$ when finding the weighted empirical moments.
 

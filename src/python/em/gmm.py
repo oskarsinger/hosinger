@@ -3,7 +3,6 @@ import numpy as np
 from optimization.optimizers import GradientOptimizer as GO
 from optimization.stepsize import FixedScheduler as FXS
 
-# TODO: account for baseline mu and sigma in E and M steps 
 class OnlineUnivariateRademacherGaussianMixtureModel:
 
     def __init__(self, 
@@ -42,35 +41,39 @@ class OnlineUnivariateRademacherGaussianMixtureModel:
         
     def _compute_E_step(self, data, r_scale):
 
-        # Get natural parameter/dual space stuff
+        # Get weights for expected sufficient stats
         normed_data = data + np.array(
             [r_scale, -r_scale])
         densities = self._get_densities(normed_data, r_scale)
         numers = densities * self.ps
         conditional_ps = numers / np.sum(numers)
+
+        # Get natural parameter/dual space stuff
+        # (Expected sufficient stats conditioned on observations)
         s_bar = np.vstack([
             conditional_ps,
             conditional_ps * normed_data,
             conditional_ps * np.power(normed_data, 2)])
 
-        # Do external proximal stuff
+        # Do additional proximal stuff
+        # (ASCENT on log-likelihood -> negate search direction)
         eta = self.eta_scheduler.get_stepsize()
-        search_direction = s_bar - self.s_current
-        # ASCENT on log-likelihood -> negate search direction
+        search_direction = - (s_bar - self.s_current)
         self.s_current = self.optimizer.get_update(
-            self.s_current, -search_direction, eta)
+            self.s_current, search_direction, eta)
 
     def _compute_M_step(self):
 
-        first = self.s_current[:self.K]
-        second = self.s_current[self.K:2*self.K]
-        third = self.s_current[2*self.K:]
+        # Extract each natural parameter estimate for all components
+        s_0 = self.s_current[:self.K]
+        s_1 = self.s_current[self.K:2*self.K]
+        s_2 = self.s_current[2*self.K:]
 
-        self.ps = first
+        self.ps = s_0
 
         # Calculate raw M step
-        mus = second / third
-        sigmas = (third - second) / first
+        mus = s_1 / s_2
+        sigmas = (s_2 - s_1) / s_0
 
         # Normalize for baseline effect
         self.mus = mus - self.baseline_mu
