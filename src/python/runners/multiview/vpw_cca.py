@@ -225,7 +225,7 @@ class ViewPairwiseCCARunner:
                         else:
                             tl[p] = np.vstack([tl[p], period])
 
-        # TODO: finish this
+        # TODO: do the actual plotting here
 
     def _show_cca_mean_over_subperiods(self):
 

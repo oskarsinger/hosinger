@@ -11,33 +11,29 @@ from utils import get_plot_path
 
 def plot_lines(
     data_map,
-    x_label,
-    y_label,
+    x_name,
+    y_name,
     title,
     colors=Spectral11):
 
-    p = figure(
-        title=title,
-        plot_width=width, plot_height=height,
-        tools="resize,hover,save,box_zoom")
-    p.grid.grid_line_alpha=0.3
-    p.xaxis.axis_label = x_label
-    p.yaxis.axis_label = y_label
+    df = _get_dataframe(
+        data_map,
+        x_name,
+        y_name)
+    ax = plt.axes()
 
-    count = 0
+    sns.tsplot(
+        time=x_name,
+        value=y_name,
+        condition='name',
+        unit=units,
+        data=df)
 
-    for name, (x_data, y_data) in data_map.items():
-        p.line(
-            x_data, 
-            y_data, 
-            color=colors[count % len(colors)], 
-            legend=name)
+    ax.set_title(title)
 
-        count += 1
+    return ax
 
-    return p
-
-def _get_dataframe(data_map):
+def _get_dataframe(data_map, x_name, y_name):
 
     names = []
     xs = None
@@ -60,4 +56,11 @@ def _get_dataframe(data_map):
 
         units = [1] * x_data.shape[0]
 
-    # TODO: finish putting this into a dataframe
+    d = {
+        x_name: xs,
+        y_name: ys,
+        'name': names,
+        'units': units}
+    df = pd.DataFrame(data=d)
+
+    return df
