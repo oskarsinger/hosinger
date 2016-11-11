@@ -30,6 +30,7 @@ class OnlineUnivariateRademacherGaussianMixtureModel:
         self.ps = ps / np.sum(ps)
         self.mus = np.zeros(self.K)
         self.sigmas = np.ones(self.K)
+        self.s_current = np.zeros(self.K * 3)
         self.num_rounds = 0
 
     def get_update(self, sample, r_scale):
@@ -39,18 +40,41 @@ class OnlineUnivariateRademacherGaussianMixtureModel:
         self._compute_E_step(data, r_scale)
         self._compute_M_step()
         
-    def _get_E_step(self, data, r_scale):
+    def _compute_E_step(self, data, r_scale):
 
-        densities = self._get_densities(data)
+        # Get natural parameter/dual space stuff
+        normed_data = data + np.array(
+            [r_scale, -r_scale])
+        densities = self._get_densities(normed_data, r_scale)
         numers = densities * self.ps
         conditional_ps = numers / np.sum(numers)
-        s_bar = None
-        s_current = None
+        s_bar = np.vstack([
+            conditional_ps,
+            conditional_ps * normed_data,
+            conditional_ps * np.power(normed_data, 2)])
+
+        # Do external proximal stuff
         eta = self.eta_scheduler.get_stepsize()
-        search_direction = s_bar - s_current
-        # TODO: Make sure negating search_direction is equivalent to gradient ascent
-        s_new = self.optimizer.get_update(
-            s_current, -search_direction, eta)
+        search_direction = s_bar - self.s_current
+        # ASCENT on log-likelihood -> negate search direction
+        self.s_current = self.optimizer.get_update(
+            self.s_current, -search_direction, eta)
+
+    def _compute_M_step(self):
+
+        first = self.s_current[:self.K]
+        second = self.s_current[self.K:2*self.K]
+        third = self.s_current[2*self.K:]
+
+        self.ps = first
+
+        # Calculate raw M step
+        mus = second / third
+        sigmas = (third - second) / first
+
+        # Normalize for baseline effect
+        self.mus = mus - self.baseline_mu
+        self.sigmas = sigmas - self.baseline_sigma
 
     def _get_densities(self, data):
 
