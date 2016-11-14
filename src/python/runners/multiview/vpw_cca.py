@@ -210,22 +210,36 @@ class ViewPairwiseCCARunner:
 
     def _show_cc(self):
 
+        tl_spuds = {s: SPUD(self.num_views, no_double=True)
+                    for s in self.ccas.keys()}
+
         for (s, spud) in self.ccas.items():
             cc_over_time = SPUD(
                 self.num_views, 
                 default=lambda: [None] * self.num_periods[s],
                 no_double=True)
+
             for (k, subperiods) in spud.items():
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
-                        tl = cc_over_time.get(k[0], k[1])
+                        tls = cc_over_time.get(k[0], k[1])
 
                         if tl[p] is None:
-                            tl[p] = period
+                            tls[p] = period
                         else:
-                            tl[p] = np.vstack([tl[p], period])
+                            tls[p] = np.vstack([tl[p], period])
 
-        # TODO: do the actual plotting here
+            for (k, tls) in cc_over_time.items():
+                tl = np.vstack(tls)
+                cc_over_time.insert(k[0], k[1], tl)
+
+            tl_spuds[s] = cc_over_time
+
+        for (s, spud) in tl_spuds.items():
+            for (k, tl) in spud.items():
+                print 'Poop'
+
+        # TODO: group timelines by subject and plot
 
     def _show_cca_mean_over_subperiods(self):
 
