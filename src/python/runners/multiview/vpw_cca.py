@@ -207,8 +207,6 @@ class ViewPairwiseCCARunner:
                     subperiods[i] = [None] * self.num_periods[s] 
                 
         for (k, l) in cca.items():
-            print 'k', k
-            print 'l', l
             info = k.split('_')
             s = info[1]
             v = [int(i) for i in info[3].split('-')]
