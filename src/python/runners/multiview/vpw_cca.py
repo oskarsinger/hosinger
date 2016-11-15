@@ -135,8 +135,9 @@ class ViewPairwiseCCARunner:
                             Y1_mat[:,cca_dim].T,
                             Y2_mat[:,cca_dim].T,
                             num_nonzero=cca_dim)
-                        cc_over_time = np.dot(
-                            np.hstack([Y1_mat, Y2_mat]), 
+                        cc_over_time = self._get_cc_over_time(
+                            Y1_mat,
+                            Y2_mat,
                             cca_over_time)
                         stuff = (
                             cca_over_time,
@@ -165,6 +166,17 @@ class ViewPairwiseCCARunner:
 
             with open(path, 'w') as f:
                 f.write(num_freqs_json)
+
+    def _get_cc_over_time(Y1_mat, Y2_mat, cca_over_time):
+
+        Y1_cc = np.dot(
+            Y1_mat, 
+            cca_over_time[:Y1_mat.shape[1],:])
+        Y2_cc = np.dot(
+            Y2_mat, 
+            cca_over_time[Y2_mat.shape[1]:,:])
+
+        return Y1_cc * Y2_cc
 
     def _save(self, cs, s, v, p, sp):
 
@@ -235,11 +247,20 @@ class ViewPairwiseCCARunner:
 
             tl_spuds[s] = cc_over_time
 
+        default = lambda: {'Subject ' + s for s in self.subjects}
+        data_maps = SPUD(
+            self.num_views,
+            default=default,
+            no_double=True)
+
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
-                print 'Poop'
+                s_key = 'Subject ' + s
+                data_maps.get(k[0], k[1])[s_key] = tl
 
-        # TODO: group timelines by subject and plot
+        for (s, dm) in data_maps.items():
+            print 'Poop'
+            # TODO: finish plotting
 
     def _show_cca_mean_over_subperiods(self):
 
