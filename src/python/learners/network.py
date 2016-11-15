@@ -66,4 +66,4 @@ class NetworkInterferenceLearner:
 
     def _get_M_step(self):
 
-        self.mus = 
+        self.mus = 'Poop'
