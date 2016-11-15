@@ -3,3 +3,4 @@ import ftprl
 import quasinewton
 
 from gradient import GradientOptimizer
+from federated import FederatedOptimizer
