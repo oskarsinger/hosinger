@@ -13,8 +13,7 @@ def plot_lines(
     data_map,
     x_name,
     y_name,
-    title,
-    colors=Spectral11):
+    title):
 
     df = _get_dataframe(
         data_map,
