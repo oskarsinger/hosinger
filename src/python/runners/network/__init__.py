@@ -1,1 +1,1 @@
-from static import StaticStructureRunner
+from static import SyntheticStaticStructureRunner
