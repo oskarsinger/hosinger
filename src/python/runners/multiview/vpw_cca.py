@@ -139,10 +139,10 @@ class ViewPairwiseCCARunner:
                             Y1_mat,
                             Y2_mat,
                             cca_over_time)
-                        stuff = (
+                        stuff = [
                             cca_over_time,
                             cca_over_freqs,
-                            cc_over_time)
+                            cc_over_time]
 
                         if p == 0:
                             self.num_freqs[k[0]] = Y1_mat.shape[1] 
