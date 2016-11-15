@@ -2,7 +2,6 @@ import numpy as np
 
 from optimization.optimizers import FederatedOptimizer as FDO
 from optimization.stepsize import FixedScheduler as FXS
-from math import sqrt
 
 class NetworkInterferenceLearner:
 
@@ -10,7 +9,7 @@ class NetworkInterferenceLearner:
         id_num, 
         adj_matrix, 
         burn_in,
-        phi=srqt):
+        phi=lambda x: x**(0.5)):
 
         self.id_num = self.id_num
         self.adj_matrix = adj_matrix
