@@ -73,6 +73,7 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
         cca = CCA(n_components=1)
 
         cca.fit(abs_X1, abs_X2)
+
         x_weights = cca.x_weights_
         y_weights = cca.y_weights_
     else:
@@ -82,7 +83,7 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             nnz=num_nonzero)
         A = np.dot(X1.T, X2)
         rank = min(X1.shape + X2.shape)
-        T = 5 * X1.shape
+        T = 5 * X1.shape[0]
         (x_weights, y_weights) = spancca.cca(
             A, rank, T, x_project, y_project)
 
