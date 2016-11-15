@@ -258,9 +258,21 @@ class ViewPairwiseCCARunner:
                 s_key = 'Subject ' + s
                 data_maps.get(k[0], k[1])[s_key] = tl
 
-        for (s, dm) in data_maps.items():
-            print 'Poop'
-            # TODO: finish plotting
+        for (k, dm) in data_maps.items():
+            x_name = 'time'
+            y_name = 'canonical correlation'
+            title = 'View-pairwise canonical correlation' + \
+                ' over time for views ' + \
+                self.names[k[0]] + ' ' + self.names[k[1]]
+
+            plot_lines(
+                dm, 
+                x_name, 
+                y_name, 
+                title).get_figure().savefig(
+                path, format='pdf')
+            sns.plt.clf()
+
 
     def _show_cca_mean_over_subperiods(self):
 
