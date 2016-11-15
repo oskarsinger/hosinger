@@ -132,8 +132,8 @@ class ViewPairwiseCCARunner:
                             Y1_mat, Y2_mat)
                         cca_dim = min([Y1_mat.shape[1], Y2_mat.shape[1]])
                         cca_over_freqs = rmu.get_cca_vecs(
-                            Y1_mat[:,cca_dim].T,
-                            Y2_mat[:,cca_dim].T,
+                            Y1_mat[:,:cca_dim].T,
+                            Y2_mat[:,:cca_dim].T,
                             num_nonzero=cca_dim)
                         cc_over_time = self._get_cc_over_time(
                             Y1_mat,
