@@ -213,7 +213,7 @@ class ViewPairwiseCCARunner:
             p = int(info[5])
             sp = int(info[7])
             loaded = {int(h_fn.split('_')[1]) : a
-                      for (h_fn, a) in loaded.items()}
+                      for (h_fn, a) in l.items()}
             num_coeffs = len(loaded)
             coeffs = [loaded[i] 
                       for i in xrange(num_coeffs)]
