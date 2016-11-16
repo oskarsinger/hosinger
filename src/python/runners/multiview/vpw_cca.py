@@ -196,25 +196,24 @@ class ViewPairwiseCCARunner:
 
         cca = {} 
 
-        for fn in os.listdir(self.ccas_dir):
-            path = os.path.join(self.ccas_dir, fn)
-
-            with open(path) as f:
-                cca[fn] = np.load(f)
-
         for (s, spud) in self.ccas.items():
             for (k, subperiods) in spud.items():
                 for i in xrange(self.num_subperiods):
                     subperiods[i] = [None] * self.num_periods[s] 
                 
-        for (k, l) in cca.items():
-            info = k.split('_')
+        for fn in os.listdir(self.ccas_dir):
+            info = fn.split('_')
             s = info[1]
             v = [int(i) for i in info[3].split('-')]
             p = int(info[5])
             sp = int(info[7])
-            loaded = {int(h_fn.split('_')[1]) : a
-                      for (h_fn, a) in l.items()}
+            path = os.path.join(self.ccas_dir, fn)
+            loaded = None
+
+            with open(path) as f:
+                loaded = {int(h_fn.split('_')[1]) : a
+                          for (h_fn, a) in np.load(f).items()}
+
             num_coeffs = len(loaded)
             coeffs = [loaded[i] 
                       for i in xrange(num_coeffs)]
