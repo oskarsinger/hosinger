@@ -256,8 +256,8 @@ class ViewPairwiseCCARunner:
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
-                data_maps.get(k[0], k[1])[s_key] = (
-                    list(xrange(len(tl))), tl)
+                data = (np.arange(len(tl)), np.array(tl))
+                data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
             x_name = 'time'
