@@ -11,7 +11,7 @@ import utils as rmu
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.arithmetic import get_running_avg as get_ra
-from lazyprojector import plot_matrix_heat
+from lazyprojector import plot_matrix_heat, plot_lines
 from math import log
 
 class ViewPairwiseCCARunner:
