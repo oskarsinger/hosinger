@@ -56,10 +56,11 @@ def _get_dataframe(data_map, x_name, y_name):
         units = [1] * x_data.shape[0]
 
     d = {
-        x_name: xs,
-        y_name: ys,
+        x_name: xs.T.tolist(),
+        y_name: ys.T.tolist(),
         'name': names,
         'units': units}
+    print [len(thing) for thing in d.values()]
     df = pd.DataFrame(data=d)
 
     return df
