@@ -247,7 +247,7 @@ class ViewPairwiseCCARunner:
 
             tl_spuds[s] = cc_over_time
 
-        default = lambda: {'Subject ' + s for s in self.subjects}
+        default = lambda: {'Subject ' + s: None for s in self.subjects}
         data_maps = SPUD(
             self.num_views,
             default=default,
