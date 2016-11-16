@@ -40,7 +40,6 @@ def _get_dataframe(data_map, x_name, y_name):
     units = []
 
     for name, (x_data, y_data) in data_map.items():
-        print 'x_data.shape[0]', x_data.shape[0]
         names.extend(
             [name for i in xrange(x_data.shape[0])])
 
@@ -57,9 +56,9 @@ def _get_dataframe(data_map, x_name, y_name):
         units.extend([1] * x_data.shape[0])
 
     print 'xs.shape', xs.shape
+    print 'ys.shape', ys.shape
     print 'xs.tolist()', xs.tolist()
     print 'ys.tolist()', ys.tolist()
-    print 'ys.shape', ys.shape
 
     d = {
         x_name: xs.T.tolist(),
