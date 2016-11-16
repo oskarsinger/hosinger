@@ -256,7 +256,9 @@ class ViewPairwiseCCARunner:
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
-                data = (np.arange(len(tl))[:,np.newaxis], np.array(tl))
+                data = (
+                    np.arange(len(tl))[:,np.newaxis], 
+                    np.array(tl)[:,np.newaxis])
                 data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
