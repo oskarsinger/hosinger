@@ -56,6 +56,9 @@ def _get_dataframe(data_map, x_name, y_name):
 
         units.extend([1] * x_data.shape[0])
 
+    print 'xs.shape', xs.shape
+    print 'ys.shape', ys.shape
+
     d = {
         x_name: xs.T.tolist(),
         y_name: ys.T.tolist(),
