@@ -276,7 +276,6 @@ class ViewPairwiseCCARunner:
                 path, format='pdf')
             sns.plt.clf()
 
-
     def _show_cca_mean_over_subperiods(self):
 
         means = None
