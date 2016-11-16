@@ -175,7 +175,7 @@ class ViewPairwiseCCARunner:
             cca_over_time[:Y1_mat.shape[1],:])
         Y2_cc = np.dot(
             Y2_mat, 
-            cca_over_time[Y2_mat.shape[1]:,:])
+            cca_over_time[Y1_mat.shape[1]:,:])
 
         return Y1_cc * Y2_cc
 
