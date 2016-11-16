@@ -46,11 +46,7 @@
 ##Experiments
 * T-tests and p-values for spike in temperature vs reported symptoms
 
-* Transpose the frequency component matrices and apply sparse CCA to find events. What will these plots look like?
-
 * Fix partial reconstruction. Not really sure how to debug it. I think I'll need to have a better understanding of the DTCWT before I can intelligently approach depbugging the partial reconstruction.
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
-
-* Plot canonical correlation over time; should I also save the canonical correlation
