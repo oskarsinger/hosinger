@@ -130,11 +130,12 @@ class ViewPairwiseCCARunner:
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
                         cca_over_time = rmu.get_cca_vecs(
                             Y1_mat, Y2_mat)
-                        cca_dim = min([Y1_mat.shape[1], Y2_mat.shape[1]])
+                        cca_dim = min(Y1_mat.shape + Y2_mat.shape)
+                        num_nonzero = int(cca_dim/2)
                         cca_over_freqs = rmu.get_cca_vecs(
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
-                            num_nonzero=cca_dim)
+                            num_nonzero=num_nonzero)
                         cc_over_time = self._get_cc_over_time(
                             Y1_mat,
                             Y2_mat,
@@ -167,7 +168,7 @@ class ViewPairwiseCCARunner:
             with open(path, 'w') as f:
                 f.write(num_freqs_json)
 
-    def _get_cc_over_time(Y1_mat, Y2_mat, cca_over_time):
+    def _get_cc_over_time(self, Y1_mat, Y2_mat, cca_over_time):
 
         Y1_cc = np.dot(
             Y1_mat, 
