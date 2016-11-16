@@ -55,18 +55,11 @@ def _get_dataframe(data_map, x_name, y_name):
 
         units.extend([1] * x_data.shape[0])
 
-    print 'xs.shape', xs.shape
-    print 'ys.shape', ys.shape
-    print 'xs.tolist()', xs.tolist()
-    print 'ys.tolist()', ys.tolist()
-
     d = {
         x_name: xs.T.tolist(),
         y_name: ys.T.tolist(),
         'name': names,
         'units': units}
-    print ['len(' + k + ') ' + str(len(v)) 
-           for (k, v) in d.items()]
     df = pd.DataFrame(data=d)
 
     return df
