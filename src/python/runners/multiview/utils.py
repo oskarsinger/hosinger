@@ -82,8 +82,8 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
         y_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
         A = np.dot(abs_X1.T, abs_X2)
-        rank = int(min(X1.shape + X2.shape)/2)
         T = X1.shape[0]
+        rank = 1
         (x_weights, y_weights) = spancca.cca(
             A,
             rank,
