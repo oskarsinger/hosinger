@@ -57,6 +57,8 @@ def _get_dataframe(data_map, x_name, y_name):
         units.extend([1] * x_data.shape[0])
 
     print 'xs.shape', xs.shape
+    print 'xs.tolist()', xs.tolist()
+    print 'ys.tolist()', ys.tolist()
     print 'ys.shape', ys.shape
 
     d = {
