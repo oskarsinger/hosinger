@@ -258,7 +258,7 @@ class ViewPairwiseCCARunner:
                 s_key = 'Subject ' + s
                 data = (
                     np.arange(len(tl))[:,np.newaxis], 
-                    np.array(tl)[:,np.newaxis])
+                    np.array(tl))
                 data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
