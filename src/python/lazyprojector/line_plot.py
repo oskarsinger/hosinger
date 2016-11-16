@@ -40,6 +40,7 @@ def _get_dataframe(data_map, x_name, y_name):
     units = []
 
     for name, (x_data, y_data) in data_map.items():
+        print 'x_data.shape[0]', x_data.shape[0]
         names.extend(
             [name for i in xrange(x_data.shape[0])])
 
@@ -53,14 +54,15 @@ def _get_dataframe(data_map, x_name, y_name):
         else:
             ys = np.vstack([ys, y_data])
 
-        units = [1] * x_data.shape[0]
+        units.extend([1] * x_data.shape[0])
 
     d = {
         x_name: xs.T.tolist(),
         y_name: ys.T.tolist(),
         'name': names,
         'units': units}
-    print [len(thing) for thing in d.values()]
+    print ['len(' + k + ') ' + str(len(v)) 
+           for (k, v) in d.items()]
     df = pd.DataFrame(data=d)
 
     return df
