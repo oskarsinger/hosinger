@@ -236,10 +236,10 @@ class ViewPairwiseCCARunner:
                     for (p, period) in enumerate(periods):
                         tls = cc_over_time.get(k[0], k[1])
 
-                        if tl[p] is None:
+                        if tls[p] is None:
                             tls[p] = period
                         else:
-                            tls[p] = np.vstack([tl[p], period])
+                            tls[p] = np.vstack([tls[p], period])
 
             for (k, tls) in cc_over_time.items():
                 tl = np.vstack(tls)
