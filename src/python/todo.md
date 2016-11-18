@@ -1,5 +1,11 @@
+#Miscellaneous
+* Write some infrastructure to assist in the kind of exploratory data analysis described in the Gelman paper from 2004.
+    * Is it possible to make this sufficiently general? Definitely should at least write a specific version for what I am working on.
+    * This would be a great resume item for any of the Data Science for Social Good applications.
+
+* Revamp CV; maybe put some code on github (which code? I don't currently have anything worth putting up; should change that).
+
 #Network Interference
-* Split APE file of Trio of Doom album into individual tracks
 
 ##Infrastructure
 * Data loader shortcuts, specifically randomly generated ones. Should I try to fit this into the same bandit arm servers I was using earlier?
@@ -21,6 +27,15 @@
 
 ##Optimization
 * I should just write out the actual prox operator with the dual averaging. Otherwise, I am never going to figure this out.
+
+* Implementation steps for online FSVRG:
+    1. Original SVRG
+    2. Infrastructure for testing distributed SVRG (and other distributed algs).
+        * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
+        * Infrastructure should reflect actual conditions as closely as possible, e.g. there should be no centralized authority determining synchronous updates if possible.
+    3. Distributed SVRG
+    4. Original FSVRG, hopefully fits in testing framework from item 2.
+    5. More online-ish FSVRG
 
 ###Particle MCMC
 * Try to find a way to propagate particle MCMC info efficiently across the network. Could just use some basic communication algs since the local parameters themselves don't actually need the information propagation.
