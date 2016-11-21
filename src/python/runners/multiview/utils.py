@@ -66,13 +66,17 @@ def get_correlation_storage(
 def get_cca_vecs(X1, X2, num_nonzero=None):
 
     (x_weights, y_weights) = [None] * 2
-    abs_X1 = np.absolute(X1)
-    abs_X2 = np.absolute(X2)
 
     if num_nonzero is None:
+        if np.any(np.iscomplex(X1)):
+            X1 = np.absolute(X1)
+
+        if np.any(np.iscomplex(X2)):
+            X2 = np.absolute(X2)
+
         cca = CCA(n_components=1)
 
-        cca.fit(abs_X1, abs_X2)
+        cca.fit(X1, X2)
 
         x_weights = cca.x_weights_
         y_weights = cca.y_weights_
@@ -81,7 +85,7 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             nnz=num_nonzero)
         y_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
-        A = np.dot(abs_X1.T, abs_X2)
+        A = get_normed_correlation(X1, X2)
         T = X1.shape[0]
         rank = 3
         (x_weights, y_weights) = spancca.cca(
@@ -98,8 +102,12 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
 
 def get_normed_correlation(X1, X2):
 
-    abs_X1 = np.absolute(X1)
-    abs_X2 = np.absolute(X2)
+    if np.any(np.iscomplex(X1)):
+        X1 = np.absolute(X1)
+
+    if np.any(np.iscomplex(X2)):
+        X2 = np.absolute(X2)
+
     p1 = X1.shape[1]
     p2 = X2.shape[1]
     corr = np.zeros((p1, p2))
