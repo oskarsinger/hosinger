@@ -25,7 +25,7 @@ def plot_lines(
         time=x_name,
         value=y_name,
         condition='name',
-        unit=units,
+        unit='units',
         data=df)
 
     ax.set_title(title)
