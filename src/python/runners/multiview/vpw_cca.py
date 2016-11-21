@@ -50,6 +50,7 @@ class ViewPairwiseCCARunner:
             load, 
             show, 
             show_mean,
+            show_cc,
             save_load_dir)
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
@@ -83,9 +84,11 @@ class ViewPairwiseCCARunner:
         load, 
         show, 
         show_mean, 
+        show_cc,
         save_load_dir):
 
-        if (show_mean or show or save) and not load:
+        mk_sl_dir = show_mean or show or show_cc or save
+        if mk_sl_dir and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -113,7 +116,7 @@ class ViewPairwiseCCARunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show or show_mean,
+            show or show_mean or show_cc,
             self.save_load_dir) 
 
     def _compute(self):
