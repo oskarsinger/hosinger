@@ -91,8 +91,6 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             x_project,
             y_project,
             verbose=True)
-        print 'x_weights.shape', x_weights.shape
-        print 'y_weights.shape', y_weights.shape
 
     return np.vstack([
         x_weights,
