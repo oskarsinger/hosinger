@@ -60,6 +60,7 @@ def _get_dataframe(data_map, x_name, y_name):
         y_name: ys.T.tolist(),
         'name': names,
         'units': units}
+    print [len(t) for t in d.values()]
     df = pd.DataFrame(data=d)
 
     return df
