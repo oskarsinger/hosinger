@@ -83,7 +83,7 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             nnz=num_nonzero)
         A = np.dot(abs_X1.T, abs_X2)
         T = X1.shape[0]
-        rank = 1
+        rank = 3
         (x_weights, y_weights) = spancca.cca(
             A,
             rank,
