@@ -42,6 +42,7 @@ def _get_dataframe(data_map, x_name, y_name):
     for name, (x_data, y_data) in data_map.items():
         names.extend(
             [name for i in xrange(x_data.shape[0])])
+        units.extend([1] * x_data.shape[0])
 
         if xs is None:
             xs = x_data
@@ -52,8 +53,6 @@ def _get_dataframe(data_map, x_name, y_name):
             ys = y_data
         else:
             ys = np.vstack([ys, y_data])
-
-        units.extend([1] * x_data.shape[0])
 
     d = {
         x_name: xs.T.tolist(),
