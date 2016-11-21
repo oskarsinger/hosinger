@@ -234,13 +234,14 @@ class ViewPairwiseCCARunner:
             for (k, subperiods) in spud.items():
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
-                        print 'period.shape', period.shape
                         tls = cc_over_time.get(k[0], k[1])
+                        p_cc_over_time = period[2]
 
                         if tls[p] is None:
-                            tls[p] = period
+                            tls[p] = p_cc_over_time
                         else:
-                            tls[p] = np.vstack([tls[p], period])
+                            tls[p] = np.vstack(
+                                [tls[p], p_cc_over_time])
 
             for (k, tls) in cc_over_time.items():
                 tl = np.vstack(tls)
