@@ -268,7 +268,7 @@ class ViewPairwiseCCARunner:
                 ' over time for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
 
-            print 'Data shapes', [d.shape for d in dm.values()]
+            print 'Data shapes', [d[1].shape for d in dm.values()]
             plot_lines(
                 dm, 
                 x_name, 
