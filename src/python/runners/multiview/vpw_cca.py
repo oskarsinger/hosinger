@@ -234,6 +234,7 @@ class ViewPairwiseCCARunner:
             for (k, subperiods) in spud.items():
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
+                        print 'period.shape', period.shape
                         tls = cc_over_time.get(k[0], k[1])
 
                         if tls[p] is None:
@@ -268,7 +269,8 @@ class ViewPairwiseCCARunner:
                 ' over time for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
 
-            print 'Data shapes', [d[1].shape for d in dm.values()]
+            print 'X data shapes', [d[0].shape for d in dm.values()]
+            print 'Y data shapes', [d[1].shape for d in dm.values()]
             plot_lines(
                 dm, 
                 x_name, 
