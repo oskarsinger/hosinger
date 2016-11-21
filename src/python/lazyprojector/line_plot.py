@@ -59,7 +59,7 @@ def _get_dataframe(data_map, x_name, y_name):
         y_name: ys.T.tolist(),
         'name': names,
         'units': units}
-    print [k + ':' + str(len(v)) for (k, v) in d.items()]
+    print [k + ':' + str(v) for (k, v) in d.items()]
     df = pd.DataFrame(data=d)
 
     return df
