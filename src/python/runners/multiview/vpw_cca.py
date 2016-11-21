@@ -136,6 +136,7 @@ class ViewPairwiseCCARunner:
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
                             num_nonzero=num_nonzero)
+                        print 'cca_over_freqs.shape', cca_over_freqs.shape
                         cc_over_time = self._get_cc_over_time(
                             Y1_mat,
                             Y2_mat,
