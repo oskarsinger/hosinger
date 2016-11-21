@@ -269,9 +269,9 @@ class ViewPairwiseCCARunner:
             title = 'View-pairwise canonical correlation' + \
                 ' over time for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
+            fn = '_'.join(title.split()) + '.pdf'
+            path = os.path.join(self.plot_dir, fn)
 
-            print 'X data shapes', [d[0].shape for d in dm.values()]
-            print 'Y data shapes', [d[1].shape for d in dm.values()]
             plot_lines(
                 dm, 
                 x_name, 
