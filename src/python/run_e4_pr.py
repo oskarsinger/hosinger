@@ -1,7 +1,7 @@
 import click
 
 from runners.multiview import E4DTCWTPartialReconstructionRunner as E4DTCWTPRR
-from runners.multiview import MVDTCWTSPRunner
+from runners.multiview import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path')
