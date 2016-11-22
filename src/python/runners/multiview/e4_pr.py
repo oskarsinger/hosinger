@@ -126,7 +126,7 @@ class E4DTCWTPartialReconstructionRunner:
     def _get_view_sp_pr(self, Yh, Yl):
 
         Lo_prev = np.copy(Yl)
-        prs = [Lo_prev]
+        prs = [np.copy(Lo_prev)]
 
         for level in reversed(xrange(1, len(Yh))):
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
@@ -143,7 +143,7 @@ class E4DTCWTPartialReconstructionRunner:
             if not Lo_n == 2 * Yh_n:
                 Lo_prev = Lo_prev[1:-1,:]
 
-            prs.append(Lo_prev)
+            prs.append(np.copy(Lo_prev))
 
         Hi = wdtcwt.oned.c2q1d(Yh[0])
         Lo_filt = wdtcwt.filters.get_column_filtered(
