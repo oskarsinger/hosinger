@@ -26,7 +26,7 @@ def run_it_all_day_bb(
     show,
     avg):
 
-    dtcwt_runner = MVDTCWTSPRunner(
+    dtcwt_runner = MVDTCWTRunner(
         data_path,
         save_load_dir=wavelet_dir,
         load=True)
