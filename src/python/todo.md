@@ -52,6 +52,8 @@
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 * Fix partial reconstruction. Not really sure how to debug it. I think I'll need to have a better understanding of the DTCWT before I can intelligently approach depbugging the partial reconstruction.
+    * ASK FOR HELP
+    * Try on easy test signal
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
