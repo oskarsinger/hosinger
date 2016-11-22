@@ -1,11 +1,12 @@
 import click
 
-from runners.multiview import E4DTCWTPartialReconstructionRunner as E4DTCWTPRR
+from runners.multiview import DTCWTPartialReconstructionRunner as DTCWTPRR
 from runners.multiview import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path')
 @click.option('--save-load-dir')
+@click.option('--dataset', default='e4')
 @click.option('--wavelet-dir')
 @click.option('--missing', default=False)
 @click.option('--complete', default=False)
@@ -17,6 +18,7 @@ from runners.multiview import MVDTCWTRunner
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
+    dataset,
     wavelet_dir,
     missing,
     complete,
@@ -27,14 +29,15 @@ def run_it_all_day_bb(
     avg):
 
     dtcwt_runner = MVDTCWTRunner(
-        data_path,
+        data_path=data_path,
+        dataset=dataset,
         save_load_dir=wavelet_dir,
         load=True)
 
     if not load:
         dtcwt_runner.run()
 
-    runner = E4DTCWTPRR(
+    runner = DTCWTPRR(
         dtcwt_runner,
         save_load_dir,
         missing=missing,

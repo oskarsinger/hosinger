@@ -15,7 +15,7 @@ from data.servers.batch import BatchServer as BS
 from drrobert.file_io import get_timestamped as get_ts
 from linal.utils.misc import get_non_nan
 
-class E4DTCWTPartialReconstructionRunner:
+class DTCWTPartialReconstructionRunner:
 
     def __init__(self,
         dtcwt_runner,
@@ -85,7 +85,7 @@ class E4DTCWTPartialReconstructionRunner:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('E4DTCWTPRR')
+            model_dir = get_ts('DTCWTPRR')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
