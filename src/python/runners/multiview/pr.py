@@ -200,7 +200,7 @@ class DTCWTPartialReconstructionRunner:
 
     def _get_stats(self):
 
-        # TODO: integrate pandas resample to deal with different sampling rates
+        # TODO: stick in Nones between the lower frequency reconstructions
         view_stats = [{s[-2:] : [] for s in self.subjects}
                       for i in xrange(self.num_views)]
 
@@ -209,22 +209,22 @@ class DTCWTPartialReconstructionRunner:
             sample_views = periods[0][0]
 
             for (v, prs) in enumerate(sample_views):
-                view_stats[v][s] = [None for f in xrange(len(prs))]
+                view_stats[v][s] = [[] for f in xrange(len(prs))]
 
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
                         for (f, pr) in enumerate(prs):
-                            current = view_stats[v][s][f]
-                            new = None
+                            new = []
 
-                            if current is None:
-                                new = pr
-                            else:
-                                new = np.vstack(
-                                    [current, pr])
+                            # TODO: consider getting rid of this and just decreasing number of points on each plot
+                            for sample in pr.tolist():
+                                power = len(prs) - f - 1
+                                padding = [None] * (2**power - 1)
 
-                            view_stats[v][s][f] = new
+                                new.extend(sample + padding)
+
+                            view_stats[v][s][f].extend(new)
 
         return self._get_completed_and_filtered(view_stats)
 
@@ -245,9 +245,8 @@ class DTCWTPartialReconstructionRunner:
 
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
-                    freq_list = [v[0] for v in freq.tolist()]
-                    l_freq = len(freq_list)
-                    freq_list = freq_list + [None] * (max_p - l_freq)
+                    l_freq = len(freq)
+                    freq_list = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
                     s_units = None
@@ -265,7 +264,7 @@ class DTCWTPartialReconstructionRunner:
                     if first or second or third:
                         periods[f].extend(s_periods)
                         subjects[f].extend(s_subjects)
-                        values[f].extend(freq_list)
+                        values[f].extend(freq)
                         units[f].extend(s_units)
 
             for f in xrange(len(view.values()[0])):
@@ -274,6 +273,7 @@ class DTCWTPartialReconstructionRunner:
                     'Subject': subjects[f], 
                     'value': values[f],
                     unit_key: units[f]}
+                print [k + ': ' + str(len(v)) for (k, v) in d.items()]
                 dfs[i][f] = pd.DataFrame(data=d)
 
         return dfs

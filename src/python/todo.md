@@ -61,4 +61,4 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
 
-* Get rid of averaging in partial reconstruction plots; need to find clean way to do resample or something similar
+* Figure out the null-padding issue on the partial reconstruction plots
