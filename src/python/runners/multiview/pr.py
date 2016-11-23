@@ -22,7 +22,6 @@ class DTCWTPartialReconstructionRunner:
         save_load_dir,
         missing=False,
         complete=False,
-        std=False,
         save=False,
         load=False,
         show=False,
@@ -126,7 +125,7 @@ class DTCWTPartialReconstructionRunner:
     def _get_view_sp_pr(self, Yh, Yl):
 
         Lo_prev = np.copy(Yl)
-        prs = [np.copy(Lo_prev)]
+        prs = [Lo_prev]
 
         for level in reversed(xrange(1, len(Yh))):
             Hi = wdtcwt.oned.c2q1d(Yh[level]) 
@@ -134,8 +133,8 @@ class DTCWTPartialReconstructionRunner:
                 Lo_prev, self.g0b, self.g0a)
             Hi_filt = wdtcwt.filters.get_column_i_filtered(
                 Hi, self.g1b, self.g1a)
-            doubled = _get_doubled_vector(Lo_prev)
-            Lo_prev = Lo_filt + Hi_filt - doubled
+            #doubled = _get_doubled_vector(Lo_prev)
+            Lo_prev = Lo_filt + Hi_filt# - doubled
 
             Lo_n = Lo_prev.shape[0]
             Yh_n = Yh[level-1].shape[0]
@@ -143,7 +142,7 @@ class DTCWTPartialReconstructionRunner:
             if not Lo_n == 2 * Yh_n:
                 Lo_prev = Lo_prev[1:-1,:]
 
-            prs.append(np.copy(Lo_prev))
+            prs.append(Lo_prev)
 
         Hi = wdtcwt.oned.c2q1d(Yh[0])
         Lo_filt = wdtcwt.filters.get_column_filtered(
@@ -205,7 +204,6 @@ class DTCWTPartialReconstructionRunner:
 
         view_stats = [{s[-2:] : [] for s in self.subjects}
                       for i in xrange(self.num_views)]
-        stat = np.std if self.std else np.mean
 
         for (s, periods) in self.prs.items():
             s = s[-2:]
