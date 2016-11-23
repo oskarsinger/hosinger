@@ -36,9 +36,11 @@
     5. More online-ish FSVRG
 
 ###Particle MCMC
+NOTE: This will have to wait until winter break or next semester probably.
+
 * Try to find a way to propagate particle MCMC info efficiently across the network.
 
-* Figure out exactly how to do particle MCMC and try to do some writing.
+* Figure out exactly how to do particle MCMC and try to do some writing. Reading the Springer PDF a bit will probably help a lot.
 
 ###Federated
 * Need to figure out best way to share information from other GMMs with federated optimizer. Now that I understand this part, will hopefully be much easier to define A and S.
@@ -54,7 +56,7 @@
 * Fix partial reconstruction. Not really sure how to debug it. I think I'll need to have a better understanding of the DTCWT before I can intelligently approach depbugging the partial reconstruction.
     * ASK FOR HELP
     * Try on easy test signal
-    * Subtracting Lo\_prev doesn't seem to make a difference in the result. Figure out whether I need to be maintaining more state
+    * Subtracting Lo\_prev doesn't seem to make a difference in the result. Figure out whether I need to be maintaining more state. I think I do.
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day

@@ -29,7 +29,6 @@ class DTCWTPartialReconstructionRunner:
 
         self.missing = False if avg else missing
         self.complete = True if avg else complete
-        self.std = std
         self.save = save
         self.load = load
         self.show = show
@@ -41,7 +40,6 @@ class DTCWTPartialReconstructionRunner:
             self.show,
             save_load_dir)
 
-        self.name = 'Std' if self.std else 'Mean'
         self.wavelets = dtcwt_runner.wavelets
         self.servers = dtcwt_runner.servers
         self.g1a = dtcwt_runner.qshift['g1a']
@@ -174,7 +172,7 @@ class DTCWTPartialReconstructionRunner:
                     ax=ax)
 
                 title = \
-                    self.name + ' of view ' + \
+                    'View ' + \
                     self.names[i] + \
                     ' for ' + str(self.subperiod) + ' scnds' + \
                     ' rcnstrctd with dec. lvl' + \
@@ -202,6 +200,7 @@ class DTCWTPartialReconstructionRunner:
 
     def _get_stats(self):
 
+        # TODO: integrate pandas resample to deal with different sampling rates
         view_stats = [{s[-2:] : [] for s in self.subjects}
                       for i in xrange(self.num_views)]
 
@@ -210,14 +209,22 @@ class DTCWTPartialReconstructionRunner:
             sample_views = periods[0][0]
 
             for (v, prs) in enumerate(sample_views):
-                view_stats[v][s] = [[] for f in xrange(len(prs))]
+                view_stats[v][s] = [None for f in xrange(len(prs))]
 
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
                         for (f, pr) in enumerate(prs):
-                            view_stats[v][s][f].append(
-                                stat(pr))
+                            current = view_stats[v][s][f]
+                            new = None
+
+                            if current is None:
+                                new = pr
+                            else:
+                                new = np.vstack(
+                                    [current, pr])
+
+                            view_stats[v][s][f] = new
 
         return self._get_completed_and_filtered(view_stats)
 
@@ -238,8 +245,9 @@ class DTCWTPartialReconstructionRunner:
 
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
-                    l_freq = len(freq)
-                    freq = freq + [None] * (max_p - l_freq)
+                    freq_list = [v[0] for v in freq.tolist()]
+                    l_freq = len(freq_list)
+                    freq_list = freq_list + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
                     s_units = None
@@ -250,23 +258,14 @@ class DTCWTPartialReconstructionRunner:
                     else:
                         s_units = [1] * max_p
 
+                    first = self.missing and l_freq < max_p
+                    second = self.complete and l_freq == max_p
+                    third = not (self.missing or self.complete)
 
-                    if self.missing:
-                        if l_freq < max_p:
-                            periods[f].extend(s_periods)
-                            subjects[f].extend(s_subjects)
-                            values[f].extend(freq)
-                            units[f].extend(s_units)
-                    elif self.complete:
-                        if l_freq == max_p:
-                            periods[f].extend(s_periods)
-                            subjects[f].extend(s_subjects)
-                            values[f].extend(freq)
-                            units[f].extend(s_units)
-                    else:
+                    if first or second or third:
                         periods[f].extend(s_periods)
                         subjects[f].extend(s_subjects)
-                        values[f].extend(freq)
+                        values[f].extend(freq_list)
                         units[f].extend(s_units)
 
             for f in xrange(len(view.values()[0])):
@@ -287,7 +286,6 @@ class DTCWTPartialReconstructionRunner:
             v = int(info[3])
             p = int(info[5])
             sp = int(info[7])
-
             path = os.path.join(self.pr_dir, fn)
             prs = None
 
