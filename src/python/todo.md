@@ -54,6 +54,9 @@
 * Fix partial reconstruction. Not really sure how to debug it. I think I'll need to have a better understanding of the DTCWT before I can intelligently approach depbugging the partial reconstruction.
     * ASK FOR HELP
     * Try on easy test signal
+    * Subtracting Lo\_prev doesn't seem to make a difference in the result. Figure out whether I need to be maintaining more state
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
+
+* Get rid of averaging in partial reconstruction plots; need to find clean way to do resample or something similar
