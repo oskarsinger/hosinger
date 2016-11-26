@@ -217,7 +217,7 @@ class DTCWTPartialReconstructionRunner:
             sample_views = periods[0][0]
 
             for (v, prs) in enumerate(sample_views):
-                view_stats[v][s] = [[] for f in xrange(len(prs))]
+                view_stats[v][s] = [None for f in xrange(len(prs))]
 
             for (p, subperiods) in enumerate(periods):
                 print 'Inside _get_stats, period', p
@@ -227,9 +227,13 @@ class DTCWTPartialReconstructionRunner:
                         print 'Inside _get_stats, view', v
                         for (f, pr) in enumerate(prs):
                             print 'Inside _get_stats, frequency', f
-                            new = [sample[0] for sample in pr.tolist()]
+                            current = view_stats[v][s][f]
 
-                            view_stats[v][s][f].extend(new)
+                            if current is None:
+                                view_stats[v][s][f] = pr
+                            else:
+                                view_stats[v][s][f] = np.vstack(
+                                    [current, pr])
 
         return self._get_completed_and_filtered(view_stats)
 
@@ -254,6 +258,7 @@ class DTCWTPartialReconstructionRunner:
                 for (f, freq) in enumerate(freqs):
                     print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
+                    freq = [x[0] for x in freq.tolist()]
                     l_freq = len(freq)
                     freq_list = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))
