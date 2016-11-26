@@ -148,21 +148,26 @@ class DTCWTPartialReconstructionRunner:
         Hi_filt = wdtcwt.filters.get_column_filtered(
             Hi, self.g1o)
 
-        prs.append(Lo_filt + Hi_filt - Lo_prev)
+        prs.append(Lo_filt + Hi_filt)# - Lo_prev)
 
         return list(reversed(prs))
 
     def _show(self):
 
+        print 'Inside _show, getting stats'
         averages = self._get_stats()
 
         for (i, view) in enumerate(averages):
+            print 'Inside _show, making plots for view', i
+
             for (f, freq) in enumerate(view):
+                print 'Inside _show, making plots for frequency', f
                 ax = plt.axes()
 
                 condition  = 'Symptomatic?' if self.avg else 'Subject'
                 unit = 'Subject' if self.avg else 'unit'
 
+                print 'Inside _show, generating plot'
                 sns.tsplot(
                     time='period', 
                     value='value', 
@@ -170,6 +175,7 @@ class DTCWTPartialReconstructionRunner:
                     unit=unit,
                     data=freq,
                     ax=ax)
+                print 'Inside _show, plot generated'
 
                 title = \
                     'View ' + \
@@ -193,18 +199,20 @@ class DTCWTPartialReconstructionRunner:
                 path = os.path.join(
                     self.plot_dir,
                     '_'.join(title.split()) + '.pdf')
+                print 'Inside _show, saving plot'
                 ax.get_figure().savefig(
                     path,
                     format='pdf')
+                print 'Inside _show, clearing figure'
                 sns.plt.clf()
 
     def _get_stats(self):
 
-        # TODO: stick in Nones between the lower frequency reconstructions
         view_stats = [{s[-2:] : [] for s in self.subjects}
                       for i in xrange(self.num_views)]
 
         for (s, periods) in self.prs.items():
+            print 'Inside _get_stats, subject', s
             s = s[-2:]
             sample_views = periods[0][0]
 
@@ -212,18 +220,14 @@ class DTCWTPartialReconstructionRunner:
                 view_stats[v][s] = [[] for f in xrange(len(prs))]
 
             for (p, subperiods) in enumerate(periods):
+                print 'Inside _get_stats, period', p
                 for (sp, views) in enumerate(subperiods):
+                    print 'Inside _get_stats, subperiod', sp
                     for (v, prs) in enumerate(views):
+                        print 'Inside _get_stats, view', v
                         for (f, pr) in enumerate(prs):
+                            print 'Inside _get_stats, frequency', f
                             new = [sample[0] for sample in pr.tolist()]
-
-                            """
-                            for sample in pr.tolist():
-                                power = len(prs) - f - 1
-                                padding = [None] * (2**power - 1)
-
-                                new.extend(sample + padding)
-                            """
 
                             view_stats[v][s][f].extend(new)
 
@@ -236,6 +240,7 @@ class DTCWTPartialReconstructionRunner:
         unit_key = 'Symptomatic?' if self.avg else 'unit'
 
         for (i, view) in enumerate(view_stats):
+            print 'Inside _get_completed_and_filtered, view', i
             num_lists = len(view.values()[0])
             periods = [[] for f in xrange(num_lists)]
             subjects = [[] for f in xrange(num_lists)]
@@ -245,7 +250,9 @@ class DTCWTPartialReconstructionRunner:
                       for f in xrange(num_lists)]
 
             for (s, freqs) in view.items():
+                print 'Inside _get_completed_and_filtered, subject', s
                 for (f, freq) in enumerate(freqs):
+                    print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
                     l_freq = len(freq)
                     freq_list = freq + [None] * (max_p - l_freq)
@@ -269,7 +276,8 @@ class DTCWTPartialReconstructionRunner:
                         values[f].extend(freq)
                         units[f].extend(s_units)
 
-            for f in xrange(len(view.values()[0])):
+            for f in xrange(num_lists):
+                print 'Inside _get_completed_and_filtered, getting df for frequency', f
                 d = {
                     'period': periods[f],
                     'Subject': subjects[f], 
@@ -281,6 +289,7 @@ class DTCWTPartialReconstructionRunner:
 
     def _load(self):
 
+        print 'Loading partial reconstructions'
         for fn in os.listdir(self.pr_dir):
             info = fn.split('_')
             s = info[1]
