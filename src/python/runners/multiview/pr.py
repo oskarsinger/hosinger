@@ -215,14 +215,15 @@ class DTCWTPartialReconstructionRunner:
                 for (sp, views) in enumerate(subperiods):
                     for (v, prs) in enumerate(views):
                         for (f, pr) in enumerate(prs):
-                            new = []
+                            new = [sample[0] for sample in pr.tolist()]
 
-                            # TODO: consider getting rid of this and just decreasing number of points on each plot
+                            """
                             for sample in pr.tolist():
                                 power = len(prs) - f - 1
                                 padding = [None] * (2**power - 1)
 
                                 new.extend(sample + padding)
+                            """
 
                             view_stats[v][s][f].extend(new)
 
@@ -235,16 +236,17 @@ class DTCWTPartialReconstructionRunner:
         unit_key = 'Symptomatic?' if self.avg else 'unit'
 
         for (i, view) in enumerate(view_stats):
-            max_p = max(
-                [len(l[0]) for l in view.values()])
             num_lists = len(view.values()[0])
             periods = [[] for f in xrange(num_lists)]
             subjects = [[] for f in xrange(num_lists)]
             values = [[] for f in xrange(num_lists)]
             units = [[] for f in xrange(num_lists)]
+            max_ps = [max(l[f] for l in view.values())
+                      for f in xrange(num_lists)]
 
             for (s, freqs) in view.items():
                 for (f, freq) in enumerate(freqs):
+                    max_p = max_ps[f]
                     l_freq = len(freq)
                     freq_list = freq + [None] * (max_p - l_freq)
                     s_periods = list(range(max_p))

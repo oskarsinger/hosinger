@@ -62,3 +62,4 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Plot full time sequence instead of average over hours on each day
 
 * Figure out the null-padding issue on the partial reconstruction plots
+    * Meixing suggested just having fewer points on the x axis. Gotta figure out how to correctly normalize it.
