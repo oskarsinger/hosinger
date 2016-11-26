@@ -248,7 +248,7 @@ class DTCWTPartialReconstructionRunner:
             num_lists = len(view.values()[0])
             periods = [[] for f in xrange(num_lists)]
             subjects = [[] for f in xrange(num_lists)]
-            values = [[] for f in xrange(num_lists)]
+            values = [None for f in xrange(num_lists)]
             units = [[] for f in xrange(num_lists)]
             max_ps = [max(len(l[f]) for l in view.values())
                       for f in xrange(num_lists)]
@@ -258,9 +258,9 @@ class DTCWTPartialReconstructionRunner:
                 for (f, freq) in enumerate(freqs):
                     print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
-                    freq = [x[0] for x in freq.tolist()]
-                    l_freq = len(freq)
-                    freq_list = freq + [None] * (max_p - l_freq)
+                    l_freq = freq.shape[0]
+                    padding = np.array([None] * (max_p - l_freq))[:,np.newaxis]
+                    freq_list = np.vstack([freq, padding])
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
                     s_units = None
@@ -278,8 +278,13 @@ class DTCWTPartialReconstructionRunner:
                     if first or second or third:
                         periods[f].extend(s_periods)
                         subjects[f].extend(s_subjects)
-                        values[f].extend(freq)
                         units[f].extend(s_units)
+
+                        if values[f] is None:
+                            values[f] = freq
+                        else:
+                            values[f] = np.vstack(
+                                [values[f], freq])
 
             for f in xrange(num_lists):
                 print 'Inside _get_completed_and_filtered, getting df for frequency', f
