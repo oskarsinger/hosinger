@@ -275,7 +275,6 @@ class DTCWTPartialReconstructionRunner:
                     'Subject': subjects[f], 
                     'value': values[f],
                     unit_key: units[f]}
-                print [k + ': ' + str(len(v)) for (k, v) in d.items()]
                 dfs[i][f] = pd.DataFrame(data=d)
 
         return dfs

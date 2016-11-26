@@ -53,13 +53,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Experiments
 * T-tests and p-values for spike in temperature vs reported symptoms
 
-* Fix partial reconstruction. Not really sure how to debug it. I think I'll need to have a better understanding of the DTCWT before I can intelligently approach depbugging the partial reconstruction.
-    * ASK FOR HELP
-    * Try on easy test signal
-    * Subtracting Lo\_prev doesn't seem to make a difference in the result. Figure out whether I need to be maintaining more state. I think I do.
-
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
-
-* Figure out the null-padding issue on the partial reconstruction plots
-    * Meixing suggested just having fewer points on the x axis. Gotta figure out how to correctly normalize it.
