@@ -241,7 +241,7 @@ class DTCWTPartialReconstructionRunner:
             subjects = [[] for f in xrange(num_lists)]
             values = [[] for f in xrange(num_lists)]
             units = [[] for f in xrange(num_lists)]
-            max_ps = [max(l[f] for l in view.values())
+            max_ps = [max(len(l[f]) for l in view.values())
                       for f in xrange(num_lists)]
 
             for (s, freqs) in view.items():
