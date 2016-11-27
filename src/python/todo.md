@@ -26,6 +26,8 @@
 ##Optimization
 * I should just write out the actual prox operator with the dual averaging. Otherwise, I am never going to figure this out.
 
+* Replace the step of distributing the global gradient approximation with some other form of information propagation across the network.
+
 * Implementation steps for online FSVRG:
     1. Original SVRG
     2. Infrastructure for testing distributed SVRG (and other distributed algs).
