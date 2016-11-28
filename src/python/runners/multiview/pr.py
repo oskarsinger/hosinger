@@ -258,9 +258,10 @@ class DTCWTPartialReconstructionRunner:
                 for (f, freq) in enumerate(freqs):
                     print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
+                    freq = freq[:,0]
                     l_freq = freq.shape[0]
-                    padding = np.array([None] * (max_p - l_freq))[:,np.newaxis]
-                    freq_list = np.vstack([freq, padding])
+                    padding = np.array([None] * (max_p - l_freq))
+                    freq_list = np.hstack([freq, padding])
                     s_periods = list(range(max_p))
                     s_subjects = [s] * max_p
                     s_units = None
@@ -283,7 +284,7 @@ class DTCWTPartialReconstructionRunner:
                         if values[f] is None:
                             values[f] = freq
                         else:
-                            values[f] = np.vstack(
+                            values[f] = np.hstack(
                                 [values[f], freq])
 
             for f in xrange(num_lists):
@@ -291,7 +292,7 @@ class DTCWTPartialReconstructionRunner:
                 d = {
                     'period': periods[f],
                     'Subject': subjects[f], 
-                    'value': values[f][:,0],
+                    'value': values[f],
                     unit_key: units[f]}
                 dfs[i][f] = pd.DataFrame(data=d)
 
