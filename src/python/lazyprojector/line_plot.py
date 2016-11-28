@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from utils import get_plot_path
 
+# TODO: allow for optional input units
 def plot_lines(
     data_map,
     x_name,
