@@ -50,7 +50,7 @@ class DANE:
 
         pool = Pool(processes=self.num_nodes)
         get_ps = lambda n, ps: [n] + [np.copy(p) for p in ps]
-        results = [pool.apply_async(func, get_ps(n, params)))
+        results = [pool.apply_async(func, get_ps(n, params))
                    for n in self.nodes]
         things = [r.get() for r in results]
 
