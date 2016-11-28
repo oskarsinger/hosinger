@@ -291,7 +291,7 @@ class DTCWTPartialReconstructionRunner:
                 d = {
                     'period': periods[f],
                     'Subject': subjects[f], 
-                    'value': values[f][:,0].tolist(),
+                    'value': values[f][:,0],
                     unit_key: units[f]}
                 dfs[i][f] = pd.DataFrame(data=d)
 
