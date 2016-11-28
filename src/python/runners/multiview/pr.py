@@ -239,19 +239,19 @@ class DTCWTPartialReconstructionRunner:
 
     def _get_completed_and_filtered(self, view_stats):
 
-        dfs = [[None] * len(view.values()[0])
-               for view in view_stats]
+        get_map = lambda v: [{s : None for s in v.keys()}
+                             for i in xrange(len(v.values()[0])]
+        dms = [get_map(v) for v in view_stats]
         unit_key = 'Symptomatic?' if self.avg else 'unit'
 
+        # TODO: put in units if avg is set to True
         for (i, view) in enumerate(view_stats):
             print 'Inside _get_completed_and_filtered, view', i
-            num_lists = len(view.values()[0])
-            periods = [[] for f in xrange(num_lists)]
-            subjects = [[] for f in xrange(num_lists)]
-            values = [None for f in xrange(num_lists)]
-            units = [[] for f in xrange(num_lists)]
+            periods = get_map(view)
+            values = get_map(view)
+            units = get_map(view)
             max_ps = [max(len(l[f]) for l in view.values())
-                      for f in xrange(num_lists)]
+                      for f in xrange(len(view.values()[0]))]
 
             for (s, freqs) in view.items():
                 print 'Inside _get_completed_and_filtered, subject', s
@@ -262,39 +262,42 @@ class DTCWTPartialReconstructionRunner:
                     l_freq = freq.shape[0]
                     padding = np.array([None] * (max_p - l_freq))
                     freq_list = np.hstack([freq, padding])
-                    s_periods = list(range(max_p))
-                    s_subjects = [s] * max_p
+                    s_periods = None
                     s_units = None
 
                     if self.avg:
                         status = rmu.get_symptom_status(s)
                         s_units = [status] * max_p
-                    else:
-                        s_units = [1] * max_p
 
                     first = self.missing and l_freq < max_p
                     second = self.complete and l_freq == max_p
                     third = not (self.missing or self.complete)
 
                     if first or second or third:
-                        periods[f].extend(s_periods)
-                        subjects[f].extend(s_subjects)
-                        units[f].extend(s_units)
 
-                        if values[f] is None:
-                            values[f] = freq
+                        if periods[f][s] is None
+                            periods[f][s] = np.arange(max_p)
                         else:
-                            values[f] = np.hstack(
-                                [values[f], freq])
+                            new = np.arange(max_p) + periods[f][s][-1] + 1
+                            periods[f][s] = np.hstack(
+                                periods[f][s], new])
 
-            for f in xrange(num_lists):
+                        if values[f][s] is None:
+                            values[f][s] = freq
+                        else:
+                            values[f][s] = np.hstack(
+                                [values[f][s], freq])
+
+            for f in xrange(len(view.values()[0])):
                 print 'Inside _get_completed_and_filtered, getting df for frequency', f
                 d = {
                     'period': periods[f],
-                    'Subject': subjects[f], 
-                    'value': values[f],
-                    unit_key: units[f]}
-                dfs[i][f] = pd.DataFrame(data=d)
+                    'value': values[f]}
+
+                if self.avg:
+                    d[unit_key] = units[f]
+
+                dfs[i][f] = d
 
         return dfs
 
