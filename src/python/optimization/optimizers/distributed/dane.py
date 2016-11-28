@@ -2,6 +2,7 @@ import numpy as np
 import optimization.utils as ou
 
 from optimization.stepsize import FixedScheduler as FXS
+from optimization.qnservers import DiagonalAdaGradServer as DAGS
 from multiprocessing import Pool
 
 class DANE:
@@ -10,8 +11,7 @@ class DANE:
         servers,
         get_gradient,
         num_rounds=5,
-        eta_schedulers=None,
-        mu_schedulers=None):
+        eta_schedulers=None):
 
         self.servers = servers
         self.num_nodes = len(self.servers)
@@ -22,17 +22,14 @@ class DANE:
             eta_schedulers = [FXS(0.1) 
                               for i in xrange(self.num_nodes)]
 
-        if mu_scheduler is None:
-            mu_scheduler = [FXS(0.1)
-                            for i in xrange(self.num_nodes)]
-
         node_stuff = zip(
             servers,
-            eta_schedulers,
-            mu_schedulers)
+            eta_schedulers)
 
-        self.nodes = [DANENode(s, self.get_gradient, es, ms)
+        self.nodes = [DANENode(s, self.get_gradient, eta_scheduler=es)
                       for i in xrange(self.num_nodes)]
+        self.get_node_grad = lambda n, w: n.get_gradient(w)
+        self.get_node_update = lambda n, w, gg: n.get_update(w, gg)
 
     def get_parameters(self, init_parameters=None):
 
@@ -40,9 +37,9 @@ class DANE:
 
         for t in xrange(self.num_rounds):
             grad_t = self._get_node_avg(
-                _get_node_grad, [w_t])
+                self.get_node_grad, [w_t])
             w_t = self._get_node_avg(
-                _get_node_update, [w_t, grad_t])
+                self.get_node_update, [w_t, grad_t])
 
         return w_t
 
@@ -59,42 +56,34 @@ class DANE:
 class DANENode:
 
     def __init__(self,
-        server,
+        data_server,
         get_gradient,
+        qn_server=None,
         eta_scheduler=None,
-        mu_scheduler=None):
+        mu=1):
 
         self.server = server
         self.get_gradient = get_gradient
+        self.mu = mu
         
         if eta_scheduler is None:
             eta_scheduler = FXS(0.1)
 
-        if mu_scheduler is None:
-            mu_scheduler = FXS(0.1)
+        if qn_server is None:
+            qn_server = DAGS(delta=self.mu)
 
         self.eta_scheduler = eta_scheduler
-        self.mu_scheduler = mu_scheduler
+        self.qn_server = qn_server
         self.data = self.server.get_data()
 
     def get_update(self, w, global_grad):
 
-        mu = self.mu_scheduler.get_stepsize()
         eta = self.eta_scheduler.get_stepsize()
         grad = self.get_gradient(self.data, w)
-        global_term = grad - eta * global_grad
-        local_term = 'Something objective dependent, unless I linearize?'
+        search_direction = self.mu * w + grad - eta * global_grad
 
-        print 'Poop'
+        return self.qn_server.get_qn_transform(search_direction)
 
     def get_gradient(self, w):
 
         return self.get_gradient(self.data, w)
-
-def _get_node_grad(node, w):
-
-    return node.get_gradient(w)
-
-def _get_node_update(node, w, grad):
-
-    return node.get_update(w, grad)

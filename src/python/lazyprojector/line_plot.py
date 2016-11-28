@@ -54,12 +54,9 @@ def _get_dataframe(data_map, x_name, y_name):
         else:
             ys = np.vstack([ys, y_data])
 
-    print 'xs.shape', xs.shape
-    print 'ys.shape', ys.shape
-
     d = {
-        x_name: [x[0] for x in xs.tolist()],
-        y_name: [y[0] for y in ys.tolist()],
+        x_name: xs[:,0].tolist(),
+        y_name: ys[:,0].tolist(),
         'name': names,
         'units': units}
     df = pd.DataFrame(data=d)
