@@ -14,6 +14,7 @@ import wavelets.dtcwt as wdtcwt
 from data.servers.batch import BatchServer as BS
 from drrobert.file_io import get_timestamped as get_ts
 from linal.utils.misc import get_non_nan
+from lazyprojector import plot_lines
 
 class DTCWTPartialReconstructionRunner:
 
@@ -162,21 +163,8 @@ class DTCWTPartialReconstructionRunner:
 
             for (f, freq) in enumerate(view):
                 print 'Inside _show, making plots for frequency', f
-                ax = plt.axes()
 
-                condition  = 'Symptomatic?' if self.avg else 'Subject'
-                unit = 'Subject' if self.avg else 'unit'
-
-                print 'Inside _show, generating plot'
-                sns.tsplot(
-                    time='period', 
-                    value='value', 
-                    condition=condition,
-                    unit=unit,
-                    data=freq,
-                    ax=ax)
-                print 'Inside _show, plot generated'
-
+                unit_name = 'Symptomatic?' if self.avg else None
                 title = \
                     'View ' + \
                     self.names[i] + \
@@ -195,7 +183,15 @@ class DTCWTPartialReconstructionRunner:
                     title = 'Complete only ' + \
                         title[0].lower() + title[1:]
 
-                ax.set_title(title)
+                print 'Inside _show, generating plot'
+                ax = plot_lines(
+                    freq,
+                    'period',
+                    'value',
+                    title,
+                    unit_name=unit_name)
+                print 'Inside _show, plot generated'
+
                 path = os.path.join(
                     self.plot_dir,
                     '_'.join(title.split()) + '.pdf')
@@ -244,7 +240,6 @@ class DTCWTPartialReconstructionRunner:
         dms = [get_map(v) for v in view_stats]
         unit_key = 'Symptomatic?' if self.avg else 'unit'
 
-        # TODO: put in units if avg is set to True
         for (i, view) in enumerate(view_stats):
             print 'Inside _get_completed_and_filtered, view', i
             periods = get_map(view)
@@ -258,10 +253,11 @@ class DTCWTPartialReconstructionRunner:
                 for (f, freq) in enumerate(freqs):
                     print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
-                    freq = freq[:,0]
                     l_freq = freq.shape[0]
-                    padding = np.array([None] * (max_p - l_freq))
-                    freq_list = np.hstack([freq, padding])
+                    padding = np.array(
+                        [None] * (max_p - l_freq))
+                    freq = np.vstack(
+                        [freq, padding[:,np.newaxis]])
                     s_periods = None
                     s_units = None
 
@@ -279,8 +275,8 @@ class DTCWTPartialReconstructionRunner:
                             periods[f][s] = np.arange(max_p)
                         else:
                             new = np.arange(max_p) + periods[f][s][-1] + 1
-                            periods[f][s] = np.hstack(
-                                periods[f][s], new])
+                            periods[f][s] = np.vstack(
+                                periods[f][s], new[:,np.newaxis]])
 
                         if values[f][s] is None:
                             values[f][s] = freq
@@ -288,18 +284,21 @@ class DTCWTPartialReconstructionRunner:
                             values[f][s] = np.hstack(
                                 [values[f][s], freq])
 
+                        if self.avg:
+                            if s_units is None:
+                                units[f][s] = s_units
+                            else:
+                                units[f][s].extend(s_units)
+
             for f in xrange(len(view.values()[0])):
-                print 'Inside _get_completed_and_filtered, getting df for frequency', f
-                d = {
-                    'period': periods[f],
-                    'value': values[f]}
+                print 'In _get_completed_and_filtered, getting dm for freq', f
+                for s in view.keys():
+                    p = periods[f][s]
+                    v = values[f][s]
+                    u = units[f][s]
+                    dms[i][f][s] = (p, v, u)
 
-                if self.avg:
-                    d[unit_key] = units[f]
-
-                dfs[i][f] = d
-
-        return dfs
+        return dms
 
     def _load(self):
 
