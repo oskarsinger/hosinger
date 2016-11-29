@@ -13,6 +13,7 @@ setup(
         'optimization.optimizers.ftprl',
         'optimization.optimizers.quasinewton',
         'optimization.stepsize',
+        'optimization.qnservers',
         'linal',
         'linal.tensor',
         'linal.random',
