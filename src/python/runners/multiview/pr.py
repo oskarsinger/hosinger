@@ -271,7 +271,7 @@ class DTCWTPartialReconstructionRunner:
 
                     if first or second or third:
 
-                        if periods[f][s] is None
+                        if periods[f][s] is None:
                             periods[f][s] = np.arange(max_p)
                         else:
                             new = np.arange(max_p) + periods[f][s][-1] + 1
