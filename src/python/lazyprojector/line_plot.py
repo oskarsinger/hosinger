@@ -9,57 +9,76 @@ import matplotlib.pyplot as plt
 
 from utils import get_plot_path
 
-# TODO: allow for optional input units
 def plot_lines(
     data_map,
     x_name,
     y_name,
-    title):
+    title,
+    unit_name=None):
+
+    condition = None
+    unit = None
+
+    if unit_name is None:
+        condition = 'name'
+        unit = 'unit'
+    else:
+        condition = unit_name
+        unit = 'name'
 
     df = _get_dataframe(
         data_map,
         x_name,
-        y_name)
+        y_name,
+        unit_name)
     ax = plt.axes()
 
     sns.tsplot(
         time=x_name,
         value=y_name,
-        condition='name',
-        unit='units',
+        condition=condition,
+        unit=unit,
         data=df)
 
     ax.set_title(title)
 
     return ax
 
-def _get_dataframe(data_map, x_name, y_name):
+def _get_dataframe(
+    data_map, 
+    x_name, 
+    y_name, 
+    unit_name):
 
     names = []
     xs = None
     ys = None
     units = []
 
-    for name, (x_data, y_data) in data_map.items():
+    for name, (x, y, u) in data_map.items():
         names.extend(
-            [name for i in xrange(x_data.shape[0])])
-        units.extend([1] * x_data.shape[0])
+            [name for i in xrange(x.shape[0])])
+        
+        if u is None:
+            units.extend([1] * x.shape[0])
+        else:
+            units.extend(u)
 
         if xs is None:
-            xs = x_data
+            xs = x
         else:
-            xs = np.vstack([xs, x_data])
+            xs = np.vstack([xs, x])
 
         if ys is None:
-            ys = y_data
+            ys = y
         else:
-            ys = np.vstack([ys, y_data])
+            ys = np.vstack([ys, y])
 
     d = {
         x_name: xs[:,0].tolist(),
         y_name: ys[:,0].tolist(),
         'name': names,
-        'units': units}
+        unit_name: units}
     df = pd.DataFrame(data=d)
 
     return df
