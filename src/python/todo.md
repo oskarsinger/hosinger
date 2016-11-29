@@ -30,10 +30,9 @@
 
 * Implementation steps for online FSVRG:
     1. Original SVRG
-    2. Infrastructure for testing distributed SVRG (and other distributed algs).
+    2. Infrastructure for testing distributed algs
         * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
-        * Infrastructure should reflect actual conditions as closely as possible, e.g. there should be no centralized authority determining synchronous updates if possible.
-    3. Distributed SVRG
+    3. Distributed SVRG, AIDE, DANE, etc.
     4. Original FSVRG, hopefully fits in testing framework from item 2.
     5. More online-ish FSVRG
 
@@ -57,3 +56,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
+
+* Consider serializing some of the intermediate steps then reloading them for the partial reconstruction plots.
