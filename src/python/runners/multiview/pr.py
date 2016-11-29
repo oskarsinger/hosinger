@@ -276,7 +276,7 @@ class DTCWTPartialReconstructionRunner:
                         else:
                             new = np.arange(max_p) + periods[f][s][-1] + 1
                             periods[f][s] = np.vstack(
-                                periods[f][s], new[:,np.newaxis]])
+                                [periods[f][s], new[:,np.newaxis]])
 
                         if values[f][s] is None:
                             values[f][s] = freq
