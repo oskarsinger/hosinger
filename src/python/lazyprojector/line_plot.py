@@ -50,35 +50,49 @@ def _get_dataframe(
     y_name, 
     unit_name):
 
-    names = []
+    names = None
     xs = None
     ys = None
-    units = []
+    units = None
 
     for name, (x, y, u) in data_map.items():
-        names.extend(
+
+        new_n = np.array(
             [name for i in xrange(x.shape[0])])
+        new_n = new_n[:,np.newaxis]
         
+        new_u = None
+
         if u is None:
-            units.extend([1] * x.shape[0])
+            new_u = np.array([1] * x.shape[0])
         else:
-            units.extend(u)
+            new_u = np.array(
+                [u for i in xrange(x.shape[0])])
 
-        if xs is None:
-            xs = x
-        else:
-            xs = np.vstack([xs, x])
+        new_u = new_u[:,np.newaxis]
 
-        if ys is None:
-            ys = y
-        else:
-            ys = np.vstack([ys, y])
+        names = _extend_vec(names, new_n)
+        units = _extend_vec(units, new_u)
+        xs = _extend_vec(xs, x)
+        ys = _extend_vec(ys, y)
 
     d = {
-        x_name: xs[:,0].tolist(),
-        y_name: ys[:,0].tolist(),
-        'name': names,
-        unit_name: units}
+        x_name: xs[:,0],
+        y_name: ys[:,0],
+        'name': names[:,0],
+        unit_name: units[:,0]}
     df = pd.DataFrame(data=d)
 
     return df
+
+def _extend_vec(old, new):
+
+    extended = None
+
+    if old is None:
+        extended = new
+    else:
+        extended = np.vstack(
+            [old, new])
+
+    return extended

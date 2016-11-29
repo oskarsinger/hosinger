@@ -58,3 +58,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Plot full time sequence instead of average over hours on each day
 
 * Consider serializing some of the intermediate steps then reloading them for the partial reconstruction plots.
+
+* Compare my partial reconstructions to Al's
