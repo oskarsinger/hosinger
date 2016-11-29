@@ -5,18 +5,21 @@ from optimization.stepsize import FixedScheduler as FXS
 from optimization.qnservers import DiagonalAdaGradServer as DAGS
 from multiprocessing import Pool
 
-class DANE:
+class QuasinewtonInexactDANE:
 
     def __init__(self,
         servers,
         get_gradient,
         num_rounds=5,
-        eta_schedulers=None):
+        eta_schedulers=None,
+        init_params=None):
 
         self.servers = servers
         self.num_nodes = len(self.servers)
         self.get_gradient = get_gradient
         self.num_rounds = num_rounds
+        self.init_params = init_params
+        self.w = None
 
         if eta_schedulers is None:
             eta_schedulers = [FXS(0.1) 
@@ -31,9 +34,17 @@ class DANE:
         self.get_node_grad = lambda n, w: n.get_gradient(w)
         self.get_node_update = lambda n, w, gg: n.get_update(w, gg)
 
-    def get_parameters(self, init_parameters=None):
+    def get_parameters(self):
 
-        w_t = init_parameters
+        if self.w is None:
+            raise Exception(
+                'Parameters have not been computed.')
+        else:
+            return np.copy(self.w)
+
+    def compute_parameters(self):
+
+        w_t = np.copy(self.init_params)
 
         for t in xrange(self.num_rounds):
             grad_t = self._get_node_avg(
@@ -41,7 +52,7 @@ class DANE:
             w_t = self._get_node_avg(
                 self.get_node_update, [w_t, grad_t])
 
-        return w_t
+        self.w = w_t
 
     def _get_node_avg(self, func, params):
 
