@@ -24,8 +24,6 @@
 * Need to make visualization to assess convergence of the algorithm on the local parameters. Should I also be assessing convergence on global model, or does that matter? Make that a later step? Maybe I should show the max error over all nodes for each coordinate.
 
 ##Optimization
-* Consider replacing the quasinewton module with a module that serves quasinewton matrices and their inverses, or serves the input search direction with the quasinewton transform applied. With the latter option, it will be easier to do things like apply soft thresholding in the dual space and take advantage of structured quasinewton matrices like the AdaGrad one that don't require a raw matrix multiplication.
-
 * Consider replacing the step of distributing the global gradient approximation with some other form of information propagation across the network.
 
 * Implementation steps for online FSVRG:
