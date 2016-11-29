@@ -236,7 +236,7 @@ class DTCWTPartialReconstructionRunner:
     def _get_completed_and_filtered(self, view_stats):
 
         get_map = lambda v: [{s : None for s in v.keys()}
-                             for i in xrange(len(v.values()[0])]
+                             for i in xrange(len(v.values()[0]))]
         dms = [get_map(v) for v in view_stats]
         unit_key = 'Symptomatic?' if self.avg else 'unit'
 
