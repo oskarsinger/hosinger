@@ -57,7 +57,14 @@ class AIDE:
 
     def _get_aide_gradient(self, y_t):
 
-        print 'Poop'
+        def get_gradient(data, w):
+
+            aux_term = self.tau * (w - y_t)
+            original = self.get_gradient(data, w)
+
+            return original + aux_term
+
+        return get_gradient
 
     def _get_zeta(self, zeta_prev):
 

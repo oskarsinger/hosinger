@@ -69,7 +69,6 @@ class DANENode:
     def __init__(self,
         data_server,
         get_gradient,
-        qn_server=None,
         eta_scheduler=None,
         mu=1):
 
@@ -80,11 +79,8 @@ class DANENode:
         if eta_scheduler is None:
             eta_scheduler = FXS(0.1)
 
-        if qn_server is None:
-            qn_server = DAGS(delta=self.mu)
-
         self.eta_scheduler = eta_scheduler
-        self.qn_server = qn_server
+        self.qn_server = DAGS(delta=self.mu)
         self.data = self.server.get_data()
 
     def get_update(self, w, global_grad):
