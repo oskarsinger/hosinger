@@ -272,10 +272,12 @@ class ViewPairwiseCCARunner:
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
                 factor = 8.0 / float(tl.shape[0])
+                unit = rmu.get_sympton_stats(s) \
+                    if self.subject_mean else None
                 data = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl,
-                    None)
+                    unit)
                 data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
@@ -286,12 +288,14 @@ class ViewPairwiseCCARunner:
                 self.names[k[0]] + ' ' + self.names[k[1]]
             fn = '_'.join(title.split()) + '.pdf'
             path = os.path.join(self.plot_dir, fn)
+            unit_name = 'Symptomatic?' if self.avg else None
 
             plot_lines(
                 dm, 
                 x_name, 
                 y_name, 
-                title).get_figure().savefig(
+                title,
+                unit_name=unit_name).get_figure().savefig(
                 path, format='pdf')
             sns.plt.clf()
 
