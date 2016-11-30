@@ -22,6 +22,7 @@ def plot_lines(
     if unit_name is None:
         condition = 'name'
         unit = 'unit'
+        unit_name = 'unit'
     else:
         condition = unit_name
         unit = 'name'
