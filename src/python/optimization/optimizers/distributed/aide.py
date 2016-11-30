@@ -3,6 +3,8 @@ import optimization.utils as ou
 
 from optimization.optimizers.distributed import QuasinewtonInexactDANE as QIDANE
 from optimization.stepsize import FixedScheduler as FXS
+from drrobert.arithmetic import get_uni_quad_sols as get_uqs
+from random import choice
 
 class AIDE:
 
@@ -17,8 +19,10 @@ class AIDE:
         self.get_gradient = get_gradient
         self.max_rounds = max_rounds
         self.dane_rounds = dane_rounds
-        self.gamma = gamma
+        self.lam = np.abs(np.random.randn()) #Figure out how to set this correctly.
         self.tau = tau
+        self.q = self.lam / (self.lam + self.tau)
+        self.gamma = gamma
         self.init_params = init_params
         self.w = None
 
@@ -68,4 +72,20 @@ class AIDE:
 
     def _get_zeta(self, zeta_prev):
 
-        print 'Poop'
+        a = 1
+        b = zeta_prev**2 - self.q
+        c = -zeta_prev**2
+        (sol_pos, sol_neg) = get_uqs(a, b, c)
+        sol = None
+
+        # ozoi = open zero-one interval
+        in_ozoi = lambda x: x > 0 and x < 1
+
+        if in_ozoi(sol_pos) and in_ozoi(sol_neg):
+            sol = choice([sol_pos, sol_neg])
+        elif in_ozoi(sol_pos):
+            sol = sol_pos
+        else:
+            sol = sol_neg
+
+        return sol

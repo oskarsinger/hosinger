@@ -38,3 +38,11 @@ class DiagonalAdaGradServer:
     def get_qn_inverse(self):
 
         return np.diag(get_sp(self.Q + delta, -1))
+
+    def get_lambda(self):
+
+        return np.min(self.Q)
+
+    def get_L(self):
+
+        return np.max(self.Q)

@@ -2,6 +2,17 @@ import numpy as np
 
 from math import log, ceil
 
+def get_uni_quad_sols(a, b, c):
+
+    (a, b, c) = [float(i) for i in [a,b,c]]
+    term1 = -b
+    term2 = (b**2 - 4 * a * c)**(0.5)
+    denom = 2 * a
+    sol_pos = (term1 + term2) / denom
+    sol_neg = (term1 - term2) / denom
+
+    return (sol_pos, sol_neg)
+
 def get_running_variance(
     old_var, new, i, old_avg=None):
 
