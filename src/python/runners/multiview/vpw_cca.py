@@ -134,14 +134,14 @@ class ViewPairwiseCCARunner:
                         (Yh2, Yl2) = subperiod[k[1]]
                         Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
-                        cca_over_time = rmu.get_cca_vecs(
-                            Y1_mat, Y2_mat)
+                        cca_over_time = np.vstack(rmu.get_cca_vecs(
+                            Y1_mat, Y2_mat))
                         cca_dim = min(Y1_mat.shape + Y2_mat.shape)
                         num_nonzero = int(cca_dim/2)
-                        cca_over_freqs = rmu.get_cca_vecs(
+                        cca_over_freqs = np.hstack(rmu.get_cca_vecs(
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
-                            num_nonzero=num_nonzero)
+                            num_nonzero=num_nonzero))
                         cc_over_time = self._get_cc_over_time(
                             Y1_mat,
                             Y2_mat,
