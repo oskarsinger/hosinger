@@ -19,7 +19,7 @@ class AIDE:
         self.get_gradient = get_gradient
         self.max_rounds = max_rounds
         self.dane_rounds = dane_rounds
-        self.lam = np.abs(np.random.randn()) #Figure out how to set this correctly.
+        self.lam = 10 * np.abs(np.random.randn()) #Figure out how to set this correctly.
         self.tau = tau
         self.q = self.lam / (self.lam + self.tau)
         self.gamma = gamma
