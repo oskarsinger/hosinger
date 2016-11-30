@@ -224,7 +224,7 @@ class DTCWTPartialReconstructionRunner:
                                     [current, np.copy(pr)])
 
                             # A GROSS attempt to free-up space; ugh
-                            prs[f] = None
+                            self.prs[s][p][sp][v][f] = None
 
         self._compute_completed_and_filtered(view_stats)
 
