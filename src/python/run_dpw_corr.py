@@ -1,7 +1,7 @@
 import click
 
-from runners.multiview import DayPairwiseCorrelationRunner as DPWCR
-from runners.multiview import MVDTCWTRunner
+from runners.wavelets import DayPairwiseCorrelationRunner as DPWCR
+from runners.wavelets import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path', default=None)

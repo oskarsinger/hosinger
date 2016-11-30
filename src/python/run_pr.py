@@ -1,7 +1,7 @@
 import click
 
-from runners.multiview import DTCWTPartialReconstructionRunner as DTCWTPRR
-from runners.multiview import MVDTCWTRunner
+from runners.wavelets import DTCWTPartialReconstructionRunner as DTCWTPRR
+from runners.wavelets import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path')

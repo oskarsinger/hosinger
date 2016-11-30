@@ -1,6 +1,6 @@
 import click
 
-from runners.multiview import MVDTCWTRunner
+from runners.wavelets import MVDTCWTRunner
 
 @click.command()
 @click.option('--data-path', default=None)
