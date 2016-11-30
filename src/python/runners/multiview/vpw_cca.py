@@ -272,7 +272,6 @@ class ViewPairwiseCCARunner:
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
                 factor = int(24 * 8 / tl.shape[0])
-                x_data = 
                 data = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl,
