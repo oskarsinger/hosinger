@@ -26,6 +26,8 @@
 ##Optimization
 * Consider replacing the step of distributing the global gradient approximation with some other form of information propagation across the network. Maybe try using the multiprocessing library's tools for sharing state across threads/processes? Save this guy for later. For now just collect the process results.
 
+* Test AIDE and SVRG on some easy synthetic data for an easy problem. Set up an easy linear regression problem. Do I need a new server for that?
+
 * Implementation steps for online FSVRG:
     1. Original SVRG
     2. Infrastructure for testing distributed algs

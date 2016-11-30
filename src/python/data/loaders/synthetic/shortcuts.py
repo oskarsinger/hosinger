@@ -1,6 +1,7 @@
 from data.loaders.readers import from_num as fn
 from periodic import CosineLoader as CL
 from gaussian import FakePeriodicGaussianLoader as FPGL
+from gaussian import GaussianLoader as GL
 
 def get_FPGL(n, ps, hertzes):
 
