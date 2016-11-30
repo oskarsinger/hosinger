@@ -51,6 +51,7 @@ class ViewPairwiseCCARunner:
             show, 
             show_mean,
             show_cc,
+            show_transpose,
             save_load_dir)
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
@@ -88,9 +89,14 @@ class ViewPairwiseCCARunner:
         show, 
         show_mean, 
         show_cc,
+        show_transpose,
         save_load_dir):
 
-        mk_sl_dir = show_mean or show or show_cc or save
+        mk_sl_dir = show_transpose or \
+            show_mean or \
+            show or \
+            show_cc or \
+            save
         if mk_sl_dir and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
