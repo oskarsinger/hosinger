@@ -288,7 +288,8 @@ class ViewPairwiseCCARunner:
                 self.names[k[0]] + ' ' + self.names[k[1]]
             fn = '_'.join(title.split()) + '.pdf'
             path = os.path.join(self.plot_dir, fn)
-            unit_name = 'Symptomatic?' if self.avg else None
+            unit_name = 'Symptomatic?' \
+                if self.subject_mean else None
 
             plot_lines(
                 dm, 
