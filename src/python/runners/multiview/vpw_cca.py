@@ -12,7 +12,7 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.arithmetic import get_running_avg as get_ra
 from lazyprojector import plot_matrix_heat, plot_lines
-from math import log
+from math import log, ceil
 
 class ViewPairwiseCCARunner:
 
@@ -143,7 +143,7 @@ class ViewPairwiseCCARunner:
                         cca_over_time = np.vstack(rmu.get_cca_vecs(
                             Y1_mat, Y2_mat))
                         cca_dim = min(Y1_mat.shape + Y2_mat.shape)
-                        num_nonzero = int(cca_dim/2)
+                        num_nonzero = ceil(int(cca_dim/10))
                         cca_over_freqs = np.hstack(rmu.get_cca_vecs(
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
@@ -271,14 +271,16 @@ class ViewPairwiseCCARunner:
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
+                factor = int(24 * 8 / tl.shape[0])
+                x_data = 
                 data = (
-                    np.arange(tl.shape[0])[:,np.newaxis], 
+                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl,
                     None)
                 data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
-            x_name = 'time'
+            x_name = 'time (hours)'
             y_name = 'canonical vector value'
             title = 'View-pairwise canonical vector values' + \
                 ' over frequencies for views ' + \
