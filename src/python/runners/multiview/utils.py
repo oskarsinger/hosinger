@@ -115,7 +115,7 @@ def get_normed_correlation(X1, X2):
     for i in xrange(p1):
         for j in xrange(p2):
             corr[i,j] = ssp(
-                abs_X1[:,i], abs_X2[:,j])[0]
+                X1[:,i], X2[:,j])[0]
 
     return corr
 
