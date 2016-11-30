@@ -55,6 +55,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
 
+* Test plot of CCA over freqs
+
 * Consider serializing some of the intermediate steps then reloading them for the partial reconstruction plots. Also, how is this taking 42 GBs? That seems way too big.
 
 * Compare my partial reconstructions to Al's

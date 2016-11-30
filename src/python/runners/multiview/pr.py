@@ -223,9 +223,6 @@ class DTCWTPartialReconstructionRunner:
                                 view_stats[v][s][f] = np.vstack(
                                     [current, np.copy(pr)])
 
-                            # A GROSS attempt to free-up space; ugh
-                            self.prs[s][p][sp][v][f] = None
-
         self._compute_completed_and_filtered(view_stats)
 
     def _compute_completed_and_filtered(self, view_stats):

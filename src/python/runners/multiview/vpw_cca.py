@@ -223,6 +223,68 @@ class ViewPairwiseCCARunner:
 
             self.ccas[s].get(v[0], v[1])[sp][p] = tuple(coeffs)
 
+    def _show_cca_over_freqs(self):
+
+        tl_spuds = {s: SPUD(self.num_views, no_double=True)
+                    for s in self.ccas.keys()}
+
+        for (s, spud) in self.ccas.items():
+            cca_over_freqs = SPUD(
+                self.num_views, 
+                default=lambda: [None] * self.num_periods[s],
+                no_double=True)
+
+            for (k, subperiods) in spud.items():
+                for (sp, periods) in enumerate(subperiods):
+                    for (p, period) in enumerate(periods):
+                        tls = cca_over_freqs.get(k[0], k[1])
+                        p_cca_over_freqs = period[1]
+
+                        if tls[p] is None:
+                            tls[p] = p_cca_over_freqs
+                        else:
+                            tls[p] = np.vstack(
+                                [tls[p], p_cca_over_freqs])
+
+            for (k, tls) in cca_over_freqs.items():
+                tl = np.vstack(tls)
+                tl = (tl[:,0] * tl[:,1])[:,np.newaxis]
+                cca_over_freqs.insert(k[0], k[1], tl)
+
+            tl_spuds[s] = cca_over_freqs
+
+        default = lambda: {'Subject ' + s: None for s in self.subjects}
+        data_maps = SPUD(
+            self.num_views,
+            default=default,
+            no_double=True)
+
+        for (s, spud) in tl_spuds.items():
+            for (k, tl) in spud.items():
+                s_key = 'Subject ' + s
+                data = (
+                    np.arange(tl.shape[0])[:,np.newaxis], 
+                    tl,
+                    None)
+                data_maps.get(k[0], k[1])[s_key] = data
+
+        for (k, dm) in data_maps.items():
+            x_name = 'time'
+            y_name = 'canonical vector value'
+            title = 'View-pairwise canonical vector values' + \
+                ' over frequencies for views ' + \
+                self.names[k[0]] + ' ' + self.names[k[1]]
+            fn = '_'.join(title.split()) + '.pdf'
+            path = os.path.join(self.plot_dir, fn)
+
+            plot_lines(
+                dm, 
+                x_name, 
+                y_name, 
+                title).get_figure().savefig(
+                path, format='pdf')
+            sns.plt.clf()
+
     def _show_cc(self):
 
         tl_spuds = {s: SPUD(self.num_views, no_double=True)
@@ -263,7 +325,8 @@ class ViewPairwiseCCARunner:
                 s_key = 'Subject ' + s
                 data = (
                     np.arange(len(tl))[:,np.newaxis], 
-                    np.array(tl))
+                    np.array(tl),
+                    None)
                 data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
