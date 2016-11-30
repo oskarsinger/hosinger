@@ -55,8 +55,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
 
-* Test plot of CCA over freqs
-
-* Consider serializing some of the intermediate steps then reloading them for the partial reconstruction plots. Also, how is this taking 42 GBs? That seems way too big.
+* Try completing the CCA over frequency time series like I did for partial reconstructions
 
 * Compare my partial reconstructions to Al's
+
+* Try averaging wavelet correlation (i.e. A matrix for sparse library) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).
