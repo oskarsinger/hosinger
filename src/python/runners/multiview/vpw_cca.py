@@ -125,7 +125,7 @@ class ViewPairwiseCCARunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show or show_mean or show_cc,
+            show_transpose or show or show_mean or show_cc,
             self.save_load_dir) 
 
     def _compute(self):
@@ -143,7 +143,7 @@ class ViewPairwiseCCARunner:
                         cca_over_time = np.vstack(rmu.get_cca_vecs(
                             Y1_mat, Y2_mat))
                         cca_dim = min(Y1_mat.shape + Y2_mat.shape)
-                        num_nonzero = int(ceil(cca_dim/3))
+                        num_nonzero = 3
                         cca_over_freqs = np.hstack(rmu.get_cca_vecs(
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
