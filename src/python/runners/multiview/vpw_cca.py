@@ -272,7 +272,7 @@ class ViewPairwiseCCARunner:
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
                 factor = 8.0 / float(tl.shape[0])
-                unit = rmu.get_sympton_stats(s) \
+                unit = rmu.get_sympton_status(s) \
                     if self.subject_mean else None
                 data = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
