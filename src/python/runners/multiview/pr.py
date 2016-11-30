@@ -250,6 +250,8 @@ class DTCWTPartialReconstructionRunner:
 
             for (s, freqs) in view.items():
                 print 'Inside _get_completed_and_filtered, subject', s
+                s_unit = rmu.get_symptom_status(s) if self.avg else None
+
                 for (f, freq) in enumerate(freqs):
                     print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
@@ -259,10 +261,6 @@ class DTCWTPartialReconstructionRunner:
                     freq = np.vstack(
                         [freq, padding[:,np.newaxis]])
                     s_periods = None
-                    s_unit = None
-
-                    if self.avg:
-                        s_unit = rmu.get_symptom_status(s)
 
                     first = self.missing and l_freq < max_p
                     second = self.complete and l_freq == max_p
@@ -284,8 +282,7 @@ class DTCWTPartialReconstructionRunner:
                                 [values[f][s], freq])
 
                         if self.avg:
-                            if s_units is None:
-                                units[f][s] = s_unit
+                            units[f][s] = s_unit
 
             for f in xrange(len(view.values()[0])):
                 print 'In _get_completed_and_filtered, getting dm for freq', f
