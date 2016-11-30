@@ -76,6 +76,9 @@ class ViewPairwiseCCARunner:
             self._show_cca_mean_over_periods()
             self._show_cca_mean_over_subperiods()
 
+        if self.show_transpose:
+            self._show_cca_over_freqs()
+
         if self.show_cc:
             self._show_cc()
 
