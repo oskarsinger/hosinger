@@ -1,5 +1,5 @@
 from basic import OneModelOneServerRunner
 
 import bandit
-import multiview
+import wavelets
 import network

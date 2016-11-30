@@ -30,10 +30,13 @@ setup(
         'data.loaders.synthetic',
         'data.loaders.readers',
         'data.servers',
-        'data.servers.action_reward',
+        'data.servers.rl',
         'data.servers.batch',
         'data.servers.minibatch',
         'data.servers.masks',
         'data.servers.gram',
         'runners',
-        'runners.bandit'])
+        'runners.bandit',
+        'runners.wavelets',
+        'runners.network',
+        'runners.distributed'])

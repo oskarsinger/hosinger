@@ -1,6 +1,6 @@
 import click
 
-from runners.multiview import ATRawDataPlotRunner as ATRDPR
+from runners.wavelets import ATRawDataPlotRunner as ATRDPR
 
 @click.command()
 @click.option('--data-path')
