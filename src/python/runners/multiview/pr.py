@@ -97,6 +97,10 @@ class DTCWTPartialReconstructionRunner:
             'pr',
             save,
             self.save_load_dir)
+        self.stat_dir = rmu.init_dir(
+            'stats',
+            show,
+            self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
             show,
@@ -156,18 +160,15 @@ class DTCWTPartialReconstructionRunner:
     def _show(self):
 
         print 'Inside _show, getting stats'
-        averages = self._get_stats()
+        self._compute_stats()
 
-        for (i, view) in enumerate(averages):
-            print 'Inside _show, making plots for view', i
-
-            for (f, freq) in enumerate(view):
-                print 'Inside _show, making plots for frequency', f
-
+        for v in xrange(self.num_views):
+            for f in xrange(self.num_freqs[v]):
+                freq = self._load_stats(v, f)
                 unit_name = 'Symptomatic?' if self.avg else None
                 title = \
                     'View ' + \
-                    self.names[i] + \
+                    self.names[v] + \
                     ' for ' + str(self.subperiod) + ' scnds' + \
                     ' rcnstrctd with dec. lvl' + \
                     ' 2^' + str(f)
@@ -183,32 +184,27 @@ class DTCWTPartialReconstructionRunner:
                     title = 'Complete only ' + \
                         title[0].lower() + title[1:]
 
-                print 'Inside _show, generating plot'
                 ax = plot_lines(
                     freq,
                     'period',
                     'value',
                     title,
                     unit_name=unit_name)
-                print 'Inside _show, plot generated'
 
                 path = os.path.join(
                     self.plot_dir,
                     '_'.join(title.split()) + '.pdf')
-                print 'Inside _show, saving plot'
                 ax.get_figure().savefig(
                     path,
                     format='pdf')
-                print 'Inside _show, clearing figure'
                 sns.plt.clf()
 
-    def _get_stats(self):
+    def _compute_stats(self):
 
         view_stats = [{s[-2:] : [] for s in self.subjects}
                       for i in xrange(self.num_views)]
 
         for (s, periods) in self.prs.items():
-            print 'Inside _get_stats, subject', s
             s = s[-2:]
             sample_views = periods[0][0]
 
@@ -216,32 +212,29 @@ class DTCWTPartialReconstructionRunner:
                 view_stats[v][s] = [None for f in xrange(len(prs))]
 
             for (p, subperiods) in enumerate(periods):
-                print 'Inside _get_stats, period', p
                 for (sp, views) in enumerate(subperiods):
-                    print 'Inside _get_stats, subperiod', sp
                     for (v, prs) in enumerate(views):
-                        print 'Inside _get_stats, view', v
                         for (f, pr) in enumerate(prs):
-                            print 'Inside _get_stats, frequency', f
                             current = view_stats[v][s][f]
 
                             if current is None:
-                                view_stats[v][s][f] = pr
+                                view_stats[v][s][f] = np.copy(pr)
                             else:
                                 view_stats[v][s][f] = np.vstack(
-                                    [current, pr])
+                                    [current, np.copy(pr)])
 
-        return self._get_completed_and_filtered(view_stats)
+                            # A GROSS attempt to free-up space; ugh
+                            prs[f] = None
 
-    def _get_completed_and_filtered(self, view_stats):
+        self._compute_completed_and_filtered(view_stats)
+
+    def _compute_completed_and_filtered(self, view_stats):
 
         get_map = lambda v: [{s : None for s in v.keys()}
                              for i in xrange(len(v.values()[0]))]
-        dms = [get_map(v) for v in view_stats]
         unit_key = 'Symptomatic?' if self.avg else 'unit'
 
         for (i, view) in enumerate(view_stats):
-            print 'Inside _get_completed_and_filtered, view', i
             periods = get_map(view)
             values = get_map(view)
             units = get_map(view)
@@ -249,11 +242,9 @@ class DTCWTPartialReconstructionRunner:
                       for f in xrange(len(view.values()[0]))]
 
             for (s, freqs) in view.items():
-                print 'Inside _get_completed_and_filtered, subject', s
                 s_unit = rmu.get_symptom_status(s) if self.avg else None
 
                 for (f, freq) in enumerate(freqs):
-                    print 'Inside _get_completed_and_filtered, frequency', f
                     max_p = max_ps[f]
                     l_freq = freq.shape[0]
                     padding = np.array(
@@ -290,9 +281,43 @@ class DTCWTPartialReconstructionRunner:
                     p = periods[f][s]
                     v = values[f][s]
                     u = units[f][s]
-                    dms[i][f][s] = (p, v, u)
 
-        return dms
+                    self._save_stats(i, f, s, p, v, u)
+
+    def _load_stats(self, v, f):
+
+        is_v = lambda fn: 'view_' + str(v) in fn
+        is_f = lambda fn: 'frequency_' + str(f) in fn
+        fns = os.listdir(self.stat_dir)
+        vf_fns = [fn for fn in fns
+                  if is_v(fn) and is_f(fn)] 
+        stats = {s[-2:] : None for s in self.subjects}
+
+        for fn in fns:
+            info = fn.split('_')
+            s = info[1]
+            path = os.path.join(self.stat_dir, fn)
+
+            with open(path) as f:
+                loaded = {int(h_fn.split('_')[1]) : a
+                          for (h_fn, a) in np.load(f).items()}
+                stats[s] = (
+                    loaded[0], 
+                    loaded[1], 
+                    loaded[2])
+        
+        return stats
+
+    def _save_stats(self, i, f, s, p, v, u):
+
+        fname = '_'.join([
+            'subject', s,
+            'view', str(i),
+            'frequency', str(f)])
+        path = os.path.join(self.stat_dir, fname)
+
+        with open(path, 'w') as f:
+            np.savez(f, *[p, v, u])
 
     def _load(self):
 
@@ -313,6 +338,9 @@ class DTCWTPartialReconstructionRunner:
                        for i in xrange(len(loaded))]
 
             self.prs[s][p][sp][v] = prs
+
+        self.num_freqs = [len(self.prs.values()[0][0][0][i])
+                          for i in xrange(self.num_views)]
 
     def _save(self, prs, s, v, p, sp):
 
