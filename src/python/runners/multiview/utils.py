@@ -96,9 +96,9 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             y_project,
             verbose=True)
 
-    return np.vstack([
+    return (
         x_weights,
-        y_weights])
+        y_weights)
 
 def get_normed_correlation(X1, X2):
 
