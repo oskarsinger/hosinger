@@ -1,7 +1,7 @@
 import numpy as np
 import optimization.utils as ou
-import QuasinewtonInexactDANE as QIDANE
 
+from optimization.optimizers.distributed import QuasinewtonInexactDANE as QIDANE
 from optimization.stepsize import FixedScheduler as FXS
 
 class AIDE:
