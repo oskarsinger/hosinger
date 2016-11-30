@@ -271,7 +271,7 @@ class ViewPairwiseCCARunner:
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
-                factor = 24.0 * 8.0 / float(tl.shape[0])
+                factor = 24.0 / float(tl.shape[0])
                 data = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl,
@@ -279,7 +279,7 @@ class ViewPairwiseCCARunner:
                 data_maps.get(k[0], k[1])[s_key] = data
 
         for (k, dm) in data_maps.items():
-            x_name = 'time (minutes)'
+            x_name = 'time (days)'
             y_name = 'canonical vector value'
             title = 'View-pairwise canonical vector values' + \
                 ' over frequencies for views ' + \
