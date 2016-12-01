@@ -9,20 +9,27 @@ from random import choice
 class AIDE:
 
     def __init__(self,
+        model,
         servers,
-        get_gradient,
+        tau=0.1,
+        gamma=0.8,
         max_rounds=5,
         dane_rounds=3,
         init_params=None):
 
+        self.model = model
         self.servers = servers
-        self.get_gradient = get_gradient
         self.max_rounds = max_rounds
         self.dane_rounds = dane_rounds
-        self.lam = 10 * np.abs(np.random.randn()) #Figure out how to set this correctly.
+        # TODO: Figure out how to set self.lam (lambda) correctly.
+        self.lam = 10 * np.abs(np.random.randn()) 
         self.tau = tau
         self.q = self.lam / (self.lam + self.tau)
         self.gamma = gamma
+
+        if init_params is None:
+            # TODO: Finish this
+
         self.init_params = init_params
         self.w = None
 

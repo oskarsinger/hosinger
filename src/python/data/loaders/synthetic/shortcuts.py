@@ -2,6 +2,35 @@ from data.loaders.readers import from_num as fn
 from periodic import CosineLoader as CL
 from gaussian import FakePeriodicGaussianLoader as FPGL
 from gaussian import GaussianLoader as GL
+from gaussian import LinearRegressionGaussianLoader as LRGL
+
+def get_LRGL(
+    n, 
+    ps, 
+    ws=None, 
+    noises=None, 
+    noisys=False, 
+    bias=False):
+
+    inner_loaders = [GL(n, p) for p in ps]
+
+    if ws is None:
+        ws = [None] * len(ps)
+
+    if noises is None:
+        noises = [None] * len(ps)
+
+    if not noisys:
+        noisys = [False] * len(ps)
+
+    info = zip(
+        inner_loaders,
+        ws,
+        noises,
+        noisys)
+    
+    return [LRGL(il, w=w, noise=ne, noisy=ny, bias=bias)
+            for (il, w, ne, ny) in info]
 
 def get_FPGL(n, ps, hertzes):
 

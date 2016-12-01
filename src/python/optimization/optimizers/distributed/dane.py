@@ -30,9 +30,7 @@ class QuasinewtonInexactDANE:
             eta_schedulers)
 
         self.nodes = [DANENode(s, self.get_gradient, eta_scheduler=es)
-                      for i in xrange(self.num_nodes)]
-        self.get_node_grad = lambda n, w: n.get_gradient(w)
-        self.get_node_update = lambda n, w, gg: n.get_update(w, gg)
+                      for (s, es) in node_stuff]
 
     def get_parameters(self):
 
@@ -47,33 +45,49 @@ class QuasinewtonInexactDANE:
         w_t = np.copy(self.init_params)
 
         for t in xrange(self.num_rounds):
-            grad_t = self._get_node_avg(
-                self.get_node_grad, [w_t])
-            w_t = self._get_node_avg(
-                self.get_node_update, [w_t, grad_t])
+            local_grads = [n.get_gradient(np.copy(w_t))
+                           for n in self.nodes]
+            grad_t = sum(local_grads) / self.num_nodes
+            updates = [n.get_update(
+                            np.copy(w_t), 
+                            np.copy(grad_t))
+                       for n in self.nodes]
+            w_t = sum(updates) / self.num_nodes
+            """
+            grad_funcs = [_get_grad_func(n, np.copy(w_t))
+                          for n in self.nodes]
+            grad_t = self._get_node_avg(grad_funcs)
+            update_funcs = [_get_update_func(
+                                n, 
+                                np.copy(w_t), 
+                                np.copy(grad_t))
+                            for n in self.nodes]
+            w_t = self._get_node_avg(update_funcs)
+            """
 
         self.w = w_t
 
-    def _get_node_avg(self, func, params):
+    """
+    def _get_node_avg(self, funcs):
 
         pool = Pool(processes=self.num_nodes)
         get_ps = lambda n, ps: [n] + [np.copy(p) for p in ps]
-        results = [pool.apply_async(func, get_ps(n, params))
-                   for n in self.nodes]
+        results = [pool.apply_async(f, ())
+                   for f in funcs]
         things = [r.get() for r in results]
 
         return sum(things) / self.num_nodes
+    """
 
 class DANENode:
 
     def __init__(self,
-        data_server,
+        server,
         get_gradient,
         eta_scheduler=None,
         mu=1):
 
         self.server = server
-        self.get_gradient = get_gradient
         self.mu = mu
         
         if eta_scheduler is None:
@@ -82,6 +96,7 @@ class DANENode:
         self.eta_scheduler = eta_scheduler
         self.qn_server = DAGS(delta=self.mu)
         self.data = self.server.get_data()
+        self.get_gradient = lambda w: get_gradient(self.data, w)
 
     def get_update(self, w, global_grad):
 
@@ -91,6 +106,20 @@ class DANENode:
 
         return self.qn_server.get_qn_transform(search_direction)
 
-    def get_gradient(self, w):
+"""
+def _get_grad_func(n, w):
 
-        return self.get_gradient(self.data, w)
+    def _get_node_grad():
+
+        return n.get_gradient(w)
+
+    return _get_node_grad
+
+def _get_update_func(n, w, gg):
+
+    def _get_node_update():
+
+        return n.get_update(w, gg)
+
+    return _get_node_update
+"""

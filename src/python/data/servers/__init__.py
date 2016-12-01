@@ -1,4 +1,4 @@
-import action_reward
+import rl
 import gram
 import minibatch
 import batch
