@@ -218,10 +218,10 @@ class DTCWTPartialReconstructionRunner:
                             current = view_stats[v][s][f]
 
                             if current is None:
-                                view_stats[v][s][f] = np.copy(pr)
+                                view_stats[v][s][f] = pr
                             else:
                                 view_stats[v][s][f] = np.vstack(
-                                    [current, np.copy(pr)])
+                                    [current, pr])
 
         self._compute_completed_and_filtered(view_stats)
 

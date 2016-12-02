@@ -59,6 +59,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Try completing the CCA over frequency time series like I did for partial reconstructions
 
+* Don't show the element-wise multiplied singular vectors. How to show it then?
+
 * Compare my partial reconstructions to Al's
 
 * Try averaging wavelet correlation (i.e. A matrix for sparse library) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).

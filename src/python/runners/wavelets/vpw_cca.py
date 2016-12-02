@@ -234,34 +234,7 @@ class ViewPairwiseCCARunner:
 
     def _show_cca_over_freqs(self):
 
-        tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ccas.keys()}
-
-        for (s, spud) in self.ccas.items():
-            cca_over_freqs = SPUD(
-                self.num_views, 
-                default=lambda: [None] * self.num_periods[s],
-                no_double=True)
-
-            for (k, subperiods) in spud.items():
-                for (sp, periods) in enumerate(subperiods):
-                    for (p, period) in enumerate(periods):
-                        tls = cca_over_freqs.get(k[0], k[1])
-                        p_cca_over_freqs = period[1]
-
-                        if tls[p] is None:
-                            tls[p] = p_cca_over_freqs
-                        else:
-                            tls[p] = np.vstack(
-                                [tls[p], p_cca_over_freqs])
-
-            for (k, tls) in cca_over_freqs.items():
-                tl = np.vstack(tls)
-                tl = (tl[:,0] * tl[:,1])[:,np.newaxis]
-                cca_over_freqs.insert(k[0], k[1], tl)
-
-            tl_spuds[s] = cca_over_freqs
-
+        tl_spuds = self._get_tl_spuds(1)
         default = lambda: {'Subject ' + s: None for s in self.subjects}
         data_maps = SPUD(
             self.num_views,
@@ -286,49 +259,19 @@ class ViewPairwiseCCARunner:
             title = 'View-pairwise canonical vector values' + \
                 ' over frequencies for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
-            fn = '_'.join(title.split()) + '.pdf'
-            path = os.path.join(self.plot_dir, fn)
             unit_name = 'Symptomatic?' \
                 if self.subject_mean else None
 
-            plot_lines(
-                dm, 
-                x_name, 
-                y_name, 
+            self._line_plot_save_clear(
+                dm,
+                x_name,
+                y_name,
                 title,
-                unit_name=unit_name).get_figure().savefig(
-                path, format='pdf')
-            sns.plt.clf()
+                unit_name=unit_name)
 
     def _show_cc(self):
 
-        tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ccas.keys()}
-
-        for (s, spud) in self.ccas.items():
-            cc_over_time = SPUD(
-                self.num_views, 
-                default=lambda: [None] * self.num_periods[s],
-                no_double=True)
-
-            for (k, subperiods) in spud.items():
-                for (sp, periods) in enumerate(subperiods):
-                    for (p, period) in enumerate(periods):
-                        tls = cc_over_time.get(k[0], k[1])
-                        p_cc_over_time = period[2]
-
-                        if tls[p] is None:
-                            tls[p] = p_cc_over_time
-                        else:
-                            tls[p] = np.vstack(
-                                [tls[p], p_cc_over_time])
-
-            for (k, tls) in cc_over_time.items():
-                tl = np.vstack(tls)
-                cc_over_time.insert(k[0], k[1], tl)
-
-            tl_spuds[s] = cc_over_time
-
+        tl_spuds = self._get_tl_spuds(2)
         default = lambda: {'Subject ' + s: None for s in self.subjects}
         data_maps = SPUD(
             self.num_views,
@@ -350,16 +293,62 @@ class ViewPairwiseCCARunner:
             title = 'View-pairwise canonical correlation' + \
                 ' over time for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
-            fn = '_'.join(title.split()) + '.pdf'
-            path = os.path.join(self.plot_dir, fn)
 
-            plot_lines(
-                dm, 
-                x_name, 
-                y_name, 
-                title).get_figure().savefig(
-                path, format='pdf')
-            sns.plt.clf()
+            self._line_plot_save_clear(
+                dm,
+                x_name,
+                y_name,
+                title)
+
+    def _get_tl_spuds(self, index):
+
+        tl_spuds = {s: SPUD(self.num_views, no_double=True)
+                    for s in self.ccas.keys()}
+
+        for (s, spud) in self.ccas.items():
+            cc_over_time = SPUD(
+                self.num_views, 
+                default=lambda: [None] * self.num_periods[s],
+                no_double=True)
+
+            for (k, subperiods) in spud.items():
+                for (sp, periods) in enumerate(subperiods):
+                    for (p, period) in enumerate(periods):
+                        tls = cc_over_time.get(k[0], k[1])
+                        p_over_time = period[index]
+
+                        if tls[p] is None:
+                            tls[p] = p_over_time
+                        else:
+                            tls[p] = np.vstack(
+                                [tls[p], p_over_time])
+
+            for (k, tls) in cc_over_time.items():
+                tl = np.vstack(tls)
+                cc_over_time.insert(k[0], k[1], tl)
+
+            tl_spuds[s] = cc_over_time
+
+        return tl_spuds
+
+    def _line_plot_save_clear(self,
+        dm,
+        x_name,
+        y_name,
+        title,
+        unit_name=None):
+
+        fn = '_'.join(title.split()) + '.pdf'
+        path = os.path.join(self.plot_dir, fn)
+
+        plot_lines(
+            dm, 
+            x_name, 
+            y_name, 
+            title,
+            unit_name=unit_name).get_figure().savefig(
+            path, format='pdf')
+        sns.plt.clf()
 
     def _show_cca_mean_over_subperiods(self):
 
@@ -428,7 +417,7 @@ class ViewPairwiseCCARunner:
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s
 
-                    self._plot_save_clear(
+                    self._matrix_plot_save_clear(
                         timeline,
                         x_labels,
                         y_labels,
@@ -443,7 +432,7 @@ class ViewPairwiseCCARunner:
                     ' cca over days for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]]
 
-                self._plot_save_clear(
+                self._matrix_plot_save_clear(
                     avg,
                     x_labels,
                     y_labels,
@@ -477,7 +466,7 @@ class ViewPairwiseCCARunner:
                         ' of subject ' + s + ' and day ' + \
                         rmu.get_2_digit(p)
 
-                    self._plot_save_clear(
+                    self._matrix_plot_save_clear(
                         timeline,
                         x_labels,
                         y_labels,
@@ -541,7 +530,7 @@ class ViewPairwiseCCARunner:
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s
 
-                    self._plot_save_clear(
+                    self._matrix_plot_save_clear(
                         timeline,
                         x_labels,
                         y_labels,
@@ -556,7 +545,7 @@ class ViewPairwiseCCARunner:
                     ' cca over hours for views ' + \
                     self.names[k[0]] + ' ' + self.names[k[1]]
 
-                self._plot_save_clear(
+                self._matrix_plot_save_clear(
                     avg,
                     x_labels,
                     y_labels,
@@ -576,14 +565,14 @@ class ViewPairwiseCCARunner:
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s + ' at hour ' + str(sp)
 
-                    self._plot_save_clear(
+                    self._matrix_plot_save_clear(
                         timeline,
                         x_labels,
                         y_labels,
                         title,
                         'day')
 
-    def _plot_save_clear(self, 
+    def _matrix_plot_save_clear(self, 
         timeline, 
         x_labels, 
         y_labels, 
