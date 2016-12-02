@@ -57,7 +57,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
 
-* Try completing the CCA over frequency time series like I did for partial reconstructions
+* Try completing the CCA over frequency time series like I did for partial reconstructions. For this, I need the sampling factor for the current subsampling rate, which will be the lowest one maintained for either of the wavelet matrices, I think? Whichever one corresponds to cca_dim.
 
 * Don't show the element-wise multiplied singular vectors. How to show it then? Show both left and right vectors on the same plot or different ones? Side by side?
 
