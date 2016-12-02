@@ -59,7 +59,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Try completing the CCA over frequency time series like I did for partial reconstructions
 
-* Don't show the element-wise multiplied singular vectors. How to show it then?
+* Don't show the element-wise multiplied singular vectors. How to show it then? Show both left and right vectors on the same plot or different ones? Side by side?
 
 * Compare my partial reconstructions to Al's
 
