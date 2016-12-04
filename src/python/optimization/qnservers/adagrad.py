@@ -4,6 +4,7 @@ import optimization.utils as ou
 from linal.utils import get_safe_power as get_sp
 from drrobert.arithmetic import get_running_avg
 
+# TODO: put in soft thresholding option for L1 penalt
 class DiagonalAdaGradServer:
 
     def __init__(self,
@@ -29,15 +30,15 @@ class DiagonalAdaGradServer:
 
             self.Q = get_sp(avg, 0.5)
 
-        return get_sp(self.Q + delta, -1) * search_direction
+        return get_sp(self.Q + self.delta, -1) * search_direction
 
     def get_qn_matrix(self):
 
-        return np.diag(self.Q + delta)
+        return np.diag(self.Q + self.delta)
 
     def get_qn_inverse(self):
 
-        return np.diag(get_sp(self.Q + delta, -1))
+        return np.diag(get_sp(self.Q + self.delta, -1))
 
     def get_lambda(self):
 

@@ -295,7 +295,7 @@ class LinearRegressionGaussianLoader:
 
         if bias:
             self.X = np.hstack(
-                [self.X, np.ones((self.n, 1))]
+                [self.X, np.ones((self.n, 1))])
             self.p += 1
 
         if w is None:

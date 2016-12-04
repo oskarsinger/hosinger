@@ -26,12 +26,9 @@ class AIDE:
         self.tau = tau
         self.q = self.lam / (self.lam + self.tau)
         self.gamma = gamma
-
-        if init_params is None:
-            # TODO: Finish this
-
         self.init_params = init_params
         self.w = None
+        self.errors = []
 
     def get_parameters(self):
 
@@ -52,6 +49,8 @@ class AIDE:
             dane_t = QIDANE(
                 self.servers, 
                 get_gradient,
+                self.model.get_error,
+                num_rounds=self.dane_rounds,
                 init_params=w_t)
 
             dane_t.compute_parameters()
@@ -63,6 +62,9 @@ class AIDE:
                 (zeta_prev**2 - zeta_t)
             y_t = w_t + beta_t * (w_t - w_prev)
             zeta_prev = zeta_t
+            
+            self.errors.append(
+                dane_t.errors[-1])
 
         self.w = w_t
 
@@ -71,7 +73,9 @@ class AIDE:
         def get_gradient(data, w):
 
             aux_term = self.tau * (w - y_t)
-            original = self.get_gradient(data, w)
+            original = self.model.get_gradient(data, w)
+            print 'Aux term norm:', np.linalg.norm(aux_term)
+            print 'Original term norm:', np.linalg.norm(original)
 
             return original + aux_term
 

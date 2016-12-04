@@ -30,5 +30,7 @@ def run_it_all_day_bb(
 
     runner.run()
 
+    print runner.errors
+
 if __name__=='__main__':
     run_it_all_day_bb()
