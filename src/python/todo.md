@@ -26,6 +26,8 @@
 ##Optimization
 * Consider replacing the step of distributing the global gradient approximation with some other form of information propagation across the network. Maybe try using the multiprocessing library's tools for sharing state across threads/processes? Save this guy for later. For now just collect the process results.
 
+* Try something harder than linear least squares regression. Also try LLR with an easier SNR to see if the error goes lower.
+
 * Implementation steps for online FSVRG:
     2. Infrastructure for testing distributed algs
         * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
