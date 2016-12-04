@@ -3,6 +3,7 @@ import numpy as np
 from optimization.optimizers.distributed import AIDE
 from data.loaders.synthetic.shortcuts import get_LRGL
 from data.servers.batch import BatchServer as BS
+from models import GaussianLinearRegression as GLR
 
 class GaussianLinearRegressionAIDERunner:
 
@@ -37,7 +38,9 @@ class GaussianLinearRegressionAIDERunner:
             self.n, 
             ps,
             ws = ws)
+
         self.servers = [BS(l) for l in loaders]
+        self.model = GLR(self.p) 
         self.w_hat = None
 
     def get_parameters(self):
@@ -47,8 +50,8 @@ class GaussianLinearRegressionAIDERunner:
     def run(self):
         
         aide = AIDE(
+            self.model,
             self.servers,
-            self.get_gradient,
             max_rounds=self.max_rounds,
             tau=self.tau,
             gamma=self.gamma,
@@ -58,15 +61,4 @@ class GaussianLinearRegressionAIDERunner:
         aide.compute_parameters()
 
         self.w_hat = aide.get_parameters()
-
-        print 'Error', np.linalg.norm(self.w_hat - self.w)
-
-    def get_gradient(self, data, params):
-
-        (A, b) = data
-        (n, p) = A.shape
-
-        if params is None:
-            params = np.random.randn(p, 1)
-
-        return np.dot(A, params) - b
+        self.errors = aide.errors

@@ -26,13 +26,9 @@
 ##Optimization
 * Consider replacing the step of distributing the global gradient approximation with some other form of information propagation across the network. Maybe try using the multiprocessing library's tools for sharing state across threads/processes? Save this guy for later. For now just collect the process results.
 
-* Write up model to represent linear regression. Include expression for gradient, number of parameters, etc. How will I get number of parameters without seeing the data?
-
 * Implementation steps for online FSVRG:
-    1. Original SVRG
     2. Infrastructure for testing distributed algs
         * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
-    3. Distributed SVRG, AIDE, DANE, etc.
     4. Original FSVRG, hopefully fits in testing framework from item 2.
     5. More online-ish FSVRG
 
@@ -50,6 +46,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
+
+* Maybe switch all of my intermediate serialization to h5py. Will probably be cleaner and maybe more space-efficient.
 
 ##Experiments
 * T-tests and p-values for spike in temperature vs reported symptoms

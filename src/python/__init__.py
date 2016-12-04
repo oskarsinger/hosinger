@@ -5,3 +5,4 @@ import linal
 import data
 import wavelets
 import runners
+import models
