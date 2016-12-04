@@ -308,7 +308,7 @@ class LinearRegressionGaussianLoader:
         if self.noise is not None:
             self.y += self.noise
         elif self.noisy:
-            self.noise = np.random.randn(self.p, 1)
+            self.noise = np.random.randn(self.n, 1)
             self.y += self.noise
 
     def get_data(self):

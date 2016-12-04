@@ -7,9 +7,11 @@ from runners.distributed.aide import GaussianLinearRegressionAIDERunner as GLRAR
 @click.option('--n', default=1000)
 @click.option('--p', default=500)
 @click.option('--max-rounds', default=5)
-@click.option('--dane-rounds', default=3)
+@click.option('--dane-rounds', default=50)
 @click.option('--tau', default=0.1)
 @click.option('--gamma', default=0.8)
+@click.option('--mu', default=100)
+@click.option('--noisy', default=False)
 def run_it_all_day_bb(
     num_nodes,
     n,
@@ -17,7 +19,9 @@ def run_it_all_day_bb(
     max_rounds,
     dane_rounds,
     tau,
-    gamma):
+    gamma,
+    mu,
+    noisy):
 
     runner = GLRAR(
         num_nodes,
@@ -26,7 +30,9 @@ def run_it_all_day_bb(
         max_rounds=max_rounds,
         dane_rounds=dane_rounds,
         tau=tau,
-        gamma=gamma)
+        gamma=gamma,
+        mu=mu,
+        noisy=noisy)
 
     runner.run()
 

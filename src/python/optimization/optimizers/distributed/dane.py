@@ -12,7 +12,8 @@ class QuasinewtonInexactDANE:
         servers,
         get_gradient,
         get_error,
-        num_rounds=5,
+        num_rounds=50,
+        mu=100,
         eta_schedulers=None,
         init_params=None):
 
@@ -21,6 +22,7 @@ class QuasinewtonInexactDANE:
         self.get_gradient = get_gradient
         self.get_error = get_error
         self.num_rounds = num_rounds
+        self.mu = mu
         self.init_params = init_params
         self.w = None
 
@@ -35,7 +37,8 @@ class QuasinewtonInexactDANE:
         self.nodes = [DANENode(s, 
                         self.get_gradient, 
                         self.get_error,
-                        eta_scheduler=es)
+                        eta_scheduler=es,
+                        mu=self.mu)
                       for (s, es) in node_stuff]
         self.errors = []
 
@@ -73,7 +76,7 @@ class DANENode:
         get_gradient,
         get_error,
         eta_scheduler=None,
-        mu=1):
+        mu=100):
 
         self.server = server
         self.mu = mu
