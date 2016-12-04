@@ -12,10 +12,12 @@ class GaussianLinearRegressionAIDERunner:
         n,
         p,
         max_rounds=5,
-        dane_rounds=3,
+        dane_rounds=50,
         tau=0.1,
         gamma=0.8,
-        init_params=None):
+        mu=100,
+        init_params=None,
+        noisy=False):
 
         self.num_nodes = num_nodes
         self.n = n
@@ -24,6 +26,8 @@ class GaussianLinearRegressionAIDERunner:
         self.dane_rounds = dane_rounds
         self.tau = tau
         self.gamma = gamma
+        self.mu = mu
+        self.noisy = noisy
 
         if init_params is None:
             init_params = np.random.randn(self.p, 1)
@@ -37,7 +41,8 @@ class GaussianLinearRegressionAIDERunner:
         loaders = get_LRGL(
             self.n, 
             ps,
-            ws = ws)
+            ws = ws,
+            noisys=[self.noisy] * self.num_nodes)
 
         self.servers = [BS(l) for l in loaders]
         self.model = GLR(self.p) 
@@ -55,6 +60,7 @@ class GaussianLinearRegressionAIDERunner:
             max_rounds=self.max_rounds,
             tau=self.tau,
             gamma=self.gamma,
+            mu=self.mu,
             dane_rounds=self.dane_rounds,
             init_params=self.init_params)
 

@@ -13,8 +13,9 @@ class AIDE:
         servers,
         tau=0.1,
         gamma=0.8,
+        mu=100,
         max_rounds=5,
-        dane_rounds=3,
+        dane_rounds=50,
         init_params=None):
 
         self.model = model
@@ -26,6 +27,7 @@ class AIDE:
         self.tau = tau
         self.q = self.lam / (self.lam + self.tau)
         self.gamma = gamma
+        self.mu = mu
         self.init_params = init_params
         self.w = None
         self.errors = []
@@ -51,7 +53,8 @@ class AIDE:
                 get_gradient,
                 self.model.get_error,
                 num_rounds=self.dane_rounds,
-                init_params=w_t)
+                init_params=w_t,
+                mu=self.mu)
 
             dane_t.compute_parameters()
 
@@ -74,8 +77,6 @@ class AIDE:
 
             aux_term = self.tau * (w - y_t)
             original = self.model.get_gradient(data, w)
-            print 'Aux term norm:', np.linalg.norm(aux_term)
-            print 'Original term norm:', np.linalg.norm(original)
 
             return original + aux_term
 
