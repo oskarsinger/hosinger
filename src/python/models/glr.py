@@ -22,6 +22,10 @@ class GaussianLinearRegression:
 
         return np.linalg.norm(residuals)
 
+    def get_projection(self, data, params):
+
+        return params
+
     def get_parameter_shape(self):
 
         return (self.p, 1)
