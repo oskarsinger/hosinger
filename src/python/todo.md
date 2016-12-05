@@ -10,7 +10,7 @@
 ##Infrastructure
 * Data loader shortcuts, specifically randomly generated ones. Should I try to fit this into the same bandit arm servers I was using earlier?
 
-* Click tool for running the runner
+* Figure out how to nicely integrate data loaders and servers in an RL context.
 
 ##Learning
 * Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper.
