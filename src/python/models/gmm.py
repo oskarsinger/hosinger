@@ -3,6 +3,7 @@ import numpy as np
 from optimization.optimizers import GradientOptimizer as GO
 from optimization.stepsize import FixedScheduler as FXS
 
+# TODO: figure out how to arrange baseline_mu and baseline_sigma so burn-in period can be used
 class RademacherGaussianMixtureModel:
 
     def __init__(self, 
