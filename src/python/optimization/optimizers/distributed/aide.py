@@ -52,6 +52,7 @@ class AIDE:
                 self.servers, 
                 get_gradient,
                 self.model.get_error,
+                self.model.get_projection,
                 num_rounds=self.dane_rounds,
                 init_params=w_t,
                 mu=self.mu)

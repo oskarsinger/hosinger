@@ -12,6 +12,7 @@ class QuasinewtonInexactDANE:
         servers,
         get_gradient,
         get_error,
+        get_projection,
         num_rounds=50,
         mu=100,
         eta_schedulers=None,
@@ -21,6 +22,7 @@ class QuasinewtonInexactDANE:
         self.num_nodes = len(self.servers)
         self.get_gradient = get_gradient
         self.get_error = get_error
+        self.get_projection = get_projection
         self.num_rounds = num_rounds
         self.mu = mu
         self.init_params = init_params
@@ -63,7 +65,8 @@ class QuasinewtonInexactDANE:
                             np.copy(grad_t))
                        for n in self.nodes]
             (ws, errors) = unzip(updates)
-            w_t = sum(ws) / self.num_nodes
+            w_t = self.get_projection(
+                sum(ws) / self.num_nodes)
 
             self.errors.append(sum(errors))
 
