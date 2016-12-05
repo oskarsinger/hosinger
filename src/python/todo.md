@@ -13,8 +13,6 @@
 * Click tool for running the runner
 
 ##Learning
-* Should I start with a global model at each node? Yes. So I need to tell each learner about network structure at the beginning.
-
 * Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper.
     
 ##Network
@@ -26,7 +24,11 @@
 ##Optimization
 * Consider replacing the step of distributing the global gradient approximation with some other form of information propagation across the network. Maybe try using the multiprocessing library's tools for sharing state across threads/processes? Save this guy for later. For now just collect the process results.
 
-* Try something harder than linear least squares regression. Also try LLR with an easier SNR to see if the error goes lower.
+* Add an option for a projection step in the AIDE code.
+
+* Try something harder than linear least squares regression (maybe especially things with projection steps?).
+    * LLR with an easier SNR to see if the error goes lower
+    * GMM by doing gradient descent in natural parameter space. For sure need to add the projection step for this.
 
 * Implementation steps for online FSVRG:
     2. Infrastructure for testing distributed algs

@@ -21,7 +21,8 @@ class GaussianLinearRegressionAIDERunner:
 
         self.num_nodes = num_nodes
         self.n = n
-        self.p = p
+        # Add 1 for bias term
+        self.p = p + 1
         self.max_rounds = max_rounds
         self.dane_rounds = dane_rounds
         self.tau = tau
@@ -35,14 +36,15 @@ class GaussianLinearRegressionAIDERunner:
         self.init_params = init_params
 
         self.w = np.random.randn(self.p, 1)
-        ps = [self.p] * self.num_nodes
+        ps = [p] * self.num_nodes
         ws = [np.copy(self.w) 
               for i in xrange(self.num_nodes)]
         loaders = get_LRGL(
             self.n, 
             ps,
             ws = ws,
-            noisys=[self.noisy] * self.num_nodes)
+            noisys=[self.noisy] * self.num_nodes,
+            bias=True)
 
         self.servers = [BS(l) for l in loaders]
         self.model = GLR(self.p) 
