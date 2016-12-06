@@ -1,6 +1,8 @@
 import h5py
 import os
 
+import drrobert.network as drn
+
 from simple import CosineLoader as CL
 from simple import FakePeriodicGaussianLoader as FPGL
 from simple import GaussianLoader as GL
@@ -11,7 +13,18 @@ from readers import from_num as fn
 from at import AlTestLoader as ATL
 from rl import ExposureShiftedGaussianWithBaselineEffectLoader as ESGWBEL
 
-def get_er_ESGWBEL():
+def get_er_ESGWBEL(
+    num_nodes,
+    n,
+    mus,
+    sigmas,
+    graph_p=0.6,
+    rad_p=0.5,
+    baseline_mus=None,
+    baseline_sigmas=None):
+
+    network = drn.get_erdos_renyi(num_nodes, p)
+    adj_lists = drn.get_adj_lists(network)
 
     print 'Poop'
 

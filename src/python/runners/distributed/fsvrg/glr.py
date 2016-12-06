@@ -44,6 +44,9 @@ class GaussianLinearRegressionSVRGRunner:
         self.model = LR(self.p) 
         self.w_hat = None
 
+        self._set_A_server()
+        self._set_S_servers()
+
     def get_parameters(self):
 
         if self.w_hat is None:
@@ -57,6 +60,8 @@ class GaussianLinearRegressionSVRGRunner:
         fsvrg = FSVRG(
             self.model,
             self.servers,
+            self.A_server,
+            self.S_servers,
             max_rounds=self.max_rounds,
             init_params=self.init_params,
             h=self.h)
@@ -65,3 +70,11 @@ class GaussianLinearRegressionSVRGRunner:
 
         self.w_hat = fsvrg.get_parameters()
         self.errors = fsvrg.errors
+
+    def _set_A_server(self):
+
+        print 'Poop'
+
+    def _set_S_servers(self):
+
+        print 'Poop'

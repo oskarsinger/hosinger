@@ -12,7 +12,7 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
         neighbors,
         id_number,
         baseline_mu=0,
-        baseline_sigma=0):
+        baseline_sigma=1):
 
         self.n = n
         self.sign = sign
