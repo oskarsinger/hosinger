@@ -1,7 +1,6 @@
 import numpy as np
 
 from drrobert.random import normal
-from math import sqrt
 
 class ExposureShiftedGaussianWithBaselineEffectLoader:
 
@@ -11,6 +10,7 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
         mu,
         sigma,
         neighbors,
+        id_number,
         baseline_mu=0,
         baseline_sigma=0):
 
@@ -19,25 +19,42 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
         self.mu = mu
         self.sigma = sigma
         self.neighbors = neighbors
+        self.id_number = id_number
         self.baseline_mu = baseline_mu
         self.baseline_sigma = baseline_sigma
         self.action = None
+        self.a_history = []
+        self.neighbor_actions = {n.id_number : False
+                                 for n in self.neighbors}
+        self.num_rounds = 0
 
     def set_action(self, action):
 
-        self.action = action 
+        self.a_history.append(action)
+
+        for n in self.neighbors:
+            n.set_neighbor_action(
+                action, self.id_number)
+
+    def set_neighbor_action(self, action, neighbor_id):
+
+        self.neighbor_actions[neighbor_id] = action
 
     def get_data(self):
 
-        exposure = self.sign * sum(
-            [1 if n.action else 0 
-             for n in self.neighbors])**(0.5)
+        self.num_rounds = 0
+
+        n_actions = self.neighbor_actions.values()
+        neighbor_treatment_count = self.sign * sum(
+            [float(na) for na in n_actions])**(0.5)
+        ratio = neighbor_treatment_count / len(self.neighbors)
+        exposure = ratio**(0.5)
         baseline = normal(
             loc=self.baseline_mu,
             scale=self.baseline_sigma)
         treatment = 0
 
-        if self.action:
+        if self.a_history[-1]:
             treatment = normal(
                 loc=self.mu
                 scale=self.sigma)
@@ -46,22 +63,23 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
 
     def cols(self):
 
-        print 'Poop'
+        return 1
 
     def rows(self):
 
-        print 'Poop'
+        return self.num_rounds
 
     def name(self):
 
         return 'RademacherMixtureModelGaussianLoader'
-    
+
+# TODO: This is quite abstract. Maybe don't need it.
 class VertexWithExposureLoader:
 
     def __init__(self,
         v,
         gamma,
-        phi=sqrt,
+        phi=lambda x: x**(0.5),
         F=np.random.normal,
         G=np.random.normal,
         theta_F=None,
@@ -87,6 +105,7 @@ class VertexWithExposureLoader:
         self.action = None
         self.num_rounds = 0
 
+    # TODO: figure out why I needed this; for dynamic network structure?
     def set_neighbors(self, neighbors):
 
         self.neighbors = neighbors
