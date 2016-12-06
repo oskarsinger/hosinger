@@ -22,7 +22,9 @@
 * Need to make visualization to assess convergence of the algorithm on the local parameters. Should I also be assessing convergence on global model, or does that matter? Make that a later step? Maybe I should show the max error over all nodes for each coordinate.
 
 ##Optimization
-* Consider replacing the step of distributing the global gradient approximation with some other form of information propagation across the network. Maybe try using the multiprocessing library's tools for sharing state across threads/processes? Save this guy for later. For now just collect the process results.
+* Replace the step of distributing the global gradient approximation with some other form of information propagation across the network. Maybe try using the multiprocessing library's tools for sharing state across threads/processes? Save this guy for later. For now just collect the process results.
+
+* Look at the plots produced in the AIDE, SVRG, and Federated papers and reproduce them for your own experiments.
 
 * Add an option for a projection step in the AIDE code.
 

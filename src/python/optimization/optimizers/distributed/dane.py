@@ -36,12 +36,13 @@ class QuasinewtonInexactDANE:
             servers,
             eta_schedulers)
 
-        self.nodes = [DANENode(s, 
+        self.nodes = [DANENode(
+                        ds, 
                         self.get_gradient, 
                         self.get_error,
                         eta_scheduler=es,
                         mu=self.mu)
-                      for (s, es) in node_stuff]
+                      for (ds, es) in node_stuff]
         self.errors = []
 
     def get_parameters(self):
@@ -49,8 +50,8 @@ class QuasinewtonInexactDANE:
         if self.w is None:
             raise Exception(
                 'Parameters have not been computed.')
-        else:
-            return np.copy(self.w)
+        
+        return np.copy(self.w)
 
     def compute_parameters(self):
 
@@ -96,7 +97,8 @@ class DANENode:
     def get_update(self, global_w, global_grad):
 
         eta = self.eta_scheduler.get_stepsize()
-        search_direction = self.qn_server.get_qn_transform(global_grad)
+        search_direction = self.qn_server.get_qn_transform(
+            global_grad)
         new_w = global_w - eta * search_direction
         error = self.get_error(new_w)
 
