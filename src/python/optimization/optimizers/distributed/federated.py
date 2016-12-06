@@ -1,5 +1,7 @@
 import numpy as np
 
+from drrobert.misc import unzip
+
 # TODO: consider using scipy sparse LA stuff
 # REMEMBER: A and S servers should be fed inverse of A and S
 class FSVRG:

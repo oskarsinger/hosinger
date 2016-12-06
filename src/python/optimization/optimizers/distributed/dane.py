@@ -1,10 +1,8 @@
 import numpy as np
-import optimization.utils as ou
 
 from optimization.stepsize import FixedScheduler as FXS
 from optimization.qnservers import DiagonalAdaGradServer as DAGS
 from drrobert.misc import unzip
-from multiprocessing import Pool
 
 class QuasinewtonInexactDANE:
 
