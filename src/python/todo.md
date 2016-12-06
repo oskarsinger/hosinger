@@ -33,6 +33,10 @@
 * Implementation steps for online FSVRG:
     2. Infrastructure for testing distributed algs
         * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
+        * Need data loaders and servers that simulate distributed data output. 
+            * The action is input, so its effectively deterministic from the perspective of the loader. The loader needs to condition on the action to give feedback (but not necessarily context) so it needs to see the action. 
+            * Maybe should have separate loaders for context/state and feedback depending on the independence assumptions.
+        * Need runners and CL tools
     4. Original FSVRG, hopefully fits in testing framework from item 2.
     5. More online-ish FSVRG
 

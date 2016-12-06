@@ -1,8 +1,58 @@
-from data.loaders import AbstractDataLoader
-
 import numpy as np
 
-class CosineLoader(AbstractDataLoader):
+from gaussian import GaussianLoader
+
+class FakePeriodicGaussianLoader:
+
+    def __init__(self, 
+        n, p, hertz,
+        lazy=True,
+        batch_size=None, 
+        k=None, 
+        mean=None):
+
+        self.hertz = hertz
+        self.loader = GaussianLoader(
+            n,
+            p, 
+            lazy=lazy, 
+            batch_size=batch_size, 
+            k=k, 
+            mean=None)
+
+    def get_data(self):
+
+        return self.loader.get_data()
+
+    def name(self):
+
+        return 'FakePeriodicGaussianLoader'
+
+    def get_status(self):
+
+        info = self.loader.get_status()
+
+        info['hertz'] = self.hertz
+
+        return info
+
+    def finished(self):
+
+        return self.loader.finished()
+
+    def refresh(self):
+
+        self.loader.refresh()
+
+    def cols(self):
+        
+        return self.loader.cols()
+
+    def rows(self):
+        
+        return self.loader.rows()
+
+class CosineLoader:
 
     def __init__(self,
         p,
