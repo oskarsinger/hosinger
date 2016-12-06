@@ -7,21 +7,20 @@ from drrobert.misc import unzip
 class FSVRG:
 
     def __init__(self,
+        model,
         servers,
-        get_gradient,
-        get_error,
-        get_projection,
         A_server,
         S_servers,
-        num_rounds=10,
+        max_rounds=10,
         h=0.01,
         init_params=None):
 
+        self.model = model
         self.servers = servers
         self.num_nodes = len(self.servers)
-        self.get_gradient = get_gradient
-        self.get_error = get_error
-        self.get_projection = get_projection
+        self.get_gradient = self.model.get_gradient
+        self.get_error = self.model.get_error
+        self.get_projection = self.model.get_projection
         self.A_server = A_server
         self.S_servers = S_servers
         self.max_rounds = max_rounds
@@ -68,7 +67,8 @@ class FSVRG:
                        for n in self.nodes]
             (ws, errors) = unzip(updates)
             agg = self._get_aggregate_grad(ws)
-            w_t = w_t + agg
+            # TODO: Make sure this is a good place to project
+            w_t = self.get_projection(w_t + agg)
 
         self.w = w_t
 
