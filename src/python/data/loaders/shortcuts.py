@@ -9,6 +9,11 @@ from e4 import FixedRateLoader as FRL
 from e4 import IBILoader as IBI
 from readers import from_num as fn
 from at import AlTestLoader as ATL
+from rl import ExposureShiftedGaussianWithBaselineEffectLoader as ESGWBEL
+
+def get_er_ESGWBEL():
+
+    print 'Poop'
 
 def get_at_loaders(data_path, subject=str(1)):
 

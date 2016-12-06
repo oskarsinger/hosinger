@@ -4,7 +4,7 @@ import optimization.utils as ou
 from linal.utils import get_safe_power as get_sp
 from drrobert.arithmetic import get_running_avg
 
-# TODO: put in soft thresholding option for L1 penalt
+# TODO: put in soft thresholding option for L1 penalty
 class DiagonalAdaGradServer:
 
     def __init__(self,
