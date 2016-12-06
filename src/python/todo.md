@@ -26,20 +26,12 @@
 
 * Look at the plots produced in the AIDE, SVRG, and Federated papers and reproduce them for your own experiments.
 
-* Add an option for a projection step in the AIDE code.
-
-* Try something harder than linear least squares regression (maybe especially things with projection steps?).
-    * LLR with an easier SNR to see if the error goes lower
-    * GMM by doing gradient descent in natural parameter space. For sure need to add the projection step for this.
+* Produce the A and S servers for linear regression with FSVRG. Make sure to account for the global model vs the local ones in your creation of the LR object and in the way the gradient updates are done.
 
 * Implementation steps for online FSVRG:
     2. Infrastructure for testing distributed algs
         * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
-        * Need data loaders and servers that simulate distributed data output. 
-            * The action is input, so its effectively deterministic from the perspective of the loader. The loader needs to condition on the action to give feedback (but not necessarily context) so it needs to see the action. 
-            * Maybe should have separate loaders for context/state and feedback depending on the independence assumptions.
-        * Need runners and CL tools
-    4. Original FSVRG, hopefully fits in testing framework from item 2.
+        * Maybe should have separate loaders for context/state and feedback depending on the independence assumptions.
     5. More online-ish FSVRG
 
 ###Particle MCMC
