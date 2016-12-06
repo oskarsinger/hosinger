@@ -63,6 +63,10 @@ class RademacherGaussianMixtureModel:
         self.mus = mus - self.baseline_mu
         self.sigmas = sigmas - self.baseline_sigma
 
+    def get_projection(self, data, w):
+
+        return w
+
     def _get_densities(self, data):
 
         numer = - np.power(self.mus - data, 2)

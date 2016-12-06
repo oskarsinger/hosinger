@@ -1,1 +1,1 @@
-from gaussian import GaussianLinearRegressionAIDERunner
+from glr import GaussianLinearRegressionAIDERunner

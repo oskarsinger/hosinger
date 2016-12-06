@@ -1,1 +1,1 @@
-from glr import GaussianLinearRegression
+from lr import LinearRegression

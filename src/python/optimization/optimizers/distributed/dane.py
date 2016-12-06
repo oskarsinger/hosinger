@@ -64,6 +64,7 @@ class QuasinewtonInexactDANE:
                             np.copy(grad_t))
                        for n in self.nodes]
             (ws, errors) = unzip(updates)
+            # TODO: Make sure this is a good place to project
             w_t = self.get_projection(
                 sum(ws) / self.num_nodes)
 

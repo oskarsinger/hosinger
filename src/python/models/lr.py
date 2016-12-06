@@ -1,6 +1,6 @@
 import numpy as np
 
-class GaussianLinearRegression:
+class LinearRegression:
 
     def __init__(self, p):
 
