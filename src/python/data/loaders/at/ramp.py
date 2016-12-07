@@ -5,7 +5,57 @@ from math import floor, ceil
 class AlTestRampLoader:
 
     def __init__(self,
-        freq=1.0/60,
+        TS,
+        subject,
+        label,
+        hertz=1.0/60,
+        period=3600*24,
+        num_periods=8):
+
+        self.TS = TS
+        self.subject = subject
+        self.label = label
+        self.hertz = hertz
+        self.period = period
+        self.num_periods = num_periods
+
+    def get_data(self):
+
+        return self.TS
+
+    def finished(self):
+
+        print 'Poop'
+
+    def name(self):
+
+        return 'AlTestRampLoader' + self.label
+
+    def rows(self):
+
+        return self.TS.shape[0]
+
+    def cols(self):
+
+        return 1
+
+    def refresh(self):
+
+        print 'Poop'
+
+    def get_status(self):
+
+        return {
+            'subject': self.subject,
+            'label': self.label,
+            'hertz': self.hertz,
+            'period': self.period,
+            'num_periods': self.num_periods}
+
+class AlTestRampGenerator:
+
+    def __init__(self,
+        hertz=1.0/60,
         period=3600*24,
         num_periods=8,
         prop_jitter=0.0,
@@ -15,7 +65,7 @@ class AlTestRampLoader:
         s1=6, s2=6,
         random_scaling=True):
 
-        self.freq = freq
+        self.hertz = hertz
         self.period = period
         self.num_periods = num_periods
         self.prop_jitter = prop_jitter
@@ -28,7 +78,7 @@ class AlTestRampLoader:
         self.s2 = s2
         self.random_scaling = random_scaling
 
-        self.T = int(floor(self.freq * self.period))
+        self.T = int(floor(self.hertz * self.period))
         self.num_points = self.T * self.num_periods
 
         rand_offsets = np.around(

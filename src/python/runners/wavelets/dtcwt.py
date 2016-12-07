@@ -2,9 +2,7 @@ import os
 import json
 
 import numpy as np
-import data.loaders.e4.shortcuts as dles
-import data.loaders.at.shortcuts as dlas
-import data.loaders.synthetic.shortcuts as dlss
+import data.loaders.shortcuts as dls
 import wavelets.dtcwt as wdtcwt
 import utils as rmu
 
@@ -59,17 +57,19 @@ class MVDTCWTRunner:
 
         loaders = None
 
-        if self.dataset == 'at':
-            loaders = dlas.get_at_loaders_all_subjects(
+        if self.dataset == 'ats':
+            loaders = dls.get_ats_loaders_all_subjects(
                 self.data_path)
         elif self.dataset == 'e4':
-            loaders = dles.get_hr_and_acc_all_subjects(
+            loaders = dls.get_hr_and_acc_all_subjects(
                 self.data_path, None, False)
+        elif self.dataset == 'atr':
+            loaders = dls.get_atr_loaders()
         elif self.dataset == 'gr':
             ps = [1] * 2
             hertzes = [1.0/60] * 2
             n = 60 * 24 * 8
-            loaders = {'e' + str(i): dlss.get_FPGL(n, ps, hertzes)
+            loaders = {'e' + str(i): dls.get_FPGL(n, ps, hertzes)
                        for i in xrange(2)}
         else:
             raise ValueError('Argument to dataset parameter not valid.')

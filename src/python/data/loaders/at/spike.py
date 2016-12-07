@@ -8,8 +8,8 @@ class AlTestSpikeLoader:
 
         self.data_path = data_path
         self.online = online
-        sub_and_name = data_path.split('/')[-1][:-4]
-        (self.subject, self.label) = sub_and_name.split('_')
+        sub_and_label = data_path.split('/')[-1][:-4]
+        (self.subject, self.label) = sub_and_label.split('_')
         self.hertz = 1.0/60
         self.window = 1
         self.data = None
@@ -51,7 +51,7 @@ class AlTestSpikeLoader:
             
     def name(self):
 
-        return self.label
+        return 'AlTestSpikeLoader' + self.label
 
     def rows(self):
 
