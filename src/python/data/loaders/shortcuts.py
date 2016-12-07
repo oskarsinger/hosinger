@@ -10,7 +10,9 @@ from supervised import LinearRegressionGaussianLoader as LRGL
 from e4 import FixedRateLoader as FRL
 from e4 import IBILoader as IBI
 from readers import from_num as fn
-from at import AlTestLoader as ATL
+from at import AlTestSpikeLoader as ATSL
+from at import AlTestRampGenerator as ATRG
+from at import AlTestRampLoader as ATRL
 from rl import ExposureShiftedGaussianWithBaselineEffectLoader as ESGWBEL
 
 def get_er_ESGWBEL(
@@ -28,23 +30,32 @@ def get_er_ESGWBEL(
 
     print 'Poop'
 
-def get_at_loaders(data_path, subject=str(1)):
+def get_atr_loaders():
+
+    (TS1, TS2) = ATRG().get_data()
+    subject = 'example1'
+    loader1 = ATRL(TS1, subject, 'TS1')
+    loader2 = ATRL(TS2, subject, 'TS2')
+
+    return {subject : [loader1, loader2]}
+
+def get_ats_loaders(data_path, subject=str(1)):
 
     subject = 'example' + subject
 
-    return [ATL(os.path.join(data_path, fn))
+    return [ATSL(os.path.join(data_path, fn))
             for fn in os.listdir(data_path)
             if subject in fn]
 
-def get_at_loaders_all_subjects(data_path):
+def get_ats_loaders_all_subjects(data_path):
 
     subject1 = 'example' + str(1)
     subject2 = 'example' + str(2)
 
     return {
-        subject1: get_at_loaders(
+        subject1: get_ats_loaders(
             data_path, subject=str(1)),
-        subject2: get_at_loaders(
+        subject2: get_ats_loaders(
             data_path, subject=str(2))}
 
 def get_e4_loaders(hdf5_path, subject, seconds, online):

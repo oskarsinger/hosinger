@@ -44,6 +44,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 ###Federated
 * Need to figure out best way to share information from other GMMs with federated optimizer. Now that I understand this part, will hopefully be much easier to define A and S.
 
+* Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
+
 ###Bandit Feedback
 
 #E4
