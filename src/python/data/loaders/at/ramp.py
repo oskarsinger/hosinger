@@ -83,9 +83,7 @@ class AlTestRampGenerator:
 
         unif_samples = np.random.uniform(
             size=self.num_periods)
-        print unif_samples
         scale = self.prop_jitter * self.T
-        print scale
         rand_offsets = np.around(
             (unif_samples - 0.5) * scale)
         signal1 = np.arange(
