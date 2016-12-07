@@ -43,12 +43,8 @@ class DTCWTPartialReconstructionRunner:
 
         self.wavelets = dtcwt_runner.wavelets
         self.servers = dtcwt_runner.servers
-        self.g1a = dtcwt_runner.qshift['g1a']
-        self.g1b = dtcwt_runner.qshift['g1b']
-        self.g0a = dtcwt_runner.qshift['g0a']
-        self.g0b = dtcwt_runner.qshift['g0b']
-        self.g0o = dtcwt_runner.biorthogonal['g0o']
-        self.g1o = dtcwt_runner.biorthogonal['g1o']
+        self.biorthogonal = dtcwt_runner.biorthogonal
+        self.qshift = dtcwt_runner.qshift
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.num_views = dtcwt_runner.num_views
@@ -127,33 +123,28 @@ class DTCWTPartialReconstructionRunner:
 
     def _get_view_sp_pr(self, Yh, Yl):
 
-        Lo_prev = np.copy(Yl)
-        prs = [Lo_prev]
+        prs = []
+        Ylz = np.zeros_like(Yl)
+        mask = np.zeros((1,len(Yh)))
 
-        for level in reversed(xrange(1, len(Yh))):
-            Hi = wdtcwt.oned.c2q1d(Yh[level]) 
-            Lo_filt = wdtcwt.filters.get_column_i_filtered(
-                Lo_prev, self.g0b, self.g0a)
-            Hi_filt = wdtcwt.filters.get_column_i_filtered(
-                Hi, self.g1b, self.g1a)
-            #doubled = _get_doubled_vector(Lo_prev)
-            Lo_prev = Lo_filt + Hi_filt# - doubled
+        for i in xrange(len(Yh)):
+            print Yh[i].shape
+            mask = mask * 0
+            mask[0,i] = 1
+            pr = wdtcwt.oned.dtwaveifm(
+                Ylz,
+                Yh,
+                self.biorthogonal,
+                self.qshift,
+                gain_mask=mask)
 
-            Lo_n = Lo_prev.shape[0]
-            Yh_n = Yh[level-1].shape[0]
-
-            if not Lo_n == 2 * Yh_n:
-                Lo_prev = Lo_prev[1:-1,:]
-
-            prs.append(Lo_prev)
-
-        Hi = wdtcwt.oned.c2q1d(Yh[0])
-        Lo_filt = wdtcwt.filters.get_column_filtered(
-            Lo_prev, self.g0o)
-        Hi_filt = wdtcwt.filters.get_column_filtered(
-            Hi, self.g1o)
-
-        prs.append(Lo_filt + Hi_filt)# - Lo_prev)
+        Yl_pr = wdtcwt.oned.dtwaveifm(
+            Yl,
+            Yh,
+            self.biorthogonal,
+            self.qshift,
+            gain_mask=mask * 0)
+        prs.append(Yl_pr)
 
         return list(reversed(prs))
 
