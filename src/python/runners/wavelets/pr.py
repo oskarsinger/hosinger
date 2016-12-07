@@ -298,10 +298,11 @@ class DTCWTPartialReconstructionRunner:
             with open(path) as f:
                 loaded = {int(h_fn.split('_')[1]) : a
                           for (h_fn, a) in np.load(f).items()}
-                stats[s] = (
-                    loaded[0], 
-                    loaded[1], 
-                    loaded[2])
+                x = loaded[0][:,np.newaxis]
+                y = loaded[1]
+                u = loaded[2]
+                u = None if u.ndim == 0 else u[:,np.newaxis]
+                stats[s] = (x, y, u)
         
         return stats
 
