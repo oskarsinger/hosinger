@@ -81,16 +81,19 @@ class AlTestRampGenerator:
         self.T = int(floor(self.hertz * self.period))
         self.num_points = self.T * self.num_periods
 
+        unif_samples = np.random.uniform(
+            size=self.num_periods)
+        print unif_samples
+        scale = self.prop_jitter * self.T
+        print scale
         rand_offsets = np.around(
-            (np.random.uniform((N,)) - 0.5) * \
-            self.prop_jitter * \
-            self.T)
+            (unif_samples - 0.5) * scale)
         signal1 = np.arange(
             int(self.T * self.supp1))[:,np.newaxis]
-        signal1 /= np.linalg.norm(signal1)
+        signal1 = signal1 / np.linalg.norm(signal1)
         signal2 = np.ones(
             (int(self.T * self.supp2), 1))
-        signal2 /= np.linalg.norm(signal2)
+        signal2 = signal2 / np.linalg.norm(signal2)
 
         self.TS1 = self._get_TS(
             signal1,
@@ -109,7 +112,7 @@ class AlTestRampGenerator:
 
         return (self.TS1, self.TS2)
 
-    def _get_cycle(self, 
+    def _get_TS(self, 
         signal, 
         sigma, 
         s, 
@@ -118,9 +121,10 @@ class AlTestRampGenerator:
 
         periods = []
 
-        for k in xrange(self.N):
+        for k in xrange(self.num_periods):
 
-            ro = random_offsets[k]
+            print rand_offsets
+            ro = rand_offsets[k]
             zs = np.zeros(
                 (int(ceil(self.T * (1-supp))+ro),1))
             period = np.copy(signal)
@@ -138,8 +142,8 @@ class AlTestRampGenerator:
         else:
             padding = np.zeros((
                 self.num_points - full.shape[0],1))
-            full = np.hstack([full, padding])
+            full = np.vstack([full, padding])
 
         noise = np.random.randn(self.num_points, 1)
 
-        return cycle + self.sigma_n * noise
+        return full + self.sigma_n * noise

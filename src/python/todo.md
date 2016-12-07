@@ -63,6 +63,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Don't show the element-wise multiplied singular vectors. How to show it then? Show both left and right vectors on the same plot or different ones? Side by side?
 
-* Compare my partial reconstructions to Al's
+* Compare my partial reconstructions to Al's. Possibly just alter my reconstruction code to reflect his. It looks correct.
 
 * Try averaging wavelet correlation (i.e. A matrix for sparse library) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).

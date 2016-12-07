@@ -1,4 +1,3 @@
-from data.loaders import AbstractDataLoader
 from data.pseudodata import MissingData
 from linal.utils import get_array_mod
 from math import ceil
@@ -10,7 +9,7 @@ import h5py
 
 import numpy as np
 
-class FixedRateLoader(AbstractDataLoader):
+class FixedRateLoader:
 
     def __init__(self,
         hdf5_path, subject, sensor, reader,
