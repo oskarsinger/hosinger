@@ -1,4 +1,3 @@
-from data.loaders import AbstractDataLoader
 from data.pseudodata import MissingData
 from math import ceil, floor
 from datetime import datetime as DT
@@ -8,7 +7,7 @@ import h5py
 
 import numpy as np
 
-class IBILoader(AbstractDataLoader):
+class IBILoader:
 
     def __init__(self,
         hdf5_path, subject, sensor, reader,

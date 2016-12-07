@@ -56,7 +56,7 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
 
         if self.a_history[-1]:
             treatment = normal(
-                loc=self.mu
+                loc=self.mu,
                 scale=self.sigma)
 
         return baseline + treatment + exposure

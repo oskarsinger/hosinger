@@ -104,7 +104,7 @@ class FSVRGNode:
         permutation = np.random.choice(
             self.n,
             replace=False,
-            self.n).tolist()
+            size=self.n).tolist()
         local_w = np.copy(global_w)
 
         for i in permutation:

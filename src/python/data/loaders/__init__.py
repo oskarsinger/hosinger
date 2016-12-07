@@ -1,5 +1,3 @@
-from data_loader import AbstractDataLoader
-
 import e4
 import readers
 import at
