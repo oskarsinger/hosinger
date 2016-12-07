@@ -1,6 +1,6 @@
 import numpy as np
 
-class AlTestLoader:
+class AlTestSpikeLoader:
 
     def __init__(self, 
         data_path,
