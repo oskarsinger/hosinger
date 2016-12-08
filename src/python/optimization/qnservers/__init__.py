@@ -1,1 +1,2 @@
 from adagrad import DiagonalAdaGradServer
+from diagonal import StaticDiagonalServer

@@ -39,11 +39,9 @@ class GaussianLinearRegressionFSVRGRunner:
             bias=True)
 
         self.servers = [BS(l) for l in loaders]
-        self.model = LR(self.p) 
+        print self.p * self.num_nodes
+        self.model = LR(self.p * self.num_nodes)
         self.w_hat = None
-
-        self._set_A_server()
-        self._set_S_servers()
 
     def get_parameters(self):
 

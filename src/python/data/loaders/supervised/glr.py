@@ -24,9 +24,6 @@ class LinearRegressionGaussianLoader:
 
         if w is None:
             w = np.random.randn(self.p, 1)
-        elif self.bias:
-            np.random.randn
-            w = np.hstack
 
         self.w = w
         self.y = np.dot(self.X, self.w)
@@ -48,8 +45,8 @@ class LinearRegressionGaussianLoader:
 
     def cols(self):
 
-        return self.loader.cols()
+        return self.p
 
     def rows(self):
 
-        return self.loader.rows()
+        return self.n
