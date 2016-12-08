@@ -59,7 +59,7 @@ class FSVRG:
                             np.copy(grad_t))
                        for n in self.nodes]
             (ws, errors) = unzip(updates)
-            agg = self._get_aggregate_grad(ws)
+            agg = self._get_aggregate_grad(ws, w_t)
             # TODO: Make sure this is a good place to project
             # TODO: Probably need to do a round of communication for projection since it is most likely data-dependent
             # w_t = self.get_projection(w_t + agg)
@@ -69,10 +69,10 @@ class FSVRG:
 
         self.w = w_t
 
-    def _get_aggregate_grad(self, ws):
+    def _get_aggregate_grad(self, ws, w_t):
 
         weighted = sum(
-            [(float(nk) / self.n) * w_k
+            [(float(nk) / self.n) * (w_k - w_t)
              for (nk, w_k) in zip(self.nks, ws)])
 
         return self.A_server.get_qn_transform(
@@ -162,6 +162,7 @@ class FSVRGNode:
                 datum_i, local_w)
             grad_i = self.get_stochastic_gradient(
                 datum_i, w_i)
+            print np.linalg.norm(grad_i - local_grad_i)
             search_direction = self.S_server.get_qn_transform(
                 grad_i - local_grad_i) + local_grad
             w_i -= self.eta * search_direction
