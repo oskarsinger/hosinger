@@ -65,7 +65,7 @@ class FSVRG:
             # w_t = self.get_projection(w_t + agg)
             w_t = w_t + agg
 
-            self.errors.append(errors[-1])
+            self.errors.append(errors)
 
         self.w = w_t
 
