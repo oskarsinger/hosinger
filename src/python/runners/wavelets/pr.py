@@ -128,7 +128,6 @@ class DTCWTPartialReconstructionRunner:
         mask = np.zeros((1,len(Yh)))
 
         for i in xrange(len(Yh)):
-            print Yh[i].shape
             mask = mask * 0
             mask[0,i] = 1
             pr = wdtcwt.oned.dtwaveifm(
@@ -137,6 +136,8 @@ class DTCWTPartialReconstructionRunner:
                 self.biorthogonal,
                 self.qshift,
                 gain_mask=mask)
+
+            prs.append(pr)
 
         Yl_pr = wdtcwt.oned.dtwaveifm(
             Yl,
@@ -342,12 +343,3 @@ class DTCWTPartialReconstructionRunner:
 
         with open(path, 'w') as f:
             np.savez(f, *prs)
-
-def _get_doubled_vector(v):
-
-    n = v.shape[0]
-    doubled = np.zeros((n*2, 1))
-    doubled[0::2,:] = np.copy(v)
-    doubled[1::2,:] = np.copy(v)
-
-    return doubled

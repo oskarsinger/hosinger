@@ -121,7 +121,6 @@ class AlTestRampGenerator:
 
         for k in xrange(self.num_periods):
 
-            print rand_offsets
             ro = rand_offsets[k]
             zs = np.zeros(
                 (int(ceil(self.T * (1-supp))+ro),1))
