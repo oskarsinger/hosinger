@@ -53,7 +53,7 @@ class FSVRG:
         for i in xrange(self.max_rounds):
             local_grads = [n.get_gradient(n.get_local(w_t))
                            for n in self.nodes]
-            grad_t = sum(local_grads) / self.num_nodes
+            grad_t = np.vstack(local_grads) / self.num_nodes
             updates = [n.get_update(
                             np.copy(w_t),
                             np.copy(grad_t))
@@ -61,27 +61,32 @@ class FSVRG:
             (ws, errors) = unzip(updates)
             agg = self._get_aggregate_grad(ws)
             # TODO: Make sure this is a good place to project
-            w_t = self.get_projection(w_t + agg)
+            # TODO: Probably need to do a round of communication for projection since it is most likely data-dependent
+            # w_t = self.get_projection(w_t + agg)
+            w_t = w_t + agg
+
+            self.errors.append(errors[-1])
 
         self.w = w_t
 
     def _get_aggregate_grad(self, ws):
 
-        weighted = [(float(n_k) / self.n) * w_k
-                    for (n_k, w_k) in zip(self.n_ks, ws)]
+        weighted = sum(
+            [(float(nk) / self.n) * w_k
+             for (nk, w_k) in zip(self.nks, ws)])
 
         return self.A_server.get_qn_transform(
             sum(weighted))
 
     def _compute_S_and_A_servers(self):
 
-        (njks, phi_jks, nks) = unzip(
+        (njks, phi_jks, self.nks) = unzip(
             [n.get_fsvrg_params()
              for n in self.nodes])
-        self.n = sum(nks)
+        self.n = sum(self.nks)
         njs = sum(njks)
         phi_js = njs / self.n
-        sjk_invs = [phi_jk / phi_js 
+        sjk_invs = [(phi_jk / phi_js)[:,np.newaxis]
                     for phi_jk in phi_jks]
         self.S_servers = [SDS(sjk_inv)
                           for sjk_inv in sjk_invs]
@@ -89,10 +94,10 @@ class FSVRG:
         for (n, S_s) in zip(self.nodes, self.S_servers):
             n.set_S_server(S_s)
 
-        omega_js = sum(
-            (njk != 0).astype(float) 
+        omega_js = np.vstack(
+            (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
-        aj_invs = omega_js / self.num_nodes
+        aj_invs = (omega_js / self.num_nodes)
 
         self.A_server = SDS(aj_invs)
 
@@ -161,11 +166,13 @@ class FSVRGNode:
                 grad_i - local_grad_i) + local_grad
             w_i -= self.eta * search_direction
 
+        error = self.get_error(self.data, w_i)
         new_global_w = np.copy(global_w)
 
         new_global_w[self.begin:self.end] = np.copy(w_i)
 
-        return new_global_w
+
+        return (new_global_w, error)
 
     def get_gradient(self, w):
 
