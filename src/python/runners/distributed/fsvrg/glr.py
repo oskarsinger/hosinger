@@ -5,7 +5,7 @@ from data.loaders.shortcuts import get_LRGL
 from data.servers.batch import BatchServer as BS
 from models import LinearRegression as LR
 
-class GaussianLinearRegressionSVRGRunner:
+class GaussianLinearRegressionFSVRGRunner:
 
     def __init__(self,
         num_nodes,
@@ -13,7 +13,6 @@ class GaussianLinearRegressionSVRGRunner:
         p,
         max_rounds=5,
         h=0.01,
-        init_params=None,
         noisy=False):
 
         self.num_nodes = num_nodes
@@ -24,19 +23,18 @@ class GaussianLinearRegressionSVRGRunner:
         self.h = h
         self.noisy = noisy
 
-        if init_params is None:
-            init_params = np.random.randn(self.p, 1)
+        self.init_params = np.random.randn(
+            self.p * self.num_nodes, 1)
 
-        self.init_params = init_params
-
-        self.w = np.random.randn(self.p, 1)
+        self.w = np.random.randn(
+            self.p * self.num_nodes, 1)
         ps = [p] * self.num_nodes
-        ws = [np.copy(self.w) 
+        ws = [np.copy(self.w[i*self.p:(i+1)*self.p])
               for i in xrange(self.num_nodes)]
         loaders = get_LRGL(
             self.n, 
             ps,
-            ws = ws,
+            ws=ws,
             noisys=[self.noisy] * self.num_nodes,
             bias=True)
 
