@@ -4,7 +4,6 @@ from drrobert.misc import unzip
 from optimization.qnservers import StaticDiagonalServer as SDS
 from linal.utils import get_safe_power as get_sp
 
-# REMEMBER: A and S servers should be fed inverse of A and S
 class FSVRG:
 
     def __init__(self,
@@ -21,13 +20,13 @@ class FSVRG:
         self.get_error = self.model.get_error
         self.get_projection = self.model.get_projection
         self.max_rounds = max_rounds
-        self.eta = eta
+        self.h = h
         self.init_params = init_params
 
         self.w = None
         self.nodes = [FSVRGNode(
                         ds,
-                        self.gradient,
+                        self.get_gradient,
                         self.get_error,
                         i,
                         h=self.h)
@@ -37,7 +36,6 @@ class FSVRG:
 
         self._compute_S_and_A_servers()
 
-        self.n = sum(self.n_ks)
         self.errors = []
 
     def get_parameters(self):
@@ -48,12 +46,12 @@ class FSVRG:
         
         return np.copy(self.w)
 
-    def compute_parameters(self, parameters, gradient, eta):
+    def compute_parameters(self):
 
         w_t = np.copy(self.init_params)
 
         for i in xrange(self.max_rounds):
-            local_grads = [n.get_gradient(np.copy(w_t))
+            local_grads = [n.get_gradient(n.get_local(w_t))
                            for n in self.nodes]
             grad_t = sum(local_grads) / self.num_nodes
             updates = [n.get_update(
@@ -77,13 +75,13 @@ class FSVRG:
 
     def _compute_S_and_A_servers(self):
 
-        (nkjs, phi_jks, nks) = unzip(
-            [n.get_svrg_params()
+        (njks, phi_jks, nks) = unzip(
+            [n.get_fsvrg_params()
              for n in self.nodes])
         self.n = sum(nks)
-        njs = sum(nkjs)
+        njs = sum(njks)
         phi_js = njs / self.n
-        sjk_invs = [phi_jk / phi_j 
+        sjk_invs = [phi_jk / phi_js 
                     for phi_jk in phi_jks]
         self.S_servers = [SDS(sjk_inv)
                           for sjk_inv in sjk_invs]
@@ -102,7 +100,6 @@ class FSVRGNode:
 
     def __init__(self,
         server,
-        S_server,
         get_gradient,
         get_error,
         id_number,
@@ -114,10 +111,12 @@ class FSVRGNode:
 
         self.nk = self.server.rows()
         self.p = self.server.cols()
+        # TODO: replace begin/end with arbitrary index vector
         self.begin = self.id_number * self.p
         self.end = self.begin + self.p
         self.get_local = lambda x: x[self.begin:self.end]
         self.data = self.server.get_data()
+        (self.A, self.b) = self.data
         (self.n_jks, self.phi_jks) = [None] * 2
 
         self._compute_local_fsvrg_params()
@@ -133,12 +132,12 @@ class FSVRGNode:
 
     def get_fsvrg_params(self):
 
-        return (self.n_jks, self.phis_jks, self.nk)
+        return (self.n_jks, self.phi_jks, self.nk)
 
     def _compute_local_fsvrg_params(self):
 
         self.n_jks = np.sum(
-            (self.data != 0).astype(float),
+            (self.data[0] != 0).astype(float),
             axis=0)
         self.phi_jks = self.n_jks / self.nk
 
@@ -147,13 +146,13 @@ class FSVRGNode:
         permutation = np.random.choice(
             self.nk,
             replace=False,
-            size=self.n).tolist()
+            size=self.nk).tolist()
         local_w = self.get_local(global_w)
-        local_grad = self.get_local(local_grad)
+        local_grad = self.get_local(global_grad)
         w_i = np.copy(local_w)
 
         for i in permutation:
-            datum_i = self.data[i,:]
+            datum_i = (self.A[i,:][np.newaxis,:], self.b[i])
             local_grad_i = self.get_stochastic_gradient(
                 datum_i, local_w)
             grad_i = self.get_stochastic_gradient(

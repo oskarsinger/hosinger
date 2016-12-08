@@ -4,7 +4,7 @@ from runners.distributed.fsvrg import GaussianLinearRegressionFSVRGRunner as GLR
 
 @click.command()
 @click.option('--num-nodes', default=4)
-@click.option('--n', default=1000)
+@click.option('--n', default=3000)
 @click.option('--p', default=500)
 @click.option('--max-rounds', default=5)
 @click.option('--h', default=0.01)
