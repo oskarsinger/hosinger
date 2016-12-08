@@ -8,6 +8,8 @@
 #Network Interference
 
 ##Infrastructure
+* Develop a Parameter class to take care of nasty indexing for stuff like FSVRG.
+
 * Data loader shortcuts, specifically randomly generated ones. Should I try to fit this into the same bandit arm servers I was using earlier?
 
 * Figure out how to nicely integrate data loaders and servers in an RL context.
@@ -46,6 +48,13 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
 
+* For now, just pretend like Federated is only dealing with scenarios where each node is only updating parameters that no other nodes are updating.
+    * How do I arranged visibility of various parts of the parameter vector to each node? Looks like I have one realistic option:
+        * Represent data only locally, then feed relevant subvectors of the parameters to the local gradient computation.
+    * For now just run batch FSVRG on linear regression, then extend.
+
+* Test the proposed advantages of FSVRG, e.g. drastically different numbers of parameters at each node, and different distributions at each node (although that doesn't seem to matter too much with complete independence across nodes as we currently have it).
+
 ###Bandit Feedback
 
 #E4
@@ -63,6 +72,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Don't show the element-wise multiplied singular vectors. How to show it then? Show both left and right vectors on the same plot or different ones? Side by side?
 
-* Compare my partial reconstructions to Al's. Possibly just alter my reconstruction code to reflect his. It looks correct.
+* Compare my partial reconstructions to Al's. Possibly just alter my reconstruction code to reflect his. It looks correct. Figure out why all frequency plots are identical. Something's buggy.
 
 * Try averaging wavelet correlation (i.e. A matrix for sparse library) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).

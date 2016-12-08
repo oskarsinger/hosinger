@@ -2,7 +2,6 @@ import numpy as np
 
 from drrobert.misc import unzip
 
-# TODO: consider using scipy sparse LA stuff
 # REMEMBER: A and S servers should be fed inverse of A and S
 class FSVRG:
 
@@ -32,17 +31,18 @@ class FSVRG:
         self.n = sum(self.n_ks)
         self.w = None
 
-        node_stuff = zip(
+        node_stuff = enumerate(zip(
             servers,
-            self.S_servers)
+            self.S_servers))
 
         self.nodes = [FSVRGNode(
                         ds,
                         S_s,
                         self.gradient,
                         self.get_error,
+                        i,
                         h=self.h)
-                      for (ds, S_s) in node_stuff]
+                      for (i, (ds, S_s)) in node_stuff]
         self.errors = []
 
     def get_parameters(self):
@@ -87,12 +87,18 @@ class FSVRGNode:
         S_server,
         get_gradient,
         get_error,
+        id_number,
         h=0.1):
 
         self.server = server
         self.get_error = get_error
+        self.id_number = id_number
 
         self.n = self.server.rows()
+        self.p = self.server.cols()
+        self.begin = self.id_number * self.p
+        self.end = self.begin + self.p
+        self.get_local = lambda x: x[self.begin:self.end]
         self.data = self.server.get_data()
         self.get_full_gradient = lambda w: get_gradient(
             self.data, w)
@@ -105,19 +111,25 @@ class FSVRGNode:
             self.n,
             replace=False,
             size=self.n).tolist()
-        local_w = np.copy(global_w)
+        local_w = self.get_local(global_w)
+        local_grad = self.get_local(local_grad)
+        w_i = np.copy(local_w)
 
         for i in permutation:
             datum_i = self.data[i,:]
-            global_grad_i = self.get_stochastic_gradient(
-                datum_i, global_w)
             local_grad_i = self.get_stochastic_gradient(
                 datum_i, local_w)
+            grad_i = self.get_stochastic_gradient(
+                datum_i, w_i)
             search_direction = self.S_server.get_qn_transform(
-                local_grad_i - global_grad_i) + global_grad
-            local_w -= self.eta * search_direction
+                grad_i - local_grad_i) + local_grad
+            w_i -= self.eta * search_direction
 
-        return local_w
+        new_global_w = np.copy(global_w)
+
+        new_global_w[self.begin:self.end] = np.copy(w_i)
+
+        return new_global_w
 
     def get_gradient(self, w):
 
