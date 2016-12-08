@@ -84,6 +84,7 @@ def dtwaveifm(
 
         if not Lo_n == 2 * Yh_n:
             Lo = Lo[1:-1,:]
+            (Lo_n, Lo_p) = Lo.shape
 
         if not (Lo_n == 2 * Yh_n and Lo_p == Yh_p):
             raise ValueError(
