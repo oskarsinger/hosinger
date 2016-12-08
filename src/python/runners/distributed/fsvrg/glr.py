@@ -58,8 +58,6 @@ class GaussianLinearRegressionFSVRGRunner:
         fsvrg = FSVRG(
             self.model,
             self.servers,
-            self.A_server,
-            self.S_servers,
             max_rounds=self.max_rounds,
             init_params=self.init_params,
             h=self.h)
@@ -68,11 +66,3 @@ class GaussianLinearRegressionFSVRGRunner:
 
         self.w_hat = fsvrg.get_parameters()
         self.errors = fsvrg.errors
-
-    def _set_A_server(self):
-
-        print 'Poop'
-
-    def _set_S_servers(self):
-
-        print 'Poop'
