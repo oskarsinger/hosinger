@@ -63,7 +63,12 @@ class FSVRG:
             # TODO: Make sure this is a good place to project
             # TODO: Probably need to do a round of communication for projection since it is most likely data-dependent
             # w_t = self.get_projection(w_t + agg)
+            print 'Before'
+            print 'norm(w_t)', np.linalg.norm(w_t)
+            print 'norm(agg)', np.linalg.norm(agg)
             w_t = w_t + agg
+            print 'After'
+            print 'norm(w_t)', np.linalg.norm(w_t)
 
             self.errors.append(errors)
 
@@ -71,9 +76,11 @@ class FSVRG:
 
     def _get_aggregate_grad(self, ws, w_t):
 
+        print 'norm(ws)', [np.linalg.norm(w) for w in ws]
         weighted = sum(
             [(float(nk) / self.n) * (w_k - w_t)
              for (nk, w_k) in zip(self.nks, ws)])
+        print 'norm(weighted)', np.linalg.norm(weighted)
 
         return self.A_server.get_qn_transform(
             sum(weighted))
@@ -97,9 +104,10 @@ class FSVRG:
         omega_js = np.vstack(
             (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
+        print omega_js
         aj_invs = (omega_js / self.num_nodes)
 
-        self.A_server = SDS(aj_invs)
+        self.A_server = SDS(get_sp(aj_invs,-1))
 
 class FSVRGNode:
 
@@ -147,24 +155,32 @@ class FSVRGNode:
         self.phi_jks = self.n_jks / self.nk
 
     def get_update(self, global_w, global_grad):
+
+        print self.id_number
         
+        print 'norm(global_w)', np.linalg.norm(global_w)
+        print 'norm(global_grad)', np.linalg.norm(global_grad)
         permutation = np.random.choice(
             self.nk,
             replace=False,
             size=self.nk).tolist()
         local_w = self.get_local(global_w)
+        print 'norm(local_w)', np.linalg.norm(local_w)
         local_grad = self.get_local(global_grad)
+        print 'norm(local_grad)', np.linalg.norm(local_grad)
         w_i = np.copy(local_w)
 
         for i in permutation:
             datum_i = (self.A[i,:][np.newaxis,:], self.b[i])
             local_grad_i = self.get_stochastic_gradient(
                 datum_i, local_w)
+            #print 'norm(local_grad_i)', np.linalg.norm(local_grad_i)
             grad_i = self.get_stochastic_gradient(
                 datum_i, w_i)
-            print np.linalg.norm(grad_i - local_grad_i)
+            #print 'norm(grad_i)', np.linalg.norm(grad_i)
             search_direction = self.S_server.get_qn_transform(
                 grad_i - local_grad_i) + local_grad
+            #print 'norm(sd)', np.linalg.norm(search_direction)
             w_i -= self.eta * search_direction
 
         error = self.get_error(self.data, w_i)

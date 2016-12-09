@@ -8,19 +8,25 @@ class LinearRegression:
 
     def get_gradient(self, data, params):
 
-        (A, b) = data
-        b_hat = np.dot(A, params)
-        residuals = b_hat - b
+        A = data[0]
+        residuals = self.get_residuals(
+            data, params)
 
         return np.dot(A.T, residuals)
 
     def get_error(self, data, params):
 
-        (A, b) = data
-        b_hat = np.dot(A, params)
-        residuals = b_hat - b
+        residuals = self.get_residuals(
+            data, params)
 
         return np.linalg.norm(residuals)
+
+    def get_residuals(self, data, params):
+
+        (A, b) = data
+        b_hat = np.dot(A, params)
+
+        return b_hat - b
 
     def get_projection(self, data, params):
 
