@@ -54,6 +54,9 @@ class FSVRG:
             local_grads = [n.get_gradient(n.get_local(w_t))
                            for n in self.nodes]
             grad_t = np.vstack(local_grads) / self.num_nodes
+
+            print 'norm(grad_t)', np.linalg.norm(grad_t)
+            print 'norm(w_t)', np.linalg.norm(w_t)
             updates = [n.get_update(
                             np.copy(w_t),
                             np.copy(grad_t))
@@ -64,7 +67,6 @@ class FSVRG:
             # TODO: Probably need to do a round of communication for projection since it is most likely data-dependent
             # w_t = self.get_projection(w_t + agg)
             print 'Before'
-            print 'norm(w_t)', np.linalg.norm(w_t)
             print 'norm(agg)', np.linalg.norm(agg)
             w_t = w_t + agg
             print 'After'
@@ -93,10 +95,10 @@ class FSVRG:
         self.n = sum(self.nks)
         njs = sum(njks)
         phi_js = njs / self.n
-        sjk_invs = [(phi_jk / phi_js)[:,np.newaxis]
-                    for phi_jk in phi_jks]
-        self.S_servers = [SDS(sjk_inv)
-                          for sjk_inv in sjk_invs]
+        sjks = [(phi_js / phi_jk)[:,np.newaxis]
+                for phi_jk in phi_jks]
+        self.S_servers = [SDS(sjk)
+                          for sjk in sjks]
 
         for (n, S_s) in zip(self.nodes, self.S_servers):
             n.set_S_server(S_s)
@@ -104,10 +106,9 @@ class FSVRG:
         omega_js = np.vstack(
             (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
-        print omega_js
-        aj_invs = (omega_js / self.num_nodes)
+        ajs = get_sp(omega_js, -1) * self.num_nodes
 
-        self.A_server = SDS(get_sp(aj_invs,-1))
+        self.A_server = SDS(ajs)
 
 class FSVRGNode:
 
@@ -158,8 +159,6 @@ class FSVRGNode:
 
         print self.id_number
         
-        print 'norm(global_w)', np.linalg.norm(global_w)
-        print 'norm(global_grad)', np.linalg.norm(global_grad)
         permutation = np.random.choice(
             self.nk,
             replace=False,
