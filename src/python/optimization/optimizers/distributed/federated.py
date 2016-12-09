@@ -56,23 +56,23 @@ class FSVRG:
             grad_t = np.vstack(local_grads) / self.num_nodes
 
             print 'norm(grad_t)', np.linalg.norm(grad_t)
+            print 'Before'
             print 'norm(w_t)', np.linalg.norm(w_t)
+            print 'norm(local_ws)', [np.linalg.norm(n.get_local(w_t))
+                                     for n in self.nodes]
             updates = [n.get_update(
                             np.copy(w_t),
                             np.copy(grad_t))
                        for n in self.nodes]
             (ws, errors) = unzip(updates)
             agg = self._get_aggregate_grad(ws, w_t)
-            # TODO: Make sure this is a good place to project
-            # TODO: Probably need to do a round of communication for projection since it is most likely data-dependent
-            # w_t = self.get_projection(w_t + agg)
-            print 'Before'
             print 'norm(agg)', np.linalg.norm(agg)
             w_t = w_t + agg
             print 'After'
             print 'norm(w_t)', np.linalg.norm(w_t)
 
-            self.errors.append(errors)
+            self.errors.append(
+                [e[-1] for e in errors])
 
         self.w = w_t
 
@@ -95,10 +95,10 @@ class FSVRG:
         self.n = sum(self.nks)
         njs = sum(njks)
         phi_js = njs / self.n
-        sjks = [(phi_js / phi_jk)[:,np.newaxis]
-                for phi_jk in phi_jks]
-        self.S_servers = [SDS(sjk)
-                          for sjk in sjks]
+        sjk_invs = [(phi_jk / phi_js)[:,np.newaxis]
+                    for phi_jk in phi_jks]
+        self.S_servers = [SDS(sjk_inv)
+                          for sjk_inv in sjk_invs]
 
         for (n, S_s) in zip(self.nodes, self.S_servers):
             n.set_S_server(S_s)
@@ -106,9 +106,9 @@ class FSVRG:
         omega_js = np.vstack(
             (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
-        ajs = get_sp(omega_js, -1) * self.num_nodes
+        aj_invs = omega_js / self.num_nodes
 
-        self.A_server = SDS(ajs)
+        self.A_server = SDS(aj_invs)
 
 class FSVRGNode:
 
@@ -139,6 +139,7 @@ class FSVRGNode:
             self.data, w)
         self.get_stochastic_gradient = get_gradient
         self.eta = h / self.nk
+        self.errors = []
 
     def set_S_server(self, S_server):
 
@@ -182,13 +183,16 @@ class FSVRGNode:
             #print 'norm(sd)', np.linalg.norm(search_direction)
             w_i -= self.eta * search_direction
 
-        error = self.get_error(self.data, w_i)
+            self.errors.append(
+                self.get_error(self.data, w_i))
+
         new_global_w = np.copy(global_w)
 
         new_global_w[self.begin:self.end] = np.copy(w_i)
 
+        print self.errors
 
-        return (new_global_w, error)
+        return (new_global_w, self.errors)
 
     def get_gradient(self, w):
 

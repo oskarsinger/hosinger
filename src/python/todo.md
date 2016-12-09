@@ -44,6 +44,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Figure out exactly how to do particle MCMC and try to do some writing. Reading the Springer PDF a bit will probably help a lot.
 
 ###Federated
+* Think carefully about when it is possible to do projected gradient in the context of federated, and how it can be accomplished.
+
 * Need to figure out best way to share information from other GMMs with federated optimizer. Now that I understand this part, will hopefully be much easier to define A and S.
 
 * Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
@@ -56,6 +58,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Test the proposed advantages of FSVRG, e.g. drastically different numbers of parameters at each node, and different distributions at each node (although that doesn't seem to matter too much with complete independence across nodes as we currently have it).
 
 ###Bandit Feedback
+* How do I account for the bandit feedback on the parameters of the treatment effect? Seems like it might be tricky to propagate through the link function to the natural parameter space.
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
