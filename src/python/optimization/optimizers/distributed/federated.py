@@ -7,27 +7,23 @@ from linal.utils import get_safe_power as get_sp
 class FSVRG:
 
     def __init__(self,
-        model,
+        get_model,
         servers,
         max_rounds=10,
         h=0.01,
         init_params=None):
 
-        self.model = model
+        self.get_model = get_model
         self.servers = servers
         self.num_nodes = len(self.servers)
-        self.get_gradient = self.model.get_gradient
-        self.get_error = self.model.get_error
-        self.get_projection = self.model.get_projection
         self.max_rounds = max_rounds
         self.h = h
         self.init_params = init_params
 
         self.w = None
         self.nodes = [FSVRGNode(
+                        self.get_model(),
                         ds,
-                        self.get_gradient,
-                        self.get_error,
                         i,
                         h=self.h)
                       for (i, ds) in enumerate(self.servers)]
@@ -36,7 +32,7 @@ class FSVRG:
 
         self._compute_S_and_A_servers()
 
-        self.errors = []
+        self.objectives = []
 
     def get_parameters(self):
 
@@ -53,6 +49,8 @@ class FSVRG:
         for i in xrange(self.max_rounds):
             local_grads = [n.get_gradient(n.get_local(w_t))
                            for n in self.nodes]
+            print 'norm(local_grads)', [np.linalg.norm(lg)
+                                        for lg in local_grads]
             grad_t = np.vstack(local_grads) / self.num_nodes
 
             print 'norm(grad_t)', np.linalg.norm(grad_t)
@@ -64,15 +62,15 @@ class FSVRG:
                             np.copy(w_t),
                             np.copy(grad_t))
                        for n in self.nodes]
-            (ws, errors) = unzip(updates)
+            (ws, objectives) = unzip(updates)
             agg = self._get_aggregate_grad(ws, w_t)
             print 'norm(agg)', np.linalg.norm(agg)
             w_t = w_t + agg
             print 'After'
             print 'norm(w_t)', np.linalg.norm(w_t)
 
-            self.errors.append(
-                [e[-1] for e in errors])
+            self.objectives.append(
+                [e[-1] for e in objectives])
 
         self.w = w_t
 
@@ -113,14 +111,14 @@ class FSVRG:
 class FSVRGNode:
 
     def __init__(self,
+        model,
         server,
-        get_gradient,
-        get_error,
         id_number,
         h=0.1):
 
         self.server = server
-        self.get_error = get_error
+        self.get_objective = model.get_objective
+        self.get_coord_counts = model.get_coordinate_counts
         self.id_number = id_number
 
         self.nk = self.server.rows()
@@ -135,11 +133,11 @@ class FSVRGNode:
 
         self._compute_local_fsvrg_params()
 
-        self.get_full_gradient = lambda w: get_gradient(
+        self.get_full_gradient = lambda w: model.get_gradient(
             self.data, w)
-        self.get_stochastic_gradient = get_gradient
+        self.get_stochastic_gradient = model.get_gradient
         self.eta = h / self.nk
-        self.errors = []
+        self.objectives = []
 
     def set_S_server(self, S_server):
 
@@ -151,9 +149,8 @@ class FSVRGNode:
 
     def _compute_local_fsvrg_params(self):
 
-        self.n_jks = np.sum(
-            (self.data[0] != 0).astype(float),
-            axis=0)
+        # TODO: Change this to be general to form of data
+        self.n_jks = self.get_coord_counts(self.data)
         self.phi_jks = self.n_jks / self.nk
 
     def get_update(self, global_w, global_grad):
@@ -174,25 +171,25 @@ class FSVRGNode:
             datum_i = (self.A[i,:][np.newaxis,:], self.b[i])
             local_grad_i = self.get_stochastic_gradient(
                 datum_i, local_w)
-            #print 'norm(local_grad_i)', np.linalg.norm(local_grad_i)
+            print 'norm(local_grad_i)', np.linalg.norm(local_grad_i)
             grad_i = self.get_stochastic_gradient(
                 datum_i, w_i)
-            #print 'norm(grad_i)', np.linalg.norm(grad_i)
+            print 'norm(grad_i)', np.linalg.norm(grad_i)
             search_direction = self.S_server.get_qn_transform(
                 grad_i - local_grad_i) + local_grad
-            #print 'norm(sd)', np.linalg.norm(search_direction)
+            print 'norm(sd)', np.linalg.norm(search_direction)
             w_i -= self.eta * search_direction
 
-            self.errors.append(
-                self.get_error(self.data, w_i))
+            self.objectives.append(
+                self.get_objective(self.data, w_i))
 
         new_global_w = np.copy(global_w)
 
         new_global_w[self.begin:self.end] = np.copy(w_i)
 
-        print self.errors
+        print self.objectives
 
-        return (new_global_w, self.errors)
+        return (new_global_w, self.objectives)
 
     def get_gradient(self, w):
 

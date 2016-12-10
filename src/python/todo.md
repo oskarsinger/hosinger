@@ -46,14 +46,14 @@ NOTE: This will have to wait until winter break or next semester probably.
 ###Federated
 * Think carefully about when it is possible to do projected gradient in the context of federated, and how it can be accomplished.
 
-* Need to figure out best way to share information from other GMMs with federated optimizer. Now that I understand this part, will hopefully be much easier to define A and S.
-
 * Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
 
 * For now, just pretend like Federated is only dealing with scenarios where each node is only updating parameters that no other nodes are updating.
-    * How do I arranged visibility of various parts of the parameter vector to each node? Looks like I have one realistic option:
-        * Represent data only locally, then feed relevant subvectors of the parameters to the local gradient computation.
-    * For now just run batch FSVRG on linear regression, then extend.
+    * Since the updates to EM require maintainence of additional state, I think I should be using the model as I have written it (with bugs fixed, of course).
+    * How do I account for the dependence structure between the local optimizers, local models, and global coordinator?
+        * The global coordinator just needs to see the updates computed by the local optimizers.
+
+* Need to set up RL-like data serving in the FSVRG framework. Should just be able to plug in calls to reward etc
 
 * Test the proposed advantages of FSVRG, e.g. drastically different numbers of parameters at each node, and different distributions at each node (although that doesn't seem to matter too much with complete independence across nodes as we currently have it).
 

@@ -17,7 +17,7 @@ class LinearRegressionGaussianLoader:
         self.X = self.loader.get_data()
         (self.n, self.p) = self.X.shape
 
-        if bias:
+        if self.bias:
             self.X = np.hstack(
                 [self.X, np.ones((self.n, 1))])
             self.p += 1
