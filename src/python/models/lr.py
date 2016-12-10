@@ -14,7 +14,7 @@ class LinearRegression:
 
         return np.dot(A.T, residuals)
 
-    def get_error(self, data, params):
+    def get_objective(self, data, params):
 
         residuals = self.get_residuals(
             data, params)
@@ -27,6 +27,14 @@ class LinearRegression:
         b_hat = np.dot(A, params)
 
         return b_hat - b
+
+    def get_coordinate_counts(self, data):
+
+        A = data[0]
+
+        return np.sum(
+            (A != 0).astype(float),
+            axis=0)
 
     def get_projection(self, data, params):
 

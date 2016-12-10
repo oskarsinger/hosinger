@@ -13,15 +13,17 @@ class GaussianLinearRegressionFSVRGRunner:
         p,
         max_rounds=5,
         h=0.01,
-        noisy=False):
+        noisy=False,
+        bias=False):
 
         self.num_nodes = num_nodes
         self.n = n
         # Add 1 for bias term
-        self.p = p + 1
         self.max_rounds = max_rounds
         self.h = h
         self.noisy = noisy
+        self.bias = bias
+        self.p = p + 1 if self.bias else p
 
         self.init_params = np.random.randn(
             self.p * self.num_nodes, 1)
@@ -36,10 +38,10 @@ class GaussianLinearRegressionFSVRGRunner:
             ps,
             ws=ws,
             noisys=[self.noisy] * self.num_nodes,
-            bias=True)
+            bias=bias)
 
         self.servers = [BS(l) for l in loaders]
-        self.model = LR(self.p * self.num_nodes)
+        self.get_model = lambda: LR(self.p * self.num_nodes)
         self.w_hat = None
 
     def get_parameters(self):
@@ -53,7 +55,7 @@ class GaussianLinearRegressionFSVRGRunner:
     def run(self):
 
         fsvrg = FSVRG(
-            self.model,
+            self.get_model,
             self.servers,
             max_rounds=self.max_rounds,
             init_params=self.init_params,
@@ -62,4 +64,4 @@ class GaussianLinearRegressionFSVRGRunner:
         fsvrg.compute_parameters()
 
         self.w_hat = fsvrg.get_parameters()
-        self.errors = fsvrg.errors
+        self.objectives = fsvrg.objectives
