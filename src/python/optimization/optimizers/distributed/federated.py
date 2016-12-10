@@ -128,7 +128,6 @@ class FSVRGNode:
         self.end = self.begin + self.p
         self.get_local = lambda x: x[self.begin:self.end]
         self.data = self.server.get_data()
-        (self.A, self.b) = self.data
         (self.n_jks, self.phi_jks) = [None] * 2
 
         self._compute_local_fsvrg_params()
