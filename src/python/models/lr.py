@@ -36,6 +36,14 @@ class LinearRegression:
             (A != 0).astype(float),
             axis=0)
 
+    def get_permuted_data(self, data, permutation):
+
+        (A, b) = data
+        perm_A = A[permutation,:]
+        perm_b = b[permutation,:]
+
+        return (perm_A, perm_b)
+
     def get_projection(self, data, params):
 
         return params

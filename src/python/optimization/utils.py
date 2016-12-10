@@ -2,15 +2,6 @@ import numpy as np
 
 from linal.utils import get_thresholded, get_safe_power
 
-def get_minibatch(A, batch_size):
-
-    indexes = np.random.choice(
-        A.shape[0],
-        replace=False, 
-        size=batch_size)
-
-    return A[indexes,:]
-
 def is_converged(previous, current, eps, verbose):
 
     dist = np.linalg.norm(previous - current)

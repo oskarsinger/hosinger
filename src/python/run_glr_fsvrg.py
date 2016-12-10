@@ -27,7 +27,7 @@ def run_it_all_day_bb(
 
     runner.run()
 
-    print runner.errors
+    print runner.objectives
 
 if __name__=='__main__':
     run_it_all_day_bb()

@@ -1,5 +1,7 @@
 import numpy as np
 
+from data.utils import get_minibatch
+
 class LinearRegressionGaussianLoader:
 
     def __init__(self,
@@ -38,6 +40,13 @@ class LinearRegressionGaussianLoader:
     def get_data(self):
 
         return (self.X, self.y)
+
+    def get_random_batch(self, batch_size=1):
+
+        batch = get_minibatch(
+            np.hstack([A, b]), batch_size)
+
+        return (batch[:,:-1], batch[:,-1])
 
     def name(self):
 
