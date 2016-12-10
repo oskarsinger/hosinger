@@ -1,6 +1,6 @@
 import numpy as np
 
-from optimization.utils import get_minibatch
+from data.utils import get_minibatch
 from drrobert.ml import get_pca
 
 class Batch2Minibatch:
