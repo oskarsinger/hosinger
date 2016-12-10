@@ -116,6 +116,7 @@ class FSVRGNode:
         id_number,
         h=0.1):
 
+        self.model = model
         self.server = server
         self.get_objective = model.get_objective
         self.get_coord_counts = model.get_coordinate_counts
@@ -160,6 +161,7 @@ class FSVRGNode:
             self.nk,
             replace=False,
             size=self.nk).tolist()
+        print permutation
         local_w = self.get_local(global_w)
         print 'norm(local_w)', np.linalg.norm(local_w)
         local_grad = self.get_local(global_grad)
@@ -167,7 +169,7 @@ class FSVRGNode:
         w_i = np.copy(local_w)
 
         for i in permutation:
-            datum_i = (self.A[i,:][np.newaxis,:], self.b[i])
+            datum_i = self.model.get_datum(self.data, i)
             local_grad_i = self.get_stochastic_gradient(
                 datum_i, local_w)
             print 'norm(local_grad_i)', np.linalg.norm(local_grad_i)
