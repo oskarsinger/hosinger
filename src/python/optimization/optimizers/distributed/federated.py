@@ -79,6 +79,7 @@ class FSVRG:
         print 'norm(ws)', [np.linalg.norm(w) for w in ws]
         weighted = [(float(nk) / self.n) * (w_k - w_t)
              for (nk, w_k) in zip(self.nks, ws)]
+        print 'norm(weighted)', [np.linalg.norm(w) for w in weighted]
 
         return self.A_server.get_qn_transform(
             sum(weighted))
@@ -91,10 +92,9 @@ class FSVRG:
         self.n = sum(self.nks)
         njs = sum(njks)
         phi_js = njs / self.n
-        sjk_invs = [(phi_jk / phi_js)[:,np.newaxis]
+        sjks = [(phi_js / phi_jk)[:,np.newaxis]
                     for phi_jk in phi_jks]
-        self.S_servers = [SDS(sjk_inv)
-                          for sjk_inv in sjk_invs]
+        self.S_servers = [SDS(sjk) for sjk in sjks]
 
         for (n, S_s) in zip(self.nodes, self.S_servers):
             n.set_S_server(S_s)
@@ -102,9 +102,9 @@ class FSVRG:
         omega_js = np.vstack(
             (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
-        aj_invs = omega_js / self.num_nodes
+        ajs = get_sp(omega_js / self.num_nodes, -1)
 
-        self.A_server = SDS(aj_invs)
+        self.A_server = SDS(ajs)
 
 class FSVRGNode:
 

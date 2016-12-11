@@ -58,7 +58,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Test the proposed advantages of FSVRG, e.g. drastically different numbers of parameters at each node, and different distributions at each node (although that doesn't seem to matter too much with complete independence across nodes as we currently have it).
 
 ###Bandit Feedback
-* How do I account for the bandit feedback on the parameters of the treatment effect? Seems like it might be tricky to propagate through the link function to the natural parameter space.
+* So I def need to make a different parameter update depending on whether I apply treatment. How does that propagate through the link function, though? Log-likelihood of Rademachers?
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
