@@ -9,8 +9,7 @@ class QuasinewtonInexactDANE:
     def __init__(self,
         servers,
         get_gradient,
-        get_error,
-        get_projection,
+        get_objective,
         num_rounds=50,
         mu=100,
         eta_schedulers=None,
@@ -19,8 +18,7 @@ class QuasinewtonInexactDANE:
         self.servers = servers
         self.num_nodes = len(self.servers)
         self.get_gradient = get_gradient
-        self.get_error = get_error
-        self.get_projection = get_projection
+        self.get_objective = get_objective
         self.num_rounds = num_rounds
         self.mu = mu
         self.init_params = init_params
@@ -37,11 +35,11 @@ class QuasinewtonInexactDANE:
         self.nodes = [DANENode(
                         ds, 
                         self.get_gradient, 
-                        self.get_error,
+                        self.get_objective,
                         eta_scheduler=es,
                         mu=self.mu)
                       for (ds, es) in node_stuff]
-        self.errors = []
+        self.objectives = []
 
     def get_parameters(self):
 
@@ -63,12 +61,11 @@ class QuasinewtonInexactDANE:
                             np.copy(w_t), 
                             np.copy(grad_t))
                        for n in self.nodes]
-            (ws, errors) = unzip(updates)
+            (ws, objectives) = unzip(updates)
             # TODO: Make sure this is a good place to project
-            w_t = self.get_projection(
-                sum(ws) / self.num_nodes)
+            w_t = sum(ws) / self.num_nodes
 
-            self.errors.append(sum(errors))
+            self.objectives.append(sum(objectives))
 
         self.w = w_t
 
@@ -77,7 +74,7 @@ class DANENode:
     def __init__(self,
         server,
         get_gradient,
-        get_error,
+        get_objective,
         eta_scheduler=None,
         mu=100):
 
@@ -91,7 +88,7 @@ class DANENode:
         self.qn_server = DAGS(delta=self.mu)
         self.data = self.server.get_data()
         self.get_gradient = lambda w: get_gradient(self.data, w)
-        self.get_error = lambda w: get_error(self.data, w)
+        self.get_objective = lambda w: get_objective(self.data, w)
 
     def get_update(self, global_w, global_grad):
 
@@ -99,6 +96,6 @@ class DANENode:
         search_direction = self.qn_server.get_qn_transform(
             global_grad)
         new_w = global_w - eta * search_direction
-        error = self.get_error(new_w)
+        objective = self.get_objective(new_w)
 
-        return (new_w, error)
+        return (new_w, objective)
