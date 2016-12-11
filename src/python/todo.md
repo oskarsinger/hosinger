@@ -28,13 +28,21 @@
 
 * Look at the plots produced in the AIDE, SVRG, and Federated papers and reproduce them for your own experiments.
 
-* Produce the A and S servers for linear regression with FSVRG. Make sure to account for the global model vs the local ones in your creation of the LR object and in the way the gradient updates are done.
-
 * Implementation steps for online FSVRG:
     2. Infrastructure for testing distributed algs
         * Needs to allow for randomly unavailable nodes. Would be nice if I didn't have to simulate that inside of SVRG subroutine. Maybe write a wrapper that simulates unavailability.
-        * Maybe should have separate loaders for context/state and feedback depending on the independence assumptions.
-    5. More online-ish FSVRG
+
+###DIAG
+* Implement static, single-threaded DIAG
+
+* Derive and implement 'federated' DIAG and RLFDIAG
+
+###Quasinewton Servers
+* Figure out how to update the S and A servers with new statistics since dataset changes at each epoch
+
+* Implement full AdaGrad and Adam, diagonal Adam
+
+* Implement the paper on low-rank estimates of QN matrices
 
 ###Particle MCMC
 NOTE: This will have to wait until winter break or next semester probably.
@@ -48,17 +56,16 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
 
-* For now, just pretend like Federated is only dealing with scenarios where each node is only updating parameters that no other nodes are updating.
-    * Since the updates to EM require maintainence of additional state, I think I should be using the model as I have written it (with bugs fixed, of course).
-    * How do I account for the dependence structure between the local optimizers, local models, and global coordinator?
-        * The global coordinator just needs to see the updates computed by the local optimizers.
-
-* Need to set up RL-like data serving in the FSVRG framework. Should just be able to plug in calls to reward etc
+* Since the updates to EM require maintainence of additional state, I think I should be using the model as I have written it (with bugs fixed, of course).
 
 * Test the proposed advantages of FSVRG, e.g. drastically different numbers of parameters at each node, and different distributions at each node (although that doesn't seem to matter too much with complete independence across nodes as we currently have it).
 
-###Bandit Feedback
-* So I def need to make a different parameter update depending on whether I apply treatment. How does that propagate through the link function, though? Log-likelihood of Rademachers?
+* Try plugging in an AdaGrad transform at each node. May speed up convergence.
+
+###RL Feedback
+* So I def need to make a different parameter update depending on whether I apply treatment. How does that propagate through the link function, though? Gradient on log-likelihood of only parameters that involve the Rademachers? Do those depend on the Gaussian parameters too?
+
+* Figure out how to integrate prox RL into my optimization library
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
