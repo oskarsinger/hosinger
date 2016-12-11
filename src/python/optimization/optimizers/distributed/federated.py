@@ -49,25 +49,15 @@ class FSVRG:
         for i in xrange(self.max_rounds):
             local_grads = [n.get_gradient(n.get_local(w_t))
                            for n in self.nodes]
-            print 'norm(local_grads)', [np.linalg.norm(lg)
-                                        for lg in local_grads]
             grad_t = np.vstack(local_grads) / self.num_nodes
 
-            print 'norm(grad_t)', np.linalg.norm(grad_t)
-            print 'Before'
-            print 'norm(w_t)', np.linalg.norm(w_t)
-            print 'norm(local_ws)', [np.linalg.norm(n.get_local(w_t))
-                                     for n in self.nodes]
             updates = [n.get_update(
                             np.copy(w_t),
                             np.copy(grad_t))
                        for n in self.nodes]
             (ws, objectives) = unzip(updates)
             agg = self._get_aggregate_grad(ws, w_t)
-            print 'norm(agg)', np.linalg.norm(agg)
             w_t = w_t + agg
-            print 'After'
-            print 'norm(w_t)', np.linalg.norm(w_t)
 
             self.objectives.append(
                 [o[-1] for o in objectives])
@@ -76,10 +66,8 @@ class FSVRG:
 
     def _get_aggregate_grad(self, ws, w_t):
 
-        print 'norm(ws)', [np.linalg.norm(w) for w in ws]
         weighted = [(float(nk) / self.n) * (w_k - w_t)
              for (nk, w_k) in zip(self.nks, ws)]
-        print 'norm(weighted)', [np.linalg.norm(w) for w in weighted]
 
         return self.A_server.get_qn_transform(
             sum(weighted))
@@ -152,16 +140,12 @@ class FSVRGNode:
 
     def get_update(self, global_w, global_grad):
 
-        print self.id_number
-        
         permutation = np.random.choice(
             self.nk,
             replace=False,
             size=self.nk).tolist()
         local_w = self.get_local(global_w)
-        print 'norm(local_w)', np.linalg.norm(local_w)
         local_grad = self.get_local(global_grad)
-        print 'norm(local_grad)', np.linalg.norm(local_grad)
         w_i = np.copy(local_w)
         objectives = []
 
@@ -169,17 +153,12 @@ class FSVRGNode:
             datum_i = self.model.get_datum(self.data, i)
             local_grad_i = self.get_stochastic_gradient(
                 datum_i, local_w)
-            print 'norm(local_grad_i)', np.linalg.norm(local_grad_i)
             grad_i = self.get_stochastic_gradient(
                 datum_i, w_i)
-            print 'norm(grad_i)', np.linalg.norm(grad_i)
             search_direction = self.S_server.get_qn_transform(
                 grad_i - local_grad_i) + local_grad
-            print 'norm(sd)', np.linalg.norm(search_direction)
-            print 'eta', self.eta
             w_i1 = np.copy(w_i)
             w_i -= self.eta * search_direction
-            print 'norm(w_i - w_i1)', np.linalg.norm(w_i - w_i1)
 
             objectives.append(
                 self.get_objective(self.data, w_i))
@@ -187,8 +166,6 @@ class FSVRGNode:
         new_global_w = np.copy(global_w)
 
         new_global_w[self.begin:self.end] = np.copy(w_i)
-
-        print objectives
 
         return (new_global_w, objectives)
 

@@ -18,7 +18,6 @@ class GaussianLinearRegressionFSVRGRunner:
 
         self.num_nodes = num_nodes
         self.n = n
-        # Add 1 for bias term
         self.max_rounds = max_rounds
         self.h = h
         self.noisy = noisy
