@@ -3,7 +3,6 @@ import optimization.utils as ou
 
 from optimization.stepsize import FixedScheduler as FXS
 
-# TODO: does this really need to be a class?
 class StochasticVarianceReducedGradient:
 
     def __init__(self, 
