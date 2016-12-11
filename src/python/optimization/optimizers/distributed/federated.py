@@ -104,7 +104,7 @@ class FSVRG:
         omega_js = np.vstack(
             (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
-        aj_invs = omega_js / self.num_nodes
+        aj_invs = get_sp(omega_js / self.num_nodes, -1)
 
         self.A_server = SDS(aj_invs)
 
@@ -149,7 +149,6 @@ class FSVRGNode:
 
     def _compute_local_fsvrg_params(self):
 
-        # TODO: Change this to be general to form of data
         self.n_jks = self.get_coord_counts(self.data)
         self.phi_jks = self.n_jks / self.nk
 
@@ -161,12 +160,12 @@ class FSVRGNode:
             self.nk,
             replace=False,
             size=self.nk).tolist()
-        print permutation
         local_w = self.get_local(global_w)
         print 'norm(local_w)', np.linalg.norm(local_w)
         local_grad = self.get_local(global_grad)
         print 'norm(local_grad)', np.linalg.norm(local_grad)
         w_i = np.copy(local_w)
+        objectives = []
 
         for i in permutation:
             datum_i = self.model.get_datum(self.data, i)
@@ -179,18 +178,21 @@ class FSVRGNode:
             search_direction = self.S_server.get_qn_transform(
                 grad_i - local_grad_i) + local_grad
             print 'norm(sd)', np.linalg.norm(search_direction)
+            print 'eta', self.eta
+            w_i1 = np.copy(w_i)
             w_i -= self.eta * search_direction
+            print 'norm(w_i - w_i1)', np.linalg.norm(w_i - w_i1)
 
-            self.objectives.append(
+            objectives.append(
                 self.get_objective(self.data, w_i))
 
         new_global_w = np.copy(global_w)
 
         new_global_w[self.begin:self.end] = np.copy(w_i)
 
-        print self.objectives
+        print objectives
 
-        return (new_global_w, self.objectives)
+        return (new_global_w, objectives)
 
     def get_gradient(self, w):
 

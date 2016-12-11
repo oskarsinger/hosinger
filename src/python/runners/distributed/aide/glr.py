@@ -73,4 +73,4 @@ class GaussianLinearRegressionAIDERunner:
         aide.compute_parameters()
 
         self.w_hat = aide.get_parameters()
-        self.errors = aide.errors
+        self.objectives = aide.objectives

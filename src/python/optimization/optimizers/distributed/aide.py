@@ -30,7 +30,7 @@ class AIDE:
         self.mu = mu
         self.init_params = init_params
         self.w = None
-        self.errors = []
+        self.objectives = []
 
     def get_parameters(self):
 
@@ -51,8 +51,7 @@ class AIDE:
             dane_t = QIDANE(
                 self.servers, 
                 get_gradient,
-                self.model.get_error,
-                self.model.get_projection,
+                self.model.get_objective,
                 num_rounds=self.dane_rounds,
                 init_params=w_t,
                 mu=self.mu)
@@ -67,8 +66,8 @@ class AIDE:
             y_t = w_t + beta_t * (w_t - w_prev)
             zeta_prev = zeta_t
             
-            self.errors.append(
-                dane_t.errors[-1])
+            self.objectives.append(
+                dane_t.objectives[-1])
 
         self.w = w_t
 
