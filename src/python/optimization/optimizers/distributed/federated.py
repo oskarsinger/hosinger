@@ -70,17 +70,15 @@ class FSVRG:
             print 'norm(w_t)', np.linalg.norm(w_t)
 
             self.objectives.append(
-                [e[-1] for e in objectives])
+                [o[-1] for o in objectives])
 
         self.w = w_t
 
     def _get_aggregate_grad(self, ws, w_t):
 
         print 'norm(ws)', [np.linalg.norm(w) for w in ws]
-        weighted = sum(
-            [(float(nk) / self.n) * (w_k - w_t)
-             for (nk, w_k) in zip(self.nks, ws)])
-        print 'norm(weighted)', np.linalg.norm(weighted)
+        weighted = [(float(nk) / self.n) * (w_k - w_t)
+             for (nk, w_k) in zip(self.nks, ws)]
 
         return self.A_server.get_qn_transform(
             sum(weighted))
@@ -104,7 +102,7 @@ class FSVRG:
         omega_js = np.vstack(
             (njk[:,np.newaxis] != 0).astype(float) 
             for njk in njks)
-        aj_invs = get_sp(omega_js / self.num_nodes, -1)
+        aj_invs = omega_js / self.num_nodes
 
         self.A_server = SDS(aj_invs)
 
