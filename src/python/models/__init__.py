@@ -1,2 +1,2 @@
 from lr import LinearRegression
-from gmm import RLNetworkRademacherGaussianMixtureModel
+from gmm import BanditNetworkRademacherGaussianMixtureModel

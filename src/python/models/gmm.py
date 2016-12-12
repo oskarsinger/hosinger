@@ -3,7 +3,7 @@ import numpy as np
 from drrobert.misc import unzip
 from scipy.stats import norm
 
-class RLNetworkRademacherGaussianMixtureModel:
+class BanditNetworkRademacherGaussianMixtureModel:
 
     def __init__(self, 
         budget,
