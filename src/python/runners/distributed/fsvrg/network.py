@@ -5,7 +5,7 @@ from data.loaders.shortcuts import get_er_ESGWBEL
 from data.servers.rl import BanditServer as BS
 from models import BanditNetworkRademacherGaussianMixtureModel as BNRGMM
 
-class BNGRMMBanditFSVRGRunner:
+class BNRGMMBanditFSVRGRunner:
 
     def __init__(self,
         num_nodes,
@@ -18,9 +18,7 @@ class BNGRMMBanditFSVRGRunner:
         self.max_rounds = max_rounds
         self.h = h
 
-        loaders = get_er_ESGWBEL(
-            # TODO: fill this in
-            )
+        loaders = get_er_ESGWBEL(num_nodes)
 
         self.servers = [BS(l) for l in loaders]
         # TODO: eventually involve unknown baseline
@@ -37,8 +35,15 @@ class BNGRMMBanditFSVRGRunner:
 
     def run(self):
 
-        bfsvrg = FSVRG(
+        bfsvrg = BanditFSVRG(
             self.get_model,
             self.servers,
             max_rounds=self.max_rounds
             h=self.h)
+
+        bfsvrg.compute_parameters()
+
+        self.w_hat = bfsvrg.get_parameters()
+        self.objectives = bfsvrg.objectives
+
+        # TODO: make line plot of objectives

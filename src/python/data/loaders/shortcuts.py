@@ -14,21 +14,55 @@ from at import AlTestSpikeLoader as ATSL
 from at import AlTestRampGenerator as ATRG
 from at import AlTestRampLoader as ATRL
 from rl import ExposureShiftedGaussianWithBaselineEffectLoader as ESGWBEL
+from drrobert.random import rademacher
 
 def get_er_ESGWBEL(
     num_nodes,
-    n,
-    mus,
-    sigmas,
     graph_p=0.6,
     rad_p=0.5,
+    mus=None,
+    sigmas=None,
     baseline_mus=None,
     baseline_sigmas=None):
 
     network = drn.get_erdos_renyi(num_nodes, p)
     adj_lists = drn.get_adj_lists(network)
+    signs = rademacher(
+        p=rad_p, size=num_nodes).tolist()
 
-    print 'Poop'
+    if mus is None:
+        mus = np.random.randn(
+            num_nodes).tolist()
+
+    if sigmas is None:
+        sigmas = np.random.uniform(
+            size=num_nodes, high=2.0)
+
+    if baseline_mus is None:
+        baseline_mus = [0] * num_nodes
+
+    if baseline_sigmas is None:
+        baseline_sigmas = [0] * num_nodes
+
+    nodes = []
+
+    for i in xrange(num_nodes):
+        node = ESGWBEL(
+            signs[i],
+            mus[i],
+            sigmas[i],
+            i,
+            baseline_mu=baseline_mus[i],
+            baseline_sigma=baseline_sigmas[i])
+
+        nodes.append(node)
+
+    for i in xrange(num_nodes):
+        neighbors = [nodes[j] for j in adj_lists[i]]
+
+        nodes[i].set_neighbors(neighbors)
+
+    return nodes
 
 def get_atr_loaders():
 
