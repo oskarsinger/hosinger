@@ -8,23 +8,25 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
         sign,
         mu,
         sigma,
-        neighbors,
         id_number,
         baseline_mu=0,
-        baseline_sigma=1):
+        baseline_sigma=0):
 
         self.sign = sign
         self.mu = mu
         self.sigma = sigma
-        self.neighbors = neighbors
         self.id_number = id_number
         self.baseline_mu = baseline_mu
         self.baseline_sigma = baseline_sigma
         self.action = None
         self.a_history = []
+        self.num_rounds = 0
+
+    def set_neighbors(self, neighbors):
+
+        self.neighbors = neighbors
         self.neighbor_actions = {n.id_number : False
                                  for n in self.neighbors}
-        self.num_rounds = 0
 
     def set_action(self, action):
 
