@@ -11,7 +11,7 @@ class GaussianLinearRegressionFSVRGRunner:
         num_nodes,
         n,
         p,
-        max_rounds=5,
+        max_rounds=10,
         h=0.01,
         noisy=False,
         bias=False):
@@ -40,7 +40,7 @@ class GaussianLinearRegressionFSVRGRunner:
             bias=bias)
 
         self.servers = [BS(l) for l in loaders]
-        self.get_model = lambda: LR(self.p * self.num_nodes)
+        self.get_model = lambda i: LR(self.p * self.num_nodes, i)
         self.w_hat = None
 
     def get_parameters(self):

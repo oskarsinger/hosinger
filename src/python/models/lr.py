@@ -2,9 +2,10 @@ import numpy as np
 
 class LinearRegression:
 
-    def __init__(self, p):
+    def __init__(self, p, i):
 
         self.p = p
+        self.id_number = i
 
     def get_gradient(self, data, params):
 

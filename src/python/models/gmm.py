@@ -1,25 +1,35 @@
 import numpy as np
 
+from drrobert.misc import unzip
 from scipy.stats import norm
 
 class RLNetworkRademacherGaussianMixtureModel:
 
     def __init__(self, 
+        budget,
+        id_number
         baseline_mu=0,
         baseline_sigma=0):
 
+        self.budget = budget
         self.baseline_mu = baseline_mu
         self.baseline_sigma = baseline_sigma
         self.K = 2
+        self.p = self.K * 6
         ps = np.random.randint(low=0, size=self.K)
         self.ps = ps / np.sum(ps)
         self.mus = np.zeros(self.K)
         self.sigmas = np.ones(self.K)
 
-    def get_action(self, data, params):
+    def get_action(self, params):
 
-        # TODO: Brandon will implement this and give it to me
-        print 'Poop'
+        max_id = int(params.shape[0] / self.p)
+        Sk = np.random.choice(
+            max_index,
+            replace=False,
+            self.budget).tolist()
+
+        return int(self.id_number in Sk)
 
     def get_objective(self, data, params):
 
@@ -41,15 +51,23 @@ class RLNetworkRademacherGaussianMixtureModel:
         raise Exception(
             'This method is not implemented for this class.')
 
-    def get_coordinate_counts(self, samples):
+    def get_coordinate_counts(self, data):
 
-        non_zero = [not s == 0 for s in samples]
+        actions = unzip(data)[1]
+        total = len(actions)
+        acted = sum(actions)
 
-        return len(non_zero)
+        coord_counts = np.zeros(
+            self.get_parameter_shape())
 
-    def get_parameter_shape(self, data, params):
+        coord_counts[0:2,:] = total
+        coord_counts[2:,:] = acted
 
-        return (self.K * 6, 1)
+        return coord_counts
+
+    def get_parameter_shape(self):
+
+        return (self.p, 1)
 
     def get_gradient(self, data, params):
 

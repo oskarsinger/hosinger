@@ -5,7 +5,10 @@
 
 * Revamp CV
     * Clean up your optimization and CCA code, then put them on github
-    * 
+    * E4 project, both wavelets and online CCA, mainly wavelets since that's where the results are
+    * Network interference project, complex optimization scheme synthesizing several recent publications and original ideas
+    * Volunteering
+    * Frisbee
 
 #Network Interference
 
