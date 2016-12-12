@@ -3,7 +3,9 @@
     * Is it possible to make this sufficiently general? Definitely should at least write a specific version for what I am working on.
     * This would be a great resume item for any of the Data Science for Social Good applications.
 
-* Revamp CV; maybe put some code on github (which code? I don't currently have anything worth putting up; should change that).
+* Revamp CV
+    * Clean up your optimization and CCA code, then put them on github
+    * 
 
 #Network Interference
 
