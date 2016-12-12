@@ -15,9 +15,7 @@
 ##Infrastructure
 * Develop a Parameter class to take care of nasty indexing for stuff like FSVRG.
 
-* Data loader shortcuts, specifically randomly generated ones. Should I try to fit this into the same bandit arm servers I was using earlier?
-
-* Figure out how to nicely integrate data loaders and servers in an RL context.
+* Figure out how to nicely integrate data SERVERS in an RL context.
 
 ##Learning
 * Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper.
@@ -43,8 +41,6 @@
 * Derive and implement 'federated' DIAG and RLFDIAG
 
 ###Quasinewton Servers
-* Figure out how to update the S and A servers with new statistics since dataset changes at each epoch
-
 * Implement full AdaGrad and Adam, diagonal Adam
 
 * Implement the paper on low-rank estimates of QN matrices
@@ -60,8 +56,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Think carefully about when it is possible to do projected gradient in the context of federated, and how it can be accomplished.
 
 * Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
-
-* Since the updates to EM require maintainence of additional state, I think I should be using the model as I have written it (with bugs fixed, of course).
 
 * Test the proposed advantages of FSVRG, e.g. drastically different numbers of parameters at each node, and different distributions at each node (although that doesn't seem to matter too much with complete independence across nodes as we currently have it).
 

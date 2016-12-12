@@ -5,7 +5,7 @@ from optimization.qnservers import StaticDiagonalServer as SDS
 from optimization.stepsize import InversePowerScheduler as IPS
 from linal.utils import get_safe_power as get_sp
 
-class RLFSVRG:
+class BanditFSVRG:
 
     def __init__(self,
         get_model,
@@ -22,7 +22,7 @@ class RLFSVRG:
         self.init_params = init_params
 
         self.w = None
-        self.nodes = [FSVRGNode(
+        self.nodes = [BanditFSVRGNode(
                         self.get_model(i),
                         ds,
                         i,
@@ -97,7 +97,7 @@ class RLFSVRG:
 
         return (S_servers, A_server)
 
-class RLFSVRGNode:
+class BanditFSVRGNode:
 
     def __init__(self,
         model,
@@ -121,7 +121,7 @@ class RLFSVRGNode:
         self.get_local = lambda x: x[self.begin:self.end]
         (self.n_jks, self.phi_jks) = [None] * 2
         self.get_stochastic_gradient = model.get_gradient
-        self.eta_scheduler = IPS(h)
+        self.eta_scheduler = IPS(initial=h,power=1)
         self.objectives = []
         self.rewards = []
         self.actions = []

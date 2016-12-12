@@ -5,7 +5,6 @@ from drrobert.random import normal
 class ExposureShiftedGaussianWithBaselineEffectLoader:
 
     def __init__(self,
-        n,
         sign,
         mu,
         sigma,
@@ -14,7 +13,6 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
         baseline_mu=0,
         baseline_sigma=1):
 
-        self.n = n
         self.sign = sign
         self.mu = mu
         self.sigma = sigma
@@ -40,7 +38,7 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
 
         self.neighbor_actions[neighbor_id] = action
 
-    def get_data(self):
+    def get_reward(self):
 
         self.num_rounds = 0
 
