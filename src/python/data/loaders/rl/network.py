@@ -25,7 +25,7 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
     def set_neighbors(self, neighbors):
 
         self.neighbors = neighbors
-        self.neighbor_actions = {n.id_number : False
+        self.neighbor_actions = {n.id_number : 0
                                  for n in self.neighbors}
 
     def set_action(self, action):
@@ -34,7 +34,7 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
 
         for n in self.neighbors:
             n.set_neighbor_action(
-                action, self.id_number)
+                int(action), self.id_number)
 
     def set_neighbor_action(self, action, neighbor_id):
 
@@ -42,13 +42,16 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
 
     def get_reward(self):
 
-        self.num_rounds = 0
+        self.num_rounds += 1
+        exposure = 0
 
-        n_actions = self.neighbor_actions.values()
-        neighbor_treatment_count = self.sign * sum(
-            [float(na) for na in n_actions])**(0.5)
-        ratio = neighbor_treatment_count / len(self.neighbors)
-        exposure = ratio**(0.5)
+        if len(self.neighbors) > 0:
+            n_actions = self.neighbor_actions.values()
+            neighbor_treatment_count = sum(
+                [float(na) for na in n_actions])**(0.5)
+            ratio = neighbor_treatment_count / len(self.neighbors)
+            exposure = ratio**(0.5)
+
         baseline = normal(
             loc=self.baseline_mu,
             scale=self.baseline_sigma)
@@ -59,7 +62,11 @@ class ExposureShiftedGaussianWithBaselineEffectLoader:
                 loc=self.mu,
                 scale=self.sigma)
 
-        return baseline + treatment + exposure
+        reward = baseline + \
+            treatment + \
+            self.sign * exposure
+
+        return (reward, exposure)
 
     def cols(self):
 

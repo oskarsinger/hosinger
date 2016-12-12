@@ -20,6 +20,9 @@ class BNRGMMBanditFSVRGRunner:
 
         loaders = get_er_ESGWBEL(num_nodes)
 
+        self.init_params = np.random.randn(
+            2 * 6 * self.num_nodes, 1)
+
         self.servers = [BS(l) for l in loaders]
         # TODO: eventually involve unknown baseline
         self.get_model = lambda i: BNRGMM(budget, i)
@@ -38,8 +41,9 @@ class BNRGMMBanditFSVRGRunner:
         bfsvrg = BanditFSVRG(
             self.get_model,
             self.servers,
-            max_rounds=self.max_rounds
-            h=self.h)
+            max_rounds=self.max_rounds,
+            h=self.h,
+            init_params=self.init_params)
 
         bfsvrg.compute_parameters()
 
