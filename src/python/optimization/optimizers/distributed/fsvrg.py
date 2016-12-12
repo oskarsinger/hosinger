@@ -128,7 +128,7 @@ class RLFSVRGNode:
 
     def set_S_server(self, S_server):
 
-        # TODO: Should I be recomputing this at every round?
+        # TODO: Just make a new one every round of communication
 
         self.S_server = S_server
 
