@@ -1,2 +1,2 @@
 from fixed import FixedScheduler
-from isr import InverseSquareRootScheduler
+from isr import InversePowerScheduler
