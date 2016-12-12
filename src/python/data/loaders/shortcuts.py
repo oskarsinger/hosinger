@@ -1,6 +1,7 @@
 import h5py
 import os
 
+import numpy as np
 import drrobert.network as drn
 
 from simple import CosineLoader as CL
@@ -25,7 +26,7 @@ def get_er_ESGWBEL(
     baseline_mus=None,
     baseline_sigmas=None):
 
-    network = drn.get_erdos_renyi(num_nodes, p)
+    network = drn.get_erdos_renyi(num_nodes, graph_p)
     adj_lists = drn.get_adj_lists(network)
     signs = rademacher(
         p=rad_p, size=num_nodes).tolist()
@@ -58,7 +59,9 @@ def get_er_ESGWBEL(
         nodes.append(node)
 
     for i in xrange(num_nodes):
-        neighbors = [nodes[j] for j in adj_lists[i]]
+        neighbors = [nodes[k]
+                     for (k, j) in enumerate(adj_lists[i])
+                     if j == 1]
 
         nodes[i].set_neighbors(neighbors)
 

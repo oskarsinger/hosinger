@@ -2,8 +2,7 @@ import numpy as np
 
 class BanditServer:
 
-    def __init(self,
-        loader):
+    def __init__(self, loader):
 
         self.loader = loader
 

@@ -7,17 +7,18 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
     def __init__(self, 
         budget,
-        id_number
+        id_number,
         baseline_mu=0,
         baseline_sigma=0):
 
         self.budget = budget
+        self.id_number = id_number
         self.baseline_mu = baseline_mu
         self.baseline_sigma = baseline_sigma
         self.K = 2
         self.p = self.K * 6
-        ps = np.random.randint(low=0, size=self.K)
-        self.ps = ps / np.sum(ps)
+        self.ps = np.random.dirichlet(
+            np.random.randn(self.K))
         self.mus = np.zeros(self.K)
         self.sigmas = np.ones(self.K)
 
@@ -25,9 +26,9 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
         max_id = int(params.shape[0] / self.p)
         Sk = np.random.choice(
-            max_index,
+            max_id,
             replace=False,
-            self.budget).tolist()
+            size=self.budget).tolist()
 
         return int(self.id_number in Sk)
 
@@ -35,6 +36,7 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
         objective = 0
 
+        print params
         for ((reward, r_scale), action) in data:
             shifted_sample = sample + np.hstack(
                 [r_scale, -r_scale])
@@ -71,37 +73,42 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
     def get_gradient(self, data, params):
 
-        ((sample, r_scale), action) = data
+        (samples_and_r_scales, actions) = unzip(data)
+        (samples, r_scales) = unzip(samples_and_r_scales)
         gradient = self._get_gradient(
-            sample, r_scale, action)
+            samples, r_scales, actions)
 
         self._compute_M_step(params, action)
 
         return gradient
         
-    def _get_gradient(self, sample, r_scale, action):
+    def _get_gradient(self, samples, r_scales, actions):
 
         # Get weights for expected sufficient stats
-        shifted_sample = sample + np.hstack(
-            [r_scale, -r_scale])
+        r_scales = np.array(r_scales)[:,np.newaxis]
+        actions = np.array(actions)[:,np.newaxis]
+        shifted_samples = np.array(samples)[:,np.newaxis] + \
+            np.hstack([r_scales, -r_scales])
         densities = self._get_densities(
-            shifted_sample, r_scale)
+            shifted_samples)
         numers = densities * self.ps
         conditional_ps = numers / np.sum(numers)
 
         # TODO: make sure this is the correct way to update when no treatment is applied
-        if action == 0:
-            shifted_sample = np.zeros_like(
-                shifted_sample)
+        shifted_samples[actions == 0] = 0
 
         # Get natural parameter/dual space stuff
         # (Expected sufficient stats conditioned on observations)
-        s_bar = np.vstack([
-            conditional_ps,
-            conditional_ps * \
-                shifted_sample,
-            conditional_ps * \
-                np.power(shifted_sample, 2)])
+        s1_hat = np.mean(
+            conditional_ps, 
+            axis=0)[:,np.newaxis]
+        s2_hat = np.mean(
+            conditional_ps * shifted_samples,
+            axis=0)[:,np.newaxis]
+        s3_hat = np.mean(
+            conditional_ps * np.power(shifted_samples, 2),
+            axis=0)[:,np.newaxis]
+        s_bar = np.vstack([s1_hat, s2_hat, s3_hat])
 
         return -s_bar
 
@@ -127,11 +134,11 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
         return w
 
-    def _get_densities(self, data):
+    def _get_densities(self, samples):
 
         mus = self.mus + self.baseline_mu
         sigmas = self.sigmas + self.baseline_sigma
-        numer = - np.power(mus - data, 2)
+        numer = - np.power(mus - samples, 2)
         denom = 2 * np.power(sigmas, 2)
         kernel = np.exp(numer / denom)
         normalizer = np.power(

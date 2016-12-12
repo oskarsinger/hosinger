@@ -5,9 +5,10 @@ from drrobert.misc import prod
 
 def rademacher(size=None, p=None):
 
-    choices = np.array([-1, +1])
+    choices = [-1, 1]
+    ps = [1-p, p]
 
-    return npr.choice(choices, size=size, p=p)
+    return npr.choice(choices, size=size, p=ps)
 
 def normal(loc=0.0, scale=1.0, shape=1):
 
@@ -19,11 +20,14 @@ def normal(loc=0.0, scale=1.0, shape=1):
         raise TypeError(
             'Parameter shape must of type tuple or int.')
 
-    vec = npr.normal(
-        loc=loc, scale=scale, size=size)
+    if scale == 0:
+        vec = np.zeros(shape)
+    else:
+        vec = npr.normal(
+            loc=loc, scale=scale, size=size)
 
-    if type(shape) is tuple:
-        vec = np.reshape(vec, shape)
+        if type(shape) is tuple:
+            vec = np.reshape(vec, shape)
 
     return vec
 

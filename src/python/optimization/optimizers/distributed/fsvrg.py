@@ -1,6 +1,6 @@
 import numpy as np
 
-from drrobert.misc import unzip
+from drrobert.misc import unzip, prod
 from optimization.qnservers import StaticDiagonalServer as SDS
 from optimization.stepsize import InversePowerScheduler as IPS
 from linal.utils import get_safe_power as get_sp
@@ -43,9 +43,12 @@ class BanditFSVRG:
         w_t = np.copy(self.init_params)
 
         for i in xrange(self.max_rounds):
-            local_grads = [n.get_gradient(n.get_local(w_t))
-                           for n in self.nodes]
-            grad_t = np.vstack(local_grads) / self.num_nodes
+            grad_t = np.zeros_like(w_t)
+
+            if i > 0:
+                local_grads = [n.get_gradient(n.get_local(w_t))
+                               for n in self.nodes]
+                grad_t = np.vstack(local_grads) / self.num_nodes
 
             (S_servers, A_server) = self._get_S_and_A_servers()
 
@@ -55,8 +58,10 @@ class BanditFSVRG:
 
             for j in xrange(2**i):
                 for n in self.nodes:
+                    n.set_local_action()
+                    
+                for n in self.nodes:
                     n.compute_local_update()
-
 
             updates = [n.get_update()
                        for n in self.nodes]
@@ -114,10 +119,10 @@ class BanditFSVRGNode:
         self.h = h
 
         self.nk = 1
-        self.p = self.server.cols()
+        self.p_shape = self.model.get_parameter_shape()
         # TODO: replace begin/end with arbitrary index vector
-        self.begin = self.id_number * self.p
-        self.end = self.begin + self.p
+        self.begin = self.id_number * prod(self.p_shape)
+        self.end = self.begin + prod(self.p_shape)
         self.get_local = lambda x: x[self.begin:self.end]
         (self.n_jks, self.phi_jks) = [None] * 2
         self.get_stochastic_gradient = model.get_gradient
@@ -138,8 +143,13 @@ class BanditFSVRGNode:
 
     def _compute_local_fsvrg_params(self):
 
-        self.n_jks = self.get_coord_counts(
-            zip(self.rewards, self.actions))
+        if self.nk == 1:
+            self.n_jks = np.zeros(
+                self.model.get_parameter_shape())
+        else:
+            self.n_jks = self.get_coord_counts(
+                zip(self.rewards, self.actions))
+
         self.phi_jks = self.n_jks / self.nk
 
     def set_global_info(self, global_w, global_grad):
@@ -148,23 +158,26 @@ class BanditFSVRGNode:
         self.global_grad = np.copy(global_grad)
         self.local_w = self.get_local(global_w)
         self.local_grad = self.get_local(global_grad)
-        self.w_n = np.copy(local_w)
+        self.w_n = np.copy(self.local_w)
 
     def get_update(self):
 
         return (self.global_w, self.objectives[-1])
 
-    def compute_local_update(self):
+    def set_local_action(self):
 
-        action = self.get_action(self.w_n)
+        action = self.get_action(self.global_w)
 
         self.actions.append(action)
+        self.server.set_action(action)
 
-        reward = self.server.get_reward(action)
+    def compute_local_update(self):
+
+        reward = self.server.get_reward()
 
         self.rewards.append(reward)
 
-        datum = (reward, action)
+        datum = zip([reward], [self.actions[-1]])
         local_grad = self.get_stochastic_gradient(
             datum, self.local_w)
         grad_n = self.get_stochastic_gradient(
@@ -184,7 +197,9 @@ class BanditFSVRGNode:
 
     def get_gradient(self, w):
 
-        return self.get_full_gradient(w)
+        data = zip(self.rewards, self.actions)
+
+        return self.model.get_gradient(data, w)
 
 class FSVRG:
 
