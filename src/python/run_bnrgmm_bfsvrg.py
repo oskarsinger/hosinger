@@ -1,5 +1,7 @@
 import click
 
+import numpy as np
+
 from runners.distributed.fsvrg import BNRGMMBanditFSVRGRunner as BNRGMMBFSVRGR
 
 @click.command()
@@ -20,6 +22,18 @@ def run_it_all_day_bb(
         h=h)
 
     runner.run()
+
+    signs = [l.sign for l in runner.loaders]
+    ps = np.hstack(
+        [n.model.ps 
+         for n in runner.bfsvrg.nodes])
+    argmaxes = np.argmax(ps, axis=0).tolist()
+    sign_hats = [-1 if agmx == 0 else 1
+                 for agmx in argmaxes]
+    errors = sum(
+        [1 for (s, s_hat) in zip(signs, sign_hats)
+         if s == s_hat])
+    print errors
 
     print runner.objectives
 

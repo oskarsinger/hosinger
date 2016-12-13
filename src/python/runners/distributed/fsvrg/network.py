@@ -18,12 +18,12 @@ class BNRGMMBanditFSVRGRunner:
         self.max_rounds = max_rounds
         self.h = h
 
-        loaders = get_er_ESGWBEL(num_nodes)
+        self.loaders = get_er_ESGWBEL(num_nodes)
 
         self.init_params = np.random.randn(
             6 * self.num_nodes, 1)
 
-        self.servers = [BS(l) for l in loaders]
+        self.servers = [BS(l) for l in self.loaders]
         # TODO: eventually involve unknown baseline
         self.get_model = lambda i: BNRGMM(budget, i)
         self.w_hat = None
@@ -38,16 +38,16 @@ class BNRGMMBanditFSVRGRunner:
 
     def run(self):
 
-        bfsvrg = BanditFSVRG(
+        self.bfsvrg = BanditFSVRG(
             self.get_model,
             self.servers,
             max_rounds=self.max_rounds,
             h=self.h,
             init_params=self.init_params)
 
-        bfsvrg.compute_parameters()
+        self.bfsvrg.compute_parameters()
 
-        self.w_hat = bfsvrg.get_parameters()
-        self.objectives = bfsvrg.objectives
+        self.w_hat = self.bfsvrg.get_parameters()
+        self.objectives = self.bfsvrg.objectives
 
         # TODO: make line plot of objectives
