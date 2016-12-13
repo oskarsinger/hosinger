@@ -2,7 +2,9 @@ import numpy as np
 
 from drrobert.misc import unzip
 from scipy.stats import norm
+from optimization.utils import get_simplex_projection
 
+# TODO: consider feeding in get_action as an arg
 class BanditNetworkRademacherGaussianMixtureModel:
 
     def __init__(self, 
@@ -16,7 +18,7 @@ class BanditNetworkRademacherGaussianMixtureModel:
         self.baseline_mu = baseline_mu
         self.baseline_sigma = baseline_sigma
         self.K = 2
-        self.p = self.K * 6
+        self.p = self.K * 3
         self.ps = np.random.dirichlet(
             np.random.randn(self.K))
         self.mus = np.zeros(self.K)
@@ -36,15 +38,14 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
         objective = 0
 
-        print params
         for ((reward, r_scale), action) in data:
-            shifted_sample = sample + np.hstack(
+            shifted_sample = reward + np.hstack(
                 [r_scale, -r_scale])
             densities = self._get_densities(
                 shifted_sample)
             likelihood = np.dot(densities, self.ps)
 
-            objective -= np.log(likelihood)
+            objective += likelihood
 
         return objective
 
@@ -78,7 +79,7 @@ class BanditNetworkRademacherGaussianMixtureModel:
         gradient = self._get_gradient(
             samples, r_scales, actions)
 
-        self._compute_M_step(params, action)
+        self._compute_M_step(params, actions)
 
         return gradient
         
@@ -86,28 +87,38 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
         # Get weights for expected sufficient stats
         r_scales = np.array(r_scales)[:,np.newaxis]
+        print 'r_scales', np.any(np.isnan(r_scales))
         actions = np.array(actions)[:,np.newaxis]
-        shifted_samples = np.array(samples)[:,np.newaxis] + \
+        print 'actions', np.any(np.isnan(actions))
+        shifted_samples = np.array(samples) + \
             np.hstack([r_scales, -r_scales])
+        print 'shifted_samples', np.any(np.isnan(shifted_samples))
         densities = self._get_densities(
             shifted_samples)
-        numers = densities * self.ps
+        print 'densities', np.any(np.isnan(densities))
+        numers = densities * self.ps.T
+        print 'numers', np.any(np.isnan(numers))
         conditional_ps = numers / np.sum(numers)
+        print 'conditional_ps', conditional_ps
 
         # TODO: make sure this is the correct way to update when no treatment is applied
-        shifted_samples[actions == 0] = 0
+        index = np.hstack([actions==0,actions==0])
+        shifted_samples[index] = 0
 
         # Get natural parameter/dual space stuff
         # (Expected sufficient stats conditioned on observations)
         s1_hat = np.mean(
             conditional_ps, 
             axis=0)[:,np.newaxis]
+        print 's1_hat', np.any(np.isnan(s1_hat))
         s2_hat = np.mean(
             conditional_ps * shifted_samples,
             axis=0)[:,np.newaxis]
+        print 's2_hat', np.any(np.isnan(s2_hat))
         s3_hat = np.mean(
             conditional_ps * np.power(shifted_samples, 2),
             axis=0)[:,np.newaxis]
+        print 's3_hat', np.any(np.isnan(s3_hat))
         s_bar = np.vstack([s1_hat, s2_hat, s3_hat])
 
         return -s_bar
@@ -115,16 +126,23 @@ class BanditNetworkRademacherGaussianMixtureModel:
     def _compute_M_step(self, params, action):
 
         # Extract each natural parameter estimate for each component
-        s_0 = params[:self.K]
-        s_1 = params[self.K:2*self.K]
-        s_2 = params[2*self.K:]
+        s_0 = get_simplex_projection(params[:self.K])
 
         self.ps = np.copy(s_0)
 
-        if action == 0:
+        if not np.any(self.ps == 0):
+            s_1 = params[self.K:2*self.K]
+            s_2 = params[2*self.K:]
+
+            s_1[s_1 >= s_2] = s_2[s_1 >= s_2] - 1
+
+
+            # TODO: should I do this even when action is 0? Does it matter?
             # Calculate raw M step
             mus = s_1 / s_2
+            print 'mus', mus
             sigmas = (s_2 - s_1) / s_0
+            print 'sigmas', sigmas
 
             # Normalize for baseline effect
             self.mus = mus - self.baseline_mu
@@ -138,13 +156,13 @@ class BanditNetworkRademacherGaussianMixtureModel:
 
         mus = self.mus + self.baseline_mu
         sigmas = self.sigmas + self.baseline_sigma
-        numer = - np.power(mus - samples, 2)
+        numer = - np.power(mus.T - samples, 2)
         denom = 2 * np.power(sigmas, 2)
-        kernel = np.exp(numer / denom)
+        kernel = np.exp(numer / denom.T)
         normalizer = np.power(
             sigmas * 2 * np.pi, 0.5)
 
-        return kernel / normalizer
+        return kernel / normalizer.T
 
 class RademacherGaussianMixtureModel:
 
