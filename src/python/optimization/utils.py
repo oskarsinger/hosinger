@@ -12,7 +12,6 @@ def get_simplex_projection(x):
     b_get = False
     
     for i in xrange(n - 1):
-        print 'i', i
         t_hat_num += sorted_x[i,0]
         t_hat = (t_hat_num - 1) / (i + 1)
 

@@ -28,7 +28,7 @@ class BanditFSVRG:
                         i,
                         h=self.h)
                       for (i, ds) in enumerate(self.servers)]
-        self.objectives = []
+        self.objectives = [[] for i in xrange(self.num_nodes)]
 
     def get_parameters(self):
 
@@ -70,8 +70,8 @@ class BanditFSVRG:
                 ws, w_t, A_server)
             w_t = w_t + agg
 
-            self.objectives.extend(
-                objectives)
+            for (i, o) in enumerate(objectives):
+                self.objectives[i].append(o)
 
         self.w = w_t
 
@@ -182,18 +182,12 @@ class BanditFSVRGNode:
         datum = zip([reward], [self.actions[-1]])
         local_grad = self.get_stochastic_gradient(
             datum, self.local_w)
-        print 'local_grad', np.any(np.isnan(local_grad))
-        print 'local_grad.shape', local_grad.shape
         grad_n = self.get_stochastic_gradient(
             datum, self.w_n)
-        print 'grad_n', np.any(np.isnan(grad_n))
-        print 'grad_n.shape', grad_n.shape
         search_direction = self.S_server.get_qn_transform(
             grad_n - local_grad) + self.local_grad
-        print 'search_direction', np.any(np.isnan(search_direction))
         eta = self.eta_scheduler.get_stepsize()
         self.w_n -= eta * search_direction
-        print 'self.w_n', np.any(np.isnan(self.w_n))
 
         self.objectives.append(
             self.get_objective(
