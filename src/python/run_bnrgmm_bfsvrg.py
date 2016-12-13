@@ -30,12 +30,26 @@ def run_it_all_day_bb(
     argmaxes = np.argmax(ps, axis=0).tolist()
     sign_hats = [-1 if agmx == 0 else 1
                  for agmx in argmaxes]
-    errors = sum(
+    num_errors = sum(
         [1 for (s, s_hat) in zip(signs, sign_hats)
-         if s == s_hat])
-    print 'ERRORS', errors
+         if not s == s_hat])
 
-    print runner.objectives
+    print 'ERRORS', num_errors
+
+    objs = np.array(
+        [sum(os) for os in runner.objectives])
+    objs = objs[:,np.newaxis]
+    y = np.arange(max_rounds)[:,np.newaxis]
+    data_map = {
+        'objective value': (y,objs,None)}
+    title = 'Network interference objective value vs communication round'
+    path = '_'.join(title.split()) + '.pdf'
+    ax = plot_lines(
+        data_map,
+        'communication round',
+        'objective value',
+        title).get_figure().savefig(
+        path, format='pdf')
 
 if __name__=='__main__':
     run_it_all_day_bb()

@@ -1,6 +1,9 @@
 import click
 
+import numpy as np
+
 from runners.distributed.fsvrg import GaussianLinearRegressionFSVRGRunner as GLRFSVRGR
+from lazyprojector import plot_lines
 
 @click.command()
 @click.option('--num-nodes', default=4)
@@ -27,7 +30,21 @@ def run_it_all_day_bb(
 
     runner.run()
 
-    print runner.objectives
+    objs = np.array(
+        [sum(os) for os in runner.objectives])
+    objs = objs[:,np.newaxis]
+    y = np.arange(max_rounds)[:,np.newaxis]
+    data_map = {
+        'objective value': (y,objs,None)}
+    title = 'objective value vs communication round'
+    path = '_'.join(title.split()) + '.pdf'
+    ax = plot_lines(
+        data_map,
+        'communication round',
+        'objective value',
+        title).get_figure().savefig(
+        path, format='pdf')
+
 
 if __name__=='__main__':
     run_it_all_day_bb()
