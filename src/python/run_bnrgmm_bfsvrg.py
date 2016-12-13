@@ -3,6 +3,7 @@ import click
 import numpy as np
 
 from runners.distributed.fsvrg import BNRGMMBanditFSVRGRunner as BNRGMMBFSVRGR
+from lazyprojector import plot_lines
 
 @click.command()
 @click.option('--num-nodes', default=100)
