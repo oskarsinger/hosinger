@@ -18,7 +18,8 @@ class BNRGMMBanditFSVRGRunner:
         self.max_rounds = max_rounds
         self.h = h
 
-        self.loaders = get_er_ESGWBEL(num_nodes)
+        self.loaders = get_er_ESGWBEL(
+            num_nodes, graph_p=0.8)
 
         self.init_params = np.random.randn(
             6 * self.num_nodes, 1)
@@ -49,5 +50,3 @@ class BNRGMMBanditFSVRGRunner:
 
         self.w_hat = self.bfsvrg.get_parameters()
         self.objectives = self.bfsvrg.objectives
-
-        # TODO: make line plot of objectives

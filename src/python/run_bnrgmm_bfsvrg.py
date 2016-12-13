@@ -33,7 +33,7 @@ def run_it_all_day_bb(
     errors = sum(
         [1 for (s, s_hat) in zip(signs, sign_hats)
          if s == s_hat])
-    print errors
+    print 'ERRORS', errors
 
     print runner.objectives
 
