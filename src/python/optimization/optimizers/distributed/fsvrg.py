@@ -80,7 +80,7 @@ class BanditFSVRG:
         weighted = [(float(nk) / self.n) * (w_k - w_t)
                     for (nk, w_k) in zip(self.nks, ws)]
 
-        return self.A_server.get_qn_transform(
+        return A_server.get_qn_transform(
             sum(weighted))
 
     def _get_S_and_A_servers(self):
@@ -91,11 +91,11 @@ class BanditFSVRG:
         self.n = sum(self.nks)
         njs = sum(njks)
         phi_js = njs / self.n
-        sjks = [(phi_js / phi_jk)[:,np.newaxis]
-                    for phi_jk in phi_jks]
+        sjks = [(phi_js / phi_jk)
+                for phi_jk in phi_jks]
         S_servers = [SDS(sjk) for sjk in sjks]
         omega_js = np.vstack(
-            (njk[:,np.newaxis] != 0).astype(float) 
+            (njk != 0).astype(float) 
             for njk in njks)
         ajs = get_sp(omega_js / self.num_nodes, -1)
         A_server = SDS(ajs)
@@ -126,7 +126,7 @@ class BanditFSVRGNode:
         self.get_local = lambda x: x[self.begin:self.end]
         (self.n_jks, self.phi_jks) = [None] * 2
         self.get_stochastic_gradient = model.get_gradient
-        self.eta_scheduler = IPS(initial=h,power=1)
+        self.eta_scheduler = IPS(initial=h,power=0.75)
         self.objectives = []
         self.rewards = []
         self.actions = []
@@ -146,6 +146,8 @@ class BanditFSVRGNode:
         if self.nk == 1:
             self.n_jks = np.zeros(
                 self.model.get_parameter_shape())
+            # To avoid NaNs in S matrix
+            self.n_jks += 0.0001
         else:
             self.n_jks = self.get_coord_counts(
                 zip(self.rewards, self.actions))
@@ -180,12 +182,18 @@ class BanditFSVRGNode:
         datum = zip([reward], [self.actions[-1]])
         local_grad = self.get_stochastic_gradient(
             datum, self.local_w)
+        print 'local_grad', np.any(np.isnan(local_grad))
+        print 'local_grad.shape', local_grad.shape
         grad_n = self.get_stochastic_gradient(
             datum, self.w_n)
+        print 'grad_n', np.any(np.isnan(grad_n))
+        print 'grad_n.shape', grad_n.shape
         search_direction = self.S_server.get_qn_transform(
             grad_n - local_grad) + self.local_grad
+        print 'search_direction', np.any(np.isnan(search_direction))
         eta = self.eta_scheduler.get_stepsize()
         self.w_n -= eta * search_direction
+        print 'self.w_n', np.any(np.isnan(self.w_n))
 
         self.objectives.append(
             self.get_objective(
