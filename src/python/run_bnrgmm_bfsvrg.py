@@ -10,13 +10,11 @@ from lazyprojector import plot_lines
 @click.option('--budget', default=5)
 @click.option('--max-rounds', default=5)
 @click.option('--graph-p', default=0.6)
-#@click.option('--h', default=0.01)
 def run_it_all_day_bb(
     num_nodes,
     budget,
     max_rounds,
-    graph_p):#,
-    #h):
+    graph_p):
 
     powers = list(reversed(
         (-np.arange(10)[1:]).tolist()))
@@ -40,18 +38,16 @@ def run_it_all_day_bb(
         argmaxes = np.argmax(ps, axis=0).tolist()
         sign_hats = [-1 if agmx == 0 else 1
                      for agmx in argmaxes]
-        num_errors = sum(
-            [1 for (s, s_hat) in zip(signs, sign_hats)
-             if not s == s_hat])
+        errors = [1 for (s, s_hat) in zip(signs, sign_hats)
+                  if not s == s_hat]
+        num_errors = sum(errors)
 
         print 'ERRORS', num_errors
 
-        objs = np.sum(
-            np.array(runner.objectives),
-            axis=0)
-        objs = objs[:,np.newaxis]
-        y = np.arange(max_rounds)[:,np.newaxis]
-        data_map['h=' + str(h)] = (y,objs,None)
+        objs = np.array(runner.objectives)
+        obj_means = np.sum(objs, axis=0)[:,np.newaxis]
+        x = np.arange(max_rounds)[:,np.newaxis]
+        data_map['h=' + str(h)] = (x,obj_means,None)
 
     title = 'Network interference ' + \
         'objective value vs communication round ' + \

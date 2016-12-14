@@ -24,6 +24,8 @@ class BNRGMMBanditFSVRGRunner:
 
         self.init_params = np.random.randn(
             6 * self.num_nodes, 1)
+        self.init_params[::6] = 0.5
+        self.init_params[1::6] = 0.5
 
         self.servers = [BS(l) for l in self.loaders]
         # TODO: eventually involve unknown baseline
