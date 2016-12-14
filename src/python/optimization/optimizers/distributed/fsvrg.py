@@ -29,6 +29,7 @@ class BanditFSVRG:
                         h=self.h)
                       for (i, ds) in enumerate(self.servers)]
         self.objectives = [[] for i in xrange(self.num_nodes)]
+        self.num_rounds = 0
 
     def get_parameters(self):
 
@@ -57,6 +58,8 @@ class BanditFSVRG:
                 n.set_S_server(S_s)
 
             for j in xrange(2**i):
+                self.num_rounds += 1
+
                 for n in self.nodes:
                     n.set_local_action()
                     
@@ -191,14 +194,14 @@ class BanditFSVRGNode:
             grad_n - local_grad) + self.local_grad
         eta = self.eta_scheduler.get_stepsize()
         self.w_n -= eta * search_direction
+        self.local_w = self.w_n
+        self.nk += 1
 
         self.objectives.append(
             self.get_objective(
                 zip(self.rewards, self.actions), 
-                self.w_n))
+                self.w_n) / self.nk)
 
-        self.local_w = self.w_n
-        self.nk += 1
 
     def get_gradient(self, w):
 

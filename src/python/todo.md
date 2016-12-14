@@ -23,8 +23,6 @@
 * Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper.
     
 ##Network
-* Plot number of erroneous gamma predictions as a function of the Erdos-Renyi probability of an edge. Should go down as probability goes up.
-* Plot node-wise error.
 
 ##Visualization
 * Need to make visualization to assess convergence of the algorithm on the local parameters. Should I also be assessing convergence on global model, or does that matter? Make that a later step? Maybe I should show the max error over all nodes for each coordinate.
