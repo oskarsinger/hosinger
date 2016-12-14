@@ -73,8 +73,8 @@ class BanditFSVRG:
             for (i, o) in enumerate(objectives):
                 self.objectives[i].append(o)
 
-        for n in self.nodes:
-            print n.objectives
+        #for n in self.nodes:
+        #    print n.objectives
 
         self.w = w_t
 

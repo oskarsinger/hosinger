@@ -10,12 +10,12 @@ def get_erdos_renyi(num_nodes, p, sym=False):
         num_rvs = num_nodes * (num_nodes - 1) / 2
         edges = bernoulli.rvs(p, size=num_rvs)
         begin = 0
-        end = num_nodes
+        end = num_nodes - 1
         
         for i in xrange(num_nodes):
-            graph[i,i:] = np.copy(edges[begin:end])
-            begin += end
-            end += num_nodes - i - 1
+            graph[i,i+1:] = np.copy(edges[begin:end])
+            begin = end
+            end += num_nodes - i - 2
 
         graph = graph + graph.T
     else:
