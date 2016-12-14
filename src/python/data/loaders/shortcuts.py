@@ -20,24 +20,25 @@ from drrobert.random import rademacher
 def get_er_ESGWBEL(
     num_nodes,
     graph_p=0.6,
-    rad_p=0.5,
+    rad_p=0.9,
     mus=None,
     sigmas=None,
     baseline_mus=None,
     baseline_sigmas=None):
 
-    network = drn.get_erdos_renyi(num_nodes, graph_p)
+    network = drn.get_erdos_renyi(
+        num_nodes, graph_p, sym=True)
     adj_lists = drn.get_adj_lists(network)
     signs = rademacher(
         p=rad_p, size=num_nodes).tolist()
 
     if mus is None:
-        mus = np.random.randn(
-            num_nodes).tolist()
+        mus = np.random.uniform(
+            size=num_nodes, high=20).tolist()
 
     if sigmas is None:
         sigmas = np.random.uniform(
-            size=num_nodes, high=2.0)
+            size=num_nodes, high=0.1)
 
     if baseline_mus is None:
         baseline_mus = [0] * num_nodes

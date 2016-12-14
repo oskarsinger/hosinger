@@ -11,7 +11,8 @@ class BNRGMMBanditFSVRGRunner:
         num_nodes,
         budget,
         max_rounds=10,
-        h=0.01):
+        h=0.01,
+        graph_p=0.6):
 
         self.num_nodes = num_nodes
         self.budget = budget
@@ -19,7 +20,7 @@ class BNRGMMBanditFSVRGRunner:
         self.h = h
 
         self.loaders = get_er_ESGWBEL(
-            num_nodes, graph_p=0.8)
+            num_nodes, graph_p=graph_p)
 
         self.init_params = np.random.randn(
             6 * self.num_nodes, 1)
