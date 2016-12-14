@@ -35,7 +35,7 @@ def run_it_all_day_bb(
     objs = objs[:,np.newaxis]
     y = np.arange(max_rounds)[:,np.newaxis]
     data_map = {
-        'objective value': (y,objs,None)}
+        'FSVRG': (y,objs,None)}
     title = 'objective value vs communication round'
     path = '_'.join(title.split()) + '.pdf'
     ax = plot_lines(
