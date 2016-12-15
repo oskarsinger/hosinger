@@ -1,65 +1,71 @@
 import click
+import matplotlib
+
+matplotlib.use('Agg')
 
 import numpy as np
+import seaborn as sns
 
 from runners.distributed.fsvrg import BNRGMMBanditFSVRGRunner as BNRGMMBFSVRGR
 from lazyprojector import plot_lines
 
 @click.command()
 @click.option('--num-nodes', default=100)
-@click.option('--budget', default=5)
 @click.option('--max-rounds', default=5)
-@click.option('--graph-p', default=0.6)
 def run_it_all_day_bb(
     num_nodes,
-    budget,
-    max_rounds,
-    graph_p):
+    max_rounds):
 
-    powers = list(reversed(
-        (-np.arange(10)[1:]).tolist()))
+    inv_powers = list(xrange(5,10))
+    graph_ps = [i * 0.1 for i in xrange(5,10)]
+    budgets = [i*5 for i in xrange(1,5)]
     data_map = {}
 
-    for i in powers:
-        h = 10**i
-        runner = BNRGMMBFSVRGR(
-            num_nodes,
-            budget,
-            max_rounds=max_rounds,
-            h=h,
-            graph_p=graph_p)
+    for budget in budgets:
+        for graph_p in graph_ps:
+            for i in inv_powers:
+                h = 10**(-i)
+                runner = BNRGMMBFSVRGR(
+                    num_nodes,
+                    budget,
+                    max_rounds=max_rounds,
+                    h=h,
+                    graph_p=graph_p)
 
-        runner.run()
+                runner.run()
 
-        signs = [l.sign for l in runner.loaders]
-        ps = np.hstack(
-            [n.model.ps 
-             for n in runner.bfsvrg.nodes])
-        argmaxes = np.argmax(ps, axis=0).tolist()
-        sign_hats = [-1 if agmx == 0 else 1
-                     for agmx in argmaxes]
-        errors = [1 for (s, s_hat) in zip(signs, sign_hats)
-                  if not s == s_hat]
-        num_errors = sum(errors)
+                signs = [l.sign for l in runner.loaders]
+                ps = np.hstack(
+                    [n.model.ps 
+                     for n in runner.bfsvrg.nodes])
+                argmaxes = np.argmax(ps, axis=0).tolist()
+                sign_hats = [-1 if agmx == 0 else 1
+                             for agmx in argmaxes]
+                errors = [1 for (s, s_hat) in zip(signs, sign_hats)
+                          if not s == s_hat]
+                num_errors = sum(errors)
 
-        print 'ERRORS', num_errors
+                print 'ERRORS', num_errors
 
-        objs = np.array(runner.objectives)
-        obj_means = np.sum(objs, axis=0)[:,np.newaxis]
-        x = np.arange(max_rounds)[:,np.newaxis]
-        data_map['h=' + str(h)] = (x,obj_means,None)
+                objs = np.array(runner.objectives)
+                obj_means = np.sum(objs, axis=0)[:,np.newaxis]
+                x = np.arange(max_rounds)[:,np.newaxis]
+                data_map['h=' + str(h)] = (x,obj_means,None)
 
-    title = 'Network interference ' + \
-        'objective value vs communication round ' + \
-        'with budget ' + str(budget) + ' and ' + \
-        'graph p ' + str(graph_p)
-    path = '_'.join(title.split()) + '.pdf'
-    ax = plot_lines(
-        data_map,
-        'communication round',
-        'objective value',
-        title).get_figure().savefig(
-        path, format='pdf')
+            title = 'Network interference ' + \
+                'objective value vs communication round ' + \
+                'with budget ' + str(budget) + ' and ' + \
+                'graph p ' + str(graph_p)
+            path = '_'.join(title.split()) + '.pdf'
+
+            plot_lines(
+                data_map,
+                'communication round',
+                'objective value',
+                title).get_figure().savefig(
+                path, format='pdf')
+            sns.plt.clf()
+
 
 if __name__=='__main__':
     run_it_all_day_bb()
