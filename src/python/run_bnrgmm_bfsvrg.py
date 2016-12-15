@@ -17,8 +17,8 @@ def run_it_all_day_bb(
     max_rounds):
 
     inv_powers = list(xrange(5,10))
-    graph_ps = [i * 0.1 for i in xrange(5,10)]
-    budgets = [i*5 for i in xrange(1,5)]
+    graph_ps = [0.5, 0.9]
+    budgets = [5, 50]
     data_map = {}
 
     for budget in budgets:
@@ -55,7 +55,7 @@ def run_it_all_day_bb(
             title = 'Network interference ' + \
                 'objective value vs communication round ' + \
                 'with budget ' + str(budget) + ' and ' + \
-                'graph p ' + str(graph_p)
+                'graph p ' + str(int(graph_p*10)) + 'x10^-1'
             path = '_'.join(title.split()) + '.pdf'
 
             plot_lines(
