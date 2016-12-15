@@ -244,11 +244,20 @@ class ViewPairwiseCCARunner:
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
-                factor = 8.0 / float(tl.shape[0])
+                # TODO: replace tl.shape[0] with completed length at that sample frequency, then pad with Nones, then
+                cca_dim = min([
+                    self.num_freqs[k[0]], 
+                    self.num_freqs[k[1]]])
+                full_length = int(24 * 3600 / 2**(cca_dim-1))
+                padding = np.array(
+                        [[None,None]] * (full_length - tl.shape[0]))
+                print tl.shape, padding.shape
+                tl = np.vstack([tl, padding])
+                factor = 8.0 / float(full_length)
                 unit = rmu.get_symptom_status(s) \
                     if self.subject_mean else None
                 data = (
-                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
+                    factor * np.arange(full_length)[:,np.newaxis], 
                     tl,
                     unit)
                 data_maps.get(k[0], k[1])[s_key] = data

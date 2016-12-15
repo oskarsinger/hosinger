@@ -147,7 +147,7 @@ class DTCWTPartialReconstructionRunner:
             gain_mask=mask * 0)
         prs.append(Yl_pr)
 
-        return list(reversed(prs))
+        return prs
 
     def _show(self):
 
