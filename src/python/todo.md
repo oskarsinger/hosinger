@@ -80,10 +80,10 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
 
-* Try completing the CCA over frequency time series like I did for partial reconstructions. For this, I need the sampling factor for the current subsampling rate, which will be the lowest one maintained for either of the wavelet matrices, I think? Whichever one corresponds to cca_dim.
+* Try completing the CCA over frequency time series like I did for partial reconstructions. For this, I need the sampling factor for the current subsampling rate, which will be the lowest one maintained for either of the wavelet matrices, I think? Whichever one corresponds to cca_dim. Do I need to be storing CCA dim so I can use it later, or can I find a way to pass it directly through?
 
-* Don't show the element-wise multiplied singular vectors. How to show it then? Show both left and right vectors on the same plot or different ones? Side by side?
+* Don't show the element-wise multiplied singular vectors. Show them on different plots, side-by-side. Need to show all subjects on the same plot to compare across subjects.
 
-* Compare my partial reconstructions to Al's. Possibly just alter my reconstruction code to reflect his. It looks correct. Figure out why all frequency plots are identical. Something's buggy.
+* Once I get access to the server, run Al's plotting stuff and check his results against mine.
 
 * Try averaging wavelet correlation (i.e. A matrix input for sparse CCA code) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).
