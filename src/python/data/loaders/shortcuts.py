@@ -34,11 +34,13 @@ def get_er_ESGWBEL(
 
     if mus is None:
         mus = np.random.uniform(
-            size=num_nodes, high=5).tolist()
+            size=num_nodes, 
+            low=-5, 
+            high=5).tolist()
 
     if sigmas is None:
         sigmas = np.random.uniform(
-            size=num_nodes, high=5)
+            size=num_nodes, low=1, high=5)
 
     if baseline_mus is None:
         baseline_mus = [0] * num_nodes
