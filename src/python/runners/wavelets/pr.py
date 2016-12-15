@@ -136,7 +136,7 @@ class DTCWTPartialReconstructionRunner:
                 self.biorthogonal,
                 self.qshift,
                 gain_mask=mask)
-
+            
             prs.append(pr)
 
         Yl_pr = wdtcwt.oned.dtwaveifm(
@@ -282,7 +282,7 @@ class DTCWTPartialReconstructionRunner:
                   if is_v(fn) and is_f(fn)] 
         stats = {s[-2:] : None for s in self.subjects}
 
-        for fn in fns:
+        for fn in vf_fns:
             info = fn.split('_')
             s = info[1]
             path = os.path.join(self.stat_dir, fn)
