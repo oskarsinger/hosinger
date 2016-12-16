@@ -5,16 +5,16 @@ matplotlib.use('Agg')
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 import data.loaders.shortcuts as dlstcts
 
 from data.servers.batch import BatchServer as BS
 from linal.utils.misc import get_non_nan
+from lazyprojector import plot_lines
 
 class ATRawDataPlotRunner:
 
     def __init__(self,
-        tsv_path,
+        tsv_path=None,
         period=24*3600,
         std=False):
 
@@ -23,10 +23,15 @@ class ATRawDataPlotRunner:
         self.std = std
         self.name = 'Std' if self.std else 'Mean'
 
-        self.rate = 1.0/60
+        self.rate = 1.0 / 60
         self.window = int(self.rate * self.period)
-        self.loaders = dlstcts.get_ats_loaders_all_subjects(
-            self.tsv_path)
+
+        if tsv_path is None:
+            self.loaders = dlstcts.get_atr_loaders()
+        else:
+            self.loaders = dlstcts.get_ats_loaders_all_subjects(
+                self.tsv_path)
+
         self.servers = {s: [BS(dl) for dl in dls]
                         for (s, dls) in self.loaders.items()}
 
@@ -41,28 +46,18 @@ class ATRawDataPlotRunner:
         averages = self._get_stats()
         
         for (i, view) in enumerate(averages):
-            ax = plt.axes()
-
-            sns.pointplot(
-                x='period', 
-                y='value', 
-                hue='subject',
-                data=view,
-                ax=ax,
-                legend=False)
-            sns.plt.legend(
-                bbox_to_anchor=(1, 1.05), 
-                loc=2, 
-                borderaxespad=0.)
-
             title = \
                 self.name + ' value of view ' + \
                 self.names[i] + \
                 ' for period length ' + \
                 str(self.period) + ' seconds'
 
-            ax.set_title(title)
-            ax.get_figure().savefig(
+            plot_lines(
+                view,
+                'period',
+                'mean signal value',
+                title
+            ).get_figure().savefig(
                 '_'.join(title.split()) + '.pdf',
                 format='pdf')
             sns.plt.clf()
@@ -72,40 +67,18 @@ class ATRawDataPlotRunner:
         views = [{s: None for s in self.servers.keys()}
                  for i in xrange(self.num_views)]
         stat = np.std if self.std else np.mean
-        dfs = [None] * self.num_views
 
         for (s, dss) in self.servers.items():
             for (i, view) in enumerate(dss):
                 view_stat = []
                 data = view.get_data()
-                f_num_periods = float(data.shape[0]) / self.window
-                i_num_periods = int(f_num_periods)
+                num_periods = int(float(data.shape[0]) / self.window)
+                truncd = data[:num_periods * self.window,:]
+                reshaped = truncd.reshape(
+                    (num_periods,self.window))
+                view_stat = stat(reshaped,axis=1)[:,np.newaxis]
+                x = np.arange(num_periods)[:,np.newaxis]
+                
+                views[i][s] = (x, view_stat, None)
 
-                if f_num_periods - i_num_periods > 0:
-                    i_num_periods += 1
-
-                for p in xrange(i_num_periods):
-                    begin = p * self.window
-                    end = begin + self.window
-
-                    view_stat.append(stat(data[begin:end]))
-
-                views[i][s] = view_stat
-
-        for (i, view) in enumerate(views):
-            periods = []
-            subjects = []
-            values = []
-
-            for (s, l) in view.items():
-                periods.extend(list(range(len(l))))
-                subjects.extend([s] * len(l))
-                values.extend(l)
-
-            d = {
-                'period': periods,
-                'subject':subjects,
-                'value': values}
-            dfs[i] = pd.DataFrame(data=d)
-
-        return dfs
+        return views
