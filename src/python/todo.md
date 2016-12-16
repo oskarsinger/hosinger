@@ -1,4 +1,6 @@
 #Miscellaneous
+* ASK AL FOR A NEW LAPTOP
+
 * PUT CITATIONS IN YOUR CODE, e.g. simplex projection in optimization.utils
 
 * Write some infrastructure to assist in the kind of exploratory data analysis described in the Gelman paper from 2004.
@@ -15,7 +17,7 @@
 #Network Interference
 
 ##Infrastructure
-* Develop a Parameter class to take care of nasty indexing for stuff like FSVRG.
+* Develop a Parameter class to take care of nasty indexing for stuff like FSVRG. That actually may not be necessary.
 
 * Figure out how to nicely integrate data SERVERS in an RL context.
 

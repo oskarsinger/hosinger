@@ -25,7 +25,8 @@ class ViewPairwiseCCARunner:
         show_mean=False,
         subject_mean=False,
         show_transpose=False,
-        show_cc=False):
+        show_cc=False,
+        nnz=1):
 
         self.save = save
         self.load = load
@@ -34,9 +35,12 @@ class ViewPairwiseCCARunner:
         self.subject_mean = subject_mean
         self.show_transpose = show_transpose
         self.show_cc = show_cc
+        self.nnz = nnz
 
         self.wavelets = dtcwt_runner.wavelets
+        self.subperiod = dtcwt_runner.subperiod
         self.subjects = dtcwt_runner.subjects
+        self.rates = dtcwt_runner.rates
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
@@ -143,11 +147,10 @@ class ViewPairwiseCCARunner:
                         cca_over_time = np.vstack(rmu.get_cca_vecs(
                             Y1_mat, Y2_mat))
                         cca_dim = min(Y1_mat.shape + Y2_mat.shape)
-                        num_nonzero = 3
                         cca_over_freqs = np.hstack(rmu.get_cca_vecs(
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
-                            num_nonzero=num_nonzero))
+                            num_nonzero=self.nnz))
                         cc_over_time = self._get_cc_over_time(
                             Y1_mat,
                             Y2_mat,
@@ -244,20 +247,11 @@ class ViewPairwiseCCARunner:
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s
-                # TODO: replace tl.shape[0] with completed length at that sample frequency, then pad with Nones, then
-                cca_dim = min([
-                    self.num_freqs[k[0]], 
-                    self.num_freqs[k[1]]])
-                full_length = int(24 * 3600 / 2**(cca_dim-1))
-                padding = np.array(
-                        [[None,None]] * (full_length - tl.shape[0]))
-                print tl.shape, padding.shape
-                tl = np.vstack([tl, padding])
-                factor = 8.0 / float(full_length)
+                factor = float(self.num_periods[s]) / tl.shape[0]
                 unit = rmu.get_symptom_status(s) \
                     if self.subject_mean else None
                 data = (
-                    factor * np.arange(full_length)[:,np.newaxis], 
+                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl,
                     unit)
                 data_maps.get(k[0], k[1])[s_key] = data
@@ -321,10 +315,32 @@ class ViewPairwiseCCARunner:
                 no_double=True)
 
             for (k, subperiods) in spud.items():
+                num_freqs = min([
+                    self.num_freqs[k[0]],
+                    self.num_freqs[k[1]]])
+                rate = max([
+                    self.rates[k[0]],
+                    self.rates[k[1]]])
+                full_length = int(
+                    rate * self.subperiod / 2**(num_freqs - 1))
+
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
                         tls = cc_over_time.get(k[0], k[1])
                         p_over_time = period[index]
+
+                        if p_over_time.shape[0] < full_length:
+                            padding_l = full_length - p_over_time.shape[0]
+
+                            if index == 1:
+                                padding = np.array(
+                                    [[np.nan,np.nan]] * padding_l)
+                            else:
+                                padding = np.array(
+                                    [np.nan] * padding_l)[:,np.newaxis]
+
+                            p_over_time = np.vstack(
+                                [p_over_time, padding])
 
                         if tls[p] is None:
                             tls[p] = p_over_time
