@@ -15,6 +15,7 @@ from runners.wavelets import MVDTCWTRunner
 @click.option('--subject-mean', default=False)
 @click.option('--show-transpose', default=False)
 @click.option('--show-cc', default=False)
+@click.option('--nnz', default=1)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
@@ -26,7 +27,8 @@ def run_it_all_day_bb(
     show_mean,
     subject_mean,
     show_transpose,
-    show_cc):
+    show_cc,
+    nnz):
 
     dtcwt_runner = MVDTCWTRunner(
         data_path=data_path,
@@ -46,7 +48,8 @@ def run_it_all_day_bb(
         show_mean=show_mean,
         subject_mean=subject_mean,
         show_transpose=show_transpose,
-        show_cc=show_cc)
+        show_cc=show_cc,
+        nnz=nnz)
 
     runner.run()
 

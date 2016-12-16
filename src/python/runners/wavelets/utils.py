@@ -87,7 +87,7 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             nnz=num_nonzero)
         A = get_normed_correlation(X1, X2)
         T = X1.shape[0]
-        rank = 3
+        rank = 7
         (x_weights, y_weights) = spancca.cca(
             A,
             rank,
