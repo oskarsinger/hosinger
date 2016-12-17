@@ -119,7 +119,7 @@ class DTCWTPartialReconstructionRunner:
                                 p,
                                 sp)
 
-                        self.prs[s][p][sp][v] = sp_v_prs
+                        #self.prs[s][p][sp][v] = sp_v_prs
 
     def _get_view_sp_pr(self, Yh, Yl):
 

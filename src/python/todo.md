@@ -73,6 +73,10 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
+    * What is my narrative? Which plots do I need to finish? What order should they go in? Don't stress too much about the order since Al will give a lot of comments. Try to get something reasonable though so that he knows I am trying. Plus its a good exercise to think through these things yourself.
+    * One of the most important things is to get the partial reconstructions working.
+        * Figure out the memory error with the E4 ones. I am pretty sure it shouldn't be running out of memory. I should just put lots of prints in so I know where the memory error is probably happening. I wonder why the bug fix didn't resolve the memory issue.
+        * Make sure that my reconstructions match up with Al's.
 
 * Maybe switch all of my intermediate serialization to h5py. Will probably be cleaner and maybe more space-efficient.
 
@@ -81,8 +85,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 ##Visualization
 * Plot full time sequence instead of average over hours on each day
-
-* Try completing the CCA over frequency time series like I did for partial reconstructions. For this, I need the sampling factor for the current subsampling rate, which will be the lowest one maintained for either of the wavelet matrices, I think? Whichever one corresponds to cca_dim. Do I need to be storing CCA dim so I can use it later, or can I find a way to pass it directly through?
 
 * Don't show the element-wise multiplied singular vectors. Show them on different plots, side-by-side. Need to show all subjects on the same plot to compare across subjects.
 
