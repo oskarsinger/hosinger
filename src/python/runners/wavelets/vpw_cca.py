@@ -327,7 +327,7 @@ class ViewPairwiseCCARunner:
                     self.rates[k[0]],
                     self.rates[k[1]]])
                 full_length = int(
-                    rate * self.subperiod / 2**(num_freqs))# - 1))
+                    rate * self.subperiod / 2**(num_freqs)) # - 1))
 
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
