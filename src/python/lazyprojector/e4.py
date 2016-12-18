@@ -2,7 +2,7 @@ import h5py
 import os
 
 import numpy as np
-import data.loaders.e4.shortcuts as dles
+import data.loaders.shortcuts as dls
 
 from math import ceil
 from random import choice
@@ -57,7 +57,7 @@ def plot_e4_hdf5_subject(
 def _get_data_maps(hdf5_path, subject):
 
     print 'Making loaders'
-    loaders = dles.get_e4_loaders(hdf5_path, subject, 1, True)
+    loaders = dls.get_e4_loaders(hdf5_path, subject, 1, True)
     print 'Making servers'
     servers = [M2M(dl, 1) for dl in loaders]
     data_maps = []
