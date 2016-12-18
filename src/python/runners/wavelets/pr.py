@@ -206,7 +206,7 @@ class DTCWTPartialReconstructionRunner:
             periods = [None] * num_freqs
             values = [None] * num_freqs
             units = [None] * num_freqs
-            factor = self.rates[i] * self.subperiod
+            factor = self.rates[view] * self.subperiod
             max_ps = [int(factor / 2**(f)) # - 1))
                       for f in xrange(num_freqs)]
 
