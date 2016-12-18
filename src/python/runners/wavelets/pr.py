@@ -229,7 +229,7 @@ class DTCWTPartialReconstructionRunner:
                 max_p = max_ps[f]
                 l_freq = freq.shape[0]
                 padding = np.array(
-                    [None] * (max_p - l_freq))
+                    [np.nan] * (max_p - l_freq))
                 freq = np.vstack(
                     [freq, padding[:,np.newaxis]])
                 s_periods = None
@@ -243,7 +243,7 @@ class DTCWTPartialReconstructionRunner:
                     if periods[f] is None:
                         periods[f] = np.arange(max_p)
                     else:
-                        new = np.arange(max_p) + periods[f][s][-1] + 1
+                        new = np.arange(max_p) + periods[f][-1] + 1
                         periods[f] = np.vstack(
                             [periods[f], new[:,np.newaxis]])
 
