@@ -31,13 +31,11 @@ class DTCWTPartialReconstructionRunner:
         self.missing = False if avg else missing
         self.complete = True if avg else complete
         self.save = save
-        self.load = load
         self.show = show
         self.avg = avg
 
         self._init_dirs(
             self.save,
-            self.load,
             self.show,
             save_load_dir)
 
@@ -61,21 +59,17 @@ class DTCWTPartialReconstructionRunner:
 
     def run(self):
 
-        if self.load:
-            self._load()
+        if self.show:
+            self._show()
         else:
             self._compute()
 
-        if self.show:
-            self._show()
-
     def _init_dirs(self,
         save,
-        load,
         show,
         save_load_dir):
 
-        if (show or save) and not load:
+        if save and not show:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -104,22 +98,33 @@ class DTCWTPartialReconstructionRunner:
 
     def _compute(self):
 
+        view_stats = [{s[-2:] : [] for s in self.subjects}
+                      for i in xrange(self.num_views)]
+
         for (s, periods) in self.wavelets.items():
+            print 'Computing stats for subject', s
+            s = s[-2:]
+            sample_views = periods[0][0]
+
+            for (v, prs) in enumerate(sample_views):
+                view_stats[v][s] = [None for f in xrange(len(prs))]
+
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, view) in enumerate(views):
                         sp_v_prs = self._get_view_sp_pr(
                             view[0], view[1])
 
-                        if self.save:
-                            self._save(
-                                sp_v_prs,
-                                s,
-                                v,
-                                p,
-                                sp)
+                        for (f, pr) in enumerate(s_v_prs):
+                            current = view_stats[v][s][f]
 
-                        #self.prs[s][p][sp][v] = sp_v_prs
+                            if current is None:
+                                view_stats[v][s][f] = pr
+                            else:
+                                view_stats[v][s][f] = np.vstack(
+                                    [current, pr])
+
+        self._compute_completed_and_filtered(view_stats)
 
     def _get_view_sp_pr(self, Yh, Yl):
 
@@ -197,6 +202,7 @@ class DTCWTPartialReconstructionRunner:
                       for i in xrange(self.num_views)]
 
         for (s, periods) in self.prs.items():
+            print 'Computing stats for subject', s
             s = s[-2:]
             sample_views = periods[0][0]
 
