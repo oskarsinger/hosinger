@@ -114,6 +114,9 @@ class DTCWTPartialReconstructionRunner:
             print 'Computing partial reconstructions for subject', s
             s = s[-2:]
             view_stats = [None] * self.num_views
+            factors = [r * self.subperiod for r in self.rates]
+            max_ps = [int(factor / 2**(f)) # - 1))
+                      for f in xrange(num_freqs)]
 
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
@@ -125,6 +128,13 @@ class DTCWTPartialReconstructionRunner:
                             view_stats[v] = [None] * len(sp_v_prs)
 
                         for (f, pr) in enumerate(sp_v_prs):
+                            max_p = int(factors[v] * self.subperiod)
+                            padding_l = max_p - pr.shape[0]
+
+                            if padding_l > 0:
+                                padding = np.array([np.nan] * padding_l)
+                                pr = np.vstack([pr, padding_l])
+
                             current = view_stats[v][f]
 
                             if current is None:
@@ -219,17 +229,16 @@ class DTCWTPartialReconstructionRunner:
         for (view, freqs) in enumerate(view_stats):
             num_freqs = len(freqs)
             periods = [None] * num_freqs
-            values = [None] * num_freqs
             units = [None] * num_freqs
-            factor = self.rates[view] * self.subperiod
+            factor = self.rates[view] * self.period * self.num_periods[s]
             max_ps = [int(factor / 2**(f)) # - 1))
                       for f in xrange(num_freqs)]
             
-
             for (f, freq) in enumerate(freqs):
                 max_p = max_ps[f]
                 print 'max_p for freq', str(f) + ':', str(max_p)
                 l_freq = freq.shape[0]
+                print 'l_freq for freq', str(f) + ':', str(l_freq)
                 padding = np.array(
                     [np.nan] * (max_p - l_freq))
                 freq = np.vstack(
