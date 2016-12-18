@@ -58,6 +58,7 @@ def _get_dataframe(
 
     for name, (x, y, u) in data_map.items():
 
+        print x.shape, y.shape
         new_n = np.array(
             [name for i in xrange(x.shape[0])])
         new_n = new_n[:,np.newaxis]
@@ -76,6 +77,8 @@ def _get_dataframe(
         units = _extend_vec(units, new_u)
         xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
+
+    print xs.shape, ys.shape, names.shape, units.shape
 
     d = {
         x_name: xs[:,0],
