@@ -154,11 +154,10 @@ class DTCWTPartialReconstructionRunner:
 
     def _show(self):
 
-        print 'Inside _show, getting stats'
-        self._compute_stats()
-
         for v in xrange(self.num_views):
+            print 'Generating plots for view', v
             for f in xrange(self.num_freqs[v]):
+                print 'Generating plots for frequency', f
                 freq = self._load_stats(v, f)
                 unit_name = 'Symptomatic?' if self.avg else None
                 title = \
