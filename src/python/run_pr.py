@@ -11,7 +11,6 @@ from runners.wavelets import MVDTCWTRunner
 @click.option('--missing', default=False)
 @click.option('--complete', default=False)
 @click.option('--save', default=False)
-@click.option('--load', default=False)
 @click.option('--show', default=False)
 @click.option('--avg', default=False)
 def run_it_all_day_bb(
@@ -22,7 +21,6 @@ def run_it_all_day_bb(
     missing,
     complete,
     save,
-    load,
     show,
     avg):
 
@@ -41,7 +39,6 @@ def run_it_all_day_bb(
         missing=missing,
         complete=complete,
         save=save,
-        load=load,
         show=show,
         avg=avg)
 
