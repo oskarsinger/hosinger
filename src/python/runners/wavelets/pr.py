@@ -171,7 +171,7 @@ class DTCWTPartialReconstructionRunner:
             print 'Generating plots for view', v
 
             for f in xrange(num_freqs[v]):
-                freqs = self._load_stats(v, f)
+                freq = self._load_stats(v, f)
 
                 print 'Generating plots for frequency', f
                 unit_name = 'Symptomatic?' if self.avg else None
