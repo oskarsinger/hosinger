@@ -99,16 +99,11 @@ class DTCWTPartialReconstructionRunner:
 
     def _compute(self):
 
-        view_stats = [{s[-2:] : [] for s in self.subjects}
+        view_stats = [{s[-2:] : None for s in self.subjects}
                       for i in xrange(self.num_views)]
 
         for (s, periods) in self.wavelets.items():
-            print 'Computing stats for subject', s
             s = s[-2:]
-            sample_views = periods[0][0]
-
-            for (v, prs) in enumerate(sample_views):
-                view_stats[v][s] = [None] * self.num_freqs[v]
 
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
@@ -116,8 +111,10 @@ class DTCWTPartialReconstructionRunner:
                         sp_v_prs = self._get_view_sp_pr(
                             view[0], view[1])
 
+                        if view_stats[v][s] is None:
+                            view_stats[v][s] = [None] * len(sp_v_prs)
+
                         for (f, pr) in enumerate(sp_v_prs):
-                            print f, self.num_freqs[v]
                             current = view_stats[v][s][f]
 
                             if current is None:
