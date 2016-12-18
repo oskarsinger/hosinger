@@ -263,19 +263,18 @@ class DTCWTPartialReconstructionRunner:
                 self._save_stats(
                     view, f, s, p, v, u)
 
-    def _load_stats(self, v):
+    def _load_stats(self, v, f):
 
         is_v = lambda fn: 'view_' + str(v) in fn
+        is_f = lambda fn: 'frequency_' + str(f) in fn
         fns = os.listdir(self.stat_dir)
-        v_fns = [fn for fn in fns
-                  if is_v(fn)] 
-        stats = [{s[-2:] : None for s in self.subjects}
-                 for f in xrange(len(v_fns))]
+        vf_fns = [fn for fn in fns
+                  if is_v(fn) and is_f(fn)]
+        stats = {s[-2:] : None for s in self.subjects}
 
-        for fn in v_fns:
+        for fn in vf_fns:
             info = fn.split('_')
             s = info[1]
-            freq = int(info[5])
             path = os.path.join(self.stat_dir, fn)
 
             with open(path) as f:
@@ -285,7 +284,7 @@ class DTCWTPartialReconstructionRunner:
                 y = loaded[1]
                 u = loaded[2]
                 u = None if u.ndim == 0 else u[:,np.newaxis]
-                stats[freq][s] = (x, y, u)
+                stats[s] = (x, y, u)
         
         return stats
 
