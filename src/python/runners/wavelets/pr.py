@@ -8,7 +8,6 @@ import pandas as pd
 import seaborn as sns
 import utils as rmu
 import matplotlib.pyplot as plt
-import data.loaders.e4.shortcuts as dles
 import wavelets.dtcwt as wdtcwt
 
 from data.servers.batch import BatchServer as BS
@@ -115,8 +114,6 @@ class DTCWTPartialReconstructionRunner:
             s = s[-2:]
             view_stats = [None] * self.num_views
             factors = [r * self.subperiod for r in self.rates]
-            max_ps = [int(factor / 2**(f)) # - 1))
-                      for f in xrange(num_freqs)]
 
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
@@ -128,7 +125,7 @@ class DTCWTPartialReconstructionRunner:
                             view_stats[v] = [None] * len(sp_v_prs)
 
                         for (f, pr) in enumerate(sp_v_prs):
-                            max_p = int(factors[v] * self.subperiod)
+                            max_p = int(factors[v] / 2**(f)) # - 1))
                             padding_l = max_p - pr.shape[0]
 
                             if padding_l > 0:
@@ -226,57 +223,13 @@ class DTCWTPartialReconstructionRunner:
         unit_key = 'Symptomatic?' if self.avg else 'unit'
         s_unit = rmu.get_symptom_status(s) if self.avg else None
 
-        for (view, freqs) in enumerate(view_stats):
-            num_freqs = len(freqs)
-            periods = [None] * num_freqs
-            units = [None] * num_freqs
-            factor = self.rates[view] * self.period * self.num_periods[s]
-            max_ps = [int(factor / 2**(f)) # - 1))
-                      for f in xrange(num_freqs)]
-            
+        for (v, freqs) in enumerate(view_stats):
             for (f, freq) in enumerate(freqs):
-                max_p = max_ps[f]
-                print 'max_p for freq', str(f) + ':', str(max_p)
-                l_freq = freq.shape[0]
-                print 'l_freq for freq', str(f) + ':', str(l_freq)
-                padding = np.array(
-                    [np.nan] * (max_p - l_freq))
-                freq = np.vstack(
-                    [freq, padding[:,np.newaxis]])
-                s_periods = None
-
-                first = self.missing and l_freq < max_p
-                second = self.complete and l_freq == max_p
-                third = not (self.missing or self.complete)
-
-                if first or second or third:
-
-                    if periods[f] is None:
-                        periods[f] = np.arange(max_p)
-                    else:
-                        shift = periods[f][-1] + 1
-                        new = np.arange(max_p) + shift
-                        periods[f] = np.vstack(
-                            [periods[f], new[:,np.newaxis]])
-
-                    if values[f] is None:
-                        values[f] = freq
-                    else:
-                        values[f] = np.hstack(
-                            [values[f], freq])
-
-                    if self.avg:
-                        units[f] = s_unit
-
-            for f in xrange(num_freqs):
-                p = periods[f]
-                v = values[f]
-                u = units[f]
-                print 'period.shape for freq', str(f) + ':', p.shape
-                print 'value.shape for freq', str(f) + ':', v.shape
-
                 self._save_stats(
-                    view, f, s, p, v, u)
+                    v, f, s, 
+                    np.arange(freq.shape[0])[:,np.newaxis], 
+                    freq, 
+                    s_unit if self.avg else None)
 
     def _load_stats(self, v, f):
 
@@ -295,7 +248,7 @@ class DTCWTPartialReconstructionRunner:
             with open(path) as f:
                 loaded = {int(h_fn.split('_')[1]) : a
                           for (h_fn, a) in np.load(f).items()}
-                x = loaded[0][:,np.newaxis]
+                x = loaded[0]
                 y = loaded[1]
                 u = loaded[2]
                 u = None if u.ndim == 0 else u[:,np.newaxis]

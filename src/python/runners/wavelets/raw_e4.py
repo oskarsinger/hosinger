@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import data.loaders.e4.shortcuts as dles
+import data.loaders.shortcuts as dlstcts
 
 from data.servers.batch import BatchServer as BS
 from linal.utils.misc import get_non_nan
@@ -27,7 +27,7 @@ class E4RawDataPlotRunner:
         self.std = std
         self.name = 'Std' if self.std else 'Mean'
 
-        self.loaders = dles.get_e4_loaders_all_subjects(
+        self.loaders = dlstcts.get_e4_loaders_all_subjects(
             hdf5_path, None, False)
         self.servers = {s: [BS(dl) for dl in dls]
                         for (s, dls) in self.loaders.items()}
