@@ -30,7 +30,7 @@ def run_it_all_day_bb(
         save_load_dir=wavelet_dir,
         load=True)
 
-    if not load:
+    if not show:
         dtcwt_runner.run()
 
     runner = DTCWTPRR(
