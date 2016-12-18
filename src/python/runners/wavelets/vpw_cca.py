@@ -238,7 +238,7 @@ class ViewPairwiseCCARunner:
     def _show_cca_over_freqs(self):
 
         tl_spuds = self._get_tl_spuds(1)
-        default = lambda: {'Subject ' + s: None for s in self.subjects}
+        default = lambda: {}
         data_maps = SPUD(
             self.num_views,
             default=default,
@@ -246,15 +246,20 @@ class ViewPairwiseCCARunner:
 
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
-                s_key = 'Subject ' + s
+                s_key = 'Subject ' + s + ' view '
                 factor = float(self.num_periods[s]) / tl.shape[0]
                 unit = rmu.get_symptom_status(s) \
                     if self.subject_mean else None
-                data = (
+                phi1 = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl,
+                    tl[:,0][:,np.newaxis],
                     unit)
-                data_maps.get(k[0], k[1])[s_key] = data
+                phi2 = (
+                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
+                    tl[:,1][:,np.newaxis],
+                    unit)
+                data_maps.get(k[0], k[1])[s_key + str(1)] = phi1
+                data_maps.get(k[0], k[1])[s_key + str(2)] = phi2
 
         for (k, dm) in data_maps.items():
             x_name = 'time (days)'
@@ -322,7 +327,7 @@ class ViewPairwiseCCARunner:
                     self.rates[k[0]],
                     self.rates[k[1]]])
                 full_length = int(
-                    rate * self.subperiod / 2**(num_freqs - 1))
+                    rate * self.subperiod / 2**(num_freqs))# - 1))
 
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
