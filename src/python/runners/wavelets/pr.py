@@ -261,7 +261,7 @@ class DTCWTPartialReconstructionRunner:
         for fn in v_fns:
             info = fn.split('_')
             s = info[1]
-            f = int(info[5])
+            freq = int(info[5])
             path = os.path.join(self.stat_dir, fn)
 
             with open(path) as f:
@@ -271,7 +271,7 @@ class DTCWTPartialReconstructionRunner:
                 y = loaded[1]
                 u = loaded[2]
                 u = None if u.ndim == 0 else u[:,np.newaxis]
-                stats[f][s] = (x, y, u)
+                stats[freq][s] = (x, y, u)
         
         return stats
 
