@@ -64,7 +64,7 @@ class DTCWTPartialReconstructionRunner:
         else:
             self._compute()
 
-    def _get_num_freqs():
+    def _get_num_freqs(self):
 
         fns = os.listdir(self.stat_dir)
         split = [fn.split('_') for fn in fns]
