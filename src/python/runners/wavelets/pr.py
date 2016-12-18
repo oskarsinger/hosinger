@@ -70,7 +70,7 @@ class DTCWTPartialReconstructionRunner:
         show,
         save_load_dir):
 
-        if save and not show:
+        if save:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -90,7 +90,7 @@ class DTCWTPartialReconstructionRunner:
             self.save_load_dir)
         self.stat_dir = rmu.init_dir(
             'stats',
-            show,
+            save,
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
