@@ -260,6 +260,8 @@ class DTCWTPartialReconstructionRunner:
                 p = periods[f]
                 v = values[f]
                 u = units[f]
+                print p.shape
+                print v.shape
 
                 self._save_stats(
                     view, f, s, p, v, u)
