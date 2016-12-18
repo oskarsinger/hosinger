@@ -224,9 +224,11 @@ class DTCWTPartialReconstructionRunner:
             factor = self.rates[view] * self.subperiod
             max_ps = [int(factor / 2**(f)) # - 1))
                       for f in xrange(num_freqs)]
+            
 
             for (f, freq) in enumerate(freqs):
                 max_p = max_ps[f]
+                print 'max_p for freq', f + ':', max_p
                 l_freq = freq.shape[0]
                 padding = np.array(
                     [np.nan] * (max_p - l_freq))
@@ -260,6 +262,8 @@ class DTCWTPartialReconstructionRunner:
                 p = periods[f]
                 v = values[f]
                 u = units[f]
+                print 'period.shape for freq', f + ':', p
+                print 'value.shape for freq', f + ':', p
 
                 self._save_stats(
                     view, f, s, p, v, u)
