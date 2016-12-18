@@ -258,7 +258,7 @@ class DTCWTPartialReconstructionRunner:
         stats = [{s[-2:] : None for s in self.subjects}
                  for f in xrange(len(v_fns))]
 
-        for fn in vf_fns:
+        for fn in v_fns:
             info = fn.split('_')
             s = info[1]
             f = int(info[5])
