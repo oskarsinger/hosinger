@@ -245,7 +245,8 @@ class DTCWTPartialReconstructionRunner:
                     if periods[f] is None:
                         periods[f] = np.arange(max_p)
                     else:
-                        new = np.arange(max_p) + periods[f][-1] + 1
+                        shift = periods[f][-1] + 1
+                        new = np.arange(max_p) + shift
                         periods[f] = np.vstack(
                             [periods[f], new[:,np.newaxis]])
 
@@ -262,8 +263,8 @@ class DTCWTPartialReconstructionRunner:
                 p = periods[f]
                 v = values[f]
                 u = units[f]
-                print 'period.shape for freq', str(f) + ':', str(p)
-                print 'value.shape for freq', str(f) + ':', str(p)
+                print 'period.shape for freq', str(f) + ':', p.shape
+                print 'value.shape for freq', str(f) + ':', v.shape
 
                 self._save_stats(
                     view, f, s, p, v, u)
