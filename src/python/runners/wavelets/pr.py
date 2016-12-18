@@ -50,7 +50,6 @@ class DTCWTPartialReconstructionRunner:
         self.subperiod = dtcwt_runner.subperiod
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
-        self.num_freqs = dtcwt_runner.num_freqs
 
         self.prs = rmu.get_wavelet_storage(
             self.num_views,
