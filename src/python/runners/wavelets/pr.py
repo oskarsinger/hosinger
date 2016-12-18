@@ -156,9 +156,10 @@ class DTCWTPartialReconstructionRunner:
 
         for v in xrange(self.num_views):
             print 'Generating plots for view', v
-            for f in xrange(self.num_freqs[v]):
+            freqs = self._load_stats(v)
+
+            for freq in freqs:
                 print 'Generating plots for frequency', f
-                freq = self._load_stats(v, f)
                 unit_name = 'Symptomatic?' if self.avg else None
                 title = \
                     'View ' + \
@@ -248,18 +249,19 @@ class DTCWTPartialReconstructionRunner:
                 self._save_stats(
                     view, f, s, p, v, u)
 
-    def _load_stats(self, v, f):
+    def _load_stats(self, v):
 
         is_v = lambda fn: 'view_' + str(v) in fn
-        is_f = lambda fn: 'frequency_' + str(f) in fn
         fns = os.listdir(self.stat_dir)
-        vf_fns = [fn for fn in fns
-                  if is_v(fn) and is_f(fn)] 
-        stats = {s[-2:] : None for s in self.subjects}
+        v_fns = [fn for fn in fns
+                  if is_v(fn)] 
+        stats = [{s[-2:] : None for s in self.subjects}
+                 for f in xrange(len(v_fns))]
 
         for fn in vf_fns:
             info = fn.split('_')
             s = info[1]
+            f = int(info[5])
             path = os.path.join(self.stat_dir, fn)
 
             with open(path) as f:
@@ -269,7 +271,7 @@ class DTCWTPartialReconstructionRunner:
                 y = loaded[1]
                 u = loaded[2]
                 u = None if u.ndim == 0 else u[:,np.newaxis]
-                stats[s] = (x, y, u)
+                stats[f][s] = (x, y, u)
         
         return stats
 
