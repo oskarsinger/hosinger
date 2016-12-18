@@ -98,11 +98,10 @@ class DTCWTPartialReconstructionRunner:
 
     def _compute(self):
 
-        view_stats = [{s[-2:] : None for s in self.subjects}
-                      for i in xrange(self.num_views)]
-
         for (s, periods) in self.wavelets.items():
+            print 'Computing partial reconstructions for subject', s
             s = s[-2:]
+            view_stats = [None] * self.num_views
 
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
@@ -110,19 +109,19 @@ class DTCWTPartialReconstructionRunner:
                         sp_v_prs = self._get_view_sp_pr(
                             view[0], view[1])
 
-                        if view_stats[v][s] is None:
-                            view_stats[v][s] = [None] * len(sp_v_prs)
+                        if view_stats[v] is None:
+                            view_stats[v] = [None] * len(sp_v_prs)
 
                         for (f, pr) in enumerate(sp_v_prs):
-                            current = view_stats[v][s][f]
+                            current = view_stats[v][f]
 
                             if current is None:
-                                view_stats[v][s][f] = pr
+                                view_stats[v][f] = pr
                             else:
-                                view_stats[v][s][f] = np.vstack(
+                                view_stats[v][f] = np.vstack(
                                     [current, pr])
 
-        self._compute_completed_and_filtered(view_stats)
+            self._compute_completed_and_filtered(view_stats, s)
 
     def _get_view_sp_pr(self, Yh, Yl):
 
@@ -194,88 +193,60 @@ class DTCWTPartialReconstructionRunner:
                     format='pdf')
                 sns.plt.clf()
 
-    def _compute_stats(self):
+    def _compute_completed_and_filtered(self, view_stats, s):
 
-        view_stats = [{s[-2:] : [] for s in self.subjects}
-                      for i in xrange(self.num_views)]
+        print 'Padding partial reconstructions for subject', s
 
-        for (s, periods) in self.prs.items():
-            print 'Computing stats for subject', s
-            s = s[-2:]
-            sample_views = periods[0][0]
-
-            for (v, prs) in enumerate(sample_views):
-                view_stats[v][s] = [None for f in xrange(len(prs))]
-
-            for (p, subperiods) in enumerate(periods):
-                for (sp, views) in enumerate(subperiods):
-                    for (v, prs) in enumerate(views):
-                        for (f, pr) in enumerate(prs):
-                            current = view_stats[v][s][f]
-
-                            if current is None:
-                                view_stats[v][s][f] = pr
-                            else:
-                                view_stats[v][s][f] = np.vstack(
-                                    [current, pr])
-
-        self._compute_completed_and_filtered(view_stats)
-
-    def _compute_completed_and_filtered(self, view_stats):
-
-        get_map = lambda v: [{s : None for s in v.keys()}
-                             for i in xrange(len(v.values()[0]))]
         unit_key = 'Symptomatic?' if self.avg else 'unit'
+        s_unit = rmu.get_symptom_status(s) if self.avg else None
 
         for (i, view) in enumerate(view_stats):
-            periods = get_map(view)
-            values = get_map(view)
-            units = get_map(view)
-            max_ps = [max(len(l[f]) for l in view.values())
-                      for f in xrange(len(view.values()[0]))]
+            num_freqs = len(view)
+            periods = [None] * num_freqs
+            values = [None] * num_freqs
+            units = [None] * num_freqs
+            factor = self.rates[i] * self.subperiod
+            max_ps = [int(factor / 2**(f)) # - 1))
+                      for f in xrange(num_freqs)]
 
-            for (s, freqs) in view.items():
-                s_unit = rmu.get_symptom_status(s) if self.avg else None
+            for (f, freq) in enumerate(freqs):
+                max_p = max_ps[f]
+                l_freq = freq.shape[0]
+                padding = np.array(
+                    [None] * (max_p - l_freq))
+                freq = np.vstack(
+                    [freq, padding[:,np.newaxis]])
+                s_periods = None
 
-                for (f, freq) in enumerate(freqs):
-                    max_p = max_ps[f]
-                    l_freq = freq.shape[0]
-                    padding = np.array(
-                        [None] * (max_p - l_freq))
-                    freq = np.vstack(
-                        [freq, padding[:,np.newaxis]])
-                    s_periods = None
+                first = self.missing and l_freq < max_p
+                second = self.complete and l_freq == max_p
+                third = not (self.missing or self.complete)
 
-                    first = self.missing and l_freq < max_p
-                    second = self.complete and l_freq == max_p
-                    third = not (self.missing or self.complete)
+                if first or second or third:
 
-                    if first or second or third:
+                    if periods[f] is None:
+                        periods[f] = np.arange(max_p)
+                    else:
+                        new = np.arange(max_p) + periods[f][s][-1] + 1
+                        periods[f] = np.vstack(
+                            [periods[f], new[:,np.newaxis]])
 
-                        if periods[f][s] is None:
-                            periods[f][s] = np.arange(max_p)
-                        else:
-                            new = np.arange(max_p) + periods[f][s][-1] + 1
-                            periods[f][s] = np.vstack(
-                                [periods[f][s], new[:,np.newaxis]])
+                    if values[f] is None:
+                        values[f] = freq
+                    else:
+                        values[f] = np.hstack(
+                            [values[f], freq])
 
-                        if values[f][s] is None:
-                            values[f][s] = freq
-                        else:
-                            values[f][s] = np.hstack(
-                                [values[f][s], freq])
+                    if self.avg:
+                        units[f] = s_unit
 
-                        if self.avg:
-                            units[f][s] = s_unit
+            for f in xrange(num_freqs):
+                p = periods[f]
+                v = values[f]
+                u = units[f]
 
-            for f in xrange(len(view.values()[0])):
-                print 'In _get_completed_and_filtered, getting dm for freq', f
-                for s in view.keys():
-                    p = periods[f][s]
-                    v = values[f][s]
-                    u = units[f][s]
-
-                    self._save_stats(i, f, s, p, v, u)
+                self._save_stats(
+                    i, f, s, p, v, u)
 
     def _load_stats(self, v, f):
 
