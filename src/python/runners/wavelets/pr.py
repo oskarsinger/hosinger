@@ -48,6 +48,7 @@ class DTCWTPartialReconstructionRunner:
         self.num_views = dtcwt_runner.num_views
         self.period = dtcwt_runner.period
         self.subperiod = dtcwt_runner.subperiod
+        self.rates = dtcwt_runner.rates
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
 
