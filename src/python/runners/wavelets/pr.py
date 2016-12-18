@@ -24,7 +24,6 @@ class DTCWTPartialReconstructionRunner:
         missing=False,
         complete=False,
         save=False,
-        load=False,
         show=False,
         avg=False):
 
@@ -64,6 +63,18 @@ class DTCWTPartialReconstructionRunner:
             self._show()
         else:
             self._compute()
+
+    def _get_num_freqs():
+
+        fns = os.listdir(self.stat_dir)
+        split = [fn.split('_') for fn in fns]
+        pairs = {(int(s[3]), s[5]) for s in split}
+        num_freqs = [0 for v in xrange(self.num_views)]
+
+        for (v, f) in pairs:
+            num_freqs[v] += 1
+
+        return num_freqs
 
     def _init_dirs(self,
         save,
@@ -154,11 +165,14 @@ class DTCWTPartialReconstructionRunner:
 
     def _show(self):
 
+        num_freqs = self._get_num_freqs()
+
         for v in xrange(self.num_views):
             print 'Generating plots for view', v
-            freqs = self._load_stats(v)
 
-            for freq in freqs:
+            for f in xrange(num_freqs[v]):
+                freqs = self._load_stats(v, f)
+
                 print 'Generating plots for frequency', f
                 unit_name = 'Symptomatic?' if self.avg else None
                 title = \
