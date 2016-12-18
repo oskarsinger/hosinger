@@ -115,7 +115,7 @@ class DTCWTPartialReconstructionRunner:
                         sp_v_prs = self._get_view_sp_pr(
                             view[0], view[1])
 
-                        for (f, pr) in enumerate(s_v_prs):
+                        for (f, pr) in enumerate(sp_v_prs):
                             current = view_stats[v][s][f]
 
                             if current is None:
