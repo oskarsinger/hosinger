@@ -201,7 +201,7 @@ class DTCWTPartialReconstructionRunner:
         unit_key = 'Symptomatic?' if self.avg else 'unit'
         s_unit = rmu.get_symptom_status(s) if self.avg else None
 
-        for (view freqs) in enumerate(view_stats):
+        for (view, freqs) in enumerate(view_stats):
             num_freqs = len(freqs)
             periods = [None] * num_freqs
             values = [None] * num_freqs
