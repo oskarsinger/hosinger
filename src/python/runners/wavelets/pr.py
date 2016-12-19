@@ -178,9 +178,12 @@ class DTCWTPartialReconstructionRunner:
             print 'Generating plots for view', v
 
             for f in xrange(num_freqs[v]):
-                print 'Generating plots for frequency', f
+
+                print 'Retrieving data for freq', f
 
                 freq = self._load_stats(v, f)
+
+                print 'Setting title for freq', f
 
                 unit_name = 'Symptomatic?' if self.avg else None
                 title = \
@@ -201,19 +204,20 @@ class DTCWTPartialReconstructionRunner:
                     title = 'Complete only ' + \
                         title[0].lower() + title[1:]
 
-                ax = plot_lines(
+                path = os.path.join(
+                    self.plot_dir,
+                    '_'.join(title.split()) + '.pdf')
+
+                print 'Generating plot for frequency', f
+
+                plot_lines(
                     freq,
                     'period',
                     'value',
                     title,
-                    unit_name=unit_name)
-
-                path = os.path.join(
-                    self.plot_dir,
-                    '_'.join(title.split()) + '.pdf')
-                ax.get_figure().savefig(
-                    path,
-                    format='pdf')
+                    unit_name=unit_name).get_figure().savefig(
+                        path,
+                        format='pdf')
                 sns.plt.clf()
 
     def _compute_completed_and_filtered(self, view_stats, s):
