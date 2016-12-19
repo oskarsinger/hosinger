@@ -250,8 +250,8 @@ class DTCWTPartialReconstructionRunner:
                           for (h_fn, a) in np.load(f).items()}
                 x = loaded[0]
                 y = loaded[1]
+                print fn
                 print x.shape
-                print y.shape
                 u = loaded[2]
                 u = None if u.ndim == 0 else u[:,np.newaxis]
                 stats[s] = (x, y, u)
