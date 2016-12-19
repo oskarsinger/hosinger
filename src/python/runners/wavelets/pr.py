@@ -38,7 +38,6 @@ class DTCWTPartialReconstructionRunner:
             save_load_dir)
 
         self.wavelets = dtcwt_runner.wavelets
-        self.servers = dtcwt_runner.servers
         self.biorthogonal = dtcwt_runner.biorthogonal
         self.qshift = dtcwt_runner.qshift
         self.subjects = dtcwt_runner.subjects[:3]
@@ -249,16 +248,17 @@ class DTCWTPartialReconstructionRunner:
             s = info[1]
             path = os.path.join(self.stat_dir, fn)
 
-            with open(path) as f:
-                loaded = {int(h_fn.split('_')[1]) : a
-                          for (h_fn, a) in np.load(f).items()}
-                x = loaded[0]
-                y = loaded[1]
-                print fn
-                print x.shape
-                u = loaded[2]
-                u = None if u.ndim == 0 else u[:,np.newaxis]
-                stats[s] = (x, y, u)
+            if s in self.subjects:
+                with open(path) as f:
+                    loaded = {int(h_fn.split('_')[1]) : a
+                              for (h_fn, a) in np.load(f).items()}
+                    x = loaded[0]
+                    y = loaded[1]
+                    print fn
+                    print x.shape
+                    u = loaded[2]
+                    u = None if u.ndim == 0 else u[:,np.newaxis]
+                    stats[s] = (x, y, u)
         
         return stats
 
