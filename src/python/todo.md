@@ -84,6 +84,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
+* Figure out how to get around the scaling issue of the partial reconstruction plots.
+
 * Plot full time sequence instead of average over hours on each day
 
 * Try averaging wavelet correlation (i.e. A matrix input for sparse CCA code) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).

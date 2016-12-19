@@ -34,6 +34,7 @@ def plot_lines(
         unit_name)
     ax = plt.axes()
 
+    print 'Inside plot_lines, generating tsplot'
     sns.tsplot(
         time=x_name,
         value=y_name,
@@ -83,6 +84,7 @@ def _get_dataframe(
         y_name: ys[:,0],
         'name': names[:,0],
         unit_name: units[:,0]}
+    print 'Creating dataframe'
     df = pd.DataFrame(data=d)
 
     return df
