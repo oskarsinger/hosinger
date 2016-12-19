@@ -58,6 +58,7 @@ def _get_dataframe(
 
     for name, (x, y, u) in data_map.items():
 
+        print 'Creating datamap entry for', name
         new_n = np.array(
             [name for i in xrange(x.shape[0])])
         new_n = new_n[:,np.newaxis]
