@@ -40,7 +40,7 @@ class DTCWTPartialReconstructionRunner:
         self.wavelets = dtcwt_runner.wavelets
         self.biorthogonal = dtcwt_runner.biorthogonal
         self.qshift = dtcwt_runner.qshift
-        self.subjects = dtcwt_runner.subjects[:3]
+        self.subjects = dtcwt_runner.subjects[:1]
         self.names = dtcwt_runner.names
         self.num_views = dtcwt_runner.num_views
         self.period = dtcwt_runner.period
