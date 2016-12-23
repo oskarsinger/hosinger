@@ -88,10 +88,10 @@ def _get_dataframe(
         ys = _extend_vec(ys, y)
 
     d = {
-        x_name: xs[:,0],
-        y_name: ys[:,0],
-        'name': names[:,0],
-        unit_name: units[:,0]}
+        x_name: xs[:1000,0],
+        y_name: ys[:1000,0],
+        'name': names[:1000,0],
+        unit_name: units[:1000,0]}
     print 'Creating dataframe'
     df = pd.DataFrame(data=d)
 
