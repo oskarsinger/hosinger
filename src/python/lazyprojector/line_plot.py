@@ -87,7 +87,7 @@ def _get_dataframe(
         print 'Extending ys array'
         ys = _extend_vec(ys, y)
 
-    cutoff = 3600 * 10
+    cutoff = 3600 * 100
     d = {
         x_name: xs[:cutoff,0],
         y_name: ys[:cutoff,0],
