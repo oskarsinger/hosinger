@@ -61,7 +61,10 @@ def _get_dataframe(
 
         print 'Creating datamap entry for', name
         print 'Creating name array'
-        new_n = [name for i in xrange(x.shape[0])]
+        new_n = np.array(
+            [name for i in xrange(x.shape[0])])
+        print 'Transposing unit arraw'
+        new_n = new_n[:,np.newaxis]
         
         new_u = None
 
