@@ -60,23 +60,31 @@ def _get_dataframe(
     for name, (x, y, u) in data_map.items():
 
         print 'Creating datamap entry for', name
+        print 'Creating name array'
         new_n = np.array(
             [name for i in xrange(x.shape[0])])
+        print 'Transposing name array'
         new_n = new_n[:,np.newaxis]
         
         new_u = None
 
+        print 'Creating unit array'
         if u is None:
             new_u = np.array([1] * x.shape[0])
         else:
             new_u = np.array(
                 [u for i in xrange(x.shape[0])])
 
+        print 'Transposing unit arraw'
         new_u = new_u[:,np.newaxis]
 
+        print 'Extending name array'
         names = _extend_vec(names, new_n)
+        print 'Extending unit array'
         units = _extend_vec(units, new_u)
+        print 'Extending xs array'
         xs = _extend_vec(xs, x)
+        print 'Extending ys array'
         ys = _extend_vec(ys, y)
 
     d = {
