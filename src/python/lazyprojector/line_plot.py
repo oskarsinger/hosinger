@@ -61,16 +61,13 @@ def _get_dataframe(
 
         print 'Creating datamap entry for', name
         print 'Creating name array'
-        new_n = np.array(
-            [name for i in xrange(x.shape[0])])
-        print 'Transposing name array'
-        new_n = new_n[:,np.newaxis]
+        new_n = [name for i in xrange(x.shape[0])]
         
         new_u = None
 
         print 'Creating unit array'
         if u is None:
-            new_u = np.array([1] * x.shape[0])
+            new_u = np.ones(x.shape[0])
         else:
             new_u = np.array(
                 [u for i in xrange(x.shape[0])])
@@ -87,7 +84,7 @@ def _get_dataframe(
         print 'Extending ys array'
         ys = _extend_vec(ys, y)
 
-    cutoff = 1000
+    cutoff = 3600
     d = {
         x_name: xs[:cutoff,0],
         y_name: ys[:cutoff,0],
