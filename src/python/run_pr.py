@@ -12,7 +12,7 @@ from runners.wavelets import MVDTCWTRunner
 @click.option('--complete', default=False)
 @click.option('--save', default=False)
 @click.option('--show', default=False)
-@click.option('--avg-over-days', default=False)
+@click.option('--avg-over-periods', default=False)
 @click.option('--avg-over-subjects', default=False)
 def run_it_all_day_bb(
     data_path,
@@ -23,7 +23,7 @@ def run_it_all_day_bb(
     complete,
     save,
     show,
-    avg_over_days,
+    avg_over_periods,
     avg_over_subjects):
 
     dtcwt_runner = MVDTCWTRunner(
@@ -42,7 +42,7 @@ def run_it_all_day_bb(
         complete=complete,
         save=save,
         show=show,
-        avg_over_days=avg_over_days,
+        avg_over_periods=avg_over_periods,
         avg_over_subjects=avg_over_subjects)
 
     runner.run()
