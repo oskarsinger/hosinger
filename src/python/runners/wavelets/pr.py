@@ -328,6 +328,6 @@ class DTCWTPartialReconstructionRunner:
                 y[:truncd_length],
                 (self.num_periods[s], period_length))
             new_y = np.mean(period_rows, axis=0)[:,np.newaxis]
-            new_freq[k] = (x, new_y, u)
+            new_freq[s] = (x, new_y, u)
 
         return new_freq
