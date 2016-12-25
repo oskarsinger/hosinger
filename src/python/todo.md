@@ -1,7 +1,7 @@
 #Miscellaneous
-* ASK AL FOR A NEW LAPTOP
+* ASK AL FOR A NEW LAPTOP; maybe wait until you have results, but it needs to happen; see if you can use the one sitting around in the lab; gut it and put Ubuntu on it
 
-* PUT CITATIONS IN YOUR CODE, e.g. simplex projection in optimization.utils
+* PUT CITATIONS IN YOUR CODE, e.g. simplex projection in optimization.utils, federated, SVRG, AdaGrad, etc, etc
 
 * Write some infrastructure to assist in the kind of exploratory data analysis described in the Gelman paper from 2004.
     * Is it possible to make this sufficiently general? Definitely should at least write a specific version for what I am working on.
@@ -17,9 +17,7 @@
 #Network Interference
 
 ##Infrastructure
-* Develop a Parameter class to take care of nasty indexing for stuff like FSVRG. That actually may not be necessary.
-
-* Figure out how to nicely integrate data SERVERS in an RL context.
+* Develop a Parameter class to take care of nasty indexing for stuff like FSVRG. That actually may not be necessary until we have more complex parameter sharing and feature generation stuff.
 
 ##Learning
 * Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper. Also, turns out Brendan McMahan and co have a paper about this that could be helpful, although I think they sample at each round, and I'd want to have probably a subset at the beginning. That may be more related to the model than the estimation. Let's see where they take the SBM stuff.
@@ -89,3 +87,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Plot full time sequence instead of average over hours on each day
 
 * Try averaging wavelet correlation (i.e. A matrix input for sparse CCA code) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).
+
+* Show correlation of the partial reconstructions maybe?
+
+* Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
