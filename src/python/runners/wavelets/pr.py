@@ -24,13 +24,15 @@ class DTCWTPartialReconstructionRunner:
         complete=False,
         save=False,
         show=False,
-        avg=False):
+        avg_over_periods=False,
+        avg_over_subjects=False):
 
-        self.missing = False if avg else missing
-        self.complete = True if avg else complete
+        self.missing = False if avg_over_subjects else missing
+        self.complete = True if avg_over_subjects else complete
         self.save = save
         self.show = show
-        self.avg = avg
+        self.avg_over_periods = avg_over_periods
+        self.avg_over_subjects = avg_over_subjects
 
         self._init_dirs(
             self.save,
@@ -182,9 +184,14 @@ class DTCWTPartialReconstructionRunner:
 
                 freq = self._load_stats(v, f)
 
+                if self.avg_over_periods:
+                    freq = self._get_avg_period(freq)
+
                 print 'Setting title for freq', f
 
-                unit_name = 'Symptomatic?' if self.avg else None
+                unit_name = 'Symptomatic?' \
+                    if self.avg_over_subjects else \
+                    None
                 title = \
                     'View ' + \
                     self.names[v] + \
@@ -192,7 +199,7 @@ class DTCWTPartialReconstructionRunner:
                     ' rcnstrctd with dec. lvl' + \
                     ' 2^' + str(f)
 
-                if self.avg:
+                if self.avg_over_subjects:
                     title = 'Mean over sbjcts of ' + \
                             title[0].lower() + title[1:]
 
@@ -223,16 +230,20 @@ class DTCWTPartialReconstructionRunner:
 
         print 'Padding partial reconstructions for subject', s
 
-        unit_key = 'Symptomatic?' if self.avg else 'unit'
-        s_unit = rmu.get_symptom_status(s) if self.avg else None
+        unit_key = 'Symptomatic?' \
+            if self.avg_over_subjects else \
+            'unit'
+        s_unit = rmu.get_symptom_status(s) \
+            if self.avg_over_subjects else \
+            None
 
         for (v, freqs) in enumerate(view_stats):
             for (f, freq) in enumerate(freqs):
                 self._save_stats(
-                    v, f, s, 
-                    np.arange(freq.shape[0])[:,np.newaxis], 
-                    freq, 
-                    s_unit if self.avg else None)
+                    v, f, s,
+                    np.arange(freq.shape[0])[:,np.newaxis],
+                    freq,
+                    s_unit)
 
     def _load_stats(self, v, f):
 
@@ -254,8 +265,6 @@ class DTCWTPartialReconstructionRunner:
                               for (h_fn, a) in np.load(f).items()}
                     x = loaded[0]
                     y = loaded[1]
-                    print fn
-                    print x.shape
                     u = loaded[2]
                     u = None if u.ndim == 0 else u[:,np.newaxis]
                     stats[s] = (x, y, u)
@@ -307,3 +316,16 @@ class DTCWTPartialReconstructionRunner:
 
         with open(path, 'w') as f:
             np.savez(f, *prs)
+
+    def _get_avg_period(self, freq):
+
+        new_freq = {}
+
+        for (k, (x, y, u)) in freq.items():
+            num_days = int(y.shape[0] / self.period)
+            day_rows = np.reshape(
+                y[:num_days*self.period], 
+                (num_days, self.period))
+            new_freq[k] = np.mean(day_rows, axis=0)
+
+        return new_freq
