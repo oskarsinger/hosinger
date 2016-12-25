@@ -91,3 +91,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Show correlation of the partial reconstructions maybe?
 
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
+
+* I should use the tsplot to average over days. Jeeeeez this is such a pain.
