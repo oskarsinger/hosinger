@@ -326,7 +326,7 @@ class DTCWTPartialReconstructionRunner:
             day_rows = np.reshape(
                 y[:num_days*self.period], 
                 (num_days, self.period))
-            new_y = np.mean(day_rows, axis=0)
+            new_y = np.mean(day_rows, axis=0)[:,np.newaxis]
             new_freq[k] = (x, new_y, u)
 
         return new_freq
