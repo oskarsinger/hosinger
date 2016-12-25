@@ -87,12 +87,11 @@ def _get_dataframe(
         print 'Extending ys array'
         ys = _extend_vec(ys, y)
 
-    cutoff = 3600 * 100
     d = {
-        x_name: xs[:cutoff,0],
-        y_name: ys[:cutoff,0],
-        'name': names[:cutoff,0],
-        unit_name: units[:cutoff,0]}
+        x_name: xs[:,0],
+        y_name: ys[:,0],
+        'name': names[:,0],
+        unit_name: units[:,0]}
     print 'Creating dataframe'
     df = pd.DataFrame(data=d)
 
