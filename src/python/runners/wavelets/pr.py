@@ -321,12 +321,13 @@ class DTCWTPartialReconstructionRunner:
 
         new_freq = {}
 
-        for (k, (x, y, u)) in freq.items():
-            num_days = int(y.shape[0] / self.period)
-            day_rows = np.reshape(
-                y[:num_days*self.period], 
-                (num_days, self.period))
-            new_y = np.mean(day_rows, axis=0)[:,np.newaxis]
+        for (s, (x, y, u)) in freq.items():
+            period_length = int(y.shape[0] / self.num_periods[s])
+            truncd_length = period_length * self.num_periods[s]
+            period_rows = np.reshape(
+                y[:truncd_length],
+                (self.num_periods[s], period_length))
+            new_y = np.mean(period_rows, axis=0)[:,np.newaxis]
             new_freq[k] = (x, new_y, u)
 
         return new_freq
