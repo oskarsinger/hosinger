@@ -42,8 +42,6 @@ class ViewPairwiseCCARunner:
         self.subjects = dtcwt_runner.subjects
         self.rates = dtcwt_runner.rates
         self.names = dtcwt_runner.names
-        self.names2indices = {name : i 
-                              for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps

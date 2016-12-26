@@ -25,7 +25,8 @@ class DTCWTPartialReconstructionRunner:
         save=False,
         show=False,
         avg_over_periods=False,
-        avg_over_subjects=False):
+        avg_over_subjects=False,
+        num_plot_periods=None):
 
         self.missing = False if avg_over_subjects else missing
         self.complete = True if avg_over_subjects else complete
@@ -51,6 +52,13 @@ class DTCWTPartialReconstructionRunner:
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
 
+        if num_plot_periods is None:
+            num_plot_periods = self.num_subperiods
+
+        if not self.avg_over_periods:
+            num_plot_periods *= max(self.num_periods)
+
+        self.num_plot_periods = num_plot_periods
         self.prs = rmu.get_wavelet_storage(
             self.num_views,
             self.num_subperiods,
@@ -183,48 +191,52 @@ class DTCWTPartialReconstructionRunner:
                 print 'Retrieving data for freq', f
 
                 freq = self._load_stats(v, f)
-
+            
                 if self.avg_over_periods:
                     freq = self._get_avg_period(freq)
 
-                print 'Setting title for freq', f
+                for pp in xrange(self.num_plot_periods):
 
-                unit_name = 'Symptomatic?' \
-                    if self.avg_over_subjects else \
-                    None
-                title = \
-                    'View ' + \
-                    self.names[v] + \
-                    ' for ' + str(self.subperiod) + ' scnds' + \
-                    ' rcnstrctd with dec. lvl' + \
-                    ' 2^' + str(f)
+                    print 'Setting title for freq', f
 
-                if self.avg_over_subjects:
-                    title = 'Mean over sbjcts of ' + \
+                    pp_freq = self._get_pp_freq(freq, pp)
+                    unit_name = 'Symptomatic?' \
+                        if self.avg_over_subjects else \
+                        None
+                    title = \
+                        'View ' + \
+                        self.names[v] + \
+                        ' for ' + str(self.subperiod) + ' scnds' + \
+                        ' rcnstrctd with dec. lvl' + \
+                        ' 2^' + str(f) + \
+                        ' of plot period ' + str(pp)
+
+                    if self.avg_over_subjects:
+                        title = 'Mean over sbjcts of ' + \
+                                title[0].lower() + title[1:]
+
+                    if self.missing:
+                        title = 'Missing only ' + \
+                            title[0].lower() + title[1:]
+                    elif self.complete:
+                        title = 'Complete only ' + \
                             title[0].lower() + title[1:]
 
-                if self.missing:
-                    title = 'Missing only ' + \
-                        title[0].lower() + title[1:]
-                elif self.complete:
-                    title = 'Complete only ' + \
-                        title[0].lower() + title[1:]
+                    path = os.path.join(
+                        self.plot_dir,
+                        '_'.join(title.split()) + '.pdf')
 
-                path = os.path.join(
-                    self.plot_dir,
-                    '_'.join(title.split()) + '.pdf')
+                    print 'Generating plot for frequency', f
 
-                print 'Generating plot for frequency', f
-
-                plot_lines(
-                    freq,
-                    'period',
-                    'value',
-                    title,
-                    unit_name=unit_name).get_figure().savefig(
-                        path,
-                        format='pdf')
-                sns.plt.clf()
+                    plot_lines(
+                        pp_freq,
+                        'period',
+                        'value',
+                        title,
+                        unit_name=unit_name).get_figure().savefig(
+                            path,
+                            format='pdf')
+                    sns.plt.clf()
 
     def _compute_completed_and_filtered(self, view_stats, s):
 
@@ -317,9 +329,25 @@ class DTCWTPartialReconstructionRunner:
         with open(path, 'w') as f:
             np.savez(f, *prs)
 
+    def _get_pp_freq(self, freq, pp):
+        
+        pp_freq = {}
+
+        for (s, (x, y, u)) in freq.items():
+            pp_length = int(x.shape[0] / self.num_plot_periods)
+            begin = pp * pp_length
+            end = begin + pp_length
+
+            pp_x = x[begin:end]
+            pp_y = y[begin:end]
+
+            freq[s] = (pp_x, pp_y, u)
+
+        return freq
+
     def _get_avg_period(self, freq):
 
-        new_freq = {}
+        avg_freq = {}
 
         for (s, (x, y, u)) in freq.items():
             period_length = int(y.shape[0] / self.num_periods[s])
@@ -327,10 +355,8 @@ class DTCWTPartialReconstructionRunner:
             period_rows = np.reshape(
                 y[:truncd_length],
                 (self.num_periods[s], period_length))
-            new_y = np.mean(period_rows, axis=0)[:,np.newaxis]
-            new_x = x[:new_y.shape[0],:]
-            print 'new_y.shape', new_y.shape
-            print 'new_x.shape', new_x.shape
-            new_freq[s] = (new_x, new_y, u)
+            avg_y = np.mean(period_rows, axis=0)[:,np.newaxis]
+            avg_x = x[:pp_y.shape[0],:]
+            avg_freq[s] = (avg_x, avg_y, u)
 
-        return new_freq
+        return avg_freq
