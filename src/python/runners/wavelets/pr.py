@@ -341,9 +341,9 @@ class DTCWTPartialReconstructionRunner:
             pp_x = np.copy(x[begin:end])
             pp_y = np.copy(y[begin:end])
 
-            freq[s] = (pp_x, pp_y, u)
+            pp_freq[s] = (pp_x, pp_y, u)
 
-        return freq
+        return pp_freq
 
     def _get_avg_period(self, freq):
 
