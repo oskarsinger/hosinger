@@ -338,8 +338,8 @@ class DTCWTPartialReconstructionRunner:
             begin = pp * pp_length
             end = begin + pp_length
 
-            pp_x = x[begin:end]
-            pp_y = y[begin:end]
+            pp_x = np.copy(x[begin:end])
+            pp_y = np.copy(y[begin:end])
 
             freq[s] = (pp_x, pp_y, u)
 
