@@ -37,6 +37,9 @@ def run_it_all_day_bb(
     if not show:
         dtcwt_runner.run()
 
+    if num_plot_periods is not None:
+        num_plot_periods = int(num_plot_periods)
+
     runner = DTCWTPRR(
         dtcwt_runner,
         save_load_dir,
