@@ -356,7 +356,7 @@ class DTCWTPartialReconstructionRunner:
                 y[:truncd_length],
                 (self.num_periods[s], period_length))
             avg_y = np.mean(period_rows, axis=0)[:,np.newaxis]
-            avg_x = x[:pp_y.shape[0],:]
+            avg_x = x[:avg_y.shape[0],:]
             avg_freq[s] = (avg_x, avg_y, u)
 
         return avg_freq
