@@ -87,6 +87,8 @@ def _get_dataframe(
         print 'Extending ys array'
         ys = _extend_vec(ys, y)
 
+    print 'xs.shape', xs.shape
+    print 'ys.shape', ys.shape
     d = {
         x_name: xs[:,0],
         y_name: ys[:,0],
