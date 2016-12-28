@@ -17,19 +17,16 @@ class DayPairwiseCorrelationRunner:
         save_load_dir,
         save=False,
         load=False,
-        show=False,
-        show_mean=False):
+        show=False):
 
         self.save = save
         self.load = load
         self.show = show
-        self.show_mean = show_mean
 
         self._init_dirs(
             save, 
             load, 
             show, 
-            show_mean,
             save_load_dir)
 
         self.wavelets = dtcwt_runner.wavelets
@@ -55,7 +52,6 @@ class DayPairwiseCorrelationRunner:
             self._show_corr_over_periods()
             self._show_corr_over_subperiods()
 
-        if self.show_mean:
             self._show_corr_mean_over_periods()
             self._show_corr_mean_over_subperiods()
 
@@ -63,10 +59,9 @@ class DayPairwiseCorrelationRunner:
         save, 
         load, 
         show, 
-        show_mean,
         save_load_dir):
 
-        if (show_mean or show or save) and not load:
+        if (show or save) and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -86,7 +81,7 @@ class DayPairwiseCorrelationRunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show or show_mean,
+            show,
             self.save_load_dir) 
 
     def _compute(self):
