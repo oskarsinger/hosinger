@@ -191,52 +191,56 @@ class DTCWTPartialReconstructionRunner:
                 print 'Retrieving data for freq', f
 
                 freq = self._load_stats(v, f)
+                fig = plt.figure()
+                title = \
+                    'View ' + \
+                    self.names[v] + \
+                    ' rcnstrctd with decmtn' + \
+                    ' 2^' + str(f) + \
+
+                if self.avg_over_subjects:
+                    title = 'Mean over sbjcts of ' + \
+                            title[0].lower() + title[1:]
+
+                if self.missing:
+                    title = 'Missing only ' + \
+                        title[0].lower() + title[1:]
+                elif self.complete:
+                    title = 'Complete only ' + \
+                        title[0].lower() + title[1:]
             
                 if self.avg_over_periods:
                     freq = self._get_avg_period(freq)
 
                 for pp in xrange(self.num_plot_periods):
-
-                    print 'Setting title for freq', f
+                    ax = fig.add_subplot(
+                        self.num_plot_periods, 1, pp)
 
                     pp_freq = self._get_pp_freq(freq, pp)
                     unit_name = 'Symptomatic?' \
                         if self.avg_over_subjects else \
                         None
-                    title = \
-                        'View ' + \
-                        self.names[v] + \
-                        ' for ' + str(self.subperiod) + ' scnds' + \
-                        ' rcnstrctd with dec. lvl' + \
-                        ' 2^' + str(f) + \
+                    pp_title = title + \
                         ' of plot period ' + str(pp)
 
-                    if self.avg_over_subjects:
-                        title = 'Mean over sbjcts of ' + \
-                                title[0].lower() + title[1:]
-
-                    if self.missing:
-                        title = 'Missing only ' + \
-                            title[0].lower() + title[1:]
-                    elif self.complete:
-                        title = 'Complete only ' + \
-                            title[0].lower() + title[1:]
-
-                    path = os.path.join(
-                        self.plot_dir,
-                        '_'.join(title.split()) + '.pdf')
-
-                    print 'Generating plot for frequency', f
+                    print 'Generating plot for plot period', str(pp)
 
                     plot_lines(
                         pp_freq,
                         'period',
                         'value',
-                        title,
-                        unit_name=unit_name).get_figure().savefig(
-                            path,
-                            format='pdf')
-                    sns.plt.clf()
+                        pp_title,
+                        unit_name=unit_name,
+                        ax=ax)
+
+                path = os.path.join(
+                    self.plot_dir,
+                    '_'.join(title.split()) + '.pdf')
+
+                fig.savefig(
+                        path,
+                        format='pdf')
+                sns.plt.clf()
 
     def _compute_completed_and_filtered(self, view_stats, s):
 
