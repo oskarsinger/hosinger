@@ -14,7 +14,8 @@ def plot_lines(
     x_name,
     y_name,
     title,
-    unit_name=None):
+    unit_name=None,
+    ax=None):
 
     condition = None
     unit = None
@@ -32,7 +33,7 @@ def plot_lines(
         x_name,
         y_name,
         unit_name)
-    ax = plt.axes()
+    ax = plt.axes() if ax is None else ax
 
     print 'Inside plot_lines, generating tsplot'
     sns.tsplot(
@@ -40,7 +41,8 @@ def plot_lines(
         value=y_name,
         condition=condition,
         unit=unit,
-        data=df)
+        data=df,
+        ax=ax)
 
     ax.set_title(title)
 
