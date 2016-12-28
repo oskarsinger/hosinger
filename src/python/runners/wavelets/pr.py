@@ -184,7 +184,7 @@ class DTCWTPartialReconstructionRunner:
 
         num_freqs = [min([f, 7])
                      for f in self._get_num_freqs()]
-        min_freqs = [max([0, f - 7])
+        min_freqs = [max([2, f - 7])
                      for f in num_freqs] 
 
         for v in xrange(self.num_views):
