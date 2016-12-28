@@ -18,7 +18,7 @@ from lazyprojector import plot_lines
 class DTCWTPartialReconstructionRunner:
 
     def __init__(self,
-        wavelets,
+        #wavelets,
         dtcwt_runner,
         save_load_dir,
         missing=False,
@@ -41,7 +41,7 @@ class DTCWTPartialReconstructionRunner:
             self.show,
             save_load_dir)
 
-        self.wavelets = wavelets
+        self.wavelets = dtwct_runner.wavelets
         self.biorthogonal = dtcwt_runner.biorthogonal
         self.qshift = dtcwt_runner.qshift
         self.subjects = dtcwt_runner.subjects
