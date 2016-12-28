@@ -1,7 +1,7 @@
 import os
 import matplotlib
 
-matplotlib.use('Agg')
+matplotlib.use('Cairo')
 
 import numpy as np
 import pandas as pd
@@ -221,8 +221,6 @@ class DTCWTPartialReconstructionRunner:
                     unit_name = 'Symptomatic?' \
                         if self.avg_over_subjects else \
                         None
-                    pp_title = title + \
-                        ' of plot period ' + str(pp)
 
                     print 'Generating plot for plot period', str(pp)
 
@@ -230,7 +228,7 @@ class DTCWTPartialReconstructionRunner:
                         pp_freq,
                         'period',
                         'value',
-                        pp_title,
+                        '',
                         unit_name=unit_name,
                         ax=ax)
 
@@ -238,9 +236,12 @@ class DTCWTPartialReconstructionRunner:
                     self.plot_dir,
                     '_'.join(title.split()) + '.pdf')
 
-                fig.savefig(
-                        path,
-                        format='pdf')
+                fix.axes[0].set_title(title)
+                plt.setp(
+                    [a.get_xticklabels() for a in fig.axes[:-1]], 
+                    visible=False)
+                fig.subplots_adjust(hspace=0)
+                fig.savefig(path, format='pdf')
                 sns.plt.clf()
 
     def _compute_completed_and_filtered(self, view_stats, s):

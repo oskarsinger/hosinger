@@ -1,7 +1,7 @@
 import os
 import matplotlib
 
-matplotlib.use('Agg')
+matplotlib.use('Cairo')
 
 import seaborn as sns
 import numpy as np
