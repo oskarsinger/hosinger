@@ -196,7 +196,7 @@ class DTCWTPartialReconstructionRunner:
                     'View ' + \
                     self.names[v] + \
                     ' rcnstrctd with decmtn' + \
-                    ' 2^' + str(f) + \
+                    ' 2^' + str(f)
 
                 if self.avg_over_subjects:
                     title = 'Mean over sbjcts of ' + \
