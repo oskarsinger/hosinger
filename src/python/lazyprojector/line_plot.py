@@ -35,7 +35,6 @@ def plot_lines(
         unit_name)
     ax = plt.axes() if ax is None else ax
 
-    print 'Inside plot_lines, generating tsplot'
     sns.tsplot(
         time=x_name,
         value=y_name,
