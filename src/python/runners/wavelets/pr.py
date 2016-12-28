@@ -182,13 +182,15 @@ class DTCWTPartialReconstructionRunner:
 
     def _show(self):
 
-        num_freqs = [min(f, 5)
+        num_freqs = [min([f, 7])
                      for f in self._get_num_freqs()]
+        min_freqs = [max([0, f - 7])
+                     for f in num_freqs] 
 
         for v in xrange(self.num_views):
             print 'Generating plots for view', v
 
-            for f in xrange(2, num_freqs[v]):
+            for f in xrange(min_freqs[v], num_freqs[v]):
 
                 print 'Retrieving data for freq', f
 
