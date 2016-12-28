@@ -41,7 +41,7 @@ class DTCWTPartialReconstructionRunner:
             self.show,
             save_load_dir)
 
-        self.wavelets = dtwct_runner.wavelets
+        self.wavelets = dtcwt_runner.wavelets
         self.biorthogonal = dtcwt_runner.biorthogonal
         self.qshift = dtcwt_runner.qshift
         self.subjects = dtcwt_runner.subjects
