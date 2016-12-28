@@ -188,7 +188,7 @@ class DTCWTPartialReconstructionRunner:
         for v in xrange(self.num_views):
             print 'Generating plots for view', v
 
-            for f in xrange(num_freqs[v]):
+            for f in xrange(2, num_freqs[v]):
 
                 print 'Retrieving data for freq', f
 
