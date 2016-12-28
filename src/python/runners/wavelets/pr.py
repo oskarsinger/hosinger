@@ -43,7 +43,7 @@ class DTCWTPartialReconstructionRunner:
         self.wavelets = dtcwt_runner.wavelets
         self.biorthogonal = dtcwt_runner.biorthogonal
         self.qshift = dtcwt_runner.qshift
-        self.subjects = dtcwt_runner.subjects[:1]
+        self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.num_views = dtcwt_runner.num_views
         self.period = dtcwt_runner.period
@@ -181,7 +181,8 @@ class DTCWTPartialReconstructionRunner:
 
     def _show(self):
 
-        num_freqs = self._get_num_freqs()
+        num_freqs = [min(f, 5)
+                     for f in self._get_num_freqs()]
 
         for v in xrange(self.num_views):
             print 'Generating plots for view', v
