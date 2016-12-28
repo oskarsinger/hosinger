@@ -7,6 +7,8 @@ import numpy as np
 import seaborn as sns
 import utils as rmu
 
+from drrobert.file_io import get_timestamped as get_ts
+
 class EpochWiseTimeSeriesAnalysis:
 
     def __init__(self,
@@ -39,9 +41,25 @@ class EpochWiseTimeSeriesAnalysis:
         self.wavelets = dtcwt_runner.wavelets
         self.analysis_runners = [None] * self.num_epochs
 
-    def _init_dirs(self):
+    def _init_dirs(self,
+        save,
+        load,
+        show,
+        save_load_dir):
 
-        print 'Poop'
+        if save:
+            if not os.path.isdir(save_load_dir):
+                os.mkdir(save_load_dir)
+
+            model_dir = get_ts('EpochWise')
+
+            self.save_load_dir = os.path.join(
+                save_load_dir,
+                model_dir)
+
+            os.mkdir(self.save_load_dir)
+        else:
+            self.save_load_dir = save_load_dir
 
     def run(self):
 
@@ -64,15 +82,19 @@ class EpochWiseTimeSeriesAnalysis:
             b_and_e = zip(begins, ends)
 
             for (i, (b, e)) in enumerate(b_and_e):
-                epochs[i][s] = ps[b:e]
+                epochs[i][s] = np.copy(ps[b:e])
 
         for (i, epoch) in enumerate(epochs):
-            
-            # TODO: make sure this is right
+            save_load_dir = os.path.join(
+                self.save_load_dir,
+                'Epoch' + str(i))
+
+            os.mkdir(save_load_dir)
+
             self.analysis_runners[i] = self.get_analysis_runner(
                 epoch,
                 self.dtcwt_runner,
-                self.save_load_dir,
+                save_load_dir,
                 save=self.save,
                 load=self.load,
                 show=self.show)

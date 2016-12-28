@@ -22,19 +22,13 @@ class ViewPairwiseCCARunner:
         save=False,
         load=False,
         show=False,
-        show_mean=False,
         subject_mean=False,
-        show_transpose=False,
-        show_cc=False,
         nnz=1):
 
         self.save = save
         self.load = load
         self.show = show
-        self.show_mean = show_mean
         self.subject_mean = subject_mean
-        self.show_transpose = show_transpose
-        self.show_cc = show_cc
         self.nnz = nnz
 
         self.wavelets = dtcwt_runner.wavelets
@@ -51,9 +45,6 @@ class ViewPairwiseCCARunner:
             save, 
             load, 
             show, 
-            show_mean,
-            show_cc,
-            show_transpose,
             save_load_dir)
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
@@ -75,30 +66,21 @@ class ViewPairwiseCCARunner:
             self._show_cca_over_periods()
             self._show_cca_over_subperiods()
 
-        if self.show_mean:
             self._show_cca_mean_over_periods()
             self._show_cca_mean_over_subperiods()
 
-        if self.show_transpose:
             self._show_cca_over_freqs()
 
-        if self.show_cc:
             self._show_cc()
 
     def _init_dirs(self, 
         save, 
         load, 
         show, 
-        show_mean, 
-        show_cc,
-        show_transpose,
         save_load_dir):
 
-        mk_sl_dir = show_transpose or \
-            show_mean or \
-            show or \
-            show_cc or \
-            save
+        mk_sl_dir = show or save
+
         if mk_sl_dir and not load:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
@@ -127,7 +109,7 @@ class ViewPairwiseCCARunner:
             self.save_load_dir)
         self.plot_dir = rmu.init_dir(
             'plots',
-            show_transpose or show or show_mean or show_cc,
+            show,
             self.save_load_dir) 
 
     def _compute(self):
