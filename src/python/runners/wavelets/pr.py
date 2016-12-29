@@ -239,7 +239,7 @@ class DTCWTPartialReconstructionRunner:
                     self.plot_dir,
                     '_'.join(title.split()) + '.pdf')
 
-                fix.axes[0].set_title(title)
+                fig.axes[0].set_title(title)
                 plt.setp(
                     [a.get_xticklabels() for a in fig.axes[:-1]], 
                     visible=False)
