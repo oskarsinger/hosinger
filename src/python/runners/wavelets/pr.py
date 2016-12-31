@@ -290,7 +290,7 @@ class DTCWTPartialReconstructionRunner:
                     x = loaded[0]
                     y = loaded[1]
                     u = loaded[2]
-                    u = None if u.ndim == 0 else u[:,np.newaxis]
+                    #u = None if u.ndim == 0 else u[:,np.newaxis]
                     stats[s] = (x, y, u)
                     print 'unit from _load_stats', u
         
