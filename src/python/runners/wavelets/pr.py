@@ -2,6 +2,7 @@ import os
 import matplotlib
 
 matplotlib.use('Cairo')
+matplotlib.rcParams.update({'font.size': 11})
 
 import numpy as np
 import pandas as pd
@@ -258,6 +259,8 @@ class DTCWTPartialReconstructionRunner:
             if self.avg_over_subjects else \
             None
 
+        print 'unit from _compute_completed_and_filtered', s_unit
+
         for (v, freqs) in enumerate(view_stats):
             for (f, freq) in enumerate(freqs):
                 self._save_stats(
@@ -289,6 +292,7 @@ class DTCWTPartialReconstructionRunner:
                     u = loaded[2]
                     u = None if u.ndim == 0 else u[:,np.newaxis]
                     stats[s] = (x, y, u)
+                    print 'unit from _load_stats', u
         
         return stats
 
