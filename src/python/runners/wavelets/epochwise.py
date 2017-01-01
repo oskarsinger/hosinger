@@ -95,6 +95,6 @@ class EpochWiseTimeSeriesAnalysis:
                 epoch,
                 self.dtcwt_runner,
                 save_load_dir,
-                save=self.save,
-                load=self.load,
-                show=self.show)
+                self.save,
+                self.load,
+                self.show)
