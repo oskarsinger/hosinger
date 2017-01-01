@@ -2,7 +2,7 @@ import os
 import matplotlib
 
 matplotlib.use('Cairo')
-matplotlib.rcParams.update({'font.size': 11})
+matplotlib.rcParams.update({'font.size': 9})
 
 import numpy as np
 import pandas as pd
@@ -244,6 +244,13 @@ class DTCWTPartialReconstructionRunner:
                 plt.setp(
                     [a.get_xticklabels() for a in fig.axes[:-1]], 
                     visible=False)
+                plt.setp(
+                    [a.get_yticklabels() for a in fig.axes], 
+                    visible=False)
+
+		for a in fig.axes[1:]:
+		    a.legend_.remove()
+
                 fig.subplots_adjust(hspace=0)
                 fig.savefig(path, format='pdf')
                 sns.plt.clf()
