@@ -59,9 +59,6 @@ def _get_dataframe(
     units = None
 
     for name, (x, y, u) in data_map.items():
-
-        print 'unit from plot_lines', u
-
         new_n = np.array(
             [name for i in xrange(x.shape[0])])
         new_n = new_n[:,np.newaxis]
