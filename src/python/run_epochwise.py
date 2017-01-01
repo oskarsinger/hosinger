@@ -1,6 +1,7 @@
 import click
 
 from runners.wavelets import EpochWiseTimeSeriesAnalysis as EWTSA
+from runners.wavelets import ViewPairwiseCorrelationRunner as VPWCR
 from runners.wavelets import MVDTCWTRunner
 
 @click.command()

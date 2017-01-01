@@ -38,7 +38,8 @@ class ViewPairwiseCorrelationRunner:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
-        self.num_periods = dtcwt_runner.num_periods
+        self.num_periods = {s : len(self.wavelets[s].values()[0])
+			    for s in self.subjects}
         self.num_subperiods = dtcwt_runner.num_sps
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
@@ -92,6 +93,7 @@ class ViewPairwiseCorrelationRunner:
     def _compute(self):
 
         for (s, s_wavelets) in self.wavelets.items():
+	    print 'Computing view pairwise correlation for subject', s
             spud = self.correlation[s]
 
             for (p, day) in enumerate(s_wavelets):
@@ -155,6 +157,7 @@ class ViewPairwiseCorrelationRunner:
     def _show_corr_mean_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
+	    print 'Generating corr-mean-over-sp plot for subject', s
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
@@ -164,6 +167,7 @@ class ViewPairwiseCorrelationRunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
+		print 'Generating plot for view pair', k
                 (n, m) = periods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
@@ -182,6 +186,7 @@ class ViewPairwiseCorrelationRunner:
                 fn = '_'.join(title.split()) + '.pdf'
                 path = os.path.join(self.plot_dir, fn)
 
+		print 'timeline', timeline
                 plot_matrix_heat(
                     timeline,
                     x_labels,
@@ -198,6 +203,7 @@ class ViewPairwiseCorrelationRunner:
     def _show_corr_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
+	    print 'Generating corr-over-subperiods plot for subject', s
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
@@ -207,6 +213,7 @@ class ViewPairwiseCorrelationRunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
+		print 'Generating plot for view pair', k
                 (n, m) = periods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
@@ -241,7 +248,9 @@ class ViewPairwiseCorrelationRunner:
     def _show_corr_mean_over_periods(self):
 
         for (s, spud) in self.correlation.items():
+	    print 'Generating corr-mean-over-periods plot for subject', s
             for (k, subperiods) in spud.items():
+	        print 'Generating plot for view pair', k
                 (n, m) = subperiods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
@@ -276,7 +285,9 @@ class ViewPairwiseCorrelationRunner:
     def _show_corr_over_periods(self):
 
         for (s, spud) in self.correlation.items():
+	    print 'Generating corr-over-periods plot for subject', s
             for (k, subperiods) in spud.items():
+		print 'Generating plot for view pair', k
                 (n, m) = subperiods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)

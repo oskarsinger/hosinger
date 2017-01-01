@@ -33,7 +33,7 @@ class EpochWiseTimeSeriesAnalysis:
         self.num_epochs = len(self.boundaries) + 1
         self.subjects = self.dtcwt_runner.subjects
         self.wavelets = self.dtcwt_runner.wavelets
-        self.num_periods = dself.dtcwt_runner.num_periods
+        self.num_periods = self.dtcwt_runner.num_periods
         self.save = save
         self.load = load
         self.show = show
@@ -63,8 +63,7 @@ class EpochWiseTimeSeriesAnalysis:
 
     def run(self):
 
-        epochs = [{s : None for s in self.subjects}
-                  for i in xrange(self.num_epochs)]
+        epochs = [{} for i in xrange(self.num_epochs)]
 
         for s in self.subjects:
             ps = self.wavelets[s]
@@ -82,19 +81,33 @@ class EpochWiseTimeSeriesAnalysis:
             b_and_e = zip(begins, ends)
 
             for (i, (b, e)) in enumerate(b_and_e):
-                epochs[i][s] = np.copy(ps[b:e])
+		if len(ps) >= b:
+                    epochs[i][s] = np.copy(ps[b:e])
 
         for (i, epoch) in enumerate(epochs):
             save_load_dir = os.path.join(
                 self.save_load_dir,
                 'Epoch' + str(i))
 
-            os.mkdir(save_load_dir)
+	    if self.save:
+            	os.mkdir(save_load_dir)
+	    else:
+		save_load_dir = os.path.join(
+		    save_load_dir,
+		    os.listdir(save_load_dir)[0])
+		
 
-            self.analysis_runners[i] = self.get_analysis_runner(
+	    print 'Creating runner for epoch', i
+	    ar = self.get_analysis_runner(
                 epoch,
                 self.dtcwt_runner,
                 save_load_dir,
                 self.save,
                 self.load,
                 self.show)
+
+	    print 'Running runner for epoch', i
+
+	    ar.run()
+
+            self.analysis_runners[i] = ar 

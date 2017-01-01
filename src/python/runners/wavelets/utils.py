@@ -201,6 +201,7 @@ def get_ravel_hstack(matrices):
 
     cols = [np.ravel(m)[:,np.newaxis]
             for m in matrices]
+    print 'col shapes', [c.shape for c in cols]
 
     return np.hstack(cols)
 

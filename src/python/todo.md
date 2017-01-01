@@ -91,3 +91,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
 
 * I should use the tsplot to average over days. Jeeeeez this is such a pain.
+
+* Compute some statistics on (in)completeness of data.
+
+* Fix epochwise to deal with SPUD and such. np.copy(p[b:e]) is not correct
