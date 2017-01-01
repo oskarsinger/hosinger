@@ -16,6 +16,7 @@ class ViewPairwiseCorrelationRunner:
     def __init__(self,
         dtcwt_runner,
         save_load_dir,
+	wavelets=None,
         save=False,
         load=False,
         show=False):
@@ -30,7 +31,8 @@ class ViewPairwiseCorrelationRunner:
             show, 
             save_load_dir)
 
-        self.wavelets = dtcwt_runner.wavelets
+        self.wavelets = dtcwt_runner.wavelets \
+		if wavelets is None else wavelets
         self.subjects = dtcwt_runner.subjects
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
