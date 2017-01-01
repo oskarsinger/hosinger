@@ -5,3 +5,4 @@ from vpw_cca import ViewPairwiseCCARunner
 from raw_e4 import E4RawDataPlotRunner
 from raw_at import ATRawDataPlotRunner
 from pr import DTCWTPartialReconstructionRunner
+from epochwise import EpochWiseTimeSeriesAnalysis
