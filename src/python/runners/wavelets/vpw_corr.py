@@ -33,7 +33,7 @@ class ViewPairwiseCorrelationRunner:
 
         self.wavelets = dtcwt_runner.wavelets \
 		if wavelets is None else wavelets
-        self.subjects = dtcwt_runner.subjects
+        self.subjects = self.wavelets.keys()
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
