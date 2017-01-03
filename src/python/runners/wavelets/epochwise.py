@@ -82,7 +82,10 @@ class EpochWiseTimeSeriesAnalysis:
 
             for (i, (b, e)) in enumerate(b_and_e):
 		if len(ps) >= b:
-                    epochs[i][s] = np.copy(ps[b:e])
+		    copy_ps = _get_copy(ps[b:e])
+		    if not e - b == len(copy_ps):
+			print 'Something is wrong!'
+                    epochs[i][s] = copy_ps
 
         for (i, epoch) in enumerate(epochs):
             save_load_dir = os.path.join(
@@ -111,3 +114,23 @@ class EpochWiseTimeSeriesAnalysis:
 	    ar.run()
 
             self.analysis_runners[i] = ar 
+
+def _get_copy(periods):
+
+    copy_periods = [None] * len(periods)
+
+    for (p, sps) in enumerate(periods):
+	copy_periods[p] = [None] * len(sps)
+
+	for (sp, views) in enumerate(sps):
+	    copy_periods[p][sp] = [None] * len(views)
+
+	    for (v, hi_and_lo) in enumerate(views):
+		copy_periods[p][sp][v] = []
+
+		copy_periods[p][sp][v].append(
+		    [np.copy(w) for w in hi_and_lo[0]])
+		copy_periods[p][sp][v].append(
+		    np.copy(hi_and_lo[1]))
+
+    return copy_periods
