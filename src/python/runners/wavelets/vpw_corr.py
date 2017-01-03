@@ -38,7 +38,7 @@ class ViewPairwiseCorrelationRunner:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
-        self.num_periods = {s : len(self.wavelets[s].values()[0])
+        self.num_periods = {s : len(self.wavelets[s])
 			    for s in self.subjects}
         self.num_subperiods = dtcwt_runner.num_sps
 
@@ -151,7 +151,7 @@ class ViewPairwiseCorrelationRunner:
             v = [int(i) for i in info[3].split('-')]
             p = int(info[5])
             sp = int(info[7])
-
+	    
             self.correlation[s].get(v[0], v[1])[sp][p] = m
 
     def _show_corr_mean_over_subperiods(self):
@@ -186,7 +186,6 @@ class ViewPairwiseCorrelationRunner:
                 fn = '_'.join(title.split()) + '.pdf'
                 path = os.path.join(self.plot_dir, fn)
 
-		print 'timeline', timeline
                 plot_matrix_heat(
                     timeline,
                     x_labels,
