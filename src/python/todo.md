@@ -71,10 +71,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
-    * What is my narrative? Which plots do I need to finish? What order should they go in? Don't stress too much about the order since Al will give a lot of comments. Try to get something reasonable though so that he knows I am trying. Plus its a good exercise to think through these things yourself.
-    * One of the most important things is to get the partial reconstructions working.
-        * Figure out the memory error with the E4 ones. I am pretty sure it shouldn't be running out of memory. I should just put lots of prints in so I know where the memory error is probably happening. I wonder why the bug fix didn't resolve the memory issue.
-        * Make sure that my reconstructions match up with Al's.
 
 * Maybe switch all of my intermediate serialization to h5py. Will probably be cleaner and maybe more space-efficient.
 
@@ -82,16 +78,10 @@ NOTE: This will have to wait until winter break or next semester probably.
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
-* Plot full time sequence instead of average over hours on each day
-
 * Try averaging wavelet correlation (i.e. A matrix input for sparse CCA code) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).
 
 * Show correlation of the partial reconstructions maybe?
 
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
 
-* I should use the tsplot to average over days. Jeeeeez this is such a pain.
-
 * Compute some statistics on (in)completeness of data.
-
-* Fix epochwise to deal with SPUD and such. np.copy(p[b:e]) is not correct
