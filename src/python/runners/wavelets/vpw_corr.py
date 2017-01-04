@@ -266,7 +266,22 @@ class ViewPairwiseCorrelationRunner:
 
     def _show_corr_mean_over_periods(self):
 
-        for (s, spud) in self.correlation.items():
+	avgs = SPUD(self.num_views, default=lambda: {})
+	things = self.correlation.values()[0].items()
+	y_labels = SPUD(self.num_views)
+
+	for (k, subperiods) in things:
+            (n, m) = subperiods[0][0].shape
+	    y_labels_k = [rmu.get_2_digit_pair(i,j)
+                     	  for i in xrange(n)
+                          for j in xrange(m)]
+            y_labels.insert(
+		k[0], k[1], y_labels_k)
+
+        for s in self.subjects:
+	    spud = self.correlation[s]
+	    sympt = rmu.get_symptom_status(s)
+
             for (k, subperiods) in spud.items():
                 (n, m) = subperiods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
@@ -281,10 +296,15 @@ class ViewPairwiseCorrelationRunner:
                      for tl in timelines])
 
 		if self.avg_over_subjects:
-		    print 'Poop'
+		    current = avgs.get(k[0], k[1])
+
+		    if sympt in current:
+			current[sympt] += timeline
+		    else:
+			current[sympt] = timeline
 		else:
-                    title = 'View-pairwise mean-over-days' + \
-                        ' correlation over hours for views ' + \
+                    title = 'View-pairwise mean-over-periods' + \
+                        ' correlation over subperiods for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
@@ -295,7 +315,7 @@ class ViewPairwiseCorrelationRunner:
                         x_labels,
                         y_labels,
                         title,
-                        'hour',
+                        'subperiod',
                         'frequency pair',
                         'correlation',
                         vmax=1,
@@ -304,7 +324,32 @@ class ViewPairwiseCorrelationRunner:
                     sns.plt.clf()
 
 	if self.avg_over_subjects:
-	    print 'Poop'
+	    for (k, sympts) in avgs.items():
+                y_labels_k = y_labels.get(k[0], k[1])
+                x_labels = [rmu.get_2_digit(p, power=False)
+                            for p in xrange(self.max_periods)]
+		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+
+		for (sympt, timeline) in sympts.items():
+                    title = 'View-pairwise mean-over-periods' + \
+                        ' correlation over subperiods for views ' + \
+                        name1 + ' ' + name2 + \
+			' with symptom status ' + sympt
+		    fn = '_'.join(title.split()) + '.pdf'
+		    path = os.path.join(self.plot_dir, fn)
+
+		    plot_matrix_heat(
+			timeline,
+			x_labels,
+			y_labels_k,
+			title,
+			'subperiod',
+			'frequency pair',
+			'correlation',
+			vmax=1,
+			vmin=-1)[0].get_figure().savefig(
+			    path, format='pdf')
+		    sns.plt.clf()
 
     def _show_corr_over_periods(self):
 
@@ -338,18 +383,15 @@ class ViewPairwiseCorrelationRunner:
 			current = avgs.get(k[0], k[1])[sp]
 
 			if sympt in current:
-			    new = get_running_avg(
-				current[sympt], timeline, sp+1)
-
-			    avgs.get(k[0], k[1])[sp][sympt] = new
+			    current[sympt] += timeline
 			else:
-			    avgs.get(k[0], k[1])[sp][sympt] = timeline
+			    current[sympt] = timeline
 		    else:
                     	title = 'View-pairwise correlation over' + \
-			    ' days for views' + \
+			    ' periods for views' + \
                             name1 + ' ' + name2 + \
                             ' of subject ' + s + \
-			    ' at hour ' + str(sp)
+			    ' at subperiod ' + str(sp)
                         fn = '_'.join(title.split()) + '.pdf'
                         path = os.path.join(self.plot_dir, fn)
 
@@ -358,7 +400,7 @@ class ViewPairwiseCorrelationRunner:
 			    x_labels,
 			    y_labels_k,
 			    title,
-			    'day',
+			    'period',
 			    'frequency pair',
 			    'correlation',
 			    vmax=1,
@@ -376,9 +418,9 @@ class ViewPairwiseCorrelationRunner:
 		for (sp, sympts) in enumerate(subperiods):
 		    for (sympt, timeline) in sympts.items():
                         title = 'View-pairwise correlation over' + \
-			    ' days for views ' + \
+			    ' periods for views ' + \
                             name1 + ' ' + name2 + \
-			    ' at hour ' + str(sp) + \
+			    ' at subperiod ' + str(sp) + \
 			    ' with symptom status ' + sympt
 		        fn = '_'.join(title.split()) + '.pdf'
 		        path = os.path.join(self.plot_dir, fn)
@@ -388,7 +430,7 @@ class ViewPairwiseCorrelationRunner:
 			    x_labels,
 			    y_labels_k,
 			    title,
-			    'day',
+			    'period',
 			    'frequency pair',
 			    'correlation',
 			    vmax=1,
