@@ -36,13 +36,19 @@ class ViewPairwiseCorrelationRunner:
 
         self.wavelets = dtcwt_runner.wavelets \
 		if wavelets is None else wavelets
-        self.subjects = self.wavelets.keys()
+	self.subjects = self.wavelets.keys()
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
         self.num_periods = {s : len(self.wavelets[s])
 			    for s in self.subjects}
+	self.max_periods = max(self.num_periods.values())
+
+	if self.avg_over_subjects:
+	    self.subjects = [s for (s, np) in self.num_periods.items()
+			     if np == self.max_periods]
+
         self.num_subperiods = dtcwt_runner.num_sps
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
@@ -301,14 +307,23 @@ class ViewPairwiseCorrelationRunner:
     def _show_corr_over_periods(self):
 
 	default = lambda: [None] * self.num_subperiods
-	avgs = SPUD(self.num_views)
+	avgs = SPUD(self.num_views, default=default)
+	things = self.correlations.values()[0].items()
+	y_labels = SPUD(self.num_views)
 
-        for (s, spud) in self.correlation.items():
+	for (k, subperiods) in things:
+            (n, m) = subperiods[0][0].shape
+	    y_labels_k = [rmu.get_2_digit_pair(i,j)
+                     	  for i in xrange(n)
+                          for j in xrange(m)]
+            y_labels.insert(
+		k[0], k[1], y_labels_k)
+
+        for s in self.subjects:
+	    spud = self.correlations[s]	
+
             for (k, subperiods) in spud.items():
-                (n, m) = subperiods[0][0].shape
-                y_labels = [rmu.get_2_digit_pair(i,j)
-                            for i in xrange(n)
-                            for j in xrange(m)]
+                y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
 		(name1, name2) = (self.names[k[0]], self.names[k[1]])
@@ -330,7 +345,8 @@ class ViewPairwiseCorrelationRunner:
                     	title = 'View-pairwise correlation over' + \
 			    ' days for views' + \
                             name2 + ' ' + name2 + \
-                            ' of subject ' + s + ' at hour ' + str(sp)
+                            ' of subject ' + s + \
+			    ' at hour ' + str(sp)
                         fn = '_'.join(title.split()) + '.pdf'
                         path = os.path.join(self.plot_dir, fn)
 
@@ -349,17 +365,16 @@ class ViewPairwiseCorrelationRunner:
 
 	if self.avg_over_subjects:
 	    for (k, subperiods) in avgs.items():
-		# This is not gonna work; figure out how to replace it
-                (n, m) = subperiods[0][0].shape
-                y_labels = [rmu.get_2_digit_pair(i,j)
-                            for i in xrange(n)
-                            for j in xrange(m)]
+                y_labels_k = y_labels_k.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
 		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
 		for (sp, timeline) in enumerate(subperiods):
-		    title = 'Poop'
+                    title = 'View-pairwise correlation over' + \
+			' days for views ' + \
+                        name2 + ' ' + name2 + \
+			' at hour ' + str(sp)
 		    fn = '_'.join(title.split()) + '.pdf'
 		    path = os.path.join(self.plot_dir, fn)
 

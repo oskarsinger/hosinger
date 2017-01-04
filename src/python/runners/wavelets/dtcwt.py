@@ -261,7 +261,9 @@ class MVDTCWTRunner:
                 Yhs[i].append([])
 
                 for sp in xrange(self.num_sps):
-                    data_sp = data_p[sp * sp_window : (sp +1) * sp_window]
+		    begin = sp * sp_window
+		    end = begin + sp_window
+                    data_sp = data_p[begin:end]
                     data_sp = get_non_nan(data_sp)[:,np.newaxis]
 
                     if threshold:
