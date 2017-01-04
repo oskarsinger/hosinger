@@ -84,8 +84,6 @@ class EpochWiseTimeSeriesAnalysis:
             for (i, (b, e)) in enumerate(b_and_e):
 		if len(ps) >= b:
 		    copy_ps = _get_copy(ps[b:e])
-		    if not e - b == len(copy_ps):
-			print 'Something is wrong!'
                     epochs[i][s] = copy_ps
 
         for (i, epoch) in enumerate(epochs):
