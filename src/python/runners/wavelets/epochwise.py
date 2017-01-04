@@ -16,6 +16,7 @@ class EpochWiseTimeSeriesAnalysis:
         save_load_dir,
         get_analysis_runner,
         boundaries,
+	epoch_names,
         save=False,
         load=False,
         show=False):
@@ -98,7 +99,6 @@ class EpochWiseTimeSeriesAnalysis:
 		save_load_dir = os.path.join(
 		    save_load_dir,
 		    os.listdir(save_load_dir)[0])
-		
 
 	    print 'Creating runner for epoch', i
 	    ar = self.get_analysis_runner(

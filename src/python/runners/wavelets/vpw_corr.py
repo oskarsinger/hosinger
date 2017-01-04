@@ -8,6 +8,7 @@ import seaborn as sns
 import utils as rmu
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
 from lazyprojector import plot_matrix_heat
 
@@ -19,11 +20,13 @@ class ViewPairwiseCorrelationRunner:
 	wavelets=None,
         save=False,
         load=False,
-        show=False):
+        show=False,
+	avg_over_subjects=False):
 
         self.save = save
         self.load = load
         self.show = show
+	self.avg_over_subjects = avg_over_subjects
 
         self._init_dirs(
             save, 
@@ -93,7 +96,6 @@ class ViewPairwiseCorrelationRunner:
     def _compute(self):
 
         for (s, s_wavelets) in self.wavelets.items():
-	    print 'Computing view pairwise correlation for subject', s
             spud = self.correlation[s]
 
             for (p, day) in enumerate(s_wavelets):
@@ -157,7 +159,6 @@ class ViewPairwiseCorrelationRunner:
     def _show_corr_mean_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
-	    print 'Generating corr-mean-over-sp plot for subject', s
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
@@ -167,7 +168,6 @@ class ViewPairwiseCorrelationRunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
-		print 'Generating plot for view pair', k
                 (n, m) = periods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
@@ -179,30 +179,36 @@ class ViewPairwiseCorrelationRunner:
                 timeline = np.hstack(
                     [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
-                title = 'View-pairwise mean-over-hours correlation' + \
-                    ' over days for views ' + \
-                    self.names[k[0]] + ' ' + self.names[k[1]] + \
-                    ' of subject ' + s
-                fn = '_'.join(title.split()) + '.pdf'
-                path = os.path.join(self.plot_dir, fn)
 
-                plot_matrix_heat(
-                    timeline,
-                    x_labels,
-                    y_labels,
-                    title,
-                    'day',
-                    'frequency pair',
-                    'correlation',
-                    vmax=1,
-                    vmin=-1)[0].get_figure().savefig(
-                        path, format='pdf')
-                sns.plt.clf()
+		if self.avg_over_subjects:
+		    print 'Poop'
+		else:
+                    title = 'View-pairwise mean-over-hours' + \
+                        ' correlation over days for views ' + \
+                        self.names[k[0]] + ' ' + self.names[k[1]] + \
+                    	' of subject ' + s
+                    fn = '_'.join(title.split()) + '.pdf'
+                    path = os.path.join(self.plot_dir, fn)
+
+                    plot_matrix_heat(
+                    	timeline,
+			x_labels,
+			y_labels,
+			title,
+			'day',
+			'frequency pair',
+			'correlation',
+			 vmax=1,
+			 vmin=-1)[0].get_figure().savefig(
+                             path, format='pdf')
+		    sns.plt.clf()
+
+	if self.avg_over_subjects:
+	    print 'Poop'
 
     def _show_corr_over_subperiods(self):
 
         for (s, spud) in self.correlation.items():
-	    print 'Generating corr-over-subperiods plot for subject', s
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
@@ -212,7 +218,6 @@ class ViewPairwiseCorrelationRunner:
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
             for (k, periods) in period_corrs.items():
-		print 'Generating plot for view pair', k
                 (n, m) = periods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
@@ -224,10 +229,56 @@ class ViewPairwiseCorrelationRunner:
 
                 for (p, subperiods) in enumerate(periods):
                     timeline = rmu.get_ravel_hstack(subperiods)
-                    title = 'View-pairwise correlation over hours ' + \
-                        ' for views ' + name1 + ' ' + name2 + \
-                        ' of subject ' + s + ' and day ' + \
-                        rmu.get_2_digit(p)
+
+		    if self.avg_over_subjects:
+			print 'Poop'
+		    else:
+		        title = 'View-pairwise correlation over ' + \
+			    ' hours for views ' + name1 + ' ' + \
+			    name2 + ' of subject ' + s + \
+			    ' and day ' + rmu.get_2_digit(p)
+		        fn = '_'.join(title.split()) + '.pdf'
+		        path = os.path.join(self.plot_dir, fn)
+
+		        plot_matrix_heat(
+			    timeline,
+			    x_labels,
+			    y_labels,
+			    title,
+			    'hour',
+			    'frequency pair',
+			    'correlation',
+			    vmax=1,
+			    vmin=-1)[0].get_figure().savefig(
+			        path, format='pdf')
+		        sns.plt.clf()
+
+	if self.avg_over_subjects:
+	    print 'Poop'
+
+    def _show_corr_mean_over_periods(self):
+
+        for (s, spud) in self.correlation.items():
+            for (k, subperiods) in spud.items():
+                (n, m) = subperiods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(p, power=False)
+                            for p in xrange(self.num_subperiods)]
+                timelines = [rmu.get_ravel_hstack(periods)
+                             for periods in subperiods]
+                timeline = np.hstack(
+                    [np.mean(tl, axis=1)[:,np.newaxis] 
+                     for tl in timelines])
+
+		if self.avg_over_subjects:
+		    print 'Poop'
+		else:
+                    title = 'View-pairwise mean-over-days' + \
+                        ' correlation over hours for views ' + \
+                        self.names[k[0]] + ' ' + self.names[k[1]] + \
+                        ' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
                     path = os.path.join(self.plot_dir, fn)
 
@@ -244,73 +295,83 @@ class ViewPairwiseCorrelationRunner:
                             path, format='pdf')
                     sns.plt.clf()
 
-    def _show_corr_mean_over_periods(self):
-
-        for (s, spud) in self.correlation.items():
-	    print 'Generating corr-mean-over-periods plot for subject', s
-            for (k, subperiods) in spud.items():
-	        print 'Generating plot for view pair', k
-                (n, m) = subperiods[0][0].shape
-                y_labels = [rmu.get_2_digit_pair(i,j)
-                            for i in xrange(n)
-                            for j in xrange(m)]
-                x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.num_subperiods)]
-                timelines = [rmu.get_ravel_hstack(periods)
-                             for periods in subperiods]
-                timeline = np.hstack(
-                    [np.mean(tl, axis=1)[:,np.newaxis] 
-                     for tl in timelines])
-                title = 'View-pairwise mean-over-days correlation' + \
-                    ' over hours for views ' + \
-                    self.names[k[0]] + ' ' + self.names[k[1]] + \
-                    ' of subject ' + s
-                fn = '_'.join(title.split()) + '.pdf'
-                path = os.path.join(self.plot_dir, fn)
-
-                plot_matrix_heat(
-                    timeline,
-                    x_labels,
-                    y_labels,
-                    title,
-                    'hour',
-                    'frequency pair',
-                    'correlation',
-                    vmax=1,
-                    vmin=-1)[0].get_figure().savefig(
-                        path, format='pdf')
-                sns.plt.clf()
+	if self.avg_over_subjects:
+	    print 'Poop'
 
     def _show_corr_over_periods(self):
 
+	default = lambda: [None] * self.num_subperiods
+	avgs = SPUD(self.num_views)
+
         for (s, spud) in self.correlation.items():
-	    print 'Generating corr-over-periods plot for subject', s
             for (k, subperiods) in spud.items():
-		print 'Generating plot for view pair', k
                 (n, m) = subperiods[0][0].shape
                 y_labels = [rmu.get_2_digit_pair(i,j)
                             for i in xrange(n)
                             for j in xrange(m)]
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
+		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
                 for (sp, periods) in enumerate(subperiods):
                     timeline = rmu.get_ravel_hstack(periods)
-                    title = 'View-pairwise correlation over days for views ' + \
-                        self.names[k[0]] + ' ' + self.names[k[1]] + \
-                        ' of subject ' + s + ' at hour ' + str(sp)
-                    fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
 
-                    plot_matrix_heat(
-                        timeline,
-                        x_labels,
-                        y_labels,
-                        title,
-                        'day',
-                        'frequency pair',
-                        'correlation',
-                        vmax=1,
-                        vmin=-1)[0].get_figure().savefig(
-                            path, format='pdf')
-                    sns.plt.clf()
+		    if self.avg_over_subjects:
+			current = avgs.get(k[0], k[1])[sp]
+
+			if current is None:
+			    avgs.get(k[0], k[1])[sp] = timeline
+			else:
+			    new = get_running_avg(
+				current, timeline, sp)
+
+			    avgs.get(k[0], k[1])[sp] = new
+		    else:
+                    	title = 'View-pairwise correlation over' + \
+			    ' days for views' + \
+                            name2 + ' ' + name2 + \
+                            ' of subject ' + s + ' at hour ' + str(sp)
+                        fn = '_'.join(title.split()) + '.pdf'
+                        path = os.path.join(self.plot_dir, fn)
+
+                        plot_matrix_heat(
+			    timeline,
+			    x_labels,
+			    y_labels,
+			    title,
+			    'day',
+			    'frequency pair',
+			    'correlation',
+			    vmax=1,
+			    vmin=-1)[0].get_figure().savefig(
+                                path, format='pdf')
+                        sns.plt.clf()
+
+	if self.avg_over_subjects:
+	    for (k, subperiods) in avgs.items():
+		# This is not gonna work; figure out how to replace it
+                (n, m) = subperiods[0][0].shape
+                y_labels = [rmu.get_2_digit_pair(i,j)
+                            for i in xrange(n)
+                            for j in xrange(m)]
+                x_labels = [rmu.get_2_digit(p, power=False)
+                            for p in xrange(self.num_periods[s])]
+		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+
+		for (sp, timeline) in enumerate(subperiods):
+		    title = 'Poop'
+		    fn = '_'.join(title.split()) + '.pdf'
+		    path = os.path.join(self.plot_dir, fn)
+
+		    plot_matrix_heat(
+			timeline,
+			x_labels,
+			y_labels,
+			title,
+			'day',
+			'frequency pair',
+			'correlation',
+			vmax=1,
+			vmin=-1)[0].get_figure().savefig(
+			     path, format='pdf')
+		    sns.plt.clf()
