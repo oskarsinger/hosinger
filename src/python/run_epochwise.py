@@ -12,6 +12,7 @@ from runners.wavelets import MVDTCWTRunner
 @click.option('--load', default=False)
 @click.option('--save', default=False)
 @click.option('--show', default=False)
+@click.option('--avg-over-subjects', default=False)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
@@ -19,7 +20,8 @@ def run_it_all_day_bb(
     wavelet_dir,
     load,
     save,
-    show,):
+    show,
+    avg_over_subjects):
 
     dtcwt_runner = MVDTCWTRunner(
         data_path=data_path,
@@ -43,15 +45,21 @@ def run_it_all_day_bb(
 	    wavelets=epoch,
 	    save=save,
 	    load=load,
-	    show=show)
+	    show=show,
+	    avg_over_subjects=avg_over_subjects)
 
     boundaries = [2,5]
+    epoch_names = [
+	'Pre-infection',  
+	'During Infection',
+	'Post-infection']
 
     runner = EWTSA(
 	dtcwt_runner,
 	save_load_dir,
 	get_analysis_runner,
 	boundaries,
+	epoch_names,
 	save=save,
 	load=load,
 	show=show)	

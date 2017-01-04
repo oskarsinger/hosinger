@@ -8,6 +8,20 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from scipy.stats import pearsonr as ssp
 from sklearn.cross_decomposition import CCA
 
+def get_complete_status(subject):
+
+    status = None
+
+    if type(subject) in {str, unicode}:
+        if len(subject) > 2:
+            subject = subject[-2:]
+        
+        subject = int(subject)
+
+    complete = {}
+
+    return subject in complete
+
 def get_symptom_status(subject):
 
     status = None
@@ -201,7 +215,6 @@ def get_ravel_hstack(matrices):
 
     cols = [np.ravel(m)[:,np.newaxis]
             for m in matrices]
-    print 'col shapes', [c.shape for c in cols]
 
     return np.hstack(cols)
 

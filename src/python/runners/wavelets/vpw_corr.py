@@ -46,8 +46,9 @@ class ViewPairwiseCorrelationRunner:
 	self.max_periods = max(self.num_periods.values())
 
 	if self.avg_over_subjects:
-	    self.subjects = [s for (s, np) in self.num_periods.items()
-			     if np == self.max_periods]
+	    self.subjects = {s for (s, np) in self.num_periods.items()
+			     if np == self.max_periods}
+	    print self.subjects
 
         self.num_subperiods = dtcwt_runner.num_sps
 
@@ -160,7 +161,8 @@ class ViewPairwiseCorrelationRunner:
             p = int(info[5])
             sp = int(info[7])
 	    
-            self.correlation[s].get(v[0], v[1])[sp][p] = m
+	    if s in self.subjects:
+            	self.correlation[s].get(v[0], v[1])[sp][p] = m
 
     def _show_corr_mean_over_subperiods(self):
 
@@ -306,9 +308,9 @@ class ViewPairwiseCorrelationRunner:
 
     def _show_corr_over_periods(self):
 
-	default = lambda: [None] * self.num_subperiods
+	default = lambda: [{} for i in xrange(self.num_subperiods)]
 	avgs = SPUD(self.num_views, default=default)
-	things = self.correlations.values()[0].items()
+	things = self.correlation.values()[0].items()
 	y_labels = SPUD(self.num_views)
 
 	for (k, subperiods) in things:
@@ -320,7 +322,8 @@ class ViewPairwiseCorrelationRunner:
 		k[0], k[1], y_labels_k)
 
         for s in self.subjects:
-	    spud = self.correlations[s]	
+	    spud = self.correlation[s]
+	    sympt = rmu.get_symptom_status(s)
 
             for (k, subperiods) in spud.items():
                 y_labels_k = y_labels.get(k[0], k[1])
@@ -334,17 +337,17 @@ class ViewPairwiseCorrelationRunner:
 		    if self.avg_over_subjects:
 			current = avgs.get(k[0], k[1])[sp]
 
-			if current is None:
-			    avgs.get(k[0], k[1])[sp] = timeline
-			else:
+			if sympt in current:
 			    new = get_running_avg(
-				current, timeline, sp)
+				current[sympt], timeline, sp+1)
 
-			    avgs.get(k[0], k[1])[sp] = new
+			    avgs.get(k[0], k[1])[sp][sympt] = new
+			else:
+			    avgs.get(k[0], k[1])[sp][sympt] = timeline
 		    else:
                     	title = 'View-pairwise correlation over' + \
 			    ' days for views' + \
-                            name2 + ' ' + name2 + \
+                            name1 + ' ' + name2 + \
                             ' of subject ' + s + \
 			    ' at hour ' + str(sp)
                         fn = '_'.join(title.split()) + '.pdf'
@@ -353,7 +356,7 @@ class ViewPairwiseCorrelationRunner:
                         plot_matrix_heat(
 			    timeline,
 			    x_labels,
-			    y_labels,
+			    y_labels_k,
 			    title,
 			    'day',
 			    'frequency pair',
@@ -365,28 +368,30 @@ class ViewPairwiseCorrelationRunner:
 
 	if self.avg_over_subjects:
 	    for (k, subperiods) in avgs.items():
-                y_labels_k = y_labels_k.get(k[0], k[1])
+                y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.num_periods[s])]
+                            for p in xrange(self.max_periods)]
 		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
-		for (sp, timeline) in enumerate(subperiods):
-                    title = 'View-pairwise correlation over' + \
-			' days for views ' + \
-                        name2 + ' ' + name2 + \
-			' at hour ' + str(sp)
-		    fn = '_'.join(title.split()) + '.pdf'
-		    path = os.path.join(self.plot_dir, fn)
+		for (sp, sympts) in enumerate(subperiods):
+		    for (sympt, timeline) in sympts.items():
+                        title = 'View-pairwise correlation over' + \
+			    ' days for views ' + \
+                            name1 + ' ' + name2 + \
+			    ' at hour ' + str(sp) + \
+			    ' with symptom status ' + sympt
+		        fn = '_'.join(title.split()) + '.pdf'
+		        path = os.path.join(self.plot_dir, fn)
 
-		    plot_matrix_heat(
-			timeline,
-			x_labels,
-			y_labels,
-			title,
-			'day',
-			'frequency pair',
-			'correlation',
-			vmax=1,
-			vmin=-1)[0].get_figure().savefig(
-			     path, format='pdf')
-		    sns.plt.clf()
+		        plot_matrix_heat(
+			    timeline,
+			    x_labels,
+			    y_labels_k,
+			    title,
+			    'day',
+			    'frequency pair',
+			    'correlation',
+			    vmax=1,
+			    vmin=-1)[0].get_figure().savefig(
+			        path, format='pdf')
+		        sns.plt.clf()
