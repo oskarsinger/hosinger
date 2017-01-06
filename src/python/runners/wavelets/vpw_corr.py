@@ -151,8 +151,8 @@ class ViewPairwiseCorrelationRunner:
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
-                for i in xrange(self.num_subperiods):
-                    subperiods[i] = [None] * self.num_periods[s] 
+                for sp in xrange(self.num_subperiods):
+                    subperiods[sp] = [None] * self.num_periods[s] 
                 
         for (k, m) in correlation.items():
             info = k.split('_')
@@ -162,6 +162,7 @@ class ViewPairwiseCorrelationRunner:
             sp = int(info[7])
 	    
 	    if s in self.subjects:
+		print 's', s, 'num_periods', self.num_periods[s]
             	self.correlation[s].get(v[0], v[1])[sp][p] = m
 
     def _show_corr_mean_over_subperiods(self):
@@ -284,9 +285,7 @@ class ViewPairwiseCorrelationRunner:
 
             for (k, subperiods) in spud.items():
                 (n, m) = subperiods[0][0].shape
-                y_labels = [rmu.get_2_digit_pair(i,j)
-                            for i in xrange(n)
-                            for j in xrange(m)]
+                y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_subperiods)]
                 timelines = [rmu.get_ravel_hstack(periods)

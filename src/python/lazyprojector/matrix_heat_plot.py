@@ -56,10 +56,10 @@ def plot_matrix_heat(
             vmin=vmin)
 
         if n > 10:
-            plot.yticklabels = n / 10
+            plot.yticklabels = n / 5
 
         if p > 10:
-            plot.xticklabels = p / 10
+            plot.xticklabels = p / 5
 
         ax.set_title(title + ' ' + k)
 
