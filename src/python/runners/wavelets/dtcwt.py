@@ -61,7 +61,7 @@ class MVDTCWTRunner:
             loaders = dls.get_ats_loaders_all_subjects(
                 self.data_path)
         elif self.dataset == 'e4':
-            loaders = dls.get_hr_and_acc_all_subjects(
+            loaders = dls.get_e4_loaders_all_subjects(
                 self.data_path, None, False)
         elif self.dataset == 'atr':
             loaders = dls.get_atr_loaders()
