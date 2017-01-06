@@ -1,6 +1,4 @@
 #Miscellaneous
-* ASK AL FOR A NEW LAPTOP; maybe wait until you have results, but it needs to happen; see if you can use the one sitting around in the lab; gut it and put Ubuntu on it
-
 * PUT CITATIONS IN YOUR CODE, e.g. simplex projection in optimization.utils, federated, SVRG, AdaGrad, etc, etc
 
 * Write some infrastructure to assist in the kind of exploratory data analysis described in the Gelman paper from 2004.
@@ -84,6 +82,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
 
-* Compute some statistics on (in)completeness of data.
+* Compute some statistics on (in)completeness of data. THIS IS HIGH PRIORITY. Need to show our collaborators (competitors?) how difficult the data is to work with.
 
 * How do I show that the multiview is more informative? Should I start computing plots for more than just HR and ACC?
