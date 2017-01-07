@@ -58,8 +58,11 @@ class E4RawDataPlotRunner:
             None
         s_units = {s : get_s_unit(s)
                    for s in self.subjects}
+        print 'subjects', self.subjects
+        print 's_units', s_units
 
         for (v, ys_v) in enumerate(ys):
+            print 'ys_v.keys()', ys_v.keys()
             title = \
                 self.name + ' value of view ' + \
                 self.names[v] + \
@@ -77,7 +80,6 @@ class E4RawDataPlotRunner:
                 title = title + ' avg over subjects within symptom status'
 
             ax = plt.axes()
-
             data_map = {s : (np.arange(y.shape[0]), y, s_units[s])
                         for (s, y) in ys_v.items()}
 
@@ -100,6 +102,8 @@ class E4RawDataPlotRunner:
                  for i in xrange(self.num_views)]
         stat = np.std if self.std else np.mean
 
+        print 'subjects', self.subjects
+        print 'servers.keys()', self.servers.keys()
         for s in self.subjects:
             dss = self.servers[s]
             s = s[-2:]
