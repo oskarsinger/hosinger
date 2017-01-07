@@ -7,7 +7,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import data.loaders.shortcuts as dlstcts
-import runners.wavelets.utils as rmu
+import utils as rmu
 
 from data.servers.batch import BatchServer as BS
 from linal.utils.misc import get_non_nan
