@@ -19,13 +19,13 @@ from lazyprojector import plot_lines
 class DTCWTPartialReconstructionRunner:
 
     def __init__(self,
-        #wavelets,
         dtcwt_runner,
         save_load_dir,
         missing=False,
         complete=False,
         save=False,
         show=False,
+        wavelets=None,
         avg_over_periods=False,
         avg_over_subjects=False,
         num_plot_periods=None):
@@ -42,7 +42,8 @@ class DTCWTPartialReconstructionRunner:
             self.show,
             save_load_dir)
 
-        self.wavelets = dtcwt_runner.wavelets
+        # TODO: adapt to manually-entered wavelets as was done in vpw_corr
+        self.wavelets = dtcwt_runner.wavelets if wavelets is None else wavelets
         self.biorthogonal = dtcwt_runner.biorthogonal
         self.qshift = dtcwt_runner.qshift
         self.subjects = dtcwt_runner.subjects
@@ -141,7 +142,7 @@ class DTCWTPartialReconstructionRunner:
 
                             if padding_l > 0:
                                 padding = np.array([np.nan] * padding_l)
-                                pr = np.vstack([pr, padding_l])
+                                pr = np.vstack([pr, padding])
 
                             current = view_stats[v][f]
 

@@ -7,9 +7,11 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import data.loaders.shortcuts as dlstcts
+import runners.wavelets.utils as rmu
 
 from data.servers.batch import BatchServer as BS
 from linal.utils.misc import get_non_nan
+from lazyprojector import plot_lines
 
 class E4RawDataPlotRunner:
 
@@ -18,13 +20,15 @@ class E4RawDataPlotRunner:
         period=24*3600,
         missing=False,
         complete=False,
-        std=False):
+        std=False,
+        avg_over_subjects):
 
         self.hdf5_path = hdf5_path
         self.period = period
         self.missing = missing
         self.complete = complete
         self.std = std
+        self.avg_over_subjects = avg_over_subjects
         self.name = 'Std' if self.std else 'Mean'
 
         self.loaders = dlstcts.get_e4_loaders_all_subjects(
@@ -39,31 +43,16 @@ class E4RawDataPlotRunner:
                       for dl in sample_dls]
         self.names = [dl.name()
                       for dl in sample_dls]
+        # TODO: this may need to be altered according to complete and missing
+        # TODO: how do I even define completeness now that the loader nan-pads?
+        self.subjects = self.servers.keys()
 
     def run(self):
 
-        averages = self._get_completed_and_filtered(
+        data_maps = self._get_data_maps(
             self._get_stats())
-        asymp = {'06', '07', '13', '21', '24'}
-        linestyles = ['--' if s[-2:] in asymp else '-'
-                      for s in self.servers.keys()]
 
-        for (i, view) in enumerate(averages):
-            ax = plt.axes()
-
-            sns.pointplot(
-                x='period', 
-                y='value', 
-                hue='subject',
-                data=view,
-                linestyles=linestyles,
-                ax=ax,
-                legend=False)
-            sns.plt.legend(
-                bbox_to_anchor=(1, 1.05), 
-                loc=2, 
-                borderaxespad=0.)
-
+        for (i, view) in enumerate(data_maps):
             title = \
                 self.name + ' value of view ' + \
                 self.names[i] + \
@@ -77,82 +66,50 @@ class E4RawDataPlotRunner:
                 title = 'Complete only ' + \
                     title[0].lower() + title[1:]
 
-            ax.set_title(title)
+            if self.avg_over_subjects:
+                title = title + ' avg over subjects within symptom status'
+
+            ax = plt.axes()
+
+            plot_lines(
+                view,
+                'period', 
+                'value', 
+                title,
+                unit_name=unit_name,
+                ax=ax)
+
             ax.get_figure().savefig(
                 '_'.join(title.split()) + '.pdf',
                 format='pdf')
             sns.plt.clf()
 
-    def _get_stats(self):
+    def _get_data_maps(self):
 
-        views = [{s[-2:] : None for s in self.servers.keys()}
+        views = [{s[-2:] : None for s in self.subjects}
                  for i in xrange(self.num_views)]
         stat = np.std if self.std else np.mean
 
-        for (s, dss) in self.servers.items():
+        for s in self.subjects:
+            dss = self.servers[s]
             s = s[-2:]
 
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
-                view_stat = []
-                truncate = self.names[i] == 'TEMP'
+                truncate = self.names[i] in {'TEMP'}
                 data = view.get_data()
-                f_num_periods = float(data.shape[0]) / window
-                i_num_periods = int(f_num_periods)
+                float_num_periods = float(data.shape[0]) / window
+                int_num_periods = int(f_num_periods)
 
-                if f_num_periods - i_num_periods > 0:
-                    i_num_periods += 1
+                if float_num_periods - int_num_periods > 0:
+                    int_num_periods += 1
 
-                for p in xrange(i_num_periods):
-                    data_p = get_non_nan(
-                        data[p * window : (p+1) * window])
+                reshaped = data[:window*int_num_periods].reshape(
+                    (window, int_num_periods))
 
-                    if truncate:
-                        data_p[data_p > 40] = 40
+                if truncate:
+                    data_p[data_p > 40] = 40
 
-                    view_stat.append(stat(data_p))
-
-                views[i][s] = view_stat
+                views[i][s] = stat(data_p, axis=1)[:, np.newaxis]
 
         return views
-
-    def _get_completed_and_filtered(self, view_stats):
-
-        dfs = [None] * self.num_views
-
-        for (i, view) in enumerate(view_stats):
-            periods = []
-            subjects = []
-            values = []
-
-            max_p = max(
-                [len(l) for l in view.values()])
-
-            for (s, l) in view.items():
-                ll = len(l)
-                l = l + [None] * (max_p - ll)
-                s_periods = list(range(max_p))
-                s_subjects = [s] * max_p
-
-                if self.missing:
-                    if ll < max_p:
-                        periods.extend(s_periods)
-                        subjects.extend(s_subjects)
-                        values.extend(l)
-                elif self.complete:
-                    if ll == max_p:
-                        periods.extend(s_periods)
-                        subjects.extend(s_subjects)
-                        values.extend(l)
-                else:
-                    periods.extend(s_periods)
-                    subjects.extend(s_subjects)
-                    values.extend(l)
-
-            d = {
-                'period': periods,
-                'subject': subjects, 
-                'value': values}
-            dfs[i] = pd.DataFrame(data=d)
-
-        return dfs
