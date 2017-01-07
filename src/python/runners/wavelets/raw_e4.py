@@ -106,7 +106,6 @@ class E4RawDataPlotRunner:
         print 'servers.keys()', self.servers.keys()
         for s in self.subjects:
             dss = self.servers[s]
-            s = s[-2:]
 
             for (i, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
