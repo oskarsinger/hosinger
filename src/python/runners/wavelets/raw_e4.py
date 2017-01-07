@@ -118,12 +118,12 @@ class E4RawDataPlotRunner:
                     padding = np.ones((padding_l, 1)) * np.nan
                     data = np.vstack([data, padding])
 
-                reshaped = data.reshape(
+                data = data.reshape(
                     (window, int_num_periods))
 
                 if truncate:
-                    data_p[data_p > 40] = 40
+                    data[data > 40] = 40
 
-                views[i][s] = stat(data_p, axis=1)[:, np.newaxis]
+                views[i][s] = stat(data, axis=1)[:, np.newaxis]
 
         return views
