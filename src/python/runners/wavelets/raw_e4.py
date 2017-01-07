@@ -98,7 +98,7 @@ class E4RawDataPlotRunner:
 
     def _get_ys(self):
 
-        views = [{s[-2:] : None for s in self.subjects}
+        views = [{s : None for s in self.subjects}
                  for i in xrange(self.num_views)]
         stat = np.std if self.std else np.mean
 
