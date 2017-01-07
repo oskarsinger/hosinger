@@ -83,5 +83,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
 
 * Compute some statistics on (in)completeness of data. THIS IS HIGH PRIORITY. Need to show our collaborators (competitors?) how difficult the data is to work with.
+* Switch raw data plots to use tsplot
 
 * How do I show that the multiview is more informative? Should I start computing plots for more than just HR and ACC?
