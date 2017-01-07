@@ -49,10 +49,17 @@ class E4RawDataPlotRunner:
 
     def run(self):
 
-        data_maps = self._get_data_maps(
-            self._get_stats())
+        ys = self._get_ys()
+        unit_name = 'Symptomatic?' \
+            if self.avg_over_subjects else \
+            None
+        get_s_unit = lambda s: rmu.get_symptom_status(s) \
+            if self.avg_over_subjects else \
+            None
+        s_units = {s : get_s_unit(s)
+                   for s in self.subjects}
 
-        for (i, view) in enumerate(data_maps):
+        for (i, ys) in enumerate(data_maps):
             title = \
                 self.name + ' value of view ' + \
                 self.names[i] + \
@@ -71,8 +78,11 @@ class E4RawDataPlotRunner:
 
             ax = plt.axes()
 
+            data_map = {s : (np.arange(y.shape[0]), ys[s], s_units[s])
+                        for s in self.subjects}
+
             plot_lines(
-                view,
+                data_map,
                 'period', 
                 'value', 
                 title,
@@ -84,7 +94,7 @@ class E4RawDataPlotRunner:
                 format='pdf')
             sns.plt.clf()
 
-    def _get_data_maps(self):
+    def _get_ys(self):
 
         views = [{s[-2:] : None for s in self.subjects}
                  for i in xrange(self.num_views)]
