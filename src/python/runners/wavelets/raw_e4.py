@@ -21,7 +21,7 @@ class E4RawDataPlotRunner:
         missing=False,
         complete=False,
         std=False,
-        avg_over_subjects):
+        avg_over_subjects=False):
 
         self.hdf5_path = hdf5_path
         self.period = period
