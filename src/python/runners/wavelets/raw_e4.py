@@ -113,9 +113,12 @@ class E4RawDataPlotRunner:
 
                 if float_num_periods - int_num_periods > 0:
                     int_num_periods += 1
+                    full_length = int_num_periods * window
+                    padding_l = full_length - data.shape[0]
+                    padding = np.ones((padding_l, 1)) * np.nan
+                    data = np.vstack([data, padding])
 
                 print 'data.shape', data.shape
-                truncd = data[:window * int_num_periods,:]
                 print 'truncd.shape', truncd.shape
                 reshaped = truncd.reshape(
                     (window, int_num_periods))
