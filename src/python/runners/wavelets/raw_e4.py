@@ -118,9 +118,7 @@ class E4RawDataPlotRunner:
                     padding = np.ones((padding_l, 1)) * np.nan
                     data = np.vstack([data, padding])
 
-                print 'data.shape', data.shape
-                print 'truncd.shape', truncd.shape
-                reshaped = truncd.reshape(
+                reshaped = data.reshape(
                     (window, int_num_periods))
 
                 if truncate:
