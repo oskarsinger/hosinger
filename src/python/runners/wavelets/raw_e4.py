@@ -109,7 +109,7 @@ class E4RawDataPlotRunner:
                 truncate = self.names[i] in {'TEMP'}
                 data = view.get_data()
                 float_num_periods = float(data.shape[0]) / window
-                int_num_periods = int(f_num_periods)
+                int_num_periods = int(float_num_periods)
 
                 if float_num_periods - int_num_periods > 0:
                     int_num_periods += 1
