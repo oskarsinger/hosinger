@@ -59,10 +59,10 @@ class E4RawDataPlotRunner:
         s_units = {s : get_s_unit(s)
                    for s in self.subjects}
 
-        for (i, ys) in enumerate(data_maps):
+        for (v, ys_v) in enumerate(ys):
             title = \
                 self.name + ' value of view ' + \
-                self.names[i] + \
+                self.names[v] + \
                 ' for period length ' + \
                 str(self.period) + ' seconds'
 
@@ -78,8 +78,8 @@ class E4RawDataPlotRunner:
 
             ax = plt.axes()
 
-            data_map = {s : (np.arange(y.shape[0]), ys[s], s_units[s])
-                        for s in self.subjects}
+            data_map = {s : (np.arange(y.shape[0]), y, s_units[s])
+                        for (s, y) in ys_v.items()}
 
             plot_lines(
                 data_map,
