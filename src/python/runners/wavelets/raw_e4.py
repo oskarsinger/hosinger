@@ -118,7 +118,8 @@ class E4RawDataPlotRunner:
 
                 truncate = self.names[v] in {'TEMP'}
                 data = view.get_data()
-                print 'nan ratio in original data', (np.isnan(data)).sum() / data.shape[0]
+                print 'nan ratio in original data', \
+                    float((np.isnan(data)).sum()) / float(data.shape[0])
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
 
@@ -136,7 +137,8 @@ class E4RawDataPlotRunner:
                     reshaped[reshaped > 40] = 40
 
                 data_stats = stat(reshaped, axis=0)[:, np.newaxis]
-                print 'nan ratio in data stats', (np.isnan(data_stats)).sum() / data_stats.shape[0]
+                print 'nan ratio in data stats', \
+                    float((np.isnan(data_stats)).sum()) / float(data_stats.shape[0])
                 views[v][s] = data_stats
 
         return views
