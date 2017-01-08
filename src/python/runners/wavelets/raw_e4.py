@@ -41,6 +41,7 @@ class E4RawDataPlotRunner:
         self.num_views = len(sample_dls)
         self.rates = [dl.get_status()['hertz']
                       for dl in sample_dls]
+        print self.rates
         self.names = [dl.name()
                       for dl in sample_dls]
         # TODO: this may need to be altered according to complete and missing
