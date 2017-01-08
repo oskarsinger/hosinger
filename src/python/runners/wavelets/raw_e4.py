@@ -41,7 +41,7 @@ class E4RawDataPlotRunner:
         self.num_views = len(sample_dls)
         self.rates = [dl.get_status()['hertz']
                       for dl in sample_dls]
-        print self.rates
+        print 'self.rates', self.rates
         self.names = [dl.name()
                       for dl in sample_dls]
         # TODO: this may need to be altered according to complete and missing
@@ -104,12 +104,17 @@ class E4RawDataPlotRunner:
         for s in self.subjects:
             dss = self.servers[s]
 
-            for (i, (r, view)) in enumerate(zip(self.rates, dss)):
+            print 'subject', s
+
+            for (v, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
-                truncate = self.names[i] in {'TEMP'}
+                print 'view', v, 'rate', r, 'window', window
+
+                truncate = self.names[v] in {'TEMP'}
                 data = view.get_data()
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
+                print 'int_num_periods', int_num_periods
 
                 if float_num_periods - int_num_periods > 0:
                     int_num_periods += 1
@@ -124,6 +129,7 @@ class E4RawDataPlotRunner:
                 if truncate:
                     data[data > 40] = 40
 
-                views[i][s] = stat(data, axis=1)[:, np.newaxis]
+                views[v][s] = stat(data, axis=1)[:, np.newaxis]
+                print 'views[v][s].shape', views[v][s].shape
 
         return views
