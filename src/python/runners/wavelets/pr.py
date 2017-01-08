@@ -260,9 +260,6 @@ class DTCWTPartialReconstructionRunner:
 
         print 'Padding partial reconstructions for subject', s
 
-        unit_key = 'Symptomatic?' \
-            if self.avg_over_subjects else \
-            'unit'
         s_unit = rmu.get_symptom_status(s) \
             if self.avg_over_subjects else \
             None
