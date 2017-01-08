@@ -112,14 +112,14 @@ class E4RawDataPlotRunner:
 
         for s in self.subjects:
             dss = self.servers[s]
+            print 'subject', s
 
             for (v, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
 
                 truncate = self.names[v] in {'TEMP'}
                 data = view.get_data()
-                print 'nan ratio in original data', \
-                    float((np.isnan(data)).sum()) / float(data.shape[0])
+                print 'num nans in original data', np.isnan(data).sum()
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
 
@@ -127,18 +127,20 @@ class E4RawDataPlotRunner:
                     int_num_periods += 1
                     full_length = int_num_periods * window
                     padding_l = full_length - data.shape[0]
+                    print 'padding_l', padding_l
                     padding = np.ones((padding_l, 1)) * np.nan
                     data = np.vstack([data, padding])
+                    print 'num nans in completed', np.isnan(data).sum()
 
                 reshaped = data.reshape(
                     (window, int_num_periods))
+                print 'num nans in reshaped', np.isnan(reshaped).sum()
 
                 if truncate:
                     reshaped[reshaped > 40] = 40
 
                 data_stats = stat(reshaped, axis=0)[:, np.newaxis]
-                print 'nan ratio in data stats', \
-                    float((np.isnan(data_stats)).sum()) / float(data_stats.shape[0])
+                print 'num nans in data stats', np.isnan(data_stats).sum()
                 views[v][s] = data_stats
 
         return views
