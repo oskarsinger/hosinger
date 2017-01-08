@@ -88,18 +88,19 @@ class FixedRateLoader:
                 num_rows = new_data.get_status()['num_missing_rows']
                 print 'Instance of missing data with num_rows', num_rows
                 new_data = np.ones((num_rows, self.window)) * np.nan
+            else:
+                print 'Instand of regular data with num_rows', new_data.shape[0]
 
             if data is None:
-                data = new_data
+                data = np.copy(new_data)
             elif self.on_deck_data is not None:
                 data = np.vstack(
-                    [data, self.on_deck_data])
+                    [data, np.copy(self.on_deck_data)])
 
                 self.on_deck_data = new_data
             else:
-                print 'v stacking nan data'
                 data = np.vstack(
-                    [data, new_data])
+                    [data, np.copy(new_data)])
 
         return data
 
@@ -121,10 +122,8 @@ class FixedRateLoader:
         self.current_time += data.shape[0] * self.seconds
 
         if time_diff > 0:
-            print 'Time diff > 0', time_diff
             self.on_deck_data = data
             num_missing_rows = int(ceil(time_diff/self.seconds))
-            print 'num_missing_rows', num_missing_rows
             data = MissingData(num_missing_rows) 
 
         return data
