@@ -38,9 +38,9 @@ def get_resampled_view(server, rate):
 
     return series.resample('S').pad().as_matrix()
 
-def get_dt_index(num_rows, factor, datetime):
+def get_dt_index(num_rows, factor, dt):
 
-    start = mktime(datetime.timetuple())
+    start = mktime(dt.timetuple())
     times = (np.arange(num_rows) * factor + start).tolist()
 
     return [datetime.fromtimestamp(t)

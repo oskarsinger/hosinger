@@ -41,7 +41,6 @@ class E4RawDataPlotRunner:
         self.num_views = len(sample_dls)
         self.rates = [dl.get_status()['hertz']
                       for dl in sample_dls]
-        print 'self.rates', self.rates
         self.names = [dl.name()
                       for dl in sample_dls]
         # TODO: this may need to be altered according to complete and missing
@@ -79,7 +78,7 @@ class E4RawDataPlotRunner:
                 title = title + ' avg over subjects within symptom status'
 
             ax = plt.axes()
-            data_map = {s : (np.arange(y.shape[0])[:,np.newaxis], y, s_units[s])
+            data_map = {s : (self._get_x(y.shape[0], v, s), y, s_units[s])
                         for (s, y) in ys_v.items()}
 
             plot_lines(
@@ -95,6 +94,18 @@ class E4RawDataPlotRunner:
                 format='pdf')
             sns.plt.clf()
 
+    def _get_x(self, num_rows, v, s):
+
+        factor = something
+        dt = self.loaders[s][v].get_status()['start_times'][0]
+        factor = 1.0 / self.rates[v]
+        dt_index_list = get_dt_index(
+            num_rows,
+            factor,
+            datetime)
+
+        return np.array(dt_index_list)[:,np.newaxis]
+
     def _get_ys(self):
 
         views = [{s : None for s in self.subjects}
@@ -104,17 +115,13 @@ class E4RawDataPlotRunner:
         for s in self.subjects:
             dss = self.servers[s]
 
-            print 'subject', s
-
             for (v, (r, view)) in enumerate(zip(self.rates, dss)):
                 window = int(r * self.period)
-                print 'view', v, 'rate', r, 'window', window
 
                 truncate = self.names[v] in {'TEMP'}
                 data = view.get_data()
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
-                print 'int_num_periods', int_num_periods
 
                 if float_num_periods - int_num_periods > 0:
                     int_num_periods += 1
@@ -125,12 +132,10 @@ class E4RawDataPlotRunner:
 
                 data = data.reshape(
                     (window, int_num_periods))
-                print 'post reshape data.shape', data.shape
 
                 if truncate:
                     data[data > 40] = 40
 
                 views[v][s] = stat(data, axis=0)[:, np.newaxis]
-                print 'views[v][s].shape', views[v][s].shape
 
         return views
