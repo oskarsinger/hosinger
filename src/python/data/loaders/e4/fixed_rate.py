@@ -65,13 +65,14 @@ class FixedRateLoader:
 
     def _refill_data(self):
 
+        # TODO: this needs to be redone completely
         sessions = self._get_hdf5_repo().items()
         index = self.num_real_data % len(sessions)
         sorted_sessions = sorted(sessions, key=lambda x: x[0])
         (key, session) = sorted_sessions[index]
 
         if self.on_deck_data is not None:
-            self.data = self.on_deck_data
+            self.data = np.copy(self.on_deck_data)
             self.on_deck_data = None
         else:
             self.data = self._get_rows(key, session)
@@ -89,16 +90,15 @@ class FixedRateLoader:
                 print 'Instance of missing data with num_rows', num_rows
                 new_data = np.ones((num_rows, self.window)) * np.nan
             else:
-                print 'Instand of regular data with num_rows', new_data.shape[0]
+                print 'Instance of regular data with num_rows', new_data.shape[0]
 
             if data is None:
                 data = np.copy(new_data)
-            elif self.on_deck_data is not None:
-                data = np.vstack(
-                    [data, np.copy(self.on_deck_data)])
+            else: 
+                if self.on_deck_data is not None:
+                    new_data = np.vstack([
+                        new_data, self.on_deck_data])
 
-                self.on_deck_data = new_data
-            else:
                 data = np.vstack(
                     [data, np.copy(new_data)])
 
@@ -160,7 +160,7 @@ class FixedRateLoader:
         if len(data) >= self.window:
             # Prepare data to be merged into full list
             modded = get_array_mod(data, self.window)
-            length = modded.shape[0] / self.window
+            length = float(modded.shape[0]) / float(self.window)
             rows = modded.reshape((length, self.window))
         else:
             raise ValueError(
