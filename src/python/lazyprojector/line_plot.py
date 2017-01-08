@@ -35,12 +35,6 @@ def plot_lines(
         unit_name)
     ax = plt.axes() if ax is None else ax
 
-    print 'x_name', x_name
-    print 'y_name', y_name
-    print 'condition', condition
-    print 'unit', unit
-    print 'df', df
-    print 'ax', ax
     sns.tsplot(
         time=x_name,
         value=y_name,
