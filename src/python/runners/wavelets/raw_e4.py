@@ -12,6 +12,7 @@ import utils as rmu
 from data.servers.batch import BatchServer as BS
 from linal.utils.misc import get_non_nan
 from lazyprojector import plot_lines
+from drrobert.time_series import get_dt_index
 
 class E4RawDataPlotRunner:
 
@@ -96,13 +97,10 @@ class E4RawDataPlotRunner:
 
     def _get_x(self, num_rows, v, s):
 
-        factor = something
         dt = self.loaders[s][v].get_status()['start_times'][0]
         factor = 1.0 / self.rates[v]
         dt_index_list = get_dt_index(
-            num_rows,
-            factor,
-            datetime)
+            num_rows, factor, dt)
 
         return np.array(dt_index_list)[:,np.newaxis]
 
