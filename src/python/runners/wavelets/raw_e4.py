@@ -115,6 +115,7 @@ class E4RawDataPlotRunner:
             print 'subject', s
 
             for (v, (r, view)) in enumerate(zip(self.rates, dss)):
+                print 'view', self.names[v]
                 window = int(r * self.period)
 
                 truncate = self.names[v] in {'TEMP'}
