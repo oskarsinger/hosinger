@@ -98,7 +98,7 @@ class E4RawDataPlotRunner:
     def _get_x(self, num_rows, v, s):
 
         dt = self.loaders[s][v].get_status()['start_times'][0]
-        factor = 1.0 / self.rates[v]
+        factor = 1.0 / (self.rates[v] * self.period)
         dt_index_list = get_dt_index(
             num_rows, factor, dt)
 
@@ -118,6 +118,7 @@ class E4RawDataPlotRunner:
 
                 truncate = self.names[v] in {'TEMP'}
                 data = view.get_data()
+                print 'nan ratio in original data', (data.isnan()).sum() / data.shape[0]
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
 
@@ -134,6 +135,8 @@ class E4RawDataPlotRunner:
                 if truncate:
                     data[data > 40] = 40
 
-                views[v][s] = stat(data, axis=0)[:, np.newaxis]
+                data_stats = stat(data, axis=0)[:, np.newaxis]
+                print 'nan ratio in data stats', (data.isnan()).sum() / data.shape[0]
+                views[v][s] = data_stats
 
         return views
