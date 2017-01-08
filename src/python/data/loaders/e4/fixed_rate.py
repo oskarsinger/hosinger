@@ -87,7 +87,7 @@ class FixedRateLoader:
             if isinstance(new_data, MissingData):
                 num_rows = new_data.get_status()['num_missing_rows']
                 print 'Instance of missing data with num_rows', num_rows
-                new_data = np.ones((num_rows, self.window)) * np.NaN
+                new_data = np.ones((num_rows, self.window)) * np.nan
 
             if data is None:
                 data = new_data
@@ -97,6 +97,7 @@ class FixedRateLoader:
 
                 self.on_deck_data = None
             else:
+                print 'v stacking nan data'
                 data = np.vstack(
                     [data, new_data])
 
