@@ -125,6 +125,7 @@ class E4RawDataPlotRunner:
 
                 data = data.reshape(
                     (window, int_num_periods))
+                print 'post reshape data.shape', data.shape
 
                 if truncate:
                     data[data > 40] = 40
