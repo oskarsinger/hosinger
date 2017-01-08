@@ -130,7 +130,7 @@ class E4RawDataPlotRunner:
                 if truncate:
                     data[data > 40] = 40
 
-                views[v][s] = stat(data, axis=1)[:, np.newaxis]
+                views[v][s] = stat(data, axis=0)[:, np.newaxis]
                 print 'views[v][s].shape', views[v][s].shape
 
         return views
