@@ -95,7 +95,7 @@ class FixedRateLoader:
                 data = np.vstack(
                     [data, self.on_deck_data])
 
-                self.on_deck_data = None
+                self.on_deck_data = new_data
             else:
                 print 'v stacking nan data'
                 data = np.vstack(
