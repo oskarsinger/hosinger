@@ -18,6 +18,7 @@ def dtwavexfm(
     L = X.shape
 
     if L[0] % 2 > 0:
+        print 'Necessary to extend by one nan'
         X = np.vstack([
             X,
             np.ones((1,1)) * np.nan])
