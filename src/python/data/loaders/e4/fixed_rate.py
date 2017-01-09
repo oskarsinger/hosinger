@@ -92,18 +92,19 @@ class FixedRateLoader:
                 num_rows = new_data.get_status()['num_missing_rows']
                 print 'Instance of missing data with num_rows', num_rows
                 new_data = np.ones((num_rows, self.window)) * np.nan
-            else:
-                print 'Instance of regular data with num_rows', new_data.shape[0]
 
             if data is None:
                 data = np.copy(new_data)
             else: 
-                if self.on_deck_data is not None:
-                    new_data = np.vstack([
-                        new_data, self.on_deck_data])
-
                 data = np.vstack(
                     [data, np.copy(new_data)])
+
+                if self.on_deck_data is not None:
+                    print 'Instance of regular data with num_rows', \
+                        self.on_deck_data.shape[0]
+
+                    data = np.vstack(
+                        [data, np.copy(self.on_deck_data)])
 
         return data
 
