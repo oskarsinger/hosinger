@@ -73,15 +73,13 @@ def _get_dataframe(
 
         new_u = new_u[:,np.newaxis]
 
-        print 'y.shape[0]', y.shape[0]
-        if ys is not None:
-            print 'ys.shape[0] before', ys.shape[0]
         names = _extend_vec(names, new_n)
         units = _extend_vec(units, new_u)
         xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
-        print 'ys.shape[0] after', ys.shape[0]
-        print 'ys after', ys
+
+        print 'xs[:,0].shape', xs[:,0].shape
+        print 'ys[:,0].shape', ys[:,0].shape
 
     d = {
         x_name: xs[:,0],
