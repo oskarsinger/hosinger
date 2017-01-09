@@ -16,6 +16,7 @@ def dtwavexfm(
         biorthogonal['h1o'])
 
     L = X.shape
+    print 'L', L
 
     if L[0] % 2 > 0:
         raise ValueError(
