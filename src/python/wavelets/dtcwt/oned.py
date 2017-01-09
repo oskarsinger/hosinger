@@ -19,8 +19,13 @@ def dtwavexfm(
     print 'L', L
 
     if L[0] % 2 > 0:
+        X = np.vstack([
+            x,
+            np.ones((1,1)) * np.nan])
+        """
         raise ValueError(
             'Size of X must be a multiple of 2!')
+        """
 
     if nlevels == 0:
         return (Yl, Yh, Y_scale)
