@@ -52,6 +52,7 @@ class E4RawDataPlotRunner:
     def run(self):
 
         ys = self._get_ys()
+        print 'ys.keys()', ys.keys()
         unit_name = 'Symptomatic?' \
             if self.avg_over_subjects else \
             None
@@ -62,6 +63,7 @@ class E4RawDataPlotRunner:
                    for s in self.subjects}
 
         for (v, ys_v) in enumerate(ys):
+            print 'ys_v.keys()', ys_v.keys()
             title = \
                 self.name + ' value of view ' + \
                 self.names[v] + \
@@ -102,8 +104,6 @@ class E4RawDataPlotRunner:
         dt_index_list = get_dt_index(
             num_rows, factor, dt)
         dt_index_array = np.array(dt_index_list)
-        print 'dt_index_array', dt_index_array
-        print 'dt_index_array.shape', dt_index_array.shape
 
         return dt_index_array[:,np.newaxis]
 
