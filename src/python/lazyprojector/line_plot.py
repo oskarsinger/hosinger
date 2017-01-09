@@ -58,7 +58,7 @@ def _get_dataframe(
     ys = None
     units = None
 
-    for name, (x, y, u) in reversed(data_map.items()):
+    for name, (x, y, u) in data_map.items():
         new_n = np.array(
             [name for i in xrange(x.shape[0])])
         new_n = new_n[:,np.newaxis]
@@ -73,10 +73,14 @@ def _get_dataframe(
 
         new_u = new_u[:,np.newaxis]
 
+        print 'y.shape[0]', y.shape[0]
+        print 'x.shape[0]', x.shape[0]
         names = _extend_vec(names, new_n)
         units = _extend_vec(units, new_u)
         xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
+        print 'y nan count', np.isnan(y).sum()
+        print 'x nan count', np.isnan(x).sum()
 
     d = {
         x_name: xs[:,0],
