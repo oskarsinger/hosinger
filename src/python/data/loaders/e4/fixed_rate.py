@@ -111,6 +111,7 @@ class FixedRateLoader:
 
         # Populate entry list with entries of hdf5 dataset
         data = self.reader(hdf5_dataset)[:,np.newaxis]
+        print 'just read data.shape', data.shape
 
         # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
