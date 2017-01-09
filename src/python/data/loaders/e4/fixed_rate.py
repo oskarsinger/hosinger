@@ -110,7 +110,7 @@ class FixedRateLoader:
         hdf5_dataset = session[self.sensor]
 
         # Populate entry list with entries of hdf5 dataset
-        data = self.reader(hdf5_dataset)[:,np.newaxis]
+        data = self.reader(hdf5_dataset)
         print 'just read data.shape', data.shape
 
         # Get difference between self.current_time and session's start time
