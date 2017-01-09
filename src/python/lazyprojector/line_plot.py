@@ -78,8 +78,7 @@ def _get_dataframe(
         xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
 
-        print 'num nans in ys', np.isnan(ys).sum()
-        print 'num nans in ys[:,0]', np.isnan(ys[:,0]).sum()
+    print names
 
     d = {
         x_name: xs[:,0],
