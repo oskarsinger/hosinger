@@ -67,11 +67,9 @@ def _get_dataframe(
 
         if u is None:
             new_u = np.ones(x.shape[0])
-            print 'Inside u is None'
         else:
             new_u = np.array(
                 [u for i in xrange(x.shape[0])])
-            print 'Inside u is not None'
 
         new_u = new_u[:,np.newaxis]
 
@@ -81,10 +79,10 @@ def _get_dataframe(
         ys = _extend_vec(ys, y)
 
     d = {
-        x_name: xs[:,0],
-        y_name: ys[:,0],
-        'name': names[:,0],
-        unit_name: units[:,0]}
+        x_name: np.copy(xs[:,0]),
+        y_name: np.copy(ys[:,0]),
+        'name': np.copy(names[:,0]),
+        unit_name: np.copy(units[:,0])}
     df = pd.DataFrame(data=d)
 
     return df
