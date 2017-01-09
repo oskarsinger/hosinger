@@ -98,9 +98,8 @@ class E4RawDataPlotRunner:
     def _get_x(self, num_rows, v, s):
 
         dt = self.loaders[s][v].get_status()['start_times'][0]
-        factor = 1.0 / (self.rates[v] * self.period)
         dt_index_list = get_dt_index(
-            num_rows, factor, dt)
+            num_rows, self.period, dt)
         dt_index_array = np.array(dt_index_list)
 
         return dt_index_array[:,np.newaxis]
