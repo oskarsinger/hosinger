@@ -78,8 +78,10 @@ def _get_dataframe(
         xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
 
-        print 'xs[:,0].shape', xs[:,0].shape
-        print 'ys[:,0].shape', ys[:,0].shape
+    print 'xs[:,0]', xs[:,0]
+    print 'ys[:,0]', ys[:,0]
+    print 'xs[:,0].shape', xs[:,0].shape
+    print 'ys[:,0].shape', ys[:,0].shape
 
     d = {
         x_name: xs[:,0],
