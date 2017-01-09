@@ -58,7 +58,7 @@ def _get_dataframe(
     ys = None
     units = None
 
-    for name, (x, y, u) in data_map.items():
+    for name, (x, y, u) in reversed(data_map.items()):
         new_n = np.array(
             [name for i in xrange(x.shape[0])])
         new_n = new_n[:,np.newaxis]
