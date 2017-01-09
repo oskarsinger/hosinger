@@ -74,13 +74,11 @@ def _get_dataframe(
         new_u = new_u[:,np.newaxis]
 
         print 'y.shape[0]', y.shape[0]
-        print 'x.shape[0]', x.shape[0]
         names = _extend_vec(names, new_n)
         units = _extend_vec(units, new_u)
-        xs = _extend_vec(xs, x)
-        ys = _extend_vec(ys, y)
+        xs = _extend_vec(xs, np.copy(x))
+        ys = _extend_vec(ys, np.copy(y))
         print 'y nan count', np.isnan(y).sum()
-        print 'x nan count', np.isnan(x).sum()
 
     d = {
         x_name: xs[:,0],
