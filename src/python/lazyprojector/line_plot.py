@@ -41,7 +41,8 @@ def plot_lines(
         condition=condition,
         unit=unit,
         data=df,
-        ax=ax)
+        ax=ax,
+        estimator=np.nanmean)
 
     ax.set_title(title)
 
