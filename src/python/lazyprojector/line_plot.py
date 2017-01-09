@@ -41,7 +41,8 @@ def plot_lines(
         condition=condition,
         unit=unit,
         data=df,
-        ax=ax)
+        ax=ax,
+        estimator=np.nanmean)
 
     ax.set_title(title)
 
@@ -77,8 +78,6 @@ def _get_dataframe(
         units = _extend_vec(units, new_u)
         xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
-
-    print names
 
     d = {
         x_name: xs[:,0],
