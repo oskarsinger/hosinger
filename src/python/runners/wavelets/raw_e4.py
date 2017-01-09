@@ -52,7 +52,6 @@ class E4RawDataPlotRunner:
     def run(self):
 
         ys = self._get_ys()
-        print 'ys.keys()', ys.keys()
         unit_name = 'Symptomatic?' \
             if self.avg_over_subjects else \
             None
@@ -81,6 +80,7 @@ class E4RawDataPlotRunner:
                 title = title + ' avg over subjects within symptom status'
 
             ax = plt.axes()
+
             data_map = {s : (self._get_x(y.shape[0], v, s), y, s_units[s])
                         for (s, y) in ys_v.items()}
 
