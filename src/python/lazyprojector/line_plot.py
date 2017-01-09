@@ -77,7 +77,7 @@ def _get_dataframe(
         print 'ys.shape[0] before', ys.shape[0]
         names = _extend_vec(names, new_n)
         units = _extend_vec(units, new_u)
-        xs = _extend_vec(xs, (x)
+        xs = _extend_vec(xs, x)
         ys = _extend_vec(ys, y)
         print 'ys.shape[0] after', ys.shape[0]
         print 'ys after', ys
