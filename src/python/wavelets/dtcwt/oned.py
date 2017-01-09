@@ -19,7 +19,7 @@ def dtwavexfm(
 
     if L[0] % 2 > 0:
         X = np.vstack([
-            x,
+            X,
             np.ones((1,1)) * np.nan])
         """
         raise ValueError(
