@@ -8,7 +8,7 @@ def get_row_magnitude(a):
     squares = get_safe_power(fac, 2)
     sums = np.sum(squares, axis=1)
 
-    return get_safe_power(sums, 0.5)
+    return get_safe_power(sums, 0.5)[:,np.newaxis]
 
 def get_array_as_is(a):
 

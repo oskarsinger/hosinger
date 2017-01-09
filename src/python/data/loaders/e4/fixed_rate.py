@@ -12,7 +12,10 @@ import numpy as np
 class FixedRateLoader:
 
     def __init__(self,
-        hdf5_path, subject, sensor, reader,
+        hdf5_path, 
+        subject, 
+        sensor, 
+        reader,
         seconds=None,
         online=False):
 
@@ -96,8 +99,6 @@ class FixedRateLoader:
                 data = np.copy(new_data)
             else: 
                 if self.on_deck_data is not None:
-                    print 'new_data.shape', new_data.shape
-                    print 'on_deck_data.shape', self.on_deck_data.shape
                     new_data = np.vstack([
                         new_data, self.on_deck_data])
 
@@ -113,7 +114,6 @@ class FixedRateLoader:
 
         # Populate entry list with entries of hdf5 dataset
         data = self.reader(hdf5_dataset)
-        print 'just read data.shape', data.shape
 
         # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
