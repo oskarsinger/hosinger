@@ -115,9 +115,15 @@ class E4RawDataPlotRunner:
 
             for (v, (r, view)) in enumerate(zip(self.rates, dss)):
 
-                window = int(r * self.period)
-                truncate = self.names[v] in {'TEMP'}
+                name = self.names[v]
                 data = view.get_data()
+
+                if v is 'TEMP':
+                    data[data > 45] = 45
+                elif v is 'EDA':
+                    data[data > 30] = 30
+
+                window = int(r * self.period)
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
 
@@ -130,10 +136,6 @@ class E4RawDataPlotRunner:
 
                 reshaped = data.reshape(
                     (int_num_periods, window))
-
-                if truncate:
-                    reshaped[reshaped > 40] = 40
-
                 data_stats = stat(reshaped, axis=1)[:,np.newaxis]
                 views[v][s] = np.copy(data_stats)
 
