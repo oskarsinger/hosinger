@@ -110,10 +110,7 @@ class FixedRateLoader:
         hdf5_dataset = session[self.sensor]
 
         # Populate entry list with entries of hdf5 dataset
-        read_data = self.reader(hdf5_dataset)
-
-        # Get the extracted windows of the data
-        data = self._get_windows(read_data)
+        data = self.reader(hdf5_dataset)
 
         # Get difference between self.current_time and session's start time
         time_diff = self._get_time_difference(key)
@@ -151,22 +148,6 @@ class FixedRateLoader:
         dt = DT(year, month, day, hour, minute, second)
 
         return dt
-
-    def _get_windows(self, data):
-
-        rows = None
-
-        # If there are enough measurements for desired window
-        if len(data) >= self.window:
-            # Prepare data to be merged into full list
-            modded = get_array_mod(data, self.window)
-            length = float(modded.shape[0]) / float(self.window)
-            rows = modded.reshape((length, self.window))
-        else:
-            raise ValueError(
-                'File has less than hertz * seconds lines.')
-
-        return rows
 
     def _get_hdf5_repo(self):
 
