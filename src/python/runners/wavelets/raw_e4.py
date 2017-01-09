@@ -118,9 +118,9 @@ class E4RawDataPlotRunner:
                 name = self.names[v]
                 data = view.get_data()
 
-                if v is 'TEMP':
+                if name == 'TEMP':
                     data[data > 45] = 45
-                elif v is 'EDA':
+                elif name == 'EDA':
                     data[data > 30] = 30
 
                 window = int(r * self.period)
