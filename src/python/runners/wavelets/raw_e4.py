@@ -101,13 +101,16 @@ class E4RawDataPlotRunner:
         factor = 1.0 / (self.rates[v] * self.period)
         dt_index_list = get_dt_index(
             num_rows, factor, dt)
+        dt_index_array = np.array(dt_index_list)
+        print 'dt_index_array', dt_index_array
+        print 'dt_index_array.shape', dt_index_array.shape
 
-        return np.array(dt_index_list)[:,np.newaxis]
+        return dt_index_array[:,np.newaxis]
 
     def _get_ys(self):
 
         views = [{s : None for s in self.subjects}
-                 for i in xrange(self.num_views)]
+                 for v in xrange(self.num_views)]
         stat = np.std if self.std else np.mean
 
         for s in self.subjects:
@@ -116,11 +119,10 @@ class E4RawDataPlotRunner:
 
             for (v, (r, view)) in enumerate(zip(self.rates, dss)):
                 print 'view', self.names[v]
-                window = int(r * self.period)
 
+                window = int(r * self.period)
                 truncate = self.names[v] in {'TEMP'}
                 data = view.get_data()
-                print 'num nans in original data', np.isnan(data).sum()
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
 
@@ -128,20 +130,16 @@ class E4RawDataPlotRunner:
                     int_num_periods += 1
                     full_length = int_num_periods * window
                     padding_l = full_length - data.shape[0]
-                    print 'padding_l', padding_l
                     padding = np.ones((padding_l, 1)) * np.nan
                     data = np.vstack([data, padding])
-                    print 'num nans in completed', np.isnan(data).sum()
 
                 reshaped = data.reshape(
                     (int_num_periods, window))
-                print 'reshaped.shape', reshaped.shape
 
                 if truncate:
                     reshaped[reshaped > 40] = 40
 
                 data_stats = stat(reshaped, axis=1)[:,np.newaxis]
-                print 'num nans in data stats', np.isnan(data_stats).sum()
-                views[v][s] = data_stats
+                views[v][s] = np.copy(data_stats)
 
         return views
