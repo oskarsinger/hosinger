@@ -134,13 +134,13 @@ class E4RawDataPlotRunner:
                     print 'num nans in completed', np.isnan(data).sum()
 
                 reshaped = data.reshape(
-                    (window, int_num_periods))
-                print 'num nans in reshaped', np.isnan(reshaped).sum()
+                    (int_num_periods, windows))
+                print 'reshaped.shape', reshaped.shape
 
                 if truncate:
                     reshaped[reshaped > 40] = 40
 
-                data_stats = stat(reshaped, axis=0)[:, np.newaxis]
+                data_stats = stat(reshaped, axis=1)[:,np.newaxis]
                 print 'num nans in data stats', np.isnan(data_stats).sum()
                 views[v][s] = data_stats
 
