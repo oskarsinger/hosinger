@@ -90,7 +90,6 @@ class FixedRateLoader:
 
             if isinstance(new_data, MissingData):
                 num_rows = new_data.get_status()['num_missing_rows']
-                print 'Instance of missing data with num_rows', num_rows
                 new_data = np.ones((num_rows, self.window)) * np.nan
 
             if data is None:
@@ -100,11 +99,10 @@ class FixedRateLoader:
                     [data, np.copy(new_data)])
 
                 if self.on_deck_data is not None:
-                    print 'Instance of regular data with num_rows', \
-                        self.on_deck_data.shape[0]
-
                     data = np.vstack(
                         [data, np.copy(self.on_deck_data)])
+
+                    self.on_deck_data = None
 
         return data
 
