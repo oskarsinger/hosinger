@@ -134,7 +134,7 @@ class E4RawDataPlotRunner:
                     print 'num nans in completed', np.isnan(data).sum()
 
                 reshaped = data.reshape(
-                    (int_num_periods, windows))
+                    (int_num_periods, window))
                 print 'reshaped.shape', reshaped.shape
 
                 if truncate:
