@@ -42,4 +42,5 @@ setup(
         'runners.bandit',
         'runners.wavelets',
         'runners.network',
-        'runners.distributed'])
+        'runners.distributed',
+        'runners.cca'])
