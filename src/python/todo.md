@@ -76,15 +76,16 @@ NOTE: This will have to wait until winter break or next semester probably.
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
-* Plot just symptomatic and just asymptomatic for raw data
-
 * Show correlation of the partial reconstructions maybe?
 
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
 
 * Compute some statistics on (in)completeness of data. THIS IS HIGH PRIORITY. Need to show our collaborators (competitors?) how difficult the data is to work with.
-* Switch raw data plots to use tsplot
 
 * How do I show that the multiview is more informative? Should I start computing plots for more than just HR and ACC?
 
-* Do vertically stacked plots for CCA components instead of plots of vertically stacked stuff
+* Do vertically stacked plots for CCA components instead of plots of vertically stacked components
+
+* Try out the new full-time correlation and horizontally-stacked partial reconstruction plots
+
+* Fix the bug in the DTCWT code

@@ -9,13 +9,21 @@ from runners.wavelets import E4RawDataPlotRunner as E4RDPR
 @click.option('--complete', default=False)
 @click.option('--std', default=False)
 @click.option('--avg-over-subjects', default=False)
+@click.option('--asx', default=True)
+@click.option('--sx', default=True)
+@click.option('--w', default=False)
+@click.option('--u', default=False)
 def run_things_all_day_bb(
     data_path,
     period,
     missing,
     complete,
     std,
-    avg_over_subjects):
+    avg_over_subjects,
+    asx,
+    sx,
+    w,
+    u):
 
     runner = E4RDPR(
         data_path,
@@ -23,7 +31,11 @@ def run_things_all_day_bb(
         missing=missing,
         complete=complete,
         std=std,
-        avg_over_subjects=avg_over_subjects)
+        avg_over_subjects=avg_over_subjects,
+        asx=asx,
+        sx=sx,
+        w=w,
+        u=u)
 
     runner.run()
 
