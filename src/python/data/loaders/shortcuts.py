@@ -7,13 +7,12 @@ import drrobert.network as drn
 from simple import CosineLoader as CL
 from simple import FakePeriodicGaussianLoader as FPGL
 from simple import GaussianLoader as GL
+from simple import BatchPhysiologicalTimeSeriesLoader as BPTSL
 from supervised import LinearRegressionGaussianLoader as LRGL
 from e4 import FixedRateLoader as FRL
 from e4 import IBILoader as IBI
 from readers import from_num as fn
 from at import AlTestSpikeLoader as ATSL
-from at import AlTestRampGenerator as ATRG
-from at import AlTestRampLoader as ATRL
 from rl import ExposureShiftedGaussianWithBaselineEffectLoader as ESGWBEL
 from drrobert.random import rademacher
 
@@ -70,12 +69,76 @@ def get_er_ESGWBEL(
 
     return nodes
 
+def get_cm_loaders(filepath):
+
+    cm_pairs = {}
+    c_mt = 'Cortisol'
+    m_mt = 'Melatonin'
+    hertz = 1.0 / (8 * 3600)
+    period = 24 * 3600
+    num_periods = 8
+
+    with open(filepath) as f:
+        f.readline()
+        prev_times = {}
+
+        for line in f:
+            items = line.strip().split(',')
+            (s, t, c, m) = items[:4]
+
+            if t == -72:
+                cm_pairs[s] = ([c], [m])
+            elif t <= 104:
+                if t - prev_times[s] > 8:
+                    (c, m) = [np.nan] * 2
+
+                cm_pairs[s][0].append(c)
+                cm_pairs[s][1]].append(m)
+
+            prev_times[s] = t
+
+    loaders = {}
+
+    for (s, (cs, ms)) in cm_pairs.items():
+        c_loader = BPTSL(
+            np.array(cs)[:,np.newaxis],
+            s,
+            c_mt,
+            hertz,
+            period,
+            num_periods)
+        m_loader = BPTSL(
+            np.array(ms)[:,np.newaxis],
+            s,
+            m_mt,
+            hertz,
+            period,
+            num_periods)
+        loaders[s] = [c_loader, m_loader]
+
+    return loaders
+
 def get_atr_loaders():
 
     (TS1, TS2) = ATRG().get_data()
     subject = 'example1'
-    loader1 = ATRL(TS1, subject, 'TS1')
-    loader2 = ATRL(TS2, subject, 'TS2')
+    hertz = 1.0 / 60
+    period = 24 * 3600
+    num_periods = 8
+    loader1 = BPTSL(
+        TS1, 
+        subject,
+        'TestRampTS1', 
+        hertz,
+        period,
+        num_periods)
+    loader2 = BPTSL(
+        TS2, 
+        subject,
+        'TestRampTS2', 
+        hertz,
+        period,
+        num_periods)
 
     return {subject : [loader1, loader2]}
 

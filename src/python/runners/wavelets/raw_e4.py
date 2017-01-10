@@ -23,8 +23,8 @@ class E4RawDataPlotRunner:
         complete=False,
         std=False,
         avg_over_subjects=False,
-        asx=True,
-        sx=True,
+        hsx=True,
+        lsx=True,
         w=False
         u=False):
 
@@ -34,17 +34,17 @@ class E4RawDataPlotRunner:
         self.complete = complete
         self.std = std
         self.avg_over_subjects = avg_over_subjects
-        self.asx = asx
-        self.sx = sx
+        self.hsx = hsx
+        self.lsx = lsx
         self.w = w
         self.u = u
         self.valid_sympts = set()
 
-        if self.asx:
-            self.valid_sympts.add('Asx')
+        if self.hsx:
+            self.valid_sympts.add('Hsx')
 
-        if self.sx:
-            self.valid_sympts.add('Sx')
+        if self.lsx:
+            self.valid_sympts.add('Lsx')
 
         if self.w:
             self.valid_sympts.add('W')

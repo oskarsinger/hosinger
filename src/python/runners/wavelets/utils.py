@@ -33,13 +33,13 @@ def get_symptom_status(subject):
         subject = int(subject)
 
     # Symptomatic
-    Sx = {2, 5, 9, 11, 17, 18, 19, 20, 23}
+    Sx = {2, 4, 5, 8, 9, 11, 17, 18, 19, 20, 23}
 
     # Asymptomatic
-    Asx = {7, 8, 12, 21, 22, 24}
+    Asx = {6, 7, 12, 13, 21, 22, 24}
 
     # Wild type
-    W = {3, 4, 6, 13}
+    W = {3}
 
     if subject in Sx:
         status = 'Sx'
@@ -48,7 +48,7 @@ def get_symptom_status(subject):
     elif subject in W:
         status = 'W'
     else:
-        status = 'U'
+	status = 'U'
 
     return status
 
