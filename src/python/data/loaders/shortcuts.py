@@ -74,6 +74,7 @@ def get_cm_loaders(filepath):
     cm_pairs = {}
     c_mt = 'Cortisol'
     m_mt = 'Melatonin'
+    d_mt = 'DHEAS'
     hertz = 1.0 / (8 * 3600)
     period = 24 * 3600
     num_periods = 8
@@ -84,22 +85,23 @@ def get_cm_loaders(filepath):
 
         for line in f:
             items = line.strip().split(',')
-            (s, t, c, m) = items[:4]
+            (s, t, c, m, d) = items
 
             if t == -72:
-                cm_pairs[s] = ([c], [m])
+                cm_pairs[s] = ([c], [m], [d])
             elif t <= 104:
                 if t - prev_times[s] > 8:
                     (c, m) = [np.nan] * 2
 
                 cm_pairs[s][0].append(c)
-                cm_pairs[s][1]].append(m)
+                cm_pairs[s][1].append(m)
+                cm_pairs[s][2].append(d)
 
             prev_times[s] = t
 
     loaders = {}
 
-    for (s, (cs, ms)) in cm_pairs.items():
+    for (s, (cs, ms, ds)) in cm_pairs.items():
         c_loader = BPTSL(
             np.array(cs)[:,np.newaxis],
             s,
@@ -114,7 +116,14 @@ def get_cm_loaders(filepath):
             hertz,
             period,
             num_periods)
-        loaders[s] = [c_loader, m_loader]
+        d_loader = BPTSL(
+            np.array(ds)[:,np.newaxis],
+            s,
+            c_mt,
+            hertz,
+            period,
+            num_periods)
+        loaders[s] = [c_loader, m_loader, d_loader]
 
     return loaders
 
