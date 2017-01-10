@@ -66,8 +66,6 @@ class E4RawDataPlotRunner:
                       for dl in sample_dls]
         self.names = [dl.name()
                       for dl in sample_dls]
-        # TODO: this may need to be altered according to complete and missing
-        # TODO: how do I even define completeness now that the loader nan-pads?
         self.subjects = {s for s in self.servers.keys()
                          if rmu.get_symptom_status(s) in self.valid_sympts}
 
