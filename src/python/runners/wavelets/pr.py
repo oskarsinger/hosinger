@@ -220,7 +220,7 @@ class DTCWTPartialReconstructionRunner:
 
                 for pp in xrange(self.num_plot_periods):
                     ax = fig.add_subplot(
-                        self.num_plot_periods, 1, pp + 1)
+                        1, self.num_plot_periods1, pp + 1)
 
                     pp_freq = self._get_pp_freq(freq, pp)
                     unit_name = 'Symptomatic?' \
@@ -239,21 +239,18 @@ class DTCWTPartialReconstructionRunner:
 
                 path = os.path.join(
                     self.plot_dir,
-                    '_'.join(title.split()) + '.pdf')
+                    '_'.join(title.split()) + '.png')
 
                 fig.axes[0].set_title(title)
                 plt.setp(
-                    [a.get_xticklabels() for a in fig.axes[:-1]], 
-                    visible=False)
-                plt.setp(
-                    [a.get_yticklabels() for a in fig.axes], 
+                    [a.get_yticklabels() for a in fig.axes[1:], 
                     visible=False)
 
 		for a in fig.axes[1:]:
 		    a.legend_.remove()
 
-                fig.subplots_adjust(hspace=0)
-                fig.savefig(path, format='pdf')
+                fig.subplots_adjust(vspace=0)
+                fig.savefig(path, format='png')
                 sns.plt.clf()
 
     def _compute_completed_and_filtered(self, view_stats, s):
@@ -293,7 +290,6 @@ class DTCWTPartialReconstructionRunner:
                     x = loaded[0]
                     y = loaded[1]
                     u = loaded[2]
-                    #u = None if u.ndim == 0 else u[:,np.newaxis]
                     stats[s] = (x, y, u)
         
         return stats

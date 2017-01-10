@@ -76,7 +76,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
-* Try averaging wavelet correlation (i.e. A matrix input for sparse CCA code) over days, but continue to do wavelet decomp over entire day at a time. Also, try doing the averaging over days on the small window again. Need to choose window size that results in good conditioning (i.e. 7 or fewer samples).
+* Plot just symptomatic and just asymptomatic for raw data
 
 * Show correlation of the partial reconstructions maybe?
 
@@ -86,3 +86,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Switch raw data plots to use tsplot
 
 * How do I show that the multiview is more informative? Should I start computing plots for more than just HR and ACC?
+
+* Do vertically stacked plots for CCA components instead of plots of vertically stacked stuff

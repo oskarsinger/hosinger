@@ -162,8 +162,99 @@ class ViewPairwiseCorrelationRunner:
             sp = int(info[7])
 	    
 	    if s in self.subjects:
-		print 's', s, 'num_periods', self.num_periods[s]
             	self.correlation[s].get(v[0], v[1])[sp][p] = m
+
+    def _show_corr_over_time(self):
+
+        avgs = SPUD(
+            self.num_views, default=lambda: {})
+	sample = self.correlation.values()[0].items()
+	y_labels = SPUD(self.num_views)
+
+	for (k, subperiods) in sample:
+            (n, m) = subperiods[0][0].shape
+	    y_labels_k = [rmu.get_2_digit_pair(i,j)
+                     	  for i in xrange(n)
+                          for j in xrange(m)]
+            y_labels.insert(
+		k[0], k[1], y_labels_k)
+
+        for s in self.subjects:
+	    spud = self.correlation[s]
+	    sympt = rmu.get_symptom_status(s)
+            default = lambda: [[] for p in xrange(self.num_periods[s])]
+            period_corrs = SPUD(self.num_views, default=default)
+
+            for (k, subperiods) in spud.items():
+                for periods in subperiods:
+                    for (p, corr) in enumerate(periods):
+                        period_corrs.get(k[0], k[1])[p].append(corr)
+
+            for (k, periods) in corrs_over_time:
+                timeline = np.hstack(
+                    [rmu.get_ravel_hstack(corrs) for corrs in periods])
+                y_labels_k = y_labels.get(k[0], k[1])
+                get_normed = lambda p: float(p) / float(self.num_subperiods)
+                num_points = self.num_periods[s] * self.num_subperiods
+                x_labels = ['{:06.3f}'.format(get_normed(p))
+                            for p in xrange(num_points)]
+		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+
+                if self.avg_over_subjects:
+                    current = avgs.get(k[0], k[1])
+
+                    if sympt in current:
+                        current[sympt] += timeline
+                    else:
+                        current[sympt] = timeline
+                else:
+                    title = 'View-pairwise correlation over' + \
+                        ' time for views' + \
+                        name1 + ' ' + name2 + \
+                        ' of subject ' + s
+                    fn = '_'.join(title.split()) + '.pdf'
+                    path = os.path.join(self.plot_dir, fn)
+
+                    plot_matrix_heat(
+                        timeline,
+                        x_labels,
+                        y_labels_k,
+                        title,
+                        'period',
+                        'frequency pair',
+                        'correlation',
+                        vmax=1,
+                        vmin=-1)[0].get_figure().savefig(
+                            path, format='pdf')
+                    sns.plt.clf()
+
+	if self.avg_over_subjects:
+	    for (k, sympts) in avgs.items():
+                y_labels_k = y_labels.get(k[0], k[1])
+                x_labels = [rmu.get_2_digit(p, power=False)
+                            for p in xrange(self.max_periods)]
+		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+
+                for (sympt, timeline) in sympts.items():
+                    title = 'View-pairwise correlation over' + \
+                        ' time for views ' + \
+                        name1 + ' ' + name2 + \
+                        ' with symptom status ' + sympt
+                    fn = '_'.join(title.split()) + '.pdf'
+                    path = os.path.join(self.plot_dir, fn)
+
+                    plot_matrix_heat(
+                        timeline,
+                        x_labels,
+                        y_labels_k,
+                        title,
+                        'time',
+                        'frequency pair',
+                        'correlation',
+                        vmax=1,
+                        vmin=-1)[0].get_figure().savefig(
+                            path, format='pdf')
+                    sns.plt.clf()
 
     def _show_corr_mean_over_subperiods(self):
 
