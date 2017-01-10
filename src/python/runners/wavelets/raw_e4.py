@@ -22,7 +22,11 @@ class E4RawDataPlotRunner:
         missing=False,
         complete=False,
         std=False,
-        avg_over_subjects=False):
+        avg_over_subjects=False,
+        asx=True,
+        sx=True,
+        w=False
+        u=False):
 
         self.hdf5_path = hdf5_path
         self.period = period
@@ -30,6 +34,24 @@ class E4RawDataPlotRunner:
         self.complete = complete
         self.std = std
         self.avg_over_subjects = avg_over_subjects
+        self.asx = asx
+        self.sx = sx
+        self.w = w
+        self.u = u
+        self.valid_sympts = set()
+
+        if self.asx:
+            self.valid_sympts.add('Asx')
+
+        if self.sx:
+            self.valid_sympts.add('Sx')
+
+        if self.w:
+            self.valid_sympts.add('W')
+
+        if self.u:
+            self.valid_sympts.add('U')
+
         self.name = 'Std' if self.std else 'Mean'
 
         self.loaders = dlstcts.get_e4_loaders_all_subjects(
@@ -47,7 +69,7 @@ class E4RawDataPlotRunner:
         # TODO: this may need to be altered according to complete and missing
         # TODO: how do I even define completeness now that the loader nan-pads?
         self.subjects = {s for s in self.servers.keys()
-                         if rmu.get_symptom_status(s) not in {'W', 'U'}}
+                         if rmu.get_symptom_status(s) in self.valid_sympts}
 
     def run(self):
 
