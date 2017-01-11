@@ -1,6 +1,6 @@
 import click
 
-from runners.wavelets import E4RawDataPlotRunner as E4RDPR
+from runners.raw import E4RawDataPlotRunner as E4RDPR
 
 @click.command()
 @click.option('--data-path')

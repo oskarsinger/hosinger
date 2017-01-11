@@ -43,4 +43,5 @@ setup(
         'runners.wavelets',
         'runners.network',
         'runners.distributed',
-        'runners.cca'])
+        'runners.cca',
+        'runners.raw'])
