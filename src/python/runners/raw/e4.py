@@ -7,7 +7,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import data.loaders.shortcuts as dlstcts
-import utils as rmu
+import data.loaders.e4.utils as e4u
 
 from data.servers.batch import BatchServer as BS
 from linal.utils.misc import get_non_nan
@@ -67,7 +67,7 @@ class E4RawDataPlotRunner:
         self.names = [dl.name()
                       for dl in sample_dls]
         self.subjects = {s for s in self.servers.keys()
-                         if rmu.get_symptom_status(s) in self.valid_sympts}
+                         if e4u.get_symptom_status(s) in self.valid_sympts}
 
     def run(self):
 
@@ -75,7 +75,7 @@ class E4RawDataPlotRunner:
         unit_name = 'Symptomatic?' \
             if self.avg_over_subjects else \
             None
-        get_s_unit = lambda s: rmu.get_symptom_status(s) \
+        get_s_unit = lambda s: e4u.get_symptom_status(s) \
             if self.avg_over_subjects else \
             None
         s_units = {s : get_s_unit(s)
