@@ -103,9 +103,13 @@ def get_normed_correlation(X1, X2):
 
     return corr
 
+def get_padded_wavelets(Yh, Yl):
+
+    print 'Poop'
+
 def get_sampled_wavelets(Yh, Yl):
 
-    hi_and_lo = Yh# + [Yl]
+    hi_and_lo = Yh + [Yl]
 
     # Truncate for full-rank down-sampled coefficient matrix
     k = None
