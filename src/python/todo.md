@@ -89,3 +89,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Try out the new full-time correlation and horizontally-stacked partial reconstruction plots
 
 * Fix the bug in the DTCWT code
+
+* Pad lower frequencies with replicated values instead of subsampling
