@@ -24,7 +24,7 @@ class E4RawDataPlotRunner:
         avg_over_subjects=False,
         hsx=True,
         lsx=True,
-        w=False
+        w=False,
         u=False):
 
         self.hdf5_path = hdf5_path
