@@ -150,11 +150,13 @@ def get_column_d_filtered(X, ha, hb):
         begin1 = 0
         end1 = n2
 
+    """
     print 'Y[begin1:end1:2,:]', Y[begin1:end1:2,:]
     print 'xe[begin_t-1:end_t-1:4]', xe[begin_t-1:end_t-1:4]
     print 'xe[begin_t-3:end_t-3:4]', xe[begin_t-3:end_t-3:4]
     print 'X[xe[begin_t-1:end_t-1:4],:]', X[xe[begin_t-1:end_t-1:4],:]
     print 'X[xe[begin_t-3:end_t-3:4],:]', X[xe[begin_t-3:end_t-3:4],:]
+    """
     Y[begin1:end1:2,:] = conv2(X[xe[begin_t-1:end_t-1:4],:], hao, 'valid') + \
             conv2(X[xe[begin_t-3:end_t-3:4],:], hae, 'valid')
     Y[begin2:end2:2,:] = conv2(X[xe[begin_t:end_t:4],:], hbo, 'valid') + \
