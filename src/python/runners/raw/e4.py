@@ -10,9 +10,8 @@ import data.loaders.shortcuts as dlstcts
 import data.loaders.e4.utils as e4u
 
 from data.servers.batch import BatchServer as BS
-from linal.utils.misc import get_non_nan
 from lazyprojector import plot_lines
-from drrobert.time_series import get_dt_index
+from drrobert.ts import get_dt_index
 
 class E4RawDataPlotRunner:
 
@@ -38,6 +37,7 @@ class E4RawDataPlotRunner:
         self.lsx = lsx
         self.w = w
         self.u = u
+
         self.valid_sympts = set()
 
         if self.hsx:

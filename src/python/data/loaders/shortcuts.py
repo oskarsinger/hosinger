@@ -69,7 +69,7 @@ def get_er_ESGWBEL(
 
     return nodes
 
-def get_cm_loaders(filepath):
+def get_cm_loaders_all_subjects(filepath):
 
     cm_pairs = {}
     c_mt = 'Cortisol'
