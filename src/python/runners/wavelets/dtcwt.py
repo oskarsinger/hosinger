@@ -264,7 +264,7 @@ class MVDTCWTRunner:
                 for sp in xrange(self.num_sps):
 		    begin = sp * sp_window
 		    end = begin + sp_window
-                    data_sp = data_p[begin:end,np.newaxis]
+                    data_sp = data_p[begin:end]
 
                     if threshold:
                         data_sp[data_sp > 40] = 40
