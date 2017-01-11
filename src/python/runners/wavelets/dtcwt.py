@@ -20,6 +20,7 @@ class MVDTCWTRunner:
         data_path=None,
         period=24*3600,
         subperiod=3600,
+        max_freqs=10,
         dataset='e4',
         save_load_dir=None, 
         save=False,
@@ -243,39 +244,41 @@ class MVDTCWTRunner:
 
     def _get_sp_wavelet_transforms(self, subject):
 
-        Yls = [[] for i in xrange(self.num_views)]
-        Yhs = [[] for i in xrange(self.num_views)]
+        Yls = [[] for v in xrange(self.num_views)]
+        Yhs = [[] for v in xrange(self.num_views)]
         iterable = enumerate(zip(
             self.rates, self.servers[subject]))
 
-        for (i, (r, ds)) in iterable:
+        for (v, (r, ds)) in iterable:
             window = int(r * self.period)
             sp_window = int(self.subperiod * r)
-            threshold = self.names[i] == 'TEMP'
+            threshold = self.names[v] == 'TEMP'
             data = ds.get_data()
 
             for p in xrange(self.num_periods[subject]):
                 data_p = data[p * window: (p+1) * window]
 
-                Yls[i].append([])
-                Yhs[i].append([])
+                Yls[v].append([])
+                Yhs[v].append([])
 
                 for sp in xrange(self.num_sps):
 		    begin = sp * sp_window
 		    end = begin + sp_window
-                    data_sp = data_p[begin:end]
-                    data_sp = get_non_nan(data_sp)[:,np.newaxis]
+                    data_sp = data_p[begin:end,np.newaxis]
 
                     if threshold:
                         data_sp[data_sp > 40] = 40
 
+                    num_freqs = min([
+                        int(log(data_sp.shape[0], 2)) - 1,
+                        10])
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                         data_sp, 
-                        int(log(data_sp.shape[0], 2)) - 1,
+                        num_freqs,
                         self.biorthogonal,
                         self.qshift)
 
-                    Yls[i][-1].append(Yl)
-                    Yhs[i][-1].append(Yh)
+                    Yls[v][-1].append(Yl)
+                    Yhs[v][-1].append(Yh)
 
         return (Yls, Yhs)
