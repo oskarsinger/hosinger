@@ -243,7 +243,7 @@ class DTCWTPartialReconstructionRunner:
 
                 fig.axes[0].set_title(title)
                 plt.setp(
-                    [a.get_yticklabels() for a in fig.axes[1:], 
+                    [a.get_yticklabels() for a in fig.axes[1:]],
                     visible=False)
 
 		for a in fig.axes[1:]:
