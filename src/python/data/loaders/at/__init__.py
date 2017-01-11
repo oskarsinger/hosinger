@@ -1,2 +1,2 @@
 from spike import AlTestSpikeLoader
-from ramp import AlTestRampGenerator, AlTestRampLoader
+from ramp import AlTestRampGenerator
