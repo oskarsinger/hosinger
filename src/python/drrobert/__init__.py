@@ -6,5 +6,5 @@ import arithmetic
 import random
 import misc
 import fp
-import time_series
+import ts
 import network
