@@ -110,8 +110,8 @@ class ViewPairwiseCorrelationRunner:
                     for k in spud.keys():
                         (Yh1, Yl1) =  subperiod[k[0]]
                         (Yh2, Yl2) =  subperiod[k[1]]
-                        Y1_mat = rmu.get_sampled_wavelets(Yh1, Yl1)
-                        Y2_mat = rmu.get_sampled_wavelets(Yh2, Yl2)
+                        Y1_mat = rmu.get_padded_wavelets(Yh1, Yl1)
+                        Y2_mat = rmu.get_padded_wavelets(Yh2, Yl2)
                         correlation = rmu.get_normed_correlation(
                             Y1_mat, Y2_mat)
 
