@@ -80,8 +80,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
 
-* Compute some statistics on (in)completeness of data. THIS IS HIGH PRIORITY. Need to show our collaborators (competitors?) how difficult the data is to work with.
-
 * How do I show that the multiview is more informative? Should I start computing plots for more than just HR and ACC?
 
 * Do vertically stacked plots for CCA components instead of plots of vertically stacked components
@@ -90,6 +88,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Fix the bug in the DTCWT code
 
-* Pad lower frequencies with replicated values instead of subsampling
-
 * Look at how wavelets react to NaNs in the data
+
+Implement view-hour-pairwise correlation
