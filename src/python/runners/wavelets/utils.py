@@ -105,7 +105,20 @@ def get_normed_correlation(X1, X2):
 
 def get_padded_wavelets(Yh, Yl):
 
-    print 'Poop'
+    hi_and_lo = Yh + [Yl]
+    num_rows = hi_and_lo[0].shape[0]
+    basis = np.zeros(
+        (num_rows, len(hi_and_lo)),
+        dtype=complex)
+    basis[:,0] = np.copy(hi_and_lo[0])
+
+    for (i, y) in enumerate(hi_and_lo[1:]):
+        power = i + 1
+
+        for j in xrange(power):
+            basis[j::2**power,power] = np.copy(y)
+
+    return basis
 
 def get_sampled_wavelets(Yh, Yl):
 
