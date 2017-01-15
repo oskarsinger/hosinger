@@ -90,4 +90,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Look at how wavelets react to NaNs in the data
 
-Implement view-hour-pairwise correlation
+* Implement view-hour-pairwise correlation
+
+* Separate wavelet into data transformer/server, then just have correlation runners. It makes sense because they wavelets are sort of a pre-processing step. Should I do the same for the reconstructions? Probably.
