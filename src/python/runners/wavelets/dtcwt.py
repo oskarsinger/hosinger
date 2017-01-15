@@ -30,6 +30,7 @@ class MVDTCWTRunner:
         self.dataset = dataset
         self.period = period
         self.subperiod = subperiod
+        self.max_freqs = max_freqs
         self.num_sps = self.period / self.subperiod
 
         self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
@@ -271,10 +272,10 @@ class MVDTCWTRunner:
 
                     num_freqs = min([
                         int(log(data_sp.shape[0], 2)) - 1,
-                        10])
+                        self.max_freqs])
                     (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                         data_sp, 
-                        num_freqs,
+                        num_freqs - 1,
                         self.biorthogonal,
                         self.qshift)
 
