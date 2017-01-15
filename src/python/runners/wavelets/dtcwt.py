@@ -278,6 +278,9 @@ class MVDTCWTRunner:
                         self.biorthogonal,
                         self.qshift)
 
+                    if num_freqs > 7:
+                        Yhs = Yhs[-6:]
+
                     Yls[v][-1].append(Yl)
                     Yhs[v][-1].append(Yh)
 

@@ -105,18 +105,24 @@ def get_normed_correlation(X1, X2):
 
 def get_padded_wavelets(Yh, Yl):
 
+    print 'Inside get_padded_wavelets'
+
     hi_and_lo = Yh + [Yl]
     num_rows = hi_and_lo[0].shape[0]
     basis = np.zeros(
         (num_rows, len(hi_and_lo)),
         dtype=complex)
+    print 'basis.shape', basis.shape
     basis[:,0] = np.copy(hi_and_lo[0][:,0])
 
     for (i, y) in enumerate(hi_and_lo[1:]):
         power = i + 1
+        print 'Getting padded resolution', power
+        print 'y.shape', y.shape
 
         for j in xrange(power):
-            basis[j::2**power,power] = np.copy(y[:,0])
+            max_len = basis[j::2**power,power].shape[0]
+            basis[j::2**power,power] = np.copy(y[:max_len,0])
 
     return basis
 
