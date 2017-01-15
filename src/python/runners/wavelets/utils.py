@@ -110,13 +110,13 @@ def get_padded_wavelets(Yh, Yl):
     basis = np.zeros(
         (num_rows, len(hi_and_lo)),
         dtype=complex)
-    basis[:,0] = np.copy(hi_and_lo[0])
+    basis[:,0] = np.copy(hi_and_lo[0][:,0])
 
     for (i, y) in enumerate(hi_and_lo[1:]):
         power = i + 1
 
         for j in xrange(power):
-            basis[j::2**power,power] = np.copy(y)
+            basis[j::2**power,power] = np.copy(y[:,0])
 
     return basis
 
