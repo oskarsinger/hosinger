@@ -15,6 +15,7 @@ from data.servers.batch import BatchServer as BS
 from drrobert.file_io import get_timestamped as get_ts
 from linal.utils.misc import get_non_nan
 from lazyprojector import plot_lines
+from wavelets.dtcwt.utils import get_partial_reconstructions as get_pr
 
 class DTCWTPartialReconstructionRunner:
 
@@ -130,8 +131,11 @@ class DTCWTPartialReconstructionRunner:
             for (p, subperiods) in enumerate(periods):
                 for (sp, views) in enumerate(subperiods):
                     for (v, view) in enumerate(views):
-                        sp_v_prs = self._get_view_sp_pr(
-                            view[0], view[1])
+                        sp_v_prs = get_pr(
+                            view[0], 
+                            view[1],
+                            self.biorthogonal,
+                            self.qshift)
 
                         if view_stats[v] is None:
                             view_stats[v] = [None] * len(sp_v_prs)
@@ -153,34 +157,6 @@ class DTCWTPartialReconstructionRunner:
                                     [current, pr])
 
             self._compute_completed_and_filtered(view_stats, s)
-
-    def _get_view_sp_pr(self, Yh, Yl):
-
-        prs = []
-        Ylz = np.zeros_like(Yl)
-        mask = np.zeros((1,len(Yh)))
-
-        for i in xrange(len(Yh)):
-            mask = mask * 0
-            mask[0,i] = 1
-            pr = wdtcwt.oned.dtwaveifm(
-                Ylz,
-                Yh,
-                self.biorthogonal,
-                self.qshift,
-                gain_mask=mask)
-            
-            prs.append(pr)
-
-        Yl_pr = wdtcwt.oned.dtwaveifm(
-            Yl,
-            Yh,
-            self.biorthogonal,
-            self.qshift,
-            gain_mask=mask * 0)
-        prs.append(Yl_pr)
-
-        return prs
 
     def _show(self):
 
