@@ -66,7 +66,7 @@ class WaveletMask:
         wavelets = []
 
         if self.load:
-            for i in xrange(len(self.hdf5_repo):
+            for i in xrange(len(self.hdf5_repo)):
                 group = self.hdf5_repo[str(i)]
                 num_Yh = len(group) - 1
                 Yh = [group['Yh_' + str(j)] for j in xrange(num_Yh)]
