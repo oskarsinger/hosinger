@@ -112,29 +112,6 @@ class ViewPairwiseCorrelationRunner:
                         (Yh2, Yl2) =  subperiod[k[1]]
                         Y1_mat = rmu.get_padded_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_padded_wavelets(Yh2, Yl2)
-                        (n1, p1) = Y1_mat.shape
-                        (n2, p2) = Y2_mat.shape
-
-                        if n1 < n2:
-                            num_reps = int(float(n2) / n1)
-                            repped = np.zeros((n2, p1))
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(Y1_mat[:max_len,:])
-
-                            Y1_mat = repped
-
-                        elif n2 < n1:
-                            num_reps = int(float(n1) / n2)
-                            repped = np.zeros((n1, p2))
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(Y2_mat[:max_len,:])
-
-                            Y2_mat = basis
-                        
                         correlation = rmu.get_normed_correlation(
                             Y1_mat, Y2_mat)
 

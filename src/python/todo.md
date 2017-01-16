@@ -90,8 +90,4 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Implement view-hour-pairwise correlation
 
-* Separate wavelet into data transformer/server, then just have correlation runners.
-
-* Make period/subperiod accumulators in the server masks. Can make them to accumulate by subperiod and by period.
-
 * Do similar padding to fill in for different sampling rates as you did to fill in for different frequency components on the wavelets
