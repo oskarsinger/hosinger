@@ -86,13 +86,11 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Try out the new full-time correlation and horizontally-stacked partial reconstruction plots
 
-* Fix the bug in the DTCWT code
-
 * Look at how wavelets react to NaNs in the data
 
 * Implement view-hour-pairwise correlation
 
-* Separate wavelet into data transformer/server, then just have correlation runners. It makes sense because they wavelets are sort of a pre-processing step. Should I do the same for the reconstructions? Probably.
+* Separate wavelet into data transformer/server, then just have correlation runners.
 
 * Make period/subperiod accumulators in the server masks. Can make them to accumulate by subperiod and by period.
 

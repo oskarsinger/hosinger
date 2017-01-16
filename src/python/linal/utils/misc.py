@@ -86,11 +86,11 @@ def get_array_mod(a, divisor, axis=0):
     length = a.shape[axis]
     remainder = length % divisor
     end = length - remainder
-    r_value = None
+    truncd = None
     
     if axis == 0:
-        r_value = a[:end] if a.ndim == 1 else a[:end,:]
+        truncd = a[:end] if a.ndim == 1 else a[:end,:]
     else:
-        r_value = a[:,:end]
+        truncd = a[:,:end]
 
-    return r_value
+    return truncd
