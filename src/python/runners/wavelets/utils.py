@@ -39,14 +39,6 @@ def get_wavelet_storage(
 
     return wavelets
 
-def get_correlation_storage(
-    num_views,
-    num_subperiods,
-    num_periods,
-    subjects):
-
-    print 'Poop'
-
 def get_cca_vecs(X1, X2, num_nonzero=None):
 
     (x_weights, y_weights) = [None] * 2
@@ -86,6 +78,8 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
 
 def get_normed_correlation(X1, X2):
 
+    print 'Inside get_normed_correlation'
+
     if np.any(np.iscomplex(X1)):
         X1 = np.absolute(X1)
 
@@ -97,7 +91,11 @@ def get_normed_correlation(X1, X2):
     corr = np.zeros((p1, p2))
 
     for i in xrange(p1):
+        print 'p1', p1
         for j in xrange(p2):
+            print 'p2', p2
+            print 'X1[:,i]', X1[:,i]
+            print 'X2[:,j]', X2[:,j]
             corr[i,j] = ssp(
                 X1[:,i], X2[:,j])[0]
 
