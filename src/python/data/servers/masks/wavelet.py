@@ -5,7 +5,7 @@ import numpy as np
 import wavelets.dtcwt as dtcwt
 
 from drrobert.file_io import get_timestamped as get_ts
-from wavelets.dtcwt.utils import get_partial_reconstruction as get_pr
+from wavelets.dtcwt.utils import get_partial_reconstructions as get_pr
 from linal.utils.misc import get_array_mod
 
 class WaveletMask:
