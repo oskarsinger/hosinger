@@ -121,7 +121,8 @@ class ViewPairwiseCorrelationRunner:
                             
                             for r in xrange(num_reps):
                                 max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(Y1_mat[:max_len,:])
+                                repped[r::num_reps,:] = np.copy(
+                                    Y1_mat[:max_len,:], dtype=complex)
 
                             Y1_mat = repped
 
@@ -131,7 +132,8 @@ class ViewPairwiseCorrelationRunner:
                             
                             for r in xrange(num_reps):
                                 max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(Y2_mat[:max_len,:])
+                                repped[r::num_reps,:] = np.copy(
+                                    Y2_mat[:max_len,:], dtype=complex)
 
                             Y2_mat = repped
                         
