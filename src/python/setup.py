@@ -43,5 +43,5 @@ setup(
         'runners.wavelets',
         'runners.network',
         'runners.distributed',
-        'runners.cca',
+        'runners.multiviewcorr',
         'runners.raw'])
