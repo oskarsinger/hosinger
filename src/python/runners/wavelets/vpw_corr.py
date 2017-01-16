@@ -117,23 +117,23 @@ class ViewPairwiseCorrelationRunner:
 
                         if n1 < n2:
                             num_reps = int(float(n2) / n1)
-                            repped = np.zeros((n2, p1))
+                            repped = np.zeros((n2, p1), dtype=complex)
                             
                             for r in xrange(num_reps):
                                 max_len = repped[r::num_reps,:].shape[0]
                                 repped[r::num_reps,:] = np.copy(
-                                    Y1_mat[:max_len,:], dtype=complex)
+                                    Y1_mat[:max_len,:])
 
                             Y1_mat = repped
 
                         elif n2 < n1:
                             num_reps = int(float(n1) / n2)
-                            repped = np.zeros((n1, p2))
+                            repped = np.zeros((n1, p2), dtype=complex)
                             
                             for r in xrange(num_reps):
                                 max_len = repped[r::num_reps,:].shape[0]
                                 repped[r::num_reps,:] = np.copy(
-                                    Y2_mat[:max_len,:], dtype=complex)
+                                    Y2_mat[:max_len,:])
 
                             Y2_mat = repped
                         
