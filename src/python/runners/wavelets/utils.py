@@ -91,13 +91,17 @@ def get_normed_correlation(X1, X2):
     corr = np.zeros((p1, p2))
 
     for i in xrange(p1):
-        print 'p1', p1
         for j in xrange(p2):
-            print 'p2', p2
-            print 'X1[:,i]', X1[:,i]
-            print 'X2[:,j]', X2[:,j]
-            corr[i,j] = ssp(
-                X1[:,i], X2[:,j])[0]
+            try:
+                corr[i,j] = ssp(
+                    X1[:,i], X2[:,j])[0]
+            except Exception:
+                print 'i', i
+                print 'j', j
+                print 'X1[:,i]', X1[:,i]
+                print 'X2[:,j]', X2[:,j]
+
+                raise Exception()
 
     return corr
 
