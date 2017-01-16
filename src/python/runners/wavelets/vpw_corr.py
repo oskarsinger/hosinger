@@ -133,7 +133,7 @@ class ViewPairwiseCorrelationRunner:
                                 max_len = repped[r::num_reps,:].shape[0]
                                 repped[r::num_reps,:] = np.copy(Y2_mat[:max_len,:])
 
-                            Y2_mat = basis
+                            Y2_mat = repped
                         
                         correlation = rmu.get_normed_correlation(
                             Y1_mat, Y2_mat)
