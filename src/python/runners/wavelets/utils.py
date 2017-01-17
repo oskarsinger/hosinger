@@ -81,9 +81,11 @@ def get_normed_correlation(X1, X2):
     print 'Inside get_normed_correlation'
 
     if np.any(np.iscomplex(X1)):
+        print 'Inside complex check for X1'
         X1 = np.absolute(X1)
 
     if np.any(np.iscomplex(X2)):
+        print 'Inside complex check for X2'
         X2 = np.absolute(X2)
 
     p1 = X1.shape[1]
