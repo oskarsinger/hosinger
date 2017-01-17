@@ -216,6 +216,8 @@ class MVDTCWTRunner:
                             p,
                             sp)
 
+        self.hdf5_repo.close()
+
     def _load(self):
 
         print 'Loading wavelets'
@@ -241,6 +243,8 @@ class MVDTCWTRunner:
                         Yl = get_fac(sp_group['Yl'])
 
                         self.wavelets[s][p][sp][v][0] = (Yh, Yl)
+
+        self.hdf5_repo.close()
 
     def _save(self, Yl, Yh, s, v, p, sp):
 
