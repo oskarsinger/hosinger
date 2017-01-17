@@ -1,3 +1,5 @@
+import numpy as np
+
 def get_pearson_matrix(X1, X2):
 
     p1 = X1.shape[1]
