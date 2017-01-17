@@ -160,19 +160,19 @@ class ViewPairwiseCorrelationRunner:
         if s not in self.hdf5_repo:
             self.hdf5_repo.create_group(s)
 
-        subject_group = self.hdf5_repo[s]
-        view_string = str(v[0]) + '-' + str(v[1])
+        s_group = self.hdf5_repo[s]
+        v_string = str(v[0]) + '-' + str(v[1])
 
-        if view_string not in subject_group:
-            subject_group.create_group(view_string)
+        if v_string not in s_group:
+            s_group.create_group(v_string)
 
-        view_group = subject_group[view_string]
+        v_group = s_group[v_string]
         sp_string = str(sp)
 
-        if sp_string not in view_group:
-            view_group.create_group(sp_string)
+        if sp_string not in v_group:
+            v_group.create_group(sp_string)
 
-        sp_group = view_group[sp_string]
+        sp_group = v_group[sp_string]
         p_string = str(p)
 
         sp_group.create_dataset(p_string, data=c)
@@ -185,10 +185,10 @@ class ViewPairwiseCorrelationRunner:
                     subperiods[sp] = [None] * self.num_periods[s] 
                 
         for s in self.subjects:
-            subject_group = self.hdf5_repo[s]
+            s_group = self.hdf5_repo[s]
             print 'Loading corr for subject', s
 
-            for (k_str, sp_group) in subject_group.items():
+            for (k_str, sp_group) in s_group.items():
                 vs = [int(v) for v in k_str.split('-')]
 
                 print 'Loading corr for view pair', k_str
