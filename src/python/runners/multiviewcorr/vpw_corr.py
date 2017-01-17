@@ -12,17 +12,19 @@ from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
 from lazyprojector import plot_matrix_heat
 
-class ViewPairwiseCorrelationRunner:
+class MultiviewMultiresolutionCorrelationRunner:
 
     def __init__(self,
-        dtcwt_runner,
         save_load_dir,
-	wavelets=None,
+        servers,
+        num_subperiods=1,
         save=False,
         load=False,
         show=False,
 	avg_over_subjects=False):
 
+        self.servers = servers
+        self.num_subperiods = num_subperiods
         self.save = save
         self.load = load
         self.show = show
@@ -34,23 +36,22 @@ class ViewPairwiseCorrelationRunner:
             show, 
             save_load_dir)
 
-        self.wavelets = dtcwt_runner.wavelets \
-		if wavelets is None else wavelets
-	self.subjects = self.wavelets.keys()
-        self.names = dtcwt_runner.names
-        self.names2indices = {name : i 
-                              for (i, name) in enumerate(self.names)}
-        self.num_views = dtcwt_runner.num_views
-        self.num_periods = {s : len(self.wavelets[s])
+	self.subjects = self.servers.keys()
+        self.data = {sub : [s.get_data() for s in servers]
+                     for (sub, servers) in self.servers.items()}
+        sample_servers = self.servers.values()[0]
+        self.view_names = [s.get_status()['data_loader'].name()
+                           for s in sample_servers]
+        self.view_names2indices = {name : i 
+                                   for (i, name) in enumerate(self.view_names)}
+        self.num_views = len(sample_servers)
+        self.num_periods = {s : len(self.data[s])
 			    for s in self.subjects}
 	self.max_periods = max(self.num_periods.values())
 
 	if self.avg_over_subjects:
 	    self.subjects = {s for (s, np) in self.num_periods.items()
 			     if np == self.max_periods}
-	    print self.subjects
-
-        self.num_subperiods = dtcwt_runner.num_sps
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
 
@@ -198,7 +199,7 @@ class ViewPairwiseCorrelationRunner:
                 num_points = self.num_periods[s] * self.num_subperiods
                 x_labels = ['{:06.3f}'.format(get_normed(p))
                             for p in xrange(num_points)]
-		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+		(name1, name2) = (self.view_names[k[0]], self.view_names[k[1]])
 
                 if self.avg_over_subjects:
                     current = avgs.get(k[0], k[1])
@@ -233,7 +234,7 @@ class ViewPairwiseCorrelationRunner:
                 y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.max_periods)]
-		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+		(name1, name2) = (self.view_names[k[0]], self.view_names[k[1]])
 
                 for (sympt, timeline) in sympts.items():
                     title = 'View-pairwise correlation over' + \
@@ -285,7 +286,7 @@ class ViewPairwiseCorrelationRunner:
 		else:
                     title = 'View-pairwise mean-over-hours' + \
                         ' correlation over days for views ' + \
-                        self.names[k[0]] + ' ' + self.names[k[1]] + \
+                        self.view_names[k[0]] + ' ' + self.view_names[k[1]] + \
                     	' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
                     path = os.path.join(self.plot_dir, fn)
@@ -324,8 +325,8 @@ class ViewPairwiseCorrelationRunner:
                             for j in xrange(m)]
                 x_labels = [rmu.get_2_digit(sp, power=False)
                             for sp in xrange(self.num_subperiods)]
-                name1 = self.names[k[0]]
-                name2 = self.names[k[1]]
+                name1 = self.view_names[k[0]]
+                name2 = self.view_names[k[1]]
 
                 for (p, subperiods) in enumerate(periods):
                     timeline = rmu.get_ravel_hstack(subperiods)
@@ -395,7 +396,7 @@ class ViewPairwiseCorrelationRunner:
 		else:
                     title = 'View-pairwise mean-over-periods' + \
                         ' correlation over subperiods for views ' + \
-                        self.names[k[0]] + ' ' + self.names[k[1]] + \
+                        self.view_names[k[0]] + ' ' + self.view_names[k[1]] + \
                         ' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
                     path = os.path.join(self.plot_dir, fn)
@@ -418,7 +419,7 @@ class ViewPairwiseCorrelationRunner:
                 y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.max_periods)]
-		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+		(name1, name2) = (self.view_names[k[0]], self.view_names[k[1]])
 
 		for (sympt, timeline) in sympts.items():
                     title = 'View-pairwise mean-over-periods' + \
@@ -464,7 +465,7 @@ class ViewPairwiseCorrelationRunner:
                 y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.num_periods[s])]
-		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+		(name1, name2) = (self.view_names[k[0]], self.view_names[k[1]])
 
                 for (sp, periods) in enumerate(subperiods):
                     timeline = rmu.get_ravel_hstack(periods)
@@ -503,7 +504,7 @@ class ViewPairwiseCorrelationRunner:
                 y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
                             for p in xrange(self.max_periods)]
-		(name1, name2) = (self.names[k[0]], self.names[k[1]])
+		(name1, name2) = (self.view_names[k[0]], self.view_names[k[1]])
 
 		for (sp, sympts) in enumerate(subperiods):
 		    for (sympt, timeline) in sympts.items():

@@ -10,6 +10,7 @@ import utils as rmu
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
+from drrobert.stats import get_pearson_matrix as get_pm
 from lazyprojector import plot_matrix_heat
 
 class ViewPairwiseCorrelationRunner:
@@ -137,8 +138,9 @@ class ViewPairwiseCorrelationRunner:
 
                             Y2_mat = repped
                         
-                        correlation = rmu.get_normed_correlation(
-                            Y1_mat, Y2_mat)
+                        correlation = get_pm(
+                            np.absolute(Y1_mat), 
+                            np.absolute(Y2_mat))
 
                         self.correlation[s].get(k[0], k[1])[sp].append(
                             correlation)
