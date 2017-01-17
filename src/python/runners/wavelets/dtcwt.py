@@ -242,7 +242,7 @@ class MVDTCWTRunner:
                               for i in xrange(num_yh)]
                         Yl = get_aai(sp_group['Yl'])
 
-                        self.wavelets[s][p][sp][v][0] = (Yh, Yl)
+                        self.wavelets[s][p][sp][v] = (Yh, Yl)
 
         self.hdf5_repo.close()
 
