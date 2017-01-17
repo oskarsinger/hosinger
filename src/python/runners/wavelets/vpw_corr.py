@@ -463,8 +463,8 @@ class ViewPairwiseCorrelationRunner:
 	if self.avg_over_subjects:
 	    for (k, sympts) in avgs.items():
                 y_labels_k = y_labels.get(k[0], k[1])
-                x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.max_periods)]
+                x_labels = ['{:02f}'.format(get_normed(p))
+                            for p in xrange(self.num_subperiods)]
 		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
 		for (sympt, timeline) in sympts.items():
