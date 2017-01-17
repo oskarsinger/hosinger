@@ -1,5 +1,7 @@
 import numpy as np
 
+from scipy.stats import pearsonr
+
 def get_pearson_matrix(X1, X2):
 
     p1 = X1.shape[1]
@@ -8,7 +10,7 @@ def get_pearson_matrix(X1, X2):
 
     for i in xrange(p1):
         for j in xrange(p2):
-            corr[i,j] = ssp(
+            corr[i,j] = pearsonr(
                 X1[:,i], X2[:,j])[0]
 
     return corr
