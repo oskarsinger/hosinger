@@ -86,6 +86,9 @@ def _populate_data_source(
     y_element = []
     values = []
 
+    print 'len(x_labels)', len(x_labels)
+    print 'p', p
+
     for j in xrange(p):
         for i in xrange(n):
             x_element.append(x_labels[j])
