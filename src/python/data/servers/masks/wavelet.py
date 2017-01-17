@@ -4,7 +4,7 @@ import os
 import numpy as np
 import wavelets.dtcwt as dtcwt
 
-from data.loaders.readers.from_num import get_fields_as_columns as get_fac
+from data.loaders.readers.from_num import get_array_as_is as get_aai
 from drrobert.file_io import get_timestamped as get_ts
 from wavelets.dtcwt.utils import get_partial_reconstructions as get_pr
 from linal.utils.misc import get_array_mod
@@ -70,8 +70,8 @@ class WaveletMask:
             for i in xrange(len(self.hdf5_repo)):
                 group = self.hdf5_repo[str(i)]
                 num_Yh = len(group) - 1
-                Yh = [get_fac(group['Yh_' + str(j)]) for j in xrange(num_Yh)]
-                Yl = get_fac(group['Yl'])
+                Yh = [get_aai(group['Yh_' + str(j)]) for j in xrange(num_Yh)]
+                Yl = get_aai(group['Yl'])
 
                 wavelets.insert((Yh, Yl))
         else:
