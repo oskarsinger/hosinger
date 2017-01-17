@@ -160,10 +160,13 @@ class MVDTCWTRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.wavelet_dir = rmu.init_dir(
-            'wavelets',
-            save,
-            self.save_load_dir)
+        hdf5_path = os.path.join(
+            self.save_load_dir,
+            'wavelets')
+        
+        self.hdf5_repo = h5py.File(
+            hdf5_path,
+            'w' if save else 'r')
 
     def _compute(self):
 
