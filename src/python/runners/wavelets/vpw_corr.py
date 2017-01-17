@@ -113,7 +113,6 @@ class ViewPairwiseCorrelationRunner:
             spud = self.correlation[s]
 
             for (p, day) in enumerate(s_wavelets):
-                print 'Computing correlations for day', p
                 for (sp, subperiod) in enumerate(day):
                     for k in spud.keys():
                         (Yh1, Yl1) =  subperiod[k[0]]
