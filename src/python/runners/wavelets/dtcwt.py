@@ -205,7 +205,7 @@ class MVDTCWTRunner:
                             self.qshift)
 
                         if num_freqs > 7:
-                            Yhs = Yhs[-6:]
+                            Yh = Yh[-6:]
 
                         self._save(
                             Yl,
