@@ -14,7 +14,7 @@ from drrobert.file_io import get_timestamped as get_ts
 from drrobert.stats import get_pearson_matrix as get_pm
 from lazyprojector import plot_matrix_heat
 from data.loaders.e4.utils import get_symptom_status
-from data.loaders.readers.from_num import get_fields_as_columns as get_fac
+from data.loaders.readers.from_num import get_array_as_is as get_aai
 
 class ViewPairwiseCorrelationRunner:
 
@@ -200,7 +200,7 @@ class ViewPairwiseCorrelationRunner:
                     for (p_str, corr) in p_group.items():
                         p = int(p_str)
                         
-            	        self.correlation[s].get(vs[0], vs[1])[sp][p] = get_fac(corr)
+            	        self.correlation[s].get(vs[0], vs[1])[sp][p] = get_aai(corr)
 
     def _show_corr_over_time(self):
 
