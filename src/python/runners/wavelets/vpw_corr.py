@@ -162,7 +162,7 @@ class ViewPairwiseCorrelationRunner:
         subject_group = self.hdf5_repo[s]
         view_string = str(v[0]) + '-' + str(v[1])
 
-        if view_string not in subect_group:
+        if view_string not in subject_group:
             subject_group.create_group(view_string)
 
         view_group = subject_group[view_string]
