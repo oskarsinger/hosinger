@@ -227,7 +227,7 @@ class ViewPairwiseCorrelationRunner:
                     for (p, corr) in enumerate(periods):
                         period_corrs.get(k[0], k[1])[p].append(corr)
 
-            for (k, periods) in corrs_over_time:
+            for (k, periods) in period_corrs.items():
                 timeline = np.hstack(
                     [rmu.get_ravel_hstack(corrs) for corrs in periods])
                 y_labels_k = y_labels.get(k[0], k[1])
