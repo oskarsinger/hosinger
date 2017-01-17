@@ -12,13 +12,16 @@ def get_row_magnitude(a):
 
 def get_array_as_is(a):
 
-    return a
+    indexed = None
+
+    if len(a.shape) == 2:
+        indexed = a[:,:]
+    else:
+        indexed = a[:]
+
+    return indexed
 
 def get_fields_as_columns(a):
-
-    print 'a', a
-    print 'a.dtype', a.dtype
-    print 'a.dtype.names', a.dtype.names
 
     fields = [a[name][:,np.newaxis] 
               for name in a.dtype.names]
