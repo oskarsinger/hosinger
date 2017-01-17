@@ -12,6 +12,8 @@
     * Volunteering
     * Frisbee
 
+* Create hdf5 serialization helpers for standard datatypes if they don't already exist.
+
 #Network Interference
 
 ##Infrastructure
@@ -84,14 +86,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Do vertically stacked plots for CCA components instead of plots of vertically stacked components
 
-* Try out the new full-time correlation and horizontally-stacked partial reconstruction plots
-
-* Look at how wavelets react to NaNs in the data
-
 * Implement view-hour-pairwise correlation
 
 * How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
-
-* Switch DTCWT runner to use hdf5 for serialization.
-
-* Create hdf5 serialization helpers for standard datatypes if they don't already exist.
