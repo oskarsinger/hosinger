@@ -266,6 +266,6 @@ class MVDTCWTRunner:
 
         sp_group.create_dataset('Yl', data=Yl)
 
-        for (i, yh) in Yh:
+        for (i, yh) in enumerate(Yh):
             sp_group.create_dataset(
                 'Yh_' + str(i), data=yh)
