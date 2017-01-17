@@ -66,6 +66,8 @@ class ViewPairwiseCorrelationRunner:
             self._compute()
 
         if self.show:
+            self._show_corr_over_time()
+
             self._show_corr_over_periods()
             self._show_corr_over_subperiods()
 
