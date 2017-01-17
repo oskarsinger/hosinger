@@ -207,6 +207,7 @@ class ViewPairwiseCorrelationRunner:
 
         avgs = SPUD(
             self.num_views, default=lambda: {})
+        get_normed = lambda p: float(p) / float(self.num_subperiods)
 	sample = self.correlation.values()[0].items()
 	y_labels = SPUD(self.num_views)
 
@@ -221,6 +222,7 @@ class ViewPairwiseCorrelationRunner:
         for s in self.subjects:
 	    spud = self.correlation[s]
 	    sympt = get_symptom_status(s)
+            num_points = self.num_periods[s] * self.num_subperiods
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
@@ -232,12 +234,6 @@ class ViewPairwiseCorrelationRunner:
             for (k, periods) in period_corrs.items():
                 timeline = np.hstack(
                     [rmu.get_ravel_hstack(corrs) for corrs in periods])
-                y_labels_k = y_labels.get(k[0], k[1])
-                get_normed = lambda p: float(p) / float(self.num_subperiods)
-                num_points = self.num_periods[s] * self.num_subperiods
-                x_labels = ['{:06.3f}'.format(get_normed(p))
-                            for p in xrange(num_points)]
-		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
                 if self.avg_over_subjects:
                     current = avgs.get(k[0], k[1])
@@ -247,12 +243,16 @@ class ViewPairwiseCorrelationRunner:
                     else:
                         current[sympt] = timeline
                 else:
+		    (name1, name2) = (self.names[k[0]], self.names[k[1]])
                     title = 'View-pairwise correlation over' + \
                         ' time for views' + \
                         name1 + ' ' + name2 + \
                         ' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
                     path = os.path.join(self.plot_dir, fn)
+                    y_labels_k = y_labels.get(k[0], k[1])
+                    x_labels = ['{:06.3f}'.format(get_normed(p))
+                                for p in xrange(num_points)]
 
                     plot_matrix_heat(
                         timeline,
@@ -268,10 +268,12 @@ class ViewPairwiseCorrelationRunner:
                     sns.plt.clf()
 
 	if self.avg_over_subjects:
+            num_points = self.num_subperiods * self.max_periods
+
 	    for (k, sympts) in avgs.items():
                 y_labels_k = y_labels.get(k[0], k[1])
-                x_labels = [rmu.get_2_digit(p, power=False)
-                            for p in xrange(self.max_periods)]
+                x_labels = ['{:06.3f}'.format(get_normed(p))
+                            for p in xrange(num_points)]
 		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
                 for (sympt, timeline) in sympts.items():
