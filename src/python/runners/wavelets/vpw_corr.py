@@ -13,7 +13,7 @@ from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.stats import get_pearson_matrix as get_pm
 from lazyprojector import plot_matrix_heat
-from data.loaders.e4 import get_symptom_status
+from data.loaders.e4.utils import get_symptom_status
 
 class ViewPairwiseCorrelationRunner:
 
