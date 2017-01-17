@@ -195,13 +195,11 @@ class ViewPairwiseCorrelationRunner:
                 for (sp_str, p_group) in sp_group.items():
                     sp = int(sp_str)
 
-                    print 'Loading corr for sp', sp_str
-
                     for (p_str, corr) in p_group.items():
                         p = int(p_str)
 
-                        print 'Loading corr for p', p_str
-                        print 'corr is None', corr is None
+                        if corr is None:
+                            print 'Loading corr for p', p_str, 'sp', sp_str
 
             	        self.correlation[s].get(vs[0], vs[1])[sp][p] = corr
 
