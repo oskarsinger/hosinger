@@ -226,13 +226,13 @@ class MVDTCWTRunner:
             self.subjects)
 
         for (s, s_group) in self.hdf5_repo.items():
-            for (v_str, v_group) in s_group:
+            for (v_str, v_group) in s_group.items():
                 v = int(v_str)
 
-                for (p_str, p_group) in v_group:
+                for (p_str, p_group) in v_group.items():
                     p = int(p_str)
 
-                    for (sp_str, sp_group) in p_group:
+                    for (sp_str, sp_group) in p_group.items():
                         sp = int(sp_str)
                         num_yh = len(sp_group) - 1
                         Yh = [sp_group['Yh_' + str(i)]

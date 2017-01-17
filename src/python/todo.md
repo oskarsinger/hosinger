@@ -91,3 +91,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Implement view-hour-pairwise correlation
 
 * How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
+
+* Switch DTCWT runner to use hdf5 for serialization.
+
+* Create hdf5 serialization helpers for standard datatypes if they don't already exist.
