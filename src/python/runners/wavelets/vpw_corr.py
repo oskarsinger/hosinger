@@ -185,15 +185,23 @@ class ViewPairwiseCorrelationRunner:
                 
         for s in self.subjects:
             subject_group = self.hdf5_repo[s]
+            print 'Loading corr for subject', s
 
             for (k_str, sp_group) in subject_group.items():
                 vs = [int(v) for v in k_str.split('-')]
 
+                print 'Loading corr for view pair', k_str
+
                 for (sp_str, p_group) in sp_group.items():
-                    sp = int(sp)
+                    sp = int(sp_str)
+
+                    print 'Loading corr for sp', sp_str
 
                     for (p_str, corr) in p_group.items():
                         p = int(p_str)
+
+                        print 'Loading corr for p', p_str
+                        print 'corr is None', corr is None
 
             	        self.correlation[s].get(vs[0], vs[1])[sp][p] = corr
 
