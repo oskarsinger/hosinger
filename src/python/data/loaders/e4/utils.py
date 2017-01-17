@@ -17,9 +17,9 @@ def get_symptom_status(subject):
     # Wild type
     W = {3}
 
-    if subject in Sx:
+    if subject in Hsx:
         status = 'Hsx'
-    elif subject in Asx:
+    elif subject in Lsx:
         status = 'Lsx'
     elif subject in W:
         status = 'W'
