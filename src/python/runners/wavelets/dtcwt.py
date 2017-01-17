@@ -138,8 +138,6 @@ class MVDTCWTRunner:
         load,
         save):
 
-        print 'Initializing directories'
-
         self.load = load
         self.save = save
 
@@ -169,14 +167,49 @@ class MVDTCWTRunner:
 
     def _compute(self):
 
-        for subject in self.subjects:
+        for s in self.subjects:
 
-            print 'Computing subperiod wavelet transforms for subject', subject
+            print 'Computing wavelet transforms for subject', s
 
-            (Yls, Yhs) = self._get_sp_wavelet_transforms(subject)
+            iterable = enumerate(zip(
+                self.rates, self.servers[s]))
 
-            if self.save:
-                self._save(Yls, Yhs, subject)
+            for (v, (r, ds)) in iterable:
+                window = int(r * self.period)
+                sp_window = int(self.subperiod * r)
+                threshold = self.names[v] == 'TEMP'
+                data = ds.get_data()
+
+                for p in xrange(self.num_periods[s]):
+                    data_p = data[p * window: (p+1) * window]
+
+                    for sp in xrange(self.num_sps):
+                        begin = sp * sp_window
+                        end = begin + sp_window
+                        data_sp = data_p[begin:end]
+
+                        if threshold:
+                            data_sp[data_sp > 40] = 40
+
+                        num_freqs = min([
+                            int(log(data_sp.shape[0], 2)) - 1,
+                            self.max_freqs])
+                        (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
+                            data_sp, 
+                            num_freqs - 1,
+                            self.biorthogonal,
+                            self.qshift)
+
+                        if num_freqs > 7:
+                            Yhs = Yhs[-6:]
+
+                        self._save(
+                            Yl,
+                            Yh,
+                            s,
+                            v,
+                            p,
+                            sp)
 
     def _load(self):
 
@@ -188,101 +221,47 @@ class MVDTCWTRunner:
             self.num_periods,
             self.subjects)
 
-        for fn in os.listdir(self.wavelet_dir):
-            path = os.path.join(self.wavelet_dir, fn)
-            info = fn.split('_')
-            s = info[1]
-            p = int(info[3])
-            sp = int(info[5])
-            v = int(info[7])
-            Yh_or_Yl = info[8]
-            index = None
-            coeffs = None
+        for (s, s_group) in self.hdf5_repo.items():
+            for (v_str, v_group) in s_group:
+                v = int(v_str)
 
-            with open(path) as f:
-                loaded = np.load(f)
+                for (p_str, p_group) in v_group:
+                    p = int(p_str)
 
-                if Yh_or_Yl == 'Yh':
-                    index = 0
-                    loaded = {int(h_fn.split('_')[1]) : a
-                              for (h_fn, a) in loaded.items()}
-                    num_coeffs = len(loaded)
-                    coeffs = [loaded[i] 
-                              for i in xrange(num_coeffs)]
-                elif Yh_or_Yl == 'Yl':
-                    index = 1
-                    coeffs = loaded
+                    for (sp_str, sp_group) in p_group:
+                        sp = int(sp_str)
+                        num_yh = len(sp_group) - 1
+                        Yh = [sp_group['Yh_' + str(i)]
+                              for i in xrange(num_yh)]
 
-            self.wavelets[s][p][sp][v][index] = coeffs
+                        self.wavelets[s][p][sp][v][0] = (Yh, sp_group['Yl'])
 
-    def _save(self, Yls, Yhs, subject):
+    def _save(self, Yl, Yh, s, v, p, sp):
 
-        for (v, (v_Yhs, v_Yls)) in enumerate(zip(Yhs, Yls)):
-            for (p, (p_Yhs, p_Yls)) in enumerate(zip(v_Yhs, v_Yls)):
-                for sp in xrange(self.num_sps):
-                    path = '_'.join([
-                        'subject',
-                        subject,
-                        'period',
-                        str(p),
-                        'subperiod',
-                        str(sp),
-                        'view',
-                        str(v)])
-                    l_fname = path + '_Yl_dtcwt_coefficients.thang'
-                    l_path = os.path.join(
-                        self.wavelet_dir, l_fname)
+        if s not in self.hdf5_repo:
+            self.hdf5_repo.create_group(s)
 
-                    with open(l_path, 'w') as f:
-                        np.save(f, p_Yls[sp])
+        s_group = self.hdf5_repo[s]
+        v_str = str(v)
 
-                    h_fname = path + '_Yh_dtcwt_coefficients.thang'
-                    h_path = os.path.join(
-                        self.wavelet_dir, h_fname)
+        if v_str not in s_group:
+            s_group.create_group(v_str)
 
-                    with open(h_path, 'w') as f:
-                        np.savez(f, *p_Yhs[sp])
+        v_group = s_group[v_str]
+        p_str = str(p)
 
-    def _get_sp_wavelet_transforms(self, subject):
+        if p_str not in v_group:
+            v_group.create_group(p_str)
 
-        Yls = [[] for v in xrange(self.num_views)]
-        Yhs = [[] for v in xrange(self.num_views)]
-        iterable = enumerate(zip(
-            self.rates, self.servers[subject]))
+        p_group = v_group[p_str]
+        sp_str = str(sp)
 
-        for (v, (r, ds)) in iterable:
-            window = int(r * self.period)
-            sp_window = int(self.subperiod * r)
-            threshold = self.names[v] == 'TEMP'
-            data = ds.get_data()
+        p_group.create_group(sp_str)
 
-            for p in xrange(self.num_periods[subject]):
-                data_p = data[p * window: (p+1) * window]
+        sp_group = p_group[sp_str]
 
-                Yls[v].append([])
-                Yhs[v].append([])
+        sp_group.create_dataset('Yl', data=Yl)
 
-                for sp in xrange(self.num_sps):
-		    begin = sp * sp_window
-		    end = begin + sp_window
-                    data_sp = data_p[begin:end]
-
-                    if threshold:
-                        data_sp[data_sp > 40] = 40
-
-                    num_freqs = min([
-                        int(log(data_sp.shape[0], 2)) - 1,
-                        self.max_freqs])
-                    (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
-                        data_sp, 
-                        num_freqs - 1,
-                        self.biorthogonal,
-                        self.qshift)
-
-                    if num_freqs > 7:
-                        Yhs = Yhs[-6:]
-
-                    Yls[v][-1].append(Yl)
-                    Yhs[v][-1].append(Yh)
-
-        return (Yls, Yhs)
+        for (i, yh) in Yh:
+            sp_group.create_dataset(
+                'Yh_' + str(i), data=yh)
