@@ -13,6 +13,7 @@ from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.stats import get_pearson_matrix as get_pm
 from lazyprojector import plot_matrix_heat
+from data.loaders.e4 import get_symptom_status
 
 class ViewPairwiseCorrelationRunner:
 
@@ -220,7 +221,7 @@ class ViewPairwiseCorrelationRunner:
 
         for s in self.subjects:
 	    spud = self.correlation[s]
-	    sympt = rmu.get_symptom_status(s)
+	    sympt = get_symptom_status(s)
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
@@ -411,7 +412,7 @@ class ViewPairwiseCorrelationRunner:
 
         for s in self.subjects:
 	    spud = self.correlation[s]
-	    sympt = rmu.get_symptom_status(s)
+	    sympt = get_symptom_status(s)
 
             for (k, subperiods) in spud.items():
                 (n, m) = subperiods[0][0].shape
@@ -497,7 +498,7 @@ class ViewPairwiseCorrelationRunner:
 
         for s in self.subjects:
 	    spud = self.correlation[s]
-	    sympt = rmu.get_symptom_status(s)
+	    sympt = get_symptom_status(s)
 
             for (k, subperiods) in spud.items():
                 y_labels_k = y_labels.get(k[0], k[1])
