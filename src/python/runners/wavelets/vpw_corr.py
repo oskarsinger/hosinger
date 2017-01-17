@@ -1,5 +1,6 @@
 import os
 import matplotlib
+import h5py
 
 matplotlib.use('Cairo')
 
@@ -49,7 +50,6 @@ class ViewPairwiseCorrelationRunner:
 	if self.avg_over_subjects:
 	    self.subjects = {s for (s, np) in self.num_periods.items()
 			     if np == self.max_periods}
-	    print self.subjects
 
         self.num_subperiods = dtcwt_runner.num_sps
 
@@ -94,10 +94,11 @@ class ViewPairwiseCorrelationRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.corr_dir = rmu.init_dir(
-            'correlation',
-            save,
-            self.save_load_dir)
+        hdf5_path = os.path.join(
+            self.save_load_dir,
+            'correlation.hdf5')
+        self.hdf5_repo = h5py.File(
+            hdf5_path, 'w' if save else 'r')
         self.plot_dir = rmu.init_dir(
             'plots',
             show,
@@ -106,9 +107,11 @@ class ViewPairwiseCorrelationRunner:
     def _compute(self):
 
         for (s, s_wavelets) in self.wavelets.items():
+            print 'Computing correlations for subject', s
             spud = self.correlation[s]
 
             for (p, day) in enumerate(s_wavelets):
+                print 'Computing correlations for day', p
                 for (sp, subperiod) in enumerate(day):
                     for k in spud.keys():
                         (Yh1, Yl1) =  subperiod[k[0]]
@@ -144,54 +147,55 @@ class ViewPairwiseCorrelationRunner:
                             np.absolute(Y1_mat), 
                             np.absolute(Y2_mat))
 
-                        self.correlation[s].get(k[0], k[1])[sp].append(
-                            correlation)
+                        self._save(
+                            correlation,
+                            s,
+                            k,
+                            p,
+                            sp)
                      
-                        if self.save:
-                            self._save(
-                                correlation,
-                                s,
-                                k,
-                                p,
-                                sp)
-
     def _save(self, c, s, v, p, sp):
 
-        views = str(v[0]) + '-' + str(v[1])
-        path = '_'.join([
-            'subject', s,
-            'views', views,
-            'period', str(p),
-            'subperiod', str(sp)])
-        path = os.path.join(self.corr_dir, path)
+        if s not in self.hdf5_repo:
+            self.hdf5_repo.create_group(s)
 
-        with open(path, 'w') as f:
-            np.save(f, c)
+        subject_group = self.hdf5_repo[s]
+        view_string = str(v[0]) + '-' + str(v[1])
+
+        if view_string not in subect_group:
+            subject_group.create_group(view_string)
+
+        view_group = subject_group[view_string]
+        sp_string = str(sp)
+
+        if sp_string not in view_group:
+            view_group.create_group(sp_string)
+
+        sp_group = view_group[sp_string]
+        p_string = str(p)
+
+        sp_group.create_dataset(p_string, data=c)
 
     def _load(self):
-
-        correlation = {} 
-
-        for fn in os.listdir(self.corr_dir):
-            path = os.path.join(self.corr_dir, fn)
-
-            with open(path) as f:
-                correlation[fn] = np.load(f)
 
         for (s, spud) in self.correlation.items():
             for (k, subperiods) in spud.items():
                 for sp in xrange(self.num_subperiods):
                     subperiods[sp] = [None] * self.num_periods[s] 
                 
-        for (k, m) in correlation.items():
-            info = k.split('_')
-            s = info[1]
-            v = [int(i) for i in info[3].split('-')]
-            p = int(info[5])
-            sp = int(info[7])
-	    
-	    if s in self.subjects:
-            	self.correlation[s].get(v[0], v[1])[sp][p] = m
+        for s in self.subjects:
+            subject_group = self.hdf5_repo[s]
+
+            for (k_str, sp_group) in subject_group.items():
+                vs = [int(v) for v in k_str.split('-')]
+
+                for (sp_str, p_group) in sp_group.items():
+                    sp = int(sp)
+
+                    for (p_str, corr) in p_group.items():
+                        p = int(p_str)
+
+            	        self.correlation[s].get(vs[0], vs[1])[sp][p] = corr
 
     def _show_corr_over_time(self):
 
