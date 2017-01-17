@@ -203,6 +203,8 @@ class ViewPairwiseCorrelationRunner:
 
     def _show_corr_over_time(self):
 
+        print 'Plotting correlation over time'
+
         avgs = SPUD(
             self.num_views, default=lambda: {})
 	sample = self.correlation.values()[0].items()
@@ -295,6 +297,8 @@ class ViewPairwiseCorrelationRunner:
 
     def _show_corr_mean_over_subperiods(self):
 
+        print 'Plotting correlation mean over subperiods'
+
         for (s, spud) in self.correlation.items():
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
@@ -345,6 +349,8 @@ class ViewPairwiseCorrelationRunner:
 
     def _show_corr_over_subperiods(self):
 
+        print 'Plotting correlation over subperiods'
+
         for (s, spud) in self.correlation.items():
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
@@ -394,6 +400,8 @@ class ViewPairwiseCorrelationRunner:
 	    print 'Poop'
 
     def _show_corr_mean_over_periods(self):
+
+        print 'Plotting correlation mean over periods'
 
 	avgs = SPUD(self.num_views, default=lambda: {})
 	things = self.correlation.values()[0].items()
@@ -479,6 +487,8 @@ class ViewPairwiseCorrelationRunner:
 		    sns.plt.clf()
 
     def _show_corr_over_periods(self):
+
+        print 'Plotting correlation over periods'
 
 	default = lambda: [{} for i in xrange(self.num_subperiods)]
 	avgs = SPUD(self.num_views, default=default)
