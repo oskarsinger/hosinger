@@ -90,4 +90,4 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Implement view-hour-pairwise correlation
 
-* Do similar padding to fill in for different sampling rates as you did to fill in for different frequency components on the wavelets
+* How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
