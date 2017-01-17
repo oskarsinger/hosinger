@@ -191,8 +191,6 @@ class ViewPairwiseCorrelationRunner:
             for (k_str, sp_group) in s_group.items():
                 vs = [int(v) for v in k_str.split('-')]
 
-                print 'Loading corr for view pair', k_str
-
                 for (sp_str, p_group) in sp_group.items():
                     sp = int(sp_str)
 
@@ -421,6 +419,8 @@ class ViewPairwiseCorrelationRunner:
 	    spud = self.correlation[s]
 	    sympt = get_symptom_status(s)
 
+            print 'Producing timelines for subject', s
+
             for (k, subperiods) in spud.items():
                 (n, m) = subperiods[0][0].shape
                 y_labels_k = y_labels.get(k[0], k[1])
@@ -462,8 +462,9 @@ class ViewPairwiseCorrelationRunner:
 
 	if self.avg_over_subjects:
 	    for (k, sympts) in avgs.items():
+                print 'Plotting for views', self.names[k[0]], self.names[k[1]]
                 y_labels_k = y_labels.get(k[0], k[1])
-                x_labels = ['{:02f}'.format(get_normed(p))
+                x_labels = ['{:02f}'.format(p)
                             for p in xrange(self.num_subperiods)]
 		(name1, name2) = (self.names[k[0]], self.names[k[1]])
 
