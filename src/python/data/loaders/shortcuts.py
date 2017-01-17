@@ -8,9 +8,8 @@ from simple import CosineLoader as CL
 from simple import FakePeriodicGaussianLoader as FPGL
 from simple import GaussianLoader as GL
 from simple import BatchPhysiologicalTimeSeriesLoader as BPTSL
-from supervised import LinearRegressionGaussianLoader as LRGL
 from e4 import FixedRateLoader as FRL
-from e4 import IBILoader as IBI
+from supervised import LinearRegressionGaussianLoader as LRGL
 from readers import from_num as fn
 from at import AlTestSpikeLoader as ATSL
 from rl import ExposureShiftedGaussianWithBaselineEffectLoader as ESGWBEL

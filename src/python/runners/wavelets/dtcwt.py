@@ -10,6 +10,7 @@ import utils as rmu
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from data.servers.batch import BatchServer as BS
+from data.loaders.readers.from_num import get_fields_as_columns as get_fac
 from linal.utils.misc import get_non_nan
 from wavelets import dtcwt
 from multiprocessing import Pool
@@ -235,10 +236,11 @@ class MVDTCWTRunner:
                     for (sp_str, sp_group) in p_group.items():
                         sp = int(sp_str)
                         num_yh = len(sp_group) - 1
-                        Yh = [sp_group['Yh_' + str(i)]
+                        Yh = [get_fac(sp_group['Yh_' + str(i)])
                               for i in xrange(num_yh)]
+                        Yl = get_fac(sp_group['Yl'])
 
-                        self.wavelets[s][p][sp][v][0] = (Yh, sp_group['Yl'])
+                        self.wavelets[s][p][sp][v][0] = (Yh, Yl)
 
     def _save(self, Yl, Yh, s, v, p, sp):
 

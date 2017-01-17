@@ -77,8 +77,6 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
 
 def get_padded_wavelets(Yh, Yl):
 
-    print 'Yh', Yh
-    print 'Yl', Yl
     hi_and_lo = Yh + [Yl]
     num_rows = hi_and_lo[0].shape[0]
     basis = np.zeros(
