@@ -87,3 +87,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Implement view-hour-pairwise correlation
 
 * How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
+
+* In general, work on speeding up these tools. They are pretty slow right now, and I could probably take more advantage of numpy's performance improvements by doing more reshaping and less looping, etc.
+    * Should I just server up the full, concatenate dataset, without period-wise separation, then use numpy operations to do all the averaging and such? Probalby can clean-up/speed-up that way. Worry about that later.

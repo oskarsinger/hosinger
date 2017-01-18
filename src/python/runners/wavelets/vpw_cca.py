@@ -1,5 +1,6 @@
 import os
 import json
+import h5py
 import matplotlib
 
 matplotlib.use('Cairo')
@@ -40,6 +41,10 @@ class ViewPairwiseCCARunner:
         self.num_periods = dtcwt_runner.num_periods
         self.num_subperiods = dtcwt_runner.num_sps
         self.num_freqs = [None] * self.num_views
+        self.cca_names = {
+            'cca_over_time',
+            'cca_over_freqs',
+            'cc_over_time'}
 
         self._init_dirs(
             save, 
@@ -48,12 +53,13 @@ class ViewPairwiseCCARunner:
             save_load_dir)
 
         default = lambda: [[] for i in xrange(self.num_subperiods)]
-
-        self.ccas = {s : SPUD(
-                        self.num_views, 
-                        default=default, 
-                        no_double=True)
-                    for s in self.subjects}
+        get_container = lambda: {s : SPUD(
+                                    self.num_views, 
+                                    default=default, 
+                                    no_double=True)
+                                 for s in self.subjects}
+        self.ccas = {n : get_container()
+                     for n in self.cca_names}
 
     def run(self):
 
@@ -103,10 +109,11 @@ class ViewPairwiseCCARunner:
 
                 self.num_freqs = json.loads(line)
 
-        self.ccas_dir = rmu.init_dir(
-            'cca',
-            save,
-            self.save_load_dir)
+        get_path = lambda n: os.path.join(
+            self.save_load_dir, n)
+        hdf5_paths = {n : get_path(n) for n in self.cca_names}
+        self.hdf5_repos = {n : h5py.File(p, 'w' if save else 'r'
+                           for p in hdf5_paths}
         self.plot_dir = rmu.init_dir(
             'plots',
             show,
@@ -124,27 +131,27 @@ class ViewPairwiseCCARunner:
                         (Yh2, Yl2) = subperiod[k[1]]
                         Y1_mat = rmu.get_padded_wavelets(Yh1, Yl1)
                         Y2_mat = rmu.get_padded_wavelets(Yh2, Yl2)
-                        cca_over_time = np.vstack(rmu.get_cca_vecs(
-                            Y1_mat, Y2_mat))
+                        cca_over_time = (rmu.get_cca_vecs(
+                            Y1_mat, Y2_mat)
                         cca_dim = min(Y1_mat.shape + Y2_mat.shape)
-                        cca_over_freqs = np.hstack(rmu.get_cca_vecs(
+                        cca_over_freqs = (rmu.get_cca_vecs(
                             Y1_mat[:,:cca_dim].T,
                             Y2_mat[:,:cca_dim].T,
-                            num_nonzero=self.nnz))
+                            num_nonzero=self.nnz)
                         cc_over_time = self._get_cc_over_time(
                             Y1_mat,
                             Y2_mat,
                             cca_over_time)
-                        stuff = [
-                            cca_over_time,
-                            cca_over_freqs,
-                            cc_over_time]
+                        stuff = {
+                            self.cca_names[0]: cca_over_time,
+                            self.cca_names[1]: cca_over_freqs,
+                            self.cca_names[2]: cc_over_time}
 
                         if p == 0:
                             self.num_freqs[k[0]] = Y1_mat.shape[1] 
                             self.num_freqs[k[1]] = Y2_mat.shape[1]
 
-                        self.ccas[s].get(k[0], k[1])[sp].append(stuff)
+                        #self.ccas[s].get(k[0], k[1])[sp].append(stuff)
                      
                         if self.save:
                             self._save(
@@ -176,44 +183,66 @@ class ViewPairwiseCCARunner:
 
     def _save(self, cs, s, v, p, sp):
 
-        views = str(v[0]) + '-' + str(v[1])
-        path = '_'.join([
-            'subject', s,
-            'views', views,
-            'period', str(p),
-            'subperiod', str(sp)])
-        path = os.path.join(self.ccas_dir, path)
+        for (n, repo) in self.hdf5_repos.items():
+            if s not in repo:
+                repo.create_group(s)
 
-        with open(path, 'w') as f:
-            np.savez(f, *cs)
+            s_group = repo[s]
+            v_str = str(v)
+            
+            if v_str not in s_group:
+                s_group.create_group(v_str)
+
+            v_group = s_group[v_str]
+            sp_str = str(sp)
+
+            if sp_str not in v_group:
+                v_group.create_group(sp_str)
+
+            sp_group = v_group[sp]
+            p_str = str(p)
+
+            if n in self.cca_names[:2]:
+                (Phi1, Phi2) = cs[n]
+
+                sp_group.create_group(p_str)
+                p_group = sp_group[p_str]
+                p_group.create_dataset('1', Phi1)
+                p_group.create_dataset('2', Phi2)
+            else:
+                sp_group.create_dataset(p_str, data=cs[n])
+
 
     def _load(self):
 
-        cca = {} 
+        for (n, n_repo) in self.hdf5_repos.items():
+            cca = self.ccas[n]
+            for (s, spud) in cca.items():
+                for (k, subperiods) in spud.items():
+                    for i in xrange(self.num_subperiods):
+                        subperiods[i] = [None] * self.num_periods[s] 
+            
+            for (s, s_group) in n_repo.items():
+                cca_s = cca[s]
 
-        for (s, spud) in self.ccas.items():
-            for (k, subperiods) in spud.items():
-                for i in xrange(self.num_subperiods):
-                    subperiods[i] = [None] * self.num_periods[s] 
-                
-        for fn in os.listdir(self.ccas_dir):
-            info = fn.split('_')
-            s = info[1]
-            v = [int(i) for i in info[3].split('-')]
-            p = int(info[5])
-            sp = int(info[7])
-            path = os.path.join(self.ccas_dir, fn)
-            loaded = None
+                for (v_str, v_group) in s_group.items():
+                    vs = [int(v) for v in v_str.split('-')]
+                    cca_vs = cca_s.get(vs[0], vs[1])
 
-            with open(path) as f:
-                loaded = {int(h_fn.split('_')[1]) : a
-                          for (h_fn, a) in np.load(f).items()}
+                    for (sp_str, sp_group) in v_group.items():
+                        sp = int(sp_str)
+                        cca_sp = cca_vs[sp]
 
-            num_coeffs = len(loaded)
-            coeffs = [loaded[i] 
-                      for i in xrange(num_coeffs)]
+                        for (p_str, p_group) in sp_group.items():
+                            p = str(p_str)
+                            data = None
 
-            self.ccas[s].get(v[0], v[1])[sp][p] = tuple(coeffs)
+                            if n in self.cca_names[:2]:
+                                cca_sp[p] = (
+                                    np.array(p_group['1']),
+                                    np.array(p_group['2']))
+                            else:
+                                cca_sp[p] = np.array(p_group)
 
     def _show_cca_over_freqs(self):
 
