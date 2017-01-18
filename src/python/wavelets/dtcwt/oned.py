@@ -3,7 +3,7 @@ import numpy as np
 import filters
 
 def get_partial_reconstructions(
-    Yh, Yl, biorthognal, qshift):
+    Yh, Yl, biorthogonal, qshift):
 
     prs = []
     Ylz = np.zeros_like(Yl)
