@@ -83,7 +83,7 @@ class DTCWTPartialReconstructionRunner:
 
         for v in xrange(self.num_views):
             num_freqs[v] = max(
-                len(s_group[v]) 
+                len(s_group[str(v)]) 
                 for s_group in self.hdf5_repo.values())
 
         return num_freqs
