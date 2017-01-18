@@ -250,7 +250,7 @@ class DTCWTPartialReconstructionRunner:
         print 'v', v, 'f', f
 
         for (s, s_group) in self.hdf5_repo.items():
-            print 's_group.items()', s_group.items()
+            print 's_group.keys()', s_group.keys()
             v_group = s_group[str(v)]
             f_group = v_group[str(f)]
             (p, v) = (f_group['p'][:,:], f_group['v'][:,:])
