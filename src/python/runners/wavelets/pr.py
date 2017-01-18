@@ -260,12 +260,6 @@ class DTCWTPartialReconstructionRunner:
 
     def _save_stats(self, i, f, s, p, v, u):
 
-        fname = '_'.join([
-            'subject', s,
-            'view', str(i),
-            'frequency', str(f)])
-        path = os.path.join(self.pr_dir, fname)
-
         if s not in self.hdf5_repo:
             self.hdf5_repo.create_group(s)
 
