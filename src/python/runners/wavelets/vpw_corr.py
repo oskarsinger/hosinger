@@ -105,6 +105,18 @@ class ViewPairwiseCorrelationRunner:
             'plots',
             show,
             self.save_load_dir) 
+        self.corr_over_periods_dir = rmu.init_dir(
+            'corr-over-periods',
+            show,
+            self.plot_dir)
+        self.corr_over_subperiods_dir = rmu.init_dir(
+            'corr-over-subperiods',
+            show,
+            self.plot_dir)
+        self.corr_over_time_dir = rmu.init_dir(
+            'corr-over-time',
+            show,
+            self.plot_dir)
 
     def _compute(self):
 
@@ -203,8 +215,8 @@ class ViewPairwiseCorrelationRunner:
 
         print 'Plotting correlation over time'
 
-        avgs = SPUD(
-            self.num_views, default=lambda: {})
+        avgs = SPUD(self.num_views, default=lambda: {})
+        counts = {}
         get_normed = lambda p: float(p) / float(self.num_subperiods)
 	sample = self.correlation.values()[0].items()
 	y_labels = SPUD(self.num_views)
@@ -224,6 +236,11 @@ class ViewPairwiseCorrelationRunner:
             default = lambda: [[] for p in xrange(self.num_periods[s])]
             period_corrs = SPUD(self.num_views, default=default)
 
+            if sympt in counts:
+                counts[sympt] += 1
+            else:
+                counts[sympt] = 1
+
             for (k, subperiods) in spud.items():
                 for periods in subperiods:
                     for (p, corr) in enumerate(periods):
@@ -237,7 +254,8 @@ class ViewPairwiseCorrelationRunner:
                     current = avgs.get(k[0], k[1])
 
                     if sympt in current:
-                        current[sympt] += timeline
+                        current[sympt] = get_running_avg(
+                            current[sympt], timeline, counts[sympt])
                     else:
                         current[sympt] = timeline
                 else:
@@ -247,7 +265,9 @@ class ViewPairwiseCorrelationRunner:
                         name1 + ' ' + name2 + \
                         ' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
+                    path = os.path.join(
+                        self.corr_over_time_dir, 
+                        fn)
                     y_labels_k = y_labels.get(k[0], k[1])
                     x_labels = ['{:06.3f}'.format(get_normed(p))
                                 for p in xrange(num_points)]
@@ -280,7 +300,9 @@ class ViewPairwiseCorrelationRunner:
                         name1 + ' ' + name2 + \
                         ' with symptom status ' + sympt
                     fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
+                    path = os.path.join(
+                        self.corr_over_time_dir, 
+                        fn)
 
                     plot_matrix_heat(
                         timeline,
@@ -329,7 +351,9 @@ class ViewPairwiseCorrelationRunner:
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                     	' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
+                    path = os.path.join(
+                        self.corr_over_periods_dir,
+                        fn)
 
                     plot_matrix_heat(
                     	timeline,
@@ -381,7 +405,9 @@ class ViewPairwiseCorrelationRunner:
 			    name2 + ' of subject ' + s + \
 			    ' and day ' + rmu.get_2_digit(p)
 		        fn = '_'.join(title.split()) + '.pdf'
-		        path = os.path.join(self.plot_dir, fn)
+		        path = os.path.join(
+                            self.corr_over_subperiods_dir, 
+                            fn)
 
 		        plot_matrix_heat(
 			    timeline,
@@ -404,6 +430,7 @@ class ViewPairwiseCorrelationRunner:
         print 'Plotting correlation mean over periods'
 
 	avgs = SPUD(self.num_views, default=lambda: {})
+        counts = {}
 	things = self.correlation.values()[0].items()
 	y_labels = SPUD(self.num_views)
 
@@ -418,6 +445,11 @@ class ViewPairwiseCorrelationRunner:
         for s in self.subjects:
 	    spud = self.correlation[s]
 	    sympt = get_symptom_status(s)
+
+            if sympt in count:
+                count[sympt] += 1
+            else:
+                count[sympt] = 1
 
             print 'Producing timelines for subject', s
 
@@ -436,7 +468,8 @@ class ViewPairwiseCorrelationRunner:
 		    current = avgs.get(k[0], k[1])
 
 		    if sympt in current:
-			current[sympt] += timeline
+			current[sympt] = get_running_avg(
+                            current[sympt], timeline, count[sympt])
 		    else:
 			current[sympt] = timeline
 		else:
@@ -445,7 +478,9 @@ class ViewPairwiseCorrelationRunner:
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s
                     fn = '_'.join(title.split()) + '.pdf'
-                    path = os.path.join(self.plot_dir, fn)
+                    path = os.path.join(
+                        self.corr_over_subperiods_dir, 
+                        fn)
 
                     plot_matrix_heat(
                         timeline,
@@ -474,7 +509,9 @@ class ViewPairwiseCorrelationRunner:
                         name1 + ' ' + name2 + \
 			' with symptom status ' + sympt
 		    fn = '_'.join(title.split()) + '.pdf'
-		    path = os.path.join(self.plot_dir, fn)
+		    path = os.path.join(
+                        self.corr_over_subperiods_dir, 
+                        fn)
 
 		    plot_matrix_heat(
 			timeline,
@@ -495,6 +532,7 @@ class ViewPairwiseCorrelationRunner:
 
 	default = lambda: [{} for i in xrange(self.num_subperiods)]
 	avgs = SPUD(self.num_views, default=default)
+        counts = {}
 	things = self.correlation.values()[0].items()
 	y_labels = SPUD(self.num_views)
 
@@ -510,6 +548,11 @@ class ViewPairwiseCorrelationRunner:
 	    spud = self.correlation[s]
 	    sympt = get_symptom_status(s)
 
+            if sympt in counts:
+                counts[sympt] += 1
+            else:
+                counts[sympt] = 1
+
             for (k, subperiods) in spud.items():
                 y_labels_k = y_labels.get(k[0], k[1])
                 x_labels = [rmu.get_2_digit(p, power=False)
@@ -523,7 +566,8 @@ class ViewPairwiseCorrelationRunner:
 			current = avgs.get(k[0], k[1])[sp]
 
 			if sympt in current:
-			    current[sympt] += timeline
+			    current[sympt] = get_running_avg(
+                                current[sympt], timeline, counts[sympt])
 			else:
 			    current[sympt] = timeline
 		    else:
@@ -533,7 +577,9 @@ class ViewPairwiseCorrelationRunner:
                             ' of subject ' + s + \
 			    ' at subperiod ' + str(sp)
                         fn = '_'.join(title.split()) + '.pdf'
-                        path = os.path.join(self.plot_dir, fn)
+                        path = os.path.join(
+                            self.corr_over_periods_dir, 
+                            fn)
 
                         plot_matrix_heat(
 			    timeline,
@@ -563,7 +609,9 @@ class ViewPairwiseCorrelationRunner:
 			    ' at subperiod ' + str(sp) + \
 			    ' with symptom status ' + sympt
 		        fn = '_'.join(title.split()) + '.pdf'
-		        path = os.path.join(self.plot_dir, fn)
+		        path = os.path.join(
+                            self.corr_over_periods_dir, 
+                            fn)
 
 		        plot_matrix_heat(
 			    timeline,
