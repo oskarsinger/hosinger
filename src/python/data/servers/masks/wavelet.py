@@ -6,7 +6,7 @@ import wavelets.dtcwt as dtcwt
 
 from data.loaders.readers.from_num import get_array_as_is as get_aai
 from drrobert.file_io import get_timestamped as get_ts
-from wavelets.dtcwt.utils import get_partial_reconstructions as get_pr
+from wavelets.dtcwt.oned import get_partial_reconstructions as get_pr
 from linal.utils.misc import get_array_mod
 
 class WaveletMask:
