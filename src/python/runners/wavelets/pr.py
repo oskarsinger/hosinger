@@ -86,6 +86,8 @@ class DTCWTPartialReconstructionRunner:
                 len(s_group[str(v)]) 
                 for s_group in self.hdf5_repo.values())
 
+        print 'num_freqs', num_freqs
+
         return num_freqs
 
     def _init_dirs(self,
