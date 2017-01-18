@@ -247,15 +247,12 @@ class DTCWTPartialReconstructionRunner:
     def _load_stats(self, v, f):
 
         stats = {s[-2:] : None for s in self.subjects}
-        print 'type(v)', type(v), 'v', v
-        print 'type(f)', type(f), 'f', f
 
         for (s, s_group) in self.hdf5_repo.items():
-            print 's_group.values()', s_group.values()
-            v_group = s_group.values()[v]
-            f_group = v_group.values()[f]
-            (p, v) = (f_group['p'][:,:], f_group['v'][:,:])
-            u = f_group.attrs['u']
+            v_group = s_group[unicode(str(v), 'utf-8')]
+            f_group = v_group[unicode(str(f), 'utf-8')]
+            (p, v) = (f_group[u'p'][:,:], f_group[u'v'][:,:])
+            u = f_group.attrs[u'u']
 
             stats[s] = (p, v, u)
         
