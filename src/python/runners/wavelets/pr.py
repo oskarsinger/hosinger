@@ -86,14 +86,6 @@ class DTCWTPartialReconstructionRunner:
                 len(s_group[v]) 
                 for s_group in self.hdf5_repo.values())
 
-        fns = os.listdir(self.stat_dir)
-        split = [fn.split('_') for fn in fns]
-        pairs = {(int(s[3]), s[5]) for s in split}
-        num_freqs = [0 for v in xrange(self.num_views)]
-
-        for (v, f) in pairs:
-            num_freqs[v] += 1
-
         return num_freqs
 
     def _init_dirs(self,
