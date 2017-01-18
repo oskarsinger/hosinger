@@ -145,7 +145,8 @@ class DTCWTPartialReconstructionRunner:
                             padding_l = max_p - pr.shape[0]
 
                             if padding_l > 0:
-                                padding = np.array([np.nan] * padding_l)
+                                padding = np.array(
+                                        [np.nan] * padding_l)[:,np.newaxis]
                                 pr = np.vstack([pr, padding])
 
                             current = view_stats[v][f]
