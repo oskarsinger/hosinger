@@ -30,7 +30,7 @@ class DTCWTPartialReconstructionRunner:
         wavelets=None,
         avg_over_periods=False,
         avg_over_subjects=False,
-        num_plot_periods=1):
+        num_plot_periods=None):
 
         self.missing = False if avg_over_subjects else missing
         self.complete = True if avg_over_subjects else complete
@@ -58,13 +58,12 @@ class DTCWTPartialReconstructionRunner:
         self.num_subperiods = dtcwt_runner.num_sps
 
         if num_plot_periods is None:
-            num_plot_periods = self.num_subperiods
+            num_plot_periods = int(self.num_subperiods)
 
         if not self.avg_over_periods:
-            num_plot_periods *= max(self.num_periods)
+            num_plot_periods *= int(max(self.num_periods))
 
         self.num_plot_periods = num_plot_periods
-        print 'self.num_plots_periods', self.num_plot_periods
         self.prs = rmu.get_wavelet_storage(
             self.num_views,
             self.num_subperiods,
