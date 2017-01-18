@@ -168,9 +168,9 @@ class DTCWTPartialReconstructionRunner:
             print 'Generating plots for view', v
 
             print 'min_freqs[v]', min_freqs[v]
-            print 'num_freqs[v]', num_freqs[v]
+            print 'max_freqs[v]', max_freqs[v]
 
-            for f in xrange(min_freqs[v], num_freqs[v]):
+            for f in xrange(min_freqs[v], max_freqs[v]):
 
                 print 'Retrieving data for freq', f
 
