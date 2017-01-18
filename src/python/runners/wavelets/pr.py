@@ -79,6 +79,13 @@ class DTCWTPartialReconstructionRunner:
 
     def _get_num_freqs(self):
 
+        num_freqs = {} 
+
+        for v in xrange(self.num_views):
+            num_freqs[v] = max(
+                len(s_group[v]) 
+                for s_group in self.hdf5_repos.values())
+
         fns = os.listdir(self.stat_dir)
         split = [fn.split('_') for fn in fns]
         pairs = {(int(s[3]), s[5]) for s in split}

@@ -72,8 +72,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 #E4
 * First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
 
-* Maybe switch all of my intermediate serialization to h5py. Will probably be cleaner and maybe more space-efficient.
-
 ##Experiments
 * T-tests and p-values for spike in temperature vs reported symptoms
 
@@ -89,5 +87,3 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Implement view-hour-pairwise correlation
 
 * How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
-
-* Consider setting up subdirectories for different types of plots if you have several different types
