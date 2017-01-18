@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import wavelets.dtcwt as wdtcwt
 
 from data.servers.batch import BatchServer as BS
+from data.loaders.e4.utils import get_symptom_status
 from drrobert.file_io import get_timestamped as get_ts
 from linal.utils.misc import get_non_nan
 from lazyprojector import plot_lines
@@ -233,7 +234,7 @@ class DTCWTPartialReconstructionRunner:
 
         print 'Padding partial reconstructions for subject', s
 
-        s_unit = rmu.get_symptom_status(s) \
+        s_unit = get_symptom_status(s) \
             if self.avg_over_subjects else \
             None
 
@@ -280,41 +281,6 @@ class DTCWTPartialReconstructionRunner:
 
         with open(path, 'w') as f:
             np.savez(f, *[p, v, u])
-
-    def _load(self):
-
-        print 'Loading partial reconstructions'
-        for fn in os.listdir(self.pr_dir):
-            info = fn.split('_')
-            s = info[1]
-            v = int(info[3])
-            p = int(info[5])
-            sp = int(info[7])
-            path = os.path.join(self.pr_dir, fn)
-            prs = None
-
-            with open(path) as f:
-                loaded = {int(h_fn.split('_')[1]) : a
-                          for (h_fn, a) in np.load(f).items()}
-                prs = [loaded[i] 
-                       for i in xrange(len(loaded))]
-
-            self.prs[s][p][sp][v] = prs
-
-        self.num_freqs = [len(self.prs.values()[0][0][0][i])
-                          for i in xrange(self.num_views)]
-
-    def _save(self, prs, s, v, p, sp):
-
-        fname = '_'.join([
-            'subject', s,
-            'view', str(v),
-            'period', str(p),
-            'subperiod', str(sp)])
-        path = os.path.join(self.pr_dir, fname)
-
-        with open(path, 'w') as f:
-            np.savez(f, *prs)
 
     def _get_pp_freq(self, freq, pp):
         
