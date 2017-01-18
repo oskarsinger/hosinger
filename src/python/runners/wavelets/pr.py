@@ -1,4 +1,5 @@
 import os
+import h5py
 import matplotlib
 
 matplotlib.use('Cairo')
@@ -107,14 +108,12 @@ class DTCWTPartialReconstructionRunner:
         else:
             self.save_load_dir = save_load_dir
 
-        self.pr_dir = rmu.init_dir(
-            'pr',
-            save,
-            self.save_load_dir)
-        self.stat_dir = rmu.init_dir(
-            'stats',
-            save,
-            self.save_load_dir)
+        hdf5_path = os.path.join(
+            self.save_load_dir, 'pr.hdf5')
+
+        self.hdf5_repo = h5py.File(
+            hdf5_path,
+            'w' if save else 'r')
         self.plot_dir = rmu.init_dir(
             'plots',
             show,
@@ -248,26 +247,14 @@ class DTCWTPartialReconstructionRunner:
 
     def _load_stats(self, v, f):
 
-        is_v = lambda fn: 'view_' + str(v) in fn
-        is_f = lambda fn: 'frequency_' + str(f) in fn
-        fns = os.listdir(self.stat_dir)
-        vf_fns = [fn for fn in fns
-                  if is_v(fn) and is_f(fn)]
         stats = {s[-2:] : None for s in self.subjects}
 
-        for fn in vf_fns:
-            info = fn.split('_')
-            s = info[1]
-            path = os.path.join(self.stat_dir, fn)
+        for (s, s_group) in self.hdf5_repo.items():
+            svf = s_group[str(v)][str(f)]
+            (p, v) = (svf['p'][:,:], svf['v'][:,:])
+            u = svf.attrs['u']
 
-            if s in self.subjects:
-                with open(path) as f:
-                    loaded = {int(h_fn.split('_')[1]) : a
-                              for (h_fn, a) in np.load(f).items()}
-                    x = loaded[0]
-                    y = loaded[1]
-                    u = loaded[2]
-                    stats[s] = (x, y, u)
+            stats[s] = (p, v, u)
         
         return stats
 
@@ -277,10 +264,27 @@ class DTCWTPartialReconstructionRunner:
             'subject', s,
             'view', str(i),
             'frequency', str(f)])
-        path = os.path.join(self.stat_dir, fname)
+        path = os.path.join(self.pr_dir, fname)
 
-        with open(path, 'w') as f:
-            np.savez(f, *[p, v, u])
+        if s not in self.hdf5_repo:
+            self.hdf5_repo.create_group(s)
+
+        s_group = self.hdf5_repo[s]
+        i_str = str(i)
+
+        if i_str not in s_group:
+            s_group.create_group(i_str)
+
+        i_group = s_group[i_str]
+        f_str = str(f)
+
+        i_group.create_group(f_str)
+
+        f_group = i_group[f_str]
+
+        f_group.create_dataset('p', data=p)
+        f_group.create_dataset('v', data=v)
+        f_group.attrs['u'] = u
 
     def _get_pp_freq(self, freq, pp):
         
