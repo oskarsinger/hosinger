@@ -30,7 +30,7 @@ class DTCWTPartialReconstructionRunner:
         wavelets=None,
         avg_over_periods=False,
         avg_over_subjects=False,
-        num_plot_periods=None):
+        num_plot_periods=1):
 
         self.missing = False if avg_over_subjects else missing
         self.complete = True if avg_over_subjects else complete
