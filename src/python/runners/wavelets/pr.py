@@ -9,14 +9,13 @@ import pandas as pd
 import seaborn as sns
 import utils as rmu
 import matplotlib.pyplot as plt
-import wavelets.dtcwt as wdtcwt
 
 from data.servers.batch import BatchServer as BS
 from data.loaders.e4.utils import get_symptom_status
 from drrobert.file_io import get_timestamped as get_ts
 from linal.utils.misc import get_non_nan
 from lazyprojector import plot_lines
-from wavelets.dtcwt.utils import get_partial_reconstructions as get_pr
+from wavelets.dtcwt.oned import get_partial_reconstructions as get_pr
 
 class DTCWTPartialReconstructionRunner:
 

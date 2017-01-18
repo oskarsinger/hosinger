@@ -2,6 +2,35 @@ import numpy as np
 
 import filters
 
+def get_partial_reconstructions(
+    Yh, Yl, biorthognal, qshift):
+
+    prs = []
+    Ylz = np.zeros_like(Yl)
+    mask = np.zeros((1,len(Yh)))
+
+    for i in xrange(len(Yh)):
+        mask = mask * 0
+        mask[0,i] = 1
+        pr = dtwaveifm(
+            Ylz,
+            Yh,
+            biorthogonal,
+            qshift,
+            gain_mask=mask)
+        
+        prs.append(pr)
+
+    Yl_pr = dtwaveifm(
+        Yl,
+        Yh,
+        biorthogonal,
+        qshift,
+        gain_mask=mask * 0)
+    prs.append(Yl_pr)
+
+    return prs
+
 def dtwavexfm(
     X, nlevels, biorthogonal, q_shift):
 
