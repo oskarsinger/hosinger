@@ -89,3 +89,5 @@ NOTE: This will have to wait until winter break or next semester probably.
 * Implement view-hour-pairwise correlation
 
 * How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
+
+* Consider setting up subdirectories for different types of plots if you have several different types
