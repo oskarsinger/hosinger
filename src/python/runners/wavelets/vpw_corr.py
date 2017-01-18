@@ -446,10 +446,10 @@ class ViewPairwiseCorrelationRunner:
 	    spud = self.correlation[s]
 	    sympt = get_symptom_status(s)
 
-            if sympt in count:
-                count[sympt] += 1
+            if sympt in counts:
+                counts[sympt] += 1
             else:
-                count[sympt] = 1
+                counts[sympt] = 1
 
             print 'Producing timelines for subject', s
 
@@ -469,7 +469,7 @@ class ViewPairwiseCorrelationRunner:
 
 		    if sympt in current:
 			current[sympt] = get_running_avg(
-                            current[sympt], timeline, count[sympt])
+                            current[sympt], timeline, counts[sympt])
 		    else:
 			current[sympt] = timeline
 		else:
