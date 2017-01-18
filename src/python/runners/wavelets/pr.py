@@ -64,6 +64,7 @@ class DTCWTPartialReconstructionRunner:
             num_plot_periods *= max(self.num_periods)
 
         self.num_plot_periods = num_plot_periods
+        print 'self.num_plots_periods', self.num_plots_periods
         self.prs = rmu.get_wavelet_storage(
             self.num_views,
             self.num_subperiods,
