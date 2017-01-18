@@ -251,6 +251,7 @@ class DTCWTPartialReconstructionRunner:
         print 'type(f)', type(f), 'f', f
 
         for (s, s_group) in self.hdf5_repo.items():
+            print 's_group.values()', s_group.values()
             v_group = s_group.values()[v]
             f_group = v_group.values()[f]
             (p, v) = (f_group['p'][:,:], f_group['v'][:,:])
