@@ -224,7 +224,7 @@ class DTCWTPartialReconstructionRunner:
 		for a in fig.axes[1:]:
 		    a.legend_.remove()
 
-                fig.subplots_adjust(vspace=0)
+                #fig.subplots_adjust(vspace=0)
                 fig.savefig(path, format='png')
                 sns.plt.clf()
 
