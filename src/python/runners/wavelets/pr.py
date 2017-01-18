@@ -249,9 +249,10 @@ class DTCWTPartialReconstructionRunner:
         stats = {s[-2:] : None for s in self.subjects}
 
         for (s, s_group) in self.hdf5_repo.items():
-            svf = s_group[str(v)][str(f)]
-            (p, v) = (svf['p'][:,:], svf['v'][:,:])
-            u = svf.attrs['u']
+            v_group = s_group[str(v)]
+            f_group = v_group[str(f)]
+            (p, v) = (f_group['p'][:,:], f_group['v'][:,:])
+            u = f_group.attrs['u']
 
             stats[s] = (p, v, u)
         
