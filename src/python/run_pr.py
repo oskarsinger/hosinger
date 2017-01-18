@@ -14,7 +14,7 @@ from runners.wavelets import MVDTCWTRunner
 @click.option('--show', default=False)
 @click.option('--avg-over-periods', default=False)
 @click.option('--avg-over-subjects', default=False)
-@click.option('--num-plot-periods', default=None)
+@click.option('--num-plot-periods', default=1)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
@@ -36,9 +36,6 @@ def run_it_all_day_bb(
 
     if not show:
         dtcwt_runner.run()
-
-    if num_plot_periods is not None:
-        num_plot_periods = int(num_plot_periods)
 
     runner = DTCWTPRR(
         dtcwt_runner,
