@@ -195,7 +195,7 @@ class DTCWTPartialReconstructionRunner:
 
                 for pp in xrange(self.num_plot_periods):
                     ax = fig.add_subplot(
-                        1, self.num_plot_periods1, pp + 1)
+                        1, self.num_plot_periods, pp + 1)
 
                     pp_freq = self._get_pp_freq(freq, pp)
                     unit_name = 'Symptomatic?' \
