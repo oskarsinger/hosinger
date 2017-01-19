@@ -167,9 +167,6 @@ class DTCWTPartialReconstructionRunner:
         for v in xrange(self.num_views):
             print 'Generating plots for view', v
 
-            print 'min_freqs[v]', min_freqs[v]
-            print 'max_freqs[v]', max_freqs[v]
-
             for f in xrange(min_freqs[v], max_freqs[v]):
 
                 print 'Retrieving data for freq', f
@@ -198,7 +195,7 @@ class DTCWTPartialReconstructionRunner:
 
                 for pp in xrange(self.num_plot_periods):
                     ax = fig.add_subplot(
-                        1, self.num_plot_periods, pp + 1)
+                        self.num_plot_periods, 1, pp + 1)
 
                     pp_freq = self._get_pp_freq(freq, pp)
                     unit_name = 'Symptomatic?' \
@@ -221,7 +218,10 @@ class DTCWTPartialReconstructionRunner:
 
                 fig.axes[0].set_title(title)
                 plt.setp(
-                    [a.get_yticklabels() for a in fig.axes[1:]],
+                        [a.get_xticklabels() for a in fig.axes[:-1]],
+                    visible=False)
+                plt.setp(
+                    [a.get_yticklabels() for a in fig.axes],
                     visible=False)
 
 		for a in fig.axes[1:]:

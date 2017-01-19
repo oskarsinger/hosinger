@@ -84,7 +84,11 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Do vertically stacked plots for CCA components instead of plots of vertically stacked components
 
-* Implement view-hour-pairwise correlation
+* Produce some autocorrelation plots for the E4 data.
+
+* Try cubic spline interpolation.
+
+* Run the online CCA and the static CCA on the cortisol and melatonin data.
 
 * How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
 
