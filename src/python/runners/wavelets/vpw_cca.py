@@ -112,7 +112,7 @@ class ViewPairwiseCCARunner:
         get_path = lambda n: os.path.join(
             self.save_load_dir, n)
         hdf5_paths = {n : get_path(n) for n in self.cca_names}
-        self.hdf5_repos = {n : h5py.File(p, 'w' if save else 'r'
+        self.hdf5_repos = {n : h5py.File(p, 'w' if save else 'r')
                            for p in hdf5_paths}
         self.plot_dir = rmu.init_dir(
             'plots',
