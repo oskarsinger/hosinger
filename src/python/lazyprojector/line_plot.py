@@ -42,7 +42,9 @@ def plot_lines(
         unit=unit,
         data=df,
         ax=ax,
-        estimator=np.nanmean)
+        estimator=np.nanmean,
+        err_style='ci_bars',
+        interpolate=False)
 
     ax.set_title(title)
 
