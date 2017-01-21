@@ -96,6 +96,7 @@ class ViewPairwiseCorrelationRunner:
             show,
             self.plot_dir)
 
+        """
         subperiod_dir = rwu.init_dir(
             'subperiod',
             show,
@@ -110,6 +111,7 @@ class ViewPairwiseCorrelationRunner:
                 subperiod_dir)
 
             self.subperiod_dirs.append(sp_i_dir)
+        """
 
     def _compute(self):
 
