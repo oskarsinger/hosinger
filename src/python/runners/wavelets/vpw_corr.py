@@ -39,6 +39,7 @@ class ViewPairwiseCorrelationRunner:
 
         self.wavelets = dtcwt_runner.wavelets \
 		if wavelets is None else wavelets
+        self.num_subperiods = dtcwt_runner.num_sps
 	self.subjects = self.wavelets.keys()
         self.names = dtcwt_runner.names
         self.names2indices = {name : i 
@@ -48,7 +49,6 @@ class ViewPairwiseCorrelationRunner:
 			    for s in self.subjects}
 	self.max_periods = max(self.num_periods.values())
 
-        self.num_subperiods = dtcwt_runner.num_sps
         self.correlation = {s : SPUD(self.num_views)
                             for s in self.subjects}
 
