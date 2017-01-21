@@ -4,7 +4,6 @@ import os
 import numpy as np
 import wavelets.dtcwt as dtcwt
 
-from data.loaders.readers.from_num import get_array_as_is as get_aai
 from drrobert.file_io import get_timestamped as get_ts
 from wavelets.dtcwt.oned import get_partial_reconstructions as get_pr
 from linal.utils.misc import get_array_mod
@@ -27,10 +26,11 @@ class WaveletMask:
         self.hertz = self.ds.get_status()['data_loader'].get_status()['hertz']
         self.max_freqs = max_freqs
         self.save_load_path = save_load_path
-        self.get_pr = pr
+        self.get_pr = get_pr
         self.load = load
         self.save = save
 
+        self.pr = self.get_pr is not None
         self.window = int(self.period * self.hertz)
         self.num_freqs = min([
             int(log(self.window, 2)) - 1,
@@ -70,8 +70,8 @@ class WaveletMask:
             for i in xrange(len(self.hdf5_repo)):
                 group = self.hdf5_repo[str(i)]
                 num_Yh = len(group) - 1
-                Yh = [get_aai(group['Yh_' + str(j)]) for j in xrange(num_Yh)]
-                Yl = get_aai(group['Yl'])
+                Yh = [np.array(group['Yh_' + str(j)]) for j in xrange(num_Yh)]
+                Yl = np.array(group['Yl'])
 
                 wavelets.insert((Yh, Yl))
         else:
@@ -134,6 +134,7 @@ class WaveletMask:
             'hdf5_repo': self.hdf5_repo}
 
         for (k, v) in self.ds.get_status():
-            new_status[k] = v
+            if k not in new_status:
+                new_status[k] = v
 
         return new_status
