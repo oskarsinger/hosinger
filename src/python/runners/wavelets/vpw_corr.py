@@ -8,8 +8,8 @@ import numpy as np
 import seaborn as sns
 import utils as rwu
 import matplotlib.pyplot as plt
-import matplotlib.animation as man
 
+from matplotlib.animation import FFMpegWriter
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
@@ -216,19 +216,23 @@ class ViewPairwiseCorrelationRunner:
     def _get_movie_plot(self, s, v1, v2, periods):
 
         # TODO: pick a good fps
-        FFMpegWriter = man.writers['ffmpeg']
         writer = FFMpegWriter(fps=1)
         fig = plt.figure()
-        get_plot = lambda c, a, sp: self._get_correlation_plot(
+        get_plot = lambda c, a, sp, p: self._get_correlation_plot(
             c, v1, v2, p, sp, a)
+        num_frames = self.num_periods[s] * self.num_subperiods
+        filename = 'views_' + self.names[v1] + '-' + self.names[v2] + '.mp4'
+        path = os.path.join(
+            self.full_time_dir, filename)
 
-        for (p, subperiods) in enumerate(periods):
-            # TODO: add frame to indicate end of 24-hour period
+        with writer.saving(fig, path, num_frames):
+            for (p, subperiods) in enumerate(periods):
+                # TODO: add frame to indicate end of 24-hour period
 
-            for (sp, corr) in enumerate(subperiods):
-                plot = get_plot(corr, fig.axes()) 
+                for (sp, corr) in enumerate(subperiods):
+                    plot = get_plot(corr, fig.axes(), sp, p)
 
-                writer.grab_frame()
+                    writer.grab_frame()
 
     def _get_correlation_plot(self, c, p, sp, v1, v2, ax):
 
