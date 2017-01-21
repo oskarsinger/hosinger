@@ -25,13 +25,11 @@ class ViewPairwiseCorrelationRunner:
 	wavelets=None,
         save=False,
         load=False,
-        show=False,
-	avg_over_subjects=False):
+        show=False):
 
         self.save = save
         self.load = load
         self.show = show
-	self.avg_over_subjects = avg_over_subjects
 
         self._init_dirs(
             save, 
@@ -49,10 +47,6 @@ class ViewPairwiseCorrelationRunner:
         self.num_periods = {s : len(self.wavelets[s])
 			    for s in self.subjects}
 	self.max_periods = max(self.num_periods.values())
-
-	if self.avg_over_subjects:
-	    self.subjects = {s for (s, np) in self.num_periods.items()
-			     if np == self.max_periods}
 
         self.num_subperiods = dtcwt_runner.num_sps
         self.correlation = {s : SPUD(self.num_views)
@@ -184,7 +178,7 @@ class ViewPairwiseCorrelationRunner:
             v_group.create_group(p_string)
 
         p_group = v_group[p_string]
-        sp_string = str(s`p)
+        sp_string = str(sp)
 
         p_group.create_dataset(sp_string, data=c)
 
