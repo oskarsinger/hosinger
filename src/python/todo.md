@@ -82,7 +82,7 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Produce some autocorrelation plots for the E4 data.
 
-* Try cubic spline interpolation.
+* Try the cubic interpolation data mask you made.
 
 * Run the online CCA and the static CCA on the cortisol and melatonin data.
 
