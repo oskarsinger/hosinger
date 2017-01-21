@@ -8,7 +8,7 @@ import numpy as np
 import seaborn as sns
 import utils as rwu
 import matplotlib.pyplot as plt
-import matplotlib.animations as man
+import matplotlib.animation as man
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
