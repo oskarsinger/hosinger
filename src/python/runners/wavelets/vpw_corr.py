@@ -53,10 +53,7 @@ class ViewPairwiseCorrelationRunner:
 			     if np == self.max_periods}
 
         self.num_subperiods = dtcwt_runner.num_sps
-
-        default = lambda: [[] for i in xrange(self.num_subperiods)]
-
-        self.correlation = {s : SPUD(self.num_views, default=default)
+        self.correlation = {s : SPUD(self.num_views)
                             for s in self.subjects}
 
     def run(self):
@@ -179,13 +176,14 @@ class ViewPairwiseCorrelationRunner:
     def _load(self):
 
         for (s, spud) in self.correlation.items():
-            for (k, subperiods) in spud.items():
-                for sp in xrange(self.num_subperiods):
-                    subperiods[sp] = [None] * self.num_periods[s] 
+            for k in spud.keys():
+                l_of_l = [[None] * self.num_subperiods
+                          for i in xrange(self.num_periods[s])]
+
+                spud.insert(k[0], k[1], l_of_l)
                 
         for s in self.subjects:
             s_group = self.hdf5_repo[s]
-            print 'Loading corr for subject', s
 
             for (k_str, sp_group) in s_group.items():
                 vs = [int(v) for v in k_str.split('-')]
@@ -197,13 +195,28 @@ class ViewPairwiseCorrelationRunner:
                         sp = int(sp_str)
                         corr = np.array(corr)
                         
-            	        self.correlation[s].get(vs[0], vs[1])[sp][p] = corr
+            	        self.correlation[s].get(vs[0], vs[1])[p][sp] = corr
 
+    # TODO: consider getting rid of load and just working directly from hdf5 repo
     def _plot_movie(self):
 
-        print 'Poop'
+        # TODO: figure out how to set up movie
 
-    def _plot_correlation_matrix(self, corr, view1, view2, ax):
+        for (s, spud) in self.correlation.items():
+            for (vp, periods) in spud.items():
+                (v1, v2) = vp
+                get_plot = lambda c, a: self._get_correlation_plot(
+                    c, v1, v2, a)
+
+                for (sp, subperiods) in periods:
+                    # TODO: add frame to indicate end of 24-hour period
+                    # TODO: figure out what to assign to ax
+                    ax = something
+                    plots = [get_plot(c, ax) 
+                             for c in subperiods]
+                    # TODO: figure out how to add plots to movie
+
+    def _get_correlation_plot(self, corr, view1, view2, ax):
 
         (n, p) = corr.shape
         x_labels = ['2^{:02i}'.format(i) 
