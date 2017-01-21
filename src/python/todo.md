@@ -91,4 +91,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Make correlation plot movie
 
-* Separate and vertically stack the plots by subject.
+* Separate plots by subject.
+    * Vertically stack line plots by subject.
+    * How to show subject-wise correlation plots.
