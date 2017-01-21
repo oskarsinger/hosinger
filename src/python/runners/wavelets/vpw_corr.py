@@ -8,7 +8,7 @@ import numpy as np
 import seaborn as sns
 import utils as rwu
 import matplotlib.pyplot as plt
-import matplotlib.animation.writers as maw
+import matplotlib.animations as man
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
@@ -216,7 +216,7 @@ class ViewPairwiseCorrelationRunner:
     def _get_movie_plot(self, s, v1, v2, periods):
 
         # TODO: pick a good fps
-        FFMpegWriter = maw['ffmpeg']
+        FFMpegWriter = man.writers['ffmpeg']
         writer = FFMpegWriter(fps=1)
         fig = plt.figure()
         get_plot = lambda c, a, sp: self._get_correlation_plot(
