@@ -10,6 +10,7 @@ import utils as rmu
 from drrobert.misc import unzip
 from drrobert.file_io import get_timestamped as get_ts
 from data.servers.batch import BatchServer as BS
+from data.servers.masks import Interp1DMask as I1DM
 from data.loaders.readers.from_num import get_array_as_is as get_aai
 from linal.utils.misc import get_non_nan
 from wavelets import dtcwt
@@ -24,12 +25,14 @@ class MVDTCWTRunner:
         subperiod=3600,
         max_freqs=10,
         dataset='e4',
+        interpolate=False,
         save_load_dir=None, 
         save=False,
         load=False):
 
         self.data_path = data_path
         self.dataset = dataset
+        self.interpolate = interpolate
         self.period = period
         self.subperiod = subperiod
         self.max_freqs = max_freqs
@@ -90,6 +93,9 @@ class MVDTCWTRunner:
                     data = [dl.get_data() for dl in dl_list]
 
                 self.servers[s] = [BS(dl) for dl in dl_list]
+
+                if self.interpolate:
+                    self.servers[s] = [I1DM(s) for s in self.servers[s]]
             except Exception, e:
                 print 'Could not load data for subject', s
                 print e
