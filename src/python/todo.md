@@ -78,10 +78,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 ##Visualization
 * Show correlation of the partial reconstructions maybe?
 
-* Currently just putting the same frequency, same view, different subjects on same plot. Could my analysis efforts benefit from different grouping?
-
-* How do I show that the multiview is more informative? Should I start computing plots for more than just HR and ACC?
-
 * Do vertically stacked plots for CCA components instead of plots of vertically stacked components
 
 * Produce some autocorrelation plots for the E4 data.
@@ -90,7 +86,9 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Run the online CCA and the static CCA on the cortisol and melatonin data.
 
-* How can I abstract away the awkward nested iteration for the correlation analysis? May not be possible.
-
 * In general, work on speeding up these tools. They are pretty slow right now, and I could probably take more advantage of numpy's performance improvements by doing more reshaping and less looping, etc.
     * Should I just server up the full, concatenate dataset, without period-wise separation, then use numpy operations to do all the averaging and such? Probalby can clean-up/speed-up that way. Worry about that later.
+
+* Make correlation plot movie
+
+* Separate and vertically stack the plots by subject.
