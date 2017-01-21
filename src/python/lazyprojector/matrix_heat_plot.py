@@ -21,57 +21,42 @@ def plot_matrix_heat(
     val_name,
     vmax=None,
     vmin=None,
-    do_phase=False):
+    ax=None):
 
     (n, m) = value_matrix.shape
-    value_matrices = None
-    ps = []
 
-    if np.any(np.iscomplex(value_matrix)):
-        value_matrices = {
-            'magnitude': np.absolute(value_matrix)}
-
-        if do_phase:
-            value_matrices['phase'] = np.angle(value_matrix)
-    else:
-        value_matrices = {
-            'magnitude': value_matrix}
-
-    plots = []
-
-    for k, matrix in value_matrices.items():
-        (n, p) = matrix.shape
-        source = _populate_data_source(
-            matrix, 
-            x_labels, 
-            y_labels,
-            x_name,
-            y_name,
-            val_name)
+    if ax is None:
         ax = plt.axes()
-        plot = sns.heatmap(
-            source,
-            ax=ax,
-            vmax=vmax,
-            vmin=vmin)
 
-        if n > 10:
-            plot.yticklabels = n / 5
+    (n, p) = value_matrix.shape
+    source = _populate_data_source(
+        value_matrix, 
+        x_labels, 
+        y_labels,
+        x_name,
+        y_name,
+        val_name)
+    plot = sns.heatmap(
+        source,
+        ax=ax,
+        vmax=vmax,
+        vmin=vmin)
 
-        if p > 10:
-            plot.xticklabels = p / 5
+    if n > 10:
+        plot.yticklabels = n / 5
 
-        ax.set_title(title + ' ' + k)
+    if p > 10:
+        plot.xticklabels = p / 5
 
-        for label in plot.get_yticklabels():
-            label.set_rotation(45)
+    ax.set_title(title)
 
-        for label in plot.get_xticklabels():
-            label.set_rotation(45)
+    for label in plot.get_yticklabels():
+        label.set_rotation(45)
 
-        plots.append(plot)
-        
-    return plots
+    for label in plot.get_xticklabels():
+        label.set_rotation(45)
+
+    return plot
 
 def _populate_data_source(
     value_matrix, 
