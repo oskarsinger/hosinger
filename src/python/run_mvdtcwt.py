@@ -8,6 +8,7 @@ from runners.wavelets import MVDTCWTRunner
 @click.option('--subperiod', default=3600)
 @click.option('--max-freqs', default=10)
 @click.option('--dataset', default='e4')
+@click.option('--interpolate', default=False)
 @click.option('--save-load-dir', default='.')
 @click.option('--save', default=False)
 @click.option('--load', default=False)
@@ -17,6 +18,7 @@ def run_it_all_day_bb(
     subperiod,
     max_freqs,
     dataset,
+    interpolate,
     save_load_dir,
     save,
     load):
@@ -27,6 +29,7 @@ def run_it_all_day_bb(
         subperiod=subperiod,
         max_freqs=max_freqs,
         dataset=dataset,
+        interpolate=interpolate,
         save_load_dir=save_load_dir,
         save=save,
         load=load)
