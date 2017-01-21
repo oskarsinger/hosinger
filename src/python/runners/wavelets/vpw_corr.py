@@ -7,6 +7,8 @@ matplotlib.use('Cairo')
 import numpy as np
 import seaborn as sns
 import utils as rwu
+import matplotlib.pyplot as plt
+import matplotlib.animation.writers as maw
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
@@ -64,13 +66,7 @@ class ViewPairwiseCorrelationRunner:
             self._compute()
 
         if self.show:
-            self._show_corr_over_time()
-
-            self._show_corr_over_periods()
-            self._show_corr_over_subperiods()
-
-            self._show_corr_mean_over_periods()
-            self._show_corr_mean_over_subperiods()
+            self._show()
 
     def _init_dirs(self, 
         save, 
@@ -101,6 +97,25 @@ class ViewPairwiseCorrelationRunner:
             'plots',
             show,
             self.save_load_dir) 
+        self.full_time_dir = rwu.init_dir(
+            'full-time',
+            show,
+            self.plot_dir)
+
+        subperiod_dir = rwu.init_dir(
+            'subperiod',
+            show,
+            self.plot_dir)
+
+        self.subperiod_dirs = []
+
+        for i in xrange(self.num_subperiods):
+            sp_i_dir = rwu.init_dir(
+                'sp-' + str(i),
+                show,
+                subperiod_dir)
+
+            self.subperiod_dirs.append(sp_i_dir)
 
     def _compute(self):
 
@@ -198,23 +213,24 @@ class ViewPairwiseCorrelationRunner:
             	        self.correlation[s].get(vs[0], vs[1])[p][sp] = corr
 
     # TODO: consider getting rid of load and just working directly from hdf5 repo
-    def _plot_movie(self):
+    def _get_movie_plot(self, s, v1, v2, periods):
 
-        # TODO: figure out how to set up movie
+        # TODO: pick a good fps
+        FFMpegWriter = maw['ffmpeg']
+        writer = FFMpegWriter(fps=15)
+        fig = plt.figure()
+        get_plot = lambda c, a: self._get_correlation_plot(
+            c, v1, v2, a)
 
-        for (s, spud) in self.correlation.items():
-            for (vp, periods) in spud.items():
-                (v1, v2) = vp
-                get_plot = lambda c, a: self._get_correlation_plot(
-                    c, v1, v2, a)
+        for (p, subperiods) in enumerate(periods):
+            # TODO: add frame to indicate end of 24-hour period
 
-                for (sp, subperiods) in periods:
-                    # TODO: add frame to indicate end of 24-hour period
-                    # TODO: figure out what to assign to ax
-                    ax = something
-                    plots = [get_plot(c, ax) 
-                             for c in subperiods]
-                    # TODO: figure out how to add plots to movie
+            for (sp, corr) in enumerate(subperiods):
+                # TODO: figure out what to assign to ax
+                ax = something
+                plot = get_plot(corr, ax) 
+
+                writer.grab_frame()
 
     def _get_correlation_plot(self, corr, view1, view2, ax):
 
