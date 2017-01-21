@@ -212,36 +212,48 @@ class ViewPairwiseCorrelationRunner:
                         
             	        self.correlation[s].get(vs[0], vs[1])[p][sp] = corr
 
+    def _show(self):
+
+        for (s, spud) in self.correlation.items():
+            for ((v1, v2), periods) in spud.items():
+                m_plot = self._get_movie_plot(s, v1, v2, periods)
+
     # TODO: consider getting rid of load and just working directly from hdf5 repo
     def _get_movie_plot(self, s, v1, v2, periods):
 
         # TODO: pick a good fps
         FFMpegWriter = maw['ffmpeg']
-        writer = FFMpegWriter(fps=15)
+        writer = FFMpegWriter(fps=1)
         fig = plt.figure()
-        get_plot = lambda c, a: self._get_correlation_plot(
-            c, v1, v2, a)
+        get_plot = lambda c, a, sp: self._get_correlation_plot(
+            c, v1, v2, p, sp, a)
 
         for (p, subperiods) in enumerate(periods):
             # TODO: add frame to indicate end of 24-hour period
 
             for (sp, corr) in enumerate(subperiods):
-                # TODO: figure out what to assign to ax
-                ax = something
-                plot = get_plot(corr, ax) 
+                plot = get_plot(corr, fig.axes()) 
 
                 writer.grab_frame()
 
-    def _get_correlation_plot(self, corr, view1, view2, ax):
+    def _get_correlation_plot(self, c, p, sp, v1, v2, ax):
 
-        (n, p) = corr.shape
+        (m, n) = corr.shape
         x_labels = ['2^{:02i}'.format(i) 
-                    for i in xrange(p)]
-        y_labels = ['2^{:02i}'.format(i)
                     for i in xrange(n)]
-        title = 'Correlation of '
-        x_name = 'Subsampling rate for view ' + self.names[view2]
-        y_name = 'Subsampling rate for view ' + self.names[view1]
+        y_labels = ['2^{:02i}'.format(i)
+                    for i in xrange(m)]
+        title = ' '.join([
+            'Frequency component correlation of view',
+            str(v1),
+            'vs',
+            str(v2),
+            'for subperiod',
+            str(sp),
+            'of period',
+            str(p)]
+        x_name = 'Subsampling rate for view ' + self.names[v2]
+        y_name = 'Subsampling rate for view ' + self.names[v1]
         val_name = 'Pearson correlation'
 
         fn = '_'.join(title.split()) + '.pdf'
