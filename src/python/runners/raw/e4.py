@@ -10,18 +10,18 @@ import data.loaders.shortcuts as dlstcts
 import data.loaders.e4.utils as e4u
 
 from data.servers.batch import BatchServer as BS
+from data.servers.masks import Interp1DMask as I1DM
 from lazyprojector import plot_lines
 from drrobert.ts import get_dt_index
+from drrobert.file_io import get_timestamped as get_ts
 
 class E4RawDataPlotRunner:
 
     def __init__(self, 
         hdf5_path,
+        save_dir,
         period=24*3600,
-        missing=False,
-        complete=False,
-        std=False,
-        avg_over_subjects=False,
+        interpolate=False,
         hsx=True,
         lsx=True,
         w=False,
@@ -29,14 +29,28 @@ class E4RawDataPlotRunner:
 
         self.hdf5_path = hdf5_path
         self.period = period
-        self.missing = missing
-        self.complete = complete
-        self.std = std
-        self.avg_over_subjects = avg_over_subjects
+        self.interpolate = interpolate
         self.hsx = hsx
         self.lsx = lsx
         self.w = w
         self.u = u
+
+        subdir = get_ts('_'.join([
+            'period',
+            str(period),
+            'interpolate',
+            str(interpolate),
+            'hsx',
+            str(hsx),
+            'lsx',
+            str(lsx),
+            'w',
+            str(w),
+            'u',
+            str(u)]))
+        
+        self.save_dir = os.path.join(
+            save_dir, subdir)
 
         self.valid_sympts = set()
 
@@ -52,12 +66,14 @@ class E4RawDataPlotRunner:
         if self.u:
             self.valid_sympts.add('U')
 
-        self.name = 'Std' if self.std else 'Mean'
-
         self.loaders = dlstcts.get_e4_loaders_all_subjects(
             hdf5_path, None, False)
         self.servers = {s: [BS(dl) for dl in dls]
                         for (s, dls) in self.loaders.items()}
+        
+        if self.interpolate:
+            self.servers = {s : [I1DM(ds) for ds in dss]
+                            for (s, dss) in self.servers.items()}
 
         sample_dls = self.loaders.values()[0]
 
@@ -66,53 +82,50 @@ class E4RawDataPlotRunner:
                       for dl in sample_dls]
         self.names = [dl.name()
                       for dl in sample_dls]
-        self.subjects = {s for s in self.servers.keys()[:4]
+        self.subjects = {s for s in self.servers.keys()
                          if e4u.get_symptom_status(s) in self.valid_sympts}
 
     def run(self):
 
         ys = self._get_ys()
-        unit_name = 'Symptomatic?' \
-            if self.avg_over_subjects else \
-            None
-        get_s_unit = lambda s: e4u.get_symptom_status(s) \
-            if self.avg_over_subjects else \
-            None
-        s_units = {s : get_s_unit(s)
-                   for s in self.subjects}
 
         for (v, ys_v) in enumerate(ys):
+            fig = plt.figure()
+
+            for (i, (s, y)) in enumerate(ys_v.items()):
+                ax = fig.add_subplot(
+                    len(ys_v), 1, i+1)
+                data_map = {s : (
+                    self._get_x(y.shape[0], v, s), 
+                    y, 
+                    None)}
+
+                plot_lines(
+                    data_map,
+                    'period', 
+                    'value', 
+                    '',
+                    unit_name='Subject',
+                    ax=ax)
+
             title = \
-                self.name + ' value of view ' + \
+                'Mean value of view ' + \
                 self.names[v] + \
                 ' for period length ' + \
                 str(self.period) + ' seconds'
+            filename = '_'.join(title.split()) + '.png'
+            path = os.path.join(
+                self.save_dir, filename)
 
-            if self.missing:
-                title = 'Missing only ' + \
-                    title[0].lower() + title[1:]
-            elif self.complete:
-                title = 'Complete only ' + \
-                    title[0].lower() + title[1:]
+            fig.axes[0].set_title(title)
+            plt.setp(
+                [a.get_xticklabels() for a in fig.axes[:-1]],
+                visible=False)
+            plt.setp(
+                [a.get_yticklabels() for a in fig.axes],
+                visible=False)
 
-            if self.avg_over_subjects:
-                title = title + ' avg over subjects within symptom status'
-
-            ax = plt.axes()
-            data_map = {s : (self._get_x(y.shape[0], v, s), y, s_units[s])
-                        for (s, y) in ys_v.items()}
-
-            plot_lines(
-                data_map,
-                'period', 
-                'value', 
-                title,
-                unit_name=unit_name,
-                ax=ax)
-
-            ax.get_figure().savefig(
-                '_'.join(title.split()) + '.pdf',
-                format='pdf')
+            fig.savefig(path, format='png')
             sns.plt.clf()
 
     def _get_x(self, num_rows, v, s):
@@ -128,7 +141,6 @@ class E4RawDataPlotRunner:
 
         views = [{s : None for s in self.subjects}
                  for v in xrange(self.num_views)]
-        stat = np.std if self.std else np.mean
 
         for s in self.subjects:
             dss = self.servers[s]
@@ -156,7 +168,7 @@ class E4RawDataPlotRunner:
 
                 reshaped = data.reshape(
                     (int_num_periods, window))
-                data_stats = stat(reshaped, axis=1)[:,np.newaxis]
-                views[v][s] = np.copy(data_stats)
+                means = np.mean(reshaped, axis=1)[:,np.newaxis]
+                views[v][s] = np.copy(means)
 
         return views
