@@ -223,9 +223,14 @@ class ViewPairwiseCorrelationRunner:
         get_plot = lambda c, a, sp, p: self._get_correlation_plot(
             c, v1, v2, p, sp, a)
         num_frames = self.num_periods[s] * self.num_subperiods
-        filename = 'views_' + self.names[v1] + '-' + self.names[v2] + '.mp4'
+        filename = 'views_' + \
+            self.names[v1] + \
+            '-' + \
+            self.names[v2] + \
+            '.mp4'
         path = os.path.join(
             self.full_time_dir, filename)
+        print 'path', path
 
         with writer.saving(fig, path, num_frames):
             for (p, subperiods) in enumerate(periods):
