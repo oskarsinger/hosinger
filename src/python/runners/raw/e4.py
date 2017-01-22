@@ -66,7 +66,7 @@ class E4RawDataPlotRunner:
                       for dl in sample_dls]
         self.names = [dl.name()
                       for dl in sample_dls]
-        self.subjects = {s for s in self.servers.keys()[:1]
+        self.subjects = {s for s in self.servers.keys()[:4]
                          if e4u.get_symptom_status(s) in self.valid_sympts}
 
     def run(self):
