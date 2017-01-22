@@ -1,3 +1,4 @@
+import os
 import matplotlib
 
 matplotlib.use('Cairo')
