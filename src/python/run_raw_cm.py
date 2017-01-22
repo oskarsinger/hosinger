@@ -1,6 +1,6 @@
 import click
 
-from runners.raw import E4RawDataPlotRunner as E4RDPR
+from runners.raw import CMRawDataPlotRunner as CMRDPR
 
 @click.command()
 @click.option('--data-path')
@@ -19,7 +19,7 @@ def run_things_all_day_bb(
     w,
     u):
 
-    runner = E4RDPR(
+    runner = CMRDPR(
         data_path,
         save_dir,
         period=period,
