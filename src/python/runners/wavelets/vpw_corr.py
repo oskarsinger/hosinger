@@ -9,7 +9,7 @@ import seaborn as sns
 import utils as rwu
 import matplotlib.pyplot as plt
 
-from matplotlib.animation import FFMpegWriter
+from matplotlib.animation import AVConvWriter
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
@@ -218,7 +218,7 @@ class ViewPairwiseCorrelationRunner:
     def _get_movie_plot(self, s, v1, v2, periods):
 
         # TODO: pick a good fps
-        writer = FFMpegWriter(fps=1)
+        writer = AVConvWriter(fps=1)
         fig = plt.figure()
         get_plot = lambda c, a, sp, p: self._get_correlation_plot(
             c, v1, v2, p, sp, a)
