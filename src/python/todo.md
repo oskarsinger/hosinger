@@ -84,15 +84,10 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Produce some autocorrelation plots for the E4 data.
 
-* Try the cubic interpolation data mask you made.
-
-* Run the online CCA and the static CCA on the cortisol and melatonin data.
+* Run the static CCA on the cortisol and melatonin data. What exactly is Al talking about with the dimensionality selection? What are his n and p supposed to mean?
 
 * In general, work on speeding up these tools. They are pretty slow right now, and I could probably take more advantage of numpy's performance improvements by doing more reshaping and less looping, etc.
     * Should I just server up the full, concatenate dataset, without period-wise separation, then use numpy operations to do all the averaging and such? Probalby can clean-up/speed-up that way. Worry about that later.
 
-* Make correlation plot movie
-
 * Separate plots by subject.
-    * Vertically stack line plots by subject.
     * How to show subject-wise correlation plots.
