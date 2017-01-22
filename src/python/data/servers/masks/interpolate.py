@@ -17,7 +17,7 @@ class Interp1DMask:
         non_nan_y = full_y[non_nan_indexes]
         f = IUS(non_nan_x, non_nan_y, k=3)
 
-        return f(full_x)
+        return f(full_x)[:,np.newaxis]
 
     def cols(self):
 
