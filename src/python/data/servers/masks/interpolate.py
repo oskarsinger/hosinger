@@ -1,6 +1,6 @@
 import numpy as np
 
-from scipy.interpolate import interp1d
+from scipy.interpolate import InterpolatedUnivariateSpline as IUS
 
 class Interp1DMask:
 
@@ -15,7 +15,7 @@ class Interp1DMask:
         non_nan_indexes = np.logical_not(np.isnan(full_y))
         non_nan_x = np.copy(full_x[non_nan_indexes])
         non_nan_y = full_y[non_nan_indexes]
-        f = interp1d(non_nan_x, non_nan_y, kind='cubic')
+        f = IUS(non_nan_x, non_nan_y, k=3)
 
         return f(full_x)
 
