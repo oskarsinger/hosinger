@@ -5,7 +5,7 @@ from runners.raw import CMRawDataPlotRunner as CMRDPR
 @click.command()
 @click.option('--data-path')
 @click.option('--save-dir')
-@click.option('--period', default=24*3600)
+@click.option('--period', default=8*3600)
 @click.option('--hsx', default=True)
 @click.option('--lsx', default=True)
 @click.option('--w', default=False)

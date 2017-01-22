@@ -5,7 +5,7 @@ from runners.raw import E4RawDataPlotRunner as E4RDPR
 @click.command()
 @click.option('--data-path')
 @click.option('--save-dir')
-@click.option('--period', default=24*3600)
+@click.option('--period', default=600)
 @click.option('--interpolate', default=False)
 @click.option('--hsx', default=True)
 @click.option('--lsx', default=True)
