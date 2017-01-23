@@ -43,6 +43,7 @@ class ViewPairwiseCorrelationRunner:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
+        print 'self.num_views', self.num_views
         self.num_periods = {s : len(self.wavelets[s])
 			    for s in self.subjects}
 	self.max_periods = max(self.num_periods.values())
@@ -254,7 +255,6 @@ class ViewPairwiseCorrelationRunner:
             str(sp),
             'of period',
             str(p)])
-        print 'v1', v1, 'v2', v2, 'self.names', self.names
         x_name = 'Subsampling rate for view 1 (' + self.names[v2] + ')'
         y_name = 'Subsampling rate for view 2 (' + self.names[v1] + ')'
         val_name = 'Pearson correlation'
