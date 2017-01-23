@@ -325,19 +325,6 @@ class ViewPairwiseCCA:
                         tls = cc_over_time.get(k[0], k[1])
                         p_over_time = period[index]
 
-                        if p_over_time.shape[0] < full_length:
-                            padding_l = full_length - p_over_time.shape[0]
-
-                            if index == 1:
-                                padding = np.array(
-                                    [[np.nan,np.nan]] * padding_l)
-                            else:
-                                padding = np.array(
-                                    [np.nan] * padding_l)[:,np.newaxis]
-
-                            p_over_time = np.vstack(
-                                [p_over_time, padding])
-
                         if tls[p] is None:
                             tls[p] = p_over_time
                         else:
@@ -414,47 +401,15 @@ class ViewPairwiseCCA:
                     [np.mean(tl, axis=1)[:,np.newaxis] 
                      for tl in timelines])
 
-                if self.subject_mean:
-                    tl_shape = timeline.shape
-                    avg_shape = means[status].get(k[0], k[1]).shape
-
-                    if tl_shape == avg_shape:
-                        count = counts[status].get(k[0], k[1]) + 1
-                        counts[status].insert(
-                            k[0], k[1], count)
-
-                        avg = get_ra(
-                            means[status].get(k[0], k[1]),
-                            timeline,
-                            count)
-
-                        means[status].insert(
-                            k[0], k[1], avg)
-                else:
-                    (y_labels, x_labels) = self._get_labels(
-                        k[0], k[1], self.num_periods[s])
-                    title = 'View-pairwise mean-over-hours cca' + \
-                        ' over days for views ' + \
-                        self.names[k[0]] + ' ' + self.names[k[1]] + \
-                        ' of subject ' + s
-
-                    self._matrix_plot_save_clear(
-                        timeline,
-                        x_labels,
-                        y_labels,
-                        title,
-                        'day')
-
-        for (status, spud) in means.items():
-            for (k, avg) in spud.items():
                 (y_labels, x_labels) = self._get_labels(
                     k[0], k[1], self.num_periods[s])
-                title = status + ' view-pairwise mean-over-hours' + \
-                    ' cca over days for views ' + \
-                    self.names[k[0]] + ' ' + self.names[k[1]]
+                title = 'View-pairwise mean-over-hours cca' + \
+                    ' over days for views ' + \
+                    self.names[k[0]] + ' ' + self.names[k[1]] + \
+                    ' of subject ' + s
 
                 self._matrix_plot_save_clear(
-                    avg,
+                    timeline,
                     x_labels,
                     y_labels,
                     title,
@@ -493,85 +448,6 @@ class ViewPairwiseCCA:
                         y_labels,
                         title,
                         'hour')
-
-    def _show_cca_mean_over_periods(self):
-
-        means = None
-        counts = None
-
-        if self.subject_mean:
-            keys = {rmu.get_symptom_status(s)
-                    for s in self.subjects}
-            means = {k: SPUD(self.num_views, no_double=True)
-                     for k in keys}
-            counts = {k: SPUD(
-                        self.num_views, 
-                        default=lambda:0, 
-                        no_double=True)
-                      for k in keys}
-            p = self.num_subperiods
-
-            for spud in means.values():
-                for (k1, k2) in spud.keys():
-                    n = self.num_freqs[k1] + self.num_freqs[k2]
-
-                    spud.insert(k1, k2, np.zeros((n, p)))
-
-        for (s, spud) in self.ccas.items():
-            status = rmu.get_symptom_status(s)
-
-            for (k, subperiods) in spud.items():
-                timelines = [np.hstack([p[0] for p in periods])
-                             for periods in subperiods]
-                timeline = np.hstack(
-                    [np.mean(tl, axis=1)[:,np.newaxis] 
-                     for tl in timelines])
-
-                if self.subject_mean:
-                    tl_shape = timeline.shape
-                    avg_shape = means[status].get(k[0], k[1]).shape
-
-                    if tl_shape == avg_shape:
-                        count = counts[status].get(k[0], k[1]) + 1
-                        counts[status].insert(
-                            k[0], k[1], count)
-
-                        avg = get_ra(
-                            means[status].get(k[0], k[1]),
-                            timeline,
-                            count)
-
-                        means[status].insert(
-                            k[0], k[1], avg)
-                else:
-                    (y_labels, x_labels) = self._get_labels(
-                        k[0], k[1], self.num_subperiods)
-                    title = 'View-pairwise mean-over-days cca' + \
-                        ' over hours for views ' + \
-                        self.names[k[0]] + ' ' + self.names[k[1]] + \
-                        ' of subject ' + s
-
-                    self._matrix_plot_save_clear(
-                        timeline,
-                        x_labels,
-                        y_labels,
-                        title,
-                        'hour')
-
-        for (status, spud) in means.items():
-            for (k, avg) in spud.items():
-                (y_labels, x_labels) = self._get_labels(
-                    k[0], k[1], self.num_subperiods)
-                title = status + ' view-pairwise mean-over-days' + \
-                    ' cca over hours for views ' + \
-                    self.names[k[0]] + ' ' + self.names[k[1]]
-
-                self._matrix_plot_save_clear(
-                    avg,
-                    x_labels,
-                    y_labels,
-                    title,
-                    'hour')
 
     def _show_cca_over_periods(self):
 
