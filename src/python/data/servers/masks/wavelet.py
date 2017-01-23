@@ -8,6 +8,7 @@ from drrobert.file_io import get_timestamped as get_ts
 from wavelets.dtcwt.utils import get_padded_wavelets as get_pw
 from wavelets.dtcwt.oned import get_partial_reconstructions as get_pr
 from linal.utils.misc import get_array_mod
+from math import log
 
 class DTCWTMask:
 
