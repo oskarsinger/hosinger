@@ -1,5 +1,6 @@
 import os
 import json
+import h5py
 import matplotlib
 
 matplotlib.use('Cairo')
@@ -9,41 +10,43 @@ import seaborn as sns
 import utils as rmu
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from drrobert.stats import get_cca_vecs
 from drrobert.file_io import get_timestamped as get_ts
-from drrobert.arithmetic import get_running_avg as get_ra
+from drrobert.file_io import init_dir
 from lazyprojector import plot_matrix_heat, plot_lines
 from math import log, ceil
 
-class ViewPairwiseCCARunner:
+class ViewPairwiseCCA:
 
     def __init__(self,
-        dtcwt_runner,
+        servers,
         save_load_dir,
-        save=False,
-        load=False,
+        num_subperiods=1,
         show=False,
-        subject_mean=False,
         nnz=1):
 
-        self.save = save
-        self.load = load
+        self.servers = servers
         self.show = show
-        self.subject_mean = subject_mean
         self.nnz = nnz
 
-        self.wavelets = dtcwt_runner.wavelets
+        self._init_dirs
+
+
+        self.subjects = self.servers.keys()
+        self.num_subperiods = num_subperiods
         self.subperiod = dtcwt_runner.subperiod
-        self.subjects = dtcwt_runner.subjects
+        self.names = [s.get_status()['data_loader'].name()
+                      for s in self.servers.values()[0]]
+        self.names2indices = {name : i 
+                              for (i, name) in enumerate(self.names)}
+        self.num_views = len(self.servers.values()[0])
+        self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
+                            for (s, servers) in self.servers.items()}
+	self.max_periods = max(self.num_periods.values())
+
         self.rates = dtcwt_runner.rates
-        self.names = dtcwt_runner.names
-        self.num_views = dtcwt_runner.num_views
-        self.num_periods = dtcwt_runner.num_periods
-        self.num_subperiods = dtcwt_runner.num_sps
-        self.num_freqs = [None] * self.num_views
 
         self._init_dirs(
-            save, 
-            load, 
             show, 
             save_load_dir)
 
@@ -57,12 +60,9 @@ class ViewPairwiseCCARunner:
 
     def run(self):
 
-        if self.load:
-            self._load()
-        else:
-            self._compute()
-
         if self.show:
+            self._load()
+
             self._show_cca_over_periods()
             self._show_cca_over_subperiods()
 
@@ -72,16 +72,14 @@ class ViewPairwiseCCARunner:
             self._show_cca_over_freqs()
 
             self._show_cc()
+        else:
+            self._compute()
 
     def _init_dirs(self, 
-        save, 
-        load, 
         show, 
         save_load_dir):
 
-        mk_sl_dir = show or save
-
-        if mk_sl_dir and not load:
+        if show:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -103,89 +101,73 @@ class ViewPairwiseCCARunner:
 
                 self.num_freqs = json.loads(line)
 
-        self.ccas_dir = rmu.init_dir(
+        self.ccas_dir = init_dir(
             'cca',
-            save,
+            not show,
             self.save_load_dir)
-        self.plot_dir = rmu.init_dir(
+        self.plot_dir = init_dir(
             'plots',
             show,
             self.save_load_dir) 
 
     def _compute(self):
 
-        for (s, s_wavelets) in self.wavelets.items():
-            spud = self.ccas[s]
+        for (s, servers) in self.servers.items():
+            print 'Computing CCAs for subject', s
+            spuds = self.ccas[s]
 
-            for (p, day) in enumerate(s_wavelets):
-                for (sp, subperiod) in enumerate(day):
-                    for k in spud.keys():
-                        (Yh1, Yl1) = subperiod[k[0]]
-                        (Yh2, Yl2) = subperiod[k[1]]
-                        Y1_mat = rmu.get_padded_wavelets(Yh1, Yl1)
-                        Y2_mat = rmu.get_padded_wavelets(Yh2, Yl2)
-                        cca_over_time = np.vstack(rmu.get_cca_vecs(
-                            Y1_mat, Y2_mat))
-                        cca_dim = min(Y1_mat.shape + Y2_mat.shape)
-                        cca_over_freqs = np.hstack(rmu.get_cca_vecs(
-                            Y1_mat[:,:cca_dim].T,
-                            Y2_mat[:,:cca_dim].T,
-                            num_nonzero=self.nnz))
-                        cc_over_time = self._get_cc_over_time(
-                            Y1_mat,
-                            Y2_mat,
-                            cca_over_time)
-                        stuff = [
-                            cca_over_time,
-                            cca_over_freqs,
-                            cc_over_time]
+            for sp in enumerate(self.num_subperiods * self.num_periods[s]):
+                subperiods = [s.get_data() for s in servers]
 
-                        if p == 0:
-                            self.num_freqs[k[0]] = Y1_mat.shape[1] 
-                            self.num_freqs[k[1]] = Y2_mat.shape[1]
+                for k in spud.keys():
+                    v1_mat = subperiod[k[0]]
+                    v2_mat = subperiod[k[1]]
+                    cca_over_time = np.vstack(get_cca_vecs(
+                        v1_mat, v2_mat))
+                    cca_dim = min(v1_mat.shape + v2_mat.shape)
+                    cca_over_freqs = np.hstack(get_cca_vecs(
+                        v1_mat[:,:cca_dim].T,
+                        v2_mat[:,:cca_dim].T,
+                        num_nonzero=self.nnz))
+                    cc_over_time = self._get_cc_over_time(
+                        v1_mat,
+                        v2_mat,
+                        cca_over_time)
+                    stuff = [
+                        cca_over_time,
+                        cca_over_freqs,
+                        cc_over_time]
 
-                        self.ccas[s].get(k[0], k[1])[sp].append(stuff)
-                     
-                        if self.save:
-                            self._save(
-                                stuff,
-                                s,
-                                k,
-                                p,
-                                sp)
+                    if p == 0:
+                        self.num_freqs[k[0]] = v1_mat.shape[1] 
+                        self.num_freqs[k[1]] = v2_mat.shape[1]
 
-        if self.save:
-            num_freqs_json = json.dumps(self.num_freqs)
-            path = os.path.join(
-                self.save_load_dir, 
-                'num_freqs.json')
+                    self._save(
+                        stuff,
+                        s,
+                        k,
+                        sp)
 
-            with open(path, 'w') as f:
-                f.write(num_freqs_json)
-
-    def _get_cc_over_time(self, Y1_mat, Y2_mat, cca_over_time):
-
-        Y1_cc = np.dot(
-            Y1_mat, 
-            cca_over_time[:Y1_mat.shape[1],:])
-        Y2_cc = np.dot(
-            Y2_mat, 
-            cca_over_time[Y1_mat.shape[1]:,:])
-
-        return Y1_cc * Y2_cc
-
-    def _save(self, cs, s, v, p, sp):
-
-        views = str(v[0]) + '-' + str(v[1])
-        path = '_'.join([
-            'subject', s,
-            'views', views,
-            'period', str(p),
-            'subperiod', str(sp)])
-        path = os.path.join(self.ccas_dir, path)
+        num_freqs_json = json.dumps(self.num_freqs)
+        path = os.path.join(
+            self.save_load_dir, 
+            'num_freqs.json')
 
         with open(path, 'w') as f:
-            np.savez(f, *cs)
+            f.write(num_freqs_json)
+
+    def _get_cc_over_time(self, v1_mat, v2_mat, cca_over_time):
+
+        v1_cc = np.dot(
+            v1_mat, 
+            cca_over_time[:v1_mat.shape[1],:])
+        v2_cc = np.dot(
+            v2_mat, 
+            cca_over_time[v1_mat.shape[1]:,:])
+
+        return v1_cc * v2_cc
+
+    def _save(self, cs, s, v, p, sp):
 
     def _load(self):
 
