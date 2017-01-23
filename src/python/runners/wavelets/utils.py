@@ -1,11 +1,9 @@
 import os
-import spancca
 
 import numpy as np
 
 from math import log
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
-from sklearn.cross_decomposition import CCA
 
 def get_complete_status(subject):
 
