@@ -13,12 +13,12 @@ class DTCWTMask:
 
     def __init__(self,
         ds,
-        period,
-        max_freqs,
         save_load_path,
-        padded=False,
+        period=3600,
+        max_freqs=7,
+        padded=True,
         pr=False,
-        serve_one_period=False,
+        serve_one_period=True,
         load=False,
         save=False):
 

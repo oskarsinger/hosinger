@@ -14,6 +14,8 @@ import data.loaders.shortcuts as dlsh
 @click.option('--dataset', default='e4')
 @click.option('--interpolate', default=False)
 @click.option('--show', default=False)
+@click.option('--wavelet-load', default=False)
+@click.option('--wavelet-save', default=False)
 @click.option('--wavelet-dir'=None)
 def run_it_all_day_bb(
     data_path,
@@ -22,6 +24,8 @@ def run_it_all_day_bb(
     dataset,
     interpolate,
     show,
+    wavelet_load,
+    wavelet_save,
     wavelet_dir):
 
     loaders = None
@@ -52,7 +56,12 @@ def run_it_all_day_bb(
                    for (s, dss) in servers.items()}
         
     if not dataset == 'cm':
-        servers = {s : [DTCWTM(s, padding=True) for s in dss]
+        servers = {s : [DTCWTM(
+                            s, 
+                            wavelet_dir, 
+                            load=wavelet_load,
+                            save=wavelet_save)
+                        for s in dss]
                    for (s, dss) in servers.items()}
 
     vpwc = VPWC(
