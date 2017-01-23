@@ -218,8 +218,8 @@ class ViewPairwiseCorrelationRunner:
         # TODO: pick a good fps
         writer = AVConvWriter(fps=1)
         fig = plt.figure()
-        get_plot = lambda c, a, sp, p: self._get_correlation_plot(
-            c, v1, v2, p, sp, a)
+        get_plot = lambda c, sp, p: self._get_correlation_plot(
+            c, v1, v2, p, sp)
         num_frames = self.num_periods[s] * self.num_subperiods
         filename = 'views_' + \
             self.names[v1] + \
@@ -234,12 +234,11 @@ class ViewPairwiseCorrelationRunner:
                 # TODO: add frame to indicate end of 24-hour period
 
                 for (sp, corr) in enumerate(subperiods):
-                    print len(fig.axes)
-                    plot = get_plot(corr, fig.axes[-1], sp, p)
+                    plot = get_plot(corr, sp, p)
 
                     writer.grab_frame()
 
-    def _get_correlation_plot(self, c, p, sp, v1, v2, ax):
+    def _get_correlation_plot(self, c, p, sp, v1, v2):
 
         (m, n) = c.shape
         x_labels = ['2^{:02d}'.format(i) 
@@ -271,8 +270,7 @@ class ViewPairwiseCorrelationRunner:
             y_name,
             val_name,
             vmax=1,
-            vmin=-1,
-            ax=ax)
+            vmin=-1)
         
     def _save_and_clear_plot(self, plot): 
         plot.get_figure().savefig(
