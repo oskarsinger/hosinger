@@ -21,8 +21,8 @@ class ViewPairwiseCorrelation:
 
     def __init__(self,
         servers,
-        num_subperiods=1,
         save_load_dir,
+        num_subperiods=1,
         show=False):
 
         self.show = show
