@@ -62,7 +62,7 @@ class DTCWTMask:
         else:
             name = '_'.join([
                 's',
-                self.get_status()['data_loader'].name(),
+                self.ds['data_loader'].name(),
                 'f',
                 str(self.hertz),
                 'p',
