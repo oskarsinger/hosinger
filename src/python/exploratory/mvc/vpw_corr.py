@@ -1,6 +1,6 @@
 import os
-import matplotlib
 import h5py
+import matplotlib
 
 matplotlib.use('Cairo')
 
@@ -10,12 +10,10 @@ import matplotlib.pyplot as plt
 
 from matplotlib.animation import AVConvWriter
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
-from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.file_io import init_dir
 from drrobert.stats import get_pearson_matrix as get_pm
 from lazyprojector import plot_matrix_heat
-from data.loaders.e4.utils import get_symptom_status
 
 class ViewPairwiseCorrelation:
 
@@ -92,7 +90,7 @@ class ViewPairwiseCorrelation:
             print 'Computing correlations for subject', s
             spud = self.correlation[s]
 
-            for sp in xrange(self.num_subperiods * self.num_periods):
+            for sp in xrange(self.num_subperiods * self.num_periods[s]):
                 subperiods = [s.get_data() for s in servers]
 
                 for k in spud.keys():

@@ -44,22 +44,24 @@ class DTCWTMask:
             'near_sym_b')
         self.qshift = dtcwt.utils.get_wavelet_basis(
             'qshift_b')
-        self.data = None
-
-        if not self.load:
-            data = self.ds.get_data()
-            num_rows = int(float(data.shape[0]) / self.window)
-            reshaped = np.reshape(
-                get_array_mod(data, self.window),
-                (num_rows, self.window))
-            self.data = reshaped
-        
+        data = None
         hdf5_repo = None
 
         if self.load:
             hdf5_repo = h5py.File(
                 self.save_load_path, 'r')
+            data = None
+
+            self.num_periods = len(self.hdf5_repo)
         else:
+            data = self.ds.get_data()
+
+            self.num_periods = int(float(data.shape[0]) / self.window)
+
+            data = np.reshape(
+                get_array_mod(data, self.window),
+                (self.num_periods, self.window))
+
             name = '_'.join([
                 's',
                 self.ds.get_status()['data_loader'].name(),
@@ -76,6 +78,7 @@ class DTCWTMask:
             hdf5_repo = h5py.File(
                 self.save_load_path, 'w')
 
+        self.data = data
         self.hdf5_repo = hdf5_repo
 
     def get_data(self):
@@ -87,11 +90,8 @@ class DTCWTMask:
 
             self.num_rounds += 1
         else:
-            num_rounds = len(self.hdf5_repo) \
-                if self.load else \
-                self.data.shape[0]
             wavelets = [self._get_one_period(i)
-                        for i in xrange(num_rounds)]
+                        for i in xrange(self.num_periods)]
 
         return wavelets
 
@@ -130,55 +130,6 @@ class DTCWTMask:
             wavelets = get_pw(Yh, Yl)
         elif self.pr:
             wavelets = get_pr(Yh, Yl, self.biorthogonal, self.qshift)
-
-        return wavelets
-
-    def _get_all_periods(self):
-
-        wavelets = []
-
-        if self.load:
-            for i in xrange(len(self.hdf5_repo)):
-                group = self.hdf5_repo[str(i)]
-                num_Yh = len(group) - 1
-                Yh = [np.array(group['Yh_' + str(j)]) 
-                      for j in xrange(num_Yh)]
-                Yl = np.array(group['Yl'])
-
-                wavelets.insert((Yh, Yl))
-        else:
-            data = self.ds.get_data()
-            num_rows = int(float(data.shape[0]) / self.window)
-            reshaped = np.reshape(
-                get_array_mod(data, self.window),
-                (num_rows, self.window))
-
-            for i in xrange(num_rows):
-                key = str(i)
-                (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
-                    reshaped[i,:][:,np.newaxis],
-                    num_freqs - 1,
-                    self.biorthogonal,
-                    self.qshift)
-
-                wavelets.insert((Yh, Yl))
-
-                if self.save:
-                    self.hdf5_repo.create_group(key)
-                    group = self.hdf5_repo[key]
-
-                    for (j, freq) in enumerate(Yh):
-                        group[key].create_dataset(
-                            'Yh_' + str(j), freq)
-
-                    group[key].create_dataset(
-                        'Yl', freq)
-
-        if self.padded:
-            wavelets = [get_pw(Yh, Yl) for (Yh, Yl) in wavelets]
-        elif self.pr:
-            wavelets = [get_pr(Yh, Yl, self.biorthogonal, self.qshift)
-                        for (Yh, Yl) in wavelets]
 
         return wavelets
 
