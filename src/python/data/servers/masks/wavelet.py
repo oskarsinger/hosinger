@@ -40,9 +40,9 @@ class DTCWTMask:
             int(log(self.window, 2)) - 1,
             self.max_freqs])
         self.num_rounds = 0
-        self.biorthogonal = wdtcwt.utils.get_wavelet_basis(
+        self.biorthogonal = dtcwt.utils.get_wavelet_basis(
             'near_sym_b')
-        self.qshift = wdtcwt.utils.get_wavelet_basis(
+        self.qshift = dtcwt.utils.get_wavelet_basis(
             'qshift_b')
         self.data = None
 
