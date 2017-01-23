@@ -10,17 +10,19 @@ import data.loaders.shortcuts as dlsh
 @click.command()
 @click.option('--data-path', default=None)
 @click.option('--save-load-dir')
-@click.option('--wavelet-dir')
+@click.option('--num-subperiods', default=24)
 @click.option('--dataset', default='e4')
-@click.option('--interpolate', default=True)
+@click.option('--interpolate', default=False)
 @click.option('--show', default=False)
+@click.option('--wavelet-dir'=None)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
-    wavelet_dir,
+    num_subperiods,
     dataset,
     interpolate,
-    show):
+    show,
+    wavelet_dir):
 
     loaders = None
 
@@ -48,13 +50,18 @@ def run_it_all_day_bb(
     if interpolate:
         servers = {s : [I1DM(s) for s in dss]
                    for (s, dss) in servers.items()}
+        
+    if not dataset == 'cm':
+        servers = {s : [DTCWTM(s) for s in dss]
+                   for (s, dss) in servers.items()}
 
-    runner = VPWC(
+    vpwc = VPWC(
         servers,
+        num_subperiods=num_subperiods,
         save_load_dir,
         show=show)
 
-    runner.run()
+    vpwc.run()
 
 if __name__=='__main__':
     run_it_all_day_bb()
