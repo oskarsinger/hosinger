@@ -262,7 +262,7 @@ class ViewPairwiseCorrelationRunner:
         path = os.path.join(self.plot_dir, fn)
 
         return plot_matrix_heat(
-            corr,
+            c,
             x_labels,
             y_labels,
             title,
