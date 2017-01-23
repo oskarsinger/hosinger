@@ -99,6 +99,7 @@ class FixedRateLoader:
                     [data, np.copy(new_data)])
 
                 if self.on_deck_data is not None:
+                    print 'data', data, 'self.on_deck_data', self.on_deck_data
                     data = np.vstack(
                         [data, np.copy(self.on_deck_data)])
 
