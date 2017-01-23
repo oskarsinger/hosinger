@@ -24,7 +24,6 @@ class DTCWTMask:
 
         # For now, assume server is batch-style
         self.ds = ds
-        self.get_wavelet_transform = get_wavelet_transform
         self.period = period
         self.hertz = self.ds.get_status()['data_loader'].get_status()['hertz']
         self.max_freqs = max_freqs
