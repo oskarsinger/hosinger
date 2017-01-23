@@ -52,7 +52,7 @@ def run_it_all_day_bb(
                    for (s, dss) in servers.items()}
         
     if not dataset == 'cm':
-        servers = {s : [DTCWTM(s) for s in dss]
+        servers = {s : [DTCWTM(s, padding=True) for s in dss]
                    for (s, dss) in servers.items()}
 
     vpwc = VPWC(

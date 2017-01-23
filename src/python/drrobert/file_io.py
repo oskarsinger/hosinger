@@ -27,3 +27,15 @@ def get_timestamped(name):
     timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 
     return timestamp + '-' + name
+
+def init_dir(dir_name, save, sl_dir):
+
+    dir_path = os.path.join(
+        sl_dir,
+        dir_name)
+
+    if save and not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+
+    return dir_path
+

@@ -1,0 +1,1 @@
+from vpw_corr import ViewPairwiseCorrelation

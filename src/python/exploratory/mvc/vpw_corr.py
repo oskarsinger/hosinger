@@ -6,18 +6,18 @@ matplotlib.use('Cairo')
 
 import numpy as np
 import seaborn as sns
-import utils as rwu
 import matplotlib.pyplot as plt
 
 from matplotlib.animation import AVConvWriter
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.arithmetic import get_running_avg
 from drrobert.file_io import get_timestamped as get_ts
+from drrobert.file_io import init_dir
 from drrobert.stats import get_pearson_matrix as get_pm
 from lazyprojector import plot_matrix_heat
 from data.loaders.e4.utils import get_symptom_status
 
-class ViewPairwiseCorrelationRunner:
+class ViewPairwiseCorrelation:
 
     def __init__(self,
         servers,
@@ -77,31 +77,14 @@ class ViewPairwiseCorrelationRunner:
             'correlation.hdf5')
         self.hdf5_repo = h5py.File(
             hdf5_path, 'w' if save else 'r')
-        self.plot_dir = rwu.init_dir(
+        self.plot_dir = init_dir(
             'plots',
             show,
             self.save_load_dir) 
-        self.full_time_dir = rwu.init_dir(
+        self.full_time_dir = init_dir(
             'full-time',
             show,
             self.plot_dir)
-
-        """
-        subperiod_dir = rwu.init_dir(
-            'subperiod',
-            show,
-            self.plot_dir)
-
-        self.subperiod_dirs = []
-
-        for i in xrange(self.num_subperiods):
-            sp_i_dir = rwu.init_dir(
-                'sp-' + str(i),
-                show,
-                subperiod_dir)
-
-            self.subperiod_dirs.append(sp_i_dir)
-        """
 
     def _compute(self):
 
