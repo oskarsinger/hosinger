@@ -16,7 +16,7 @@ import data.loaders.shortcuts as dlsh
 @click.option('--show', default=False)
 @click.option('--wavelet-load', default=False)
 @click.option('--wavelet-save', default=False)
-@click.option('--wavelet-dir'=None)
+@click.option('--wavelet-dir', default=None)
 def run_it_all_day_bb(
     data_path,
     save_load_dir,
