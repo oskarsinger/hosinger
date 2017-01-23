@@ -234,7 +234,7 @@ class ViewPairwiseCorrelationRunner:
                 # TODO: add frame to indicate end of 24-hour period
 
                 for (sp, corr) in enumerate(subperiods):
-                    plot = get_plot(corr, fig.axes, sp, p)
+                    plot = get_plot(corr, fig.axes[-1], sp, p)
 
                     writer.grab_frame()
 
