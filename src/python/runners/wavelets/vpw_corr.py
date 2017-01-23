@@ -43,7 +43,6 @@ class ViewPairwiseCorrelationRunner:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = dtcwt_runner.num_views
-        print 'self.num_views', self.num_views
         self.num_periods = {s : len(self.wavelets[s])
 			    for s in self.subjects}
 	self.max_periods = max(self.num_periods.values())
@@ -220,7 +219,7 @@ class ViewPairwiseCorrelationRunner:
         writer = AVConvWriter(fps=1)
         fig = plt.figure()
         get_plot = lambda c, sp, p: self._get_correlation_plot(
-            c, v1, v2, p, sp)
+            c, p, sp, v1, v2)
         num_frames = self.num_periods[s] * self.num_subperiods
         filename = 'views_' + \
             self.names[v1] + \
@@ -258,9 +257,6 @@ class ViewPairwiseCorrelationRunner:
         x_name = 'Subsampling rate for view 1 (' + self.names[v2] + ')'
         y_name = 'Subsampling rate for view 2 (' + self.names[v1] + ')'
         val_name = 'Pearson correlation'
-
-        fn = '_'.join(title.split()) + '.pdf'
-        path = os.path.join(self.plot_dir, fn)
 
         return plot_matrix_heat(
             c,
