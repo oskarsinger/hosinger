@@ -241,9 +241,9 @@ class ViewPairwiseCorrelationRunner:
     def _get_correlation_plot(self, c, p, sp, v1, v2, ax):
 
         (m, n) = c.shape
-        x_labels = ['2^{:02i}'.format(i) 
+        x_labels = ['2^{:02d}'.format(i) 
                     for i in xrange(n)]
-        y_labels = ['2^{:02i}'.format(i)
+        y_labels = ['2^{:02d}'.format(i)
                     for i in xrange(m)]
         title = ' '.join([
             'Frequency component correlation of view',
