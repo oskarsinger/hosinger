@@ -228,14 +228,13 @@ class ViewPairwiseCorrelationRunner:
             '.mp4'
         path = os.path.join(
             self.full_time_dir, filename)
-        print 'path', path
 
         with writer.saving(fig, path, num_frames):
             for (p, subperiods) in enumerate(periods):
                 # TODO: add frame to indicate end of 24-hour period
 
                 for (sp, corr) in enumerate(subperiods):
-                    plot = get_plot(corr, fig.axes(), sp, p)
+                    plot = get_plot(corr, fig.axes, sp, p)
 
                     writer.grab_frame()
 
