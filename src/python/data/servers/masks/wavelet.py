@@ -110,7 +110,7 @@ class DTCWTMask:
             key = str(i)
             (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                 self.data[i,:][:,np.newaxis],
-                num_freqs - 1,
+                self.num_freqs - 1,
                 self.biorthogonal,
                 self.qshift)
             wavelets = (Yh, Yl)

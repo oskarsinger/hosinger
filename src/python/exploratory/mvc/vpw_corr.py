@@ -88,56 +88,57 @@ class ViewPairwiseCorrelation:
 
         for (s, servers) in self.servers.items():
             print 'Computing correlations for subject', s
-            spud = self.correlation[s]
 
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
                 subperiods = [s.get_data() for s in servers]
 
-                for k in spud.keys():
-                    v1_mat = subperiods[k[0]]
-                    v2_mat = subperiods[k[1]]
-                    (n1, p1) = v1_mat.shape
-                    (n2, p2) = v2_mat.shape
+                for i in xrange(self.num_views):
+                    for j in xrange(i+1, self.num_views):
+                        v1_mat = subperiods[i]
+                        v2_mat = subperiods[j]
+                        (n1, p1) = v1_mat.shape
+                        (n2, p2) = v2_mat.shape
 
-                    if n1 < n2:
-                        num_reps = int(float(n2) / n1)
-                        repped = np.zeros((n2, p1), dtype=complex)
+                        if n1 < n2:
+                            num_reps = int(float(n2) / n1)
+                            repped = np.zeros((n2, p1), dtype=complex)
+                            
+                            for r in xrange(num_reps):
+                                max_len = repped[r::num_reps,:].shape[0]
+                                repped[r::num_reps,:] = np.copy(
+                                    v1_mat[:max_len,:])
+
+                            v1_mat = repped
+
+                        elif n2 < n1:
+                            num_reps = int(float(n1) / n2)
+                            repped = np.zeros((n1, p2), dtype=complex)
+                            
+                            for r in xrange(num_reps):
+                                max_len = repped[r::num_reps,:].shape[0]
+                                repped[r::num_reps,:] = np.copy(
+                                    v2_mat[:max_len,:])
+
+                            v2_mat = repped
                         
-                        for r in xrange(num_reps):
-                            max_len = repped[r::num_reps,:].shape[0]
-                            repped[r::num_reps,:] = np.copy(
-                                v1_mat[:max_len,:])
+                        correlation = get_pm(
+                            np.absolute(v1_mat), 
+                            np.absolute(v2_mat))
 
-                        v1_mat = repped
-
-                    elif n2 < n1:
-                        num_reps = int(float(n1) / n2)
-                        repped = np.zeros((n1, p2), dtype=complex)
-                        
-                        for r in xrange(num_reps):
-                            max_len = repped[r::num_reps,:].shape[0]
-                            repped[r::num_reps,:] = np.copy(
-                                v2_mat[:max_len,:])
-
-                        v2_mat = repped
-                    
-                    correlation = get_pm(
-                        np.absolute(v1_mat), 
-                        np.absolute(v2_mat))
-
-                    self._save(
-                        correlation,
-                        s,
-                        k,
-                        sp)
+                        self._save(
+                            correlation,
+                            s,
+                            i,
+                            j,
+                            sp)
                      
-    def _save(self, c, s, v, sp):
+    def _save(self, c, s, v1, v2, sp):
 
         if s not in self.hdf5_repo:
             self.hdf5_repo.create_group(s)
 
         s_group = self.hdf5_repo[s]
-        v_string = str(v[0]) + '-' + str(v[1])
+        v_string = str(i) + '-' + str(j)
 
         if v_string not in s_group:
             s_group.create_group(v_string)
@@ -145,7 +146,7 @@ class ViewPairwiseCorrelation:
         v_group = s_group[v_string]
         sp_string = str(sp)
 
-        sp_group.create_dataset(sp_string, data=c)
+        v_group.create_dataset(sp_string, data=c)
 
     def _load(self):
 

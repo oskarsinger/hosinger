@@ -43,6 +43,10 @@ class ViewPairwiseCCA:
         self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
+        self.cca_names = {
+            'cca_over_time',
+            'cca_over_freqs',
+            'cc_over_time'}
 
         self.rates = dtcwt_runner.rates
 
@@ -50,13 +54,12 @@ class ViewPairwiseCCA:
             show, 
             save_load_dir)
 
-        default = lambda: [[] for i in xrange(self.num_subperiods)]
-
-        self.ccas = {s : SPUD(
-                        self.num_views, 
-                        default=default, 
-                        no_double=True)
-                    for s in self.subjects}
+        get_container = lambda: {s : SPUD(
+                                    self.num_views, 
+                                    no_double=True)
+                                 for s in self.subjects}
+        self.ccas = {n : get_container()
+                     for n in self.cca_names}
 
     def run(self):
 
@@ -83,7 +86,7 @@ class ViewPairwiseCCA:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('VPWCCAR')
+            model_dir = get_ts('VPWCCA')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
@@ -101,11 +104,12 @@ class ViewPairwiseCCA:
 
                 self.num_freqs = json.loads(line)
 
-        self.ccas_dir = init_dir(
-            'cca',
-            not show,
-            self.save_load_dir)
-        self.plot_dir = init_dir(
+        get_path = lambda n: os.path.join(
+            self.save_load_dir, n)
+        hdf5_paths = {n : get_path(n) for n in self.cca_names}
+        self.hdf5_repos = {n : h5py.File(p, 'w' if save else 'r')
+                           for p in hdf5_paths}
+        self.plot_dir = rmu.init_dir(
             'plots',
             show,
             self.save_load_dir) 
@@ -114,39 +118,40 @@ class ViewPairwiseCCA:
 
         for (s, servers) in self.servers.items():
             print 'Computing CCAs for subject', s
-            spuds = self.ccas[s]
 
             for sp in enumerate(self.num_subperiods * self.num_periods[s]):
                 subperiods = [s.get_data() for s in servers]
 
-                for k in spud.keys():
-                    v1_mat = subperiod[k[0]]
-                    v2_mat = subperiod[k[1]]
-                    cca_over_time = np.vstack(get_cca_vecs(
-                        v1_mat, v2_mat))
-                    cca_dim = min(v1_mat.shape + v2_mat.shape)
-                    cca_over_freqs = np.hstack(get_cca_vecs(
-                        v1_mat[:,:cca_dim].T,
-                        v2_mat[:,:cca_dim].T,
-                        num_nonzero=self.nnz))
-                    cc_over_time = self._get_cc_over_time(
-                        v1_mat,
-                        v2_mat,
-                        cca_over_time)
-                    stuff = [
-                        cca_over_time,
-                        cca_over_freqs,
-                        cc_over_time]
+                for i in xrange(self.num_views):
+                    for j in xrange(i, self.num_views):
+                        v1_mat = subperiod[i]
+                        v2_mat = subperiod[j]
+                        cca_over_time = np.vstack(get_cca_vecs(
+                            v1_mat, v2_mat))
+                        cca_dim = min(v1_mat.shape + v2_mat.shape)
+                        cca_over_freqs = np.hstack(get_cca_vecs(
+                            v1_mat[:,:cca_dim].T,
+                            v2_mat[:,:cca_dim].T,
+                            num_nonzero=self.nnz))
+                        cc_over_time = self._get_cc_over_time(
+                            v1_mat,
+                            v2_mat,
+                            cca_over_time)
+                        stuff = {
+                            self.cca_names[0]: cca_over_time,
+                            self.cca_names[1]: cca_over_freqs,
+                            self.cca_names[2]: cc_over_time}
 
-                    if p == 0:
-                        self.num_freqs[k[0]] = v1_mat.shape[1] 
-                        self.num_freqs[k[1]] = v2_mat.shape[1]
+                        if p == 0:
+                            self.num_freqs[i] = Y1_mat.shape[1] 
+                            self.num_freqs[j] = Y2_mat.shape[1]
 
-                    self._save(
-                        stuff,
-                        s,
-                        k,
-                        sp)
+                        self._save(
+                            stuff,
+                            s,
+                            i,
+                            j,
+                            sp)
 
         num_freqs_json = json.dumps(self.num_freqs)
         path = os.path.join(
@@ -167,35 +172,59 @@ class ViewPairwiseCCA:
 
         return v1_cc * v2_cc
 
-    def _save(self, cs, s, v, p, sp):
+    def _save(self, cs, s, i, j, sp):
+
+        for (n, repo) in self.hdf5_repos.items():
+            if s not in repo:
+                repo.create_group(s)
+
+            s_group = repo[s]
+            v_str = str(i) + '-' + str(j)
+            
+            if v_str not in s_group:
+                s_group.create_group(v_str)
+
+            v_group = s_group[v_str]
+            sp_str = str(sp)
+
+            if n in self.cca_names[:2]:
+                if sp_str not in v_group:
+                    v_group.create_group(sp_str)
+
+                sp_group = v_group[sp]
+                (Phi1, Phi2) = cs[n]
+
+                sp_group.create_dataset('1', Phi1)
+                sp_group.create_dataset('2', Phi2)
+            else:
+                v_group.create_dataset(sp_str, data=cs[n])
 
     def _load(self):
 
-        cca = {} 
+        for (n, n_repo) in self.hdf5_repos.items():
+            cca = self.ccas[n]
+            for (s, spud) in cca.items():
+                for k in spud.keys():
+                    l = [None] * self.num_subperiods * self.num_periods[s]
 
-        for (s, spud) in self.ccas.items():
-            for (k, subperiods) in spud.items():
-                for i in xrange(self.num_subperiods):
-                    subperiods[i] = [None] * self.num_periods[s] 
-                
-        for fn in os.listdir(self.ccas_dir):
-            info = fn.split('_')
-            s = info[1]
-            v = [int(i) for i in info[3].split('-')]
-            p = int(info[5])
-            sp = int(info[7])
-            path = os.path.join(self.ccas_dir, fn)
-            loaded = None
+                    spud.insert(k[0], k[1], l)
+            
+            for (s, s_group) in n_repo.items():
+                cca_s = cca[s]
 
-            with open(path) as f:
-                loaded = {int(h_fn.split('_')[1]) : a
-                          for (h_fn, a) in np.load(f).items()}
+                for (v_str, v_group) in s_group.items():
+                    vs = [int(v) for v in v_str.split('-')]
+                    cca_vs = cca_s.get(vs[0], vs[1])
 
-            num_coeffs = len(loaded)
-            coeffs = [loaded[i] 
-                      for i in xrange(num_coeffs)]
+                    for (sp_str, sp_group) in v_group.items():
+                        sp = int(sp_str)
 
-            self.ccas[s].get(v[0], v[1])[sp][p] = tuple(coeffs)
+                        if n in self.cca_names[:2]:
+                            cca_vs[sp] = (
+                                np.array(sp_group['1']),
+                                np.array(sp_group['2']))
+                        else:
+                            cca_vs[sp] = np.array(sp_group)
 
     def _show_cca_over_freqs(self):
 
