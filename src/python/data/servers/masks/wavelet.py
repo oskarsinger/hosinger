@@ -9,7 +9,7 @@ from wavelets.dtcwt.utils import get_padded_wavelets as get_pw
 from wavelets.dtcwt.oned import get_partial_reconstructions as get_pr
 from linal.utils.misc import get_array_mod
 
-class WaveletMask:
+class DTCWTMask:
 
     def __init__(self,
         ds,
