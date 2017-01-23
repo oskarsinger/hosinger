@@ -53,9 +53,13 @@ def run_it_all_day_bb(
     servers = {s : [BS(dl) for dl in dls]
                for (s, dls) in loaders.items()}
 
+    print 'Batch servers keys', servers.keys()
+
     if interpolate:
         servers = {s : [I1DM(s) for s in dss]
                    for (s, dss) in servers.items()}
+
+        print 'Interp servers keys', servers.keys()
         
     if not dataset == 'cm':
 
@@ -72,6 +76,8 @@ def run_it_all_day_bb(
                             save=wavelet_save)
                         for server in dss]
                    for (sub, dss) in servers.items()}
+
+        print 'Wavelet servers keys', servers.keys()
 
     vpwc = VPWC(
         servers,
