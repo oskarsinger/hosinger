@@ -183,7 +183,7 @@ class FixedRateLoader:
 
     def name(self):
 
-        return self.sensor
+        return self.sensor + '_' + self.subject
 
     def refresh(self):
 
