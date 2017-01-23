@@ -76,6 +76,8 @@ NOTE: This will have to wait until winter break or next semester probably.
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
+* TOP PRIORITY: run experiments on cortisol and melatonin data from Yaya
+
 * Look at error of partial reconstructions rather than the reconstructions themselves.
 
 * Show correlation of the partial reconstructions maybe?
