@@ -8,8 +8,8 @@ from data.servers.batch import BatchServer as BS
 import data.loaders.shortcuts as dlsh
 
 @click.command()
-@click.option('--data-path', default=None)
 @click.option('--save-load-dir')
+@click.option('--data-path', default=None)
 @click.option('--num-subperiods', default=24)
 @click.option('--dataset', default='e4')
 @click.option('--interpolate', default=False)
@@ -18,8 +18,8 @@ import data.loaders.shortcuts as dlsh
 @click.option('--wavelet-save', default=False)
 @click.option('--wavelet-dir', default=None)
 def run_it_all_day_bb(
-    data_path,
     save_load_dir,
+    data_path,
     num_subperiods,
     dataset,
     interpolate,
