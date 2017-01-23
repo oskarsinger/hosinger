@@ -49,7 +49,7 @@ def run_it_all_day_bb(
                    for i in xrange(2)}
 
     servers = {s : [BS(dl) for dl in dls]
-               for (s, dl) in loaders.items()}
+               for (s, dls) in loaders.items()}
 
     if interpolate:
         servers = {s : [I1DM(s) for s in dss]
