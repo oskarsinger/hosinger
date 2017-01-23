@@ -66,8 +66,8 @@ def run_it_all_day_bb(
 
     vpwc = VPWC(
         servers,
-        num_subperiods=num_subperiods,
         save_load_dir,
+        num_subperiods=num_subperiods,
         show=show)
 
     vpwc.run()
