@@ -254,6 +254,7 @@ class ViewPairwiseCorrelationRunner:
             str(sp),
             'of period',
             str(p)])
+        print 'v1', v1, 'v2', v2, 'self.names', self.names
         x_name = 'Subsampling rate for view 1 (' + self.names[v2] + ')'
         y_name = 'Subsampling rate for view 2 (' + self.names[v1] + ')'
         val_name = 'Pearson correlation'
