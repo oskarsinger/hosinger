@@ -1,6 +1,9 @@
+import spancca
+
 import numpy as np
 
 from scipy.stats import pearsonr
+from sklearn.cross_decomposition import CCA
 
 def get_pearson_matrix(X1, X2):
 
