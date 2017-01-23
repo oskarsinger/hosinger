@@ -36,7 +36,7 @@ class Interp1DMask:
         new_status = {
             'ds': self.ds,}
 
-        for (k, v) in self.ds.get_status():
+        for (k, v) in self.ds.get_status().items():
             if k not in new_status:
                 new_status[k] = v
 

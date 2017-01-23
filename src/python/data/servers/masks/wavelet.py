@@ -206,7 +206,7 @@ class DTCWTMask:
             'window': self.window,
             'hdf5_repo': self.hdf5_repo}
 
-        for (k, v) in self.ds.get_status():
+        for (k, v) in self.ds.get_status().items():
             if k not in new_status:
                 new_status[k] = v
 
