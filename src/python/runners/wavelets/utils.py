@@ -93,17 +93,6 @@ def get_appended_spud(list_spud, item_spud):
 
     return list_spud
 
-def init_dir(dir_name, save, sl_dir):
-
-    dir_path = os.path.join(
-        sl_dir,
-        dir_name)
-
-    if save and not os.path.isdir(dir_path):
-        os.mkdir(dir_path)
-
-    return dir_path
-
 def get_kmeans_spud_dict(
     data, 
     label_subjects, 
