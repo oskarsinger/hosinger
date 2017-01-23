@@ -1,9 +1,11 @@
 import click
+import os
 
 from exploratory.mvc import ViewPairwiseCorrelation as VPWC
 from data.servers.masks import Interp1DMask as I1DM
 from data.servers.masks import DTCWTMask as DTCWTM
 from data.servers.batch import BatchServer as BS
+from drrobert.file_io import get_timestamped as get_ts
 
 import data.loaders.shortcuts as dlsh
 
@@ -56,13 +58,19 @@ def run_it_all_day_bb(
                    for (s, dss) in servers.items()}
         
     if not dataset == 'cm':
-        servers = {s : [DTCWTM(
-                            s, 
+
+        if wavelet_save:
+            wavelet_dir = get_ts('DTCWT')
+
+            os.mkdir(wavelet_dir)
+
+        servers = {sub : [DTCWTM(
+                            server, 
                             wavelet_dir, 
                             load=wavelet_load,
                             save=wavelet_save)
-                        for s in dss]
-                   for (s, dss) in servers.items()}
+                        for server in dss]
+                   for (sub, dss) in servers.items()}
 
     vpwc = VPWC(
         servers,
