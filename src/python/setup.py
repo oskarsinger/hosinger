@@ -43,5 +43,6 @@ setup(
         'runners.wavelets',
         'runners.network',
         'runners.distributed',
-        'runners.multiviewcorr',
-        'runners.raw'])
+        'exploratory',
+        'exploratory.mvc',
+        'exploratory.raw'])
