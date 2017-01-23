@@ -20,31 +20,27 @@ from data.loaders.e4.utils import get_symptom_status
 class ViewPairwiseCorrelationRunner:
 
     def __init__(self,
-        dtcwt_runner,
+        servers,
+        num_subperiods=1,
         save_load_dir,
-        save=False,
-        load=False,
         show=False):
 
-        self.save = save
-        self.load = load
         self.show = show
 
         self._init_dirs(
-            save, 
-            load, 
             show, 
             save_load_dir)
 
-        self.wavelets = dtcwt_runner.wavelets
-        self.num_subperiods = dtcwt_runner.num_sps
-	self.subjects = self.wavelets.keys()
-        self.names = dtcwt_runner.names
+        self.servers = servers
+        self.num_subperiods = num_subperiods
+	self.subjects = self.servers.keys()
+        self.names = [s.get_status()['data_loader'].name()
+                      for s in self.servers.values()[0]]
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
-        self.num_views = dtcwt_runner.num_views
-        self.num_periods = {s : len(self.wavelets[s])
-			    for s in self.subjects}
+        self.num_views = len(self.servers.values()[0])
+        self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
+                            for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
 
         self.correlation = {s : SPUD(self.num_views)
@@ -52,21 +48,19 @@ class ViewPairwiseCorrelationRunner:
 
     def run(self):
 
-        if self.load:
+        if self.show:
             self._load()
+            self._show()
         else:
             self._compute()
 
-        if self.show:
-            self._show()
-
     def _init_dirs(self, 
-        save, 
-        load, 
         show, 
         save_load_dir):
 
-        if (show or save) and not load:
+        if show:
+            self.save_load_dir = save_load_dir
+        else:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
@@ -77,8 +71,6 @@ class ViewPairwiseCorrelationRunner:
                 model_dir)
 
             os.mkdir(self.save_load_dir)
-        else:
-            self.save_load_dir = save_load_dir
 
         hdf5_path = os.path.join(
             self.save_load_dir,
@@ -113,54 +105,52 @@ class ViewPairwiseCorrelationRunner:
 
     def _compute(self):
 
-        for (s, s_wavelets) in self.wavelets.items():
+        for (s, servers) in self.servers.items():
             print 'Computing correlations for subject', s
             spud = self.correlation[s]
 
-            for (p, day) in enumerate(s_wavelets):
-                for (sp, subperiod) in enumerate(day):
-                    for k in spud.keys():
-                        (Yh1, Yl1) =  subperiod[k[0]]
-                        (Yh2, Yl2) =  subperiod[k[1]]
-                        Y1_mat = rwu.get_padded_wavelets(Yh1, Yl1)
-                        Y2_mat = rwu.get_padded_wavelets(Yh2, Yl2)
-                        (n1, p1) = Y1_mat.shape
-                        (n2, p2) = Y2_mat.shape
+            for sp in xrange(self.num_subperiods * self.num_periods):
+                subperiods = [s.get_data() for s in servers]
 
-                        if n1 < n2:
-                            num_reps = int(float(n2) / n1)
-                            repped = np.zeros((n2, p1), dtype=complex)
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(
-                                    Y1_mat[:max_len,:])
+                for k in spud.keys():
+                    v1_mat = subperiods[k[0]]
+                    v2_mat = subperiods[k[1]]
+                    (n1, p1) = v1_mat.shape
+                    (n2, p2) = v2_mat.shape
 
-                            Y1_mat = repped
-
-                        elif n2 < n1:
-                            num_reps = int(float(n1) / n2)
-                            repped = np.zeros((n1, p2), dtype=complex)
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(
-                                    Y2_mat[:max_len,:])
-
-                            Y2_mat = repped
+                    if n1 < n2:
+                        num_reps = int(float(n2) / n1)
+                        repped = np.zeros((n2, p1), dtype=complex)
                         
-                        correlation = get_pm(
-                            np.absolute(Y1_mat), 
-                            np.absolute(Y2_mat))
+                        for r in xrange(num_reps):
+                            max_len = repped[r::num_reps,:].shape[0]
+                            repped[r::num_reps,:] = np.copy(
+                                v1_mat[:max_len,:])
 
-                        self._save(
-                            correlation,
-                            s,
-                            k,
-                            p,
-                            sp)
+                        v1_mat = repped
+
+                    elif n2 < n1:
+                        num_reps = int(float(n1) / n2)
+                        repped = np.zeros((n1, p2), dtype=complex)
+                        
+                        for r in xrange(num_reps):
+                            max_len = repped[r::num_reps,:].shape[0]
+                            repped[r::num_reps,:] = np.copy(
+                                v2_mat[:max_len,:])
+
+                        v2_mat = repped
+                    
+                    correlation = get_pm(
+                        np.absolute(v1_mat), 
+                        np.absolute(v2_mat))
+
+                    self._save(
+                        correlation,
+                        s,
+                        k,
+                        sp)
                      
-    def _save(self, c, s, v, p, sp):
+    def _save(self, c, s, v, sp):
 
         if s not in self.hdf5_repo:
             self.hdf5_repo.create_group(s)
@@ -172,48 +162,41 @@ class ViewPairwiseCorrelationRunner:
             s_group.create_group(v_string)
 
         v_group = s_group[v_string]
-        p_string = str(p)
-
-        if p_string not in v_group:
-            v_group.create_group(p_string)
-
-        p_group = v_group[p_string]
         sp_string = str(sp)
 
-        p_group.create_dataset(sp_string, data=c)
+        sp_group.create_dataset(sp_string, data=c)
 
     def _load(self):
 
         for (s, spud) in self.correlation.items():
-            for k in spud.keys():
-                l_of_l = [[None] * self.num_subperiods
-                          for i in xrange(self.num_periods[s])]
+            num_subperiods = self.num_subperiods * self.num_periods[s]
 
-                spud.insert(k[0], k[1], l_of_l)
+            for k in spud.keys():
+                l = [None] * num_subperiods
+
+                spud.insert(k[0], k[1], l)
                 
         for s in self.subjects:
             s_group = self.hdf5_repo[s]
 
-            for (k_str, sp_group) in s_group.items():
+            for (k_str, k_group) in s_group.items():
                 vs = [int(v) for v in k_str.split('-')]
 
-                for (p_str, p_group) in sp_group.items():
-                    p = int(p_str)
+                for (sp_str, corr) in k_group.items():
+                    sp = int(sp_str)
 
-                    for (sp_str, corr) in p_group.items():
-                        sp = int(sp_str)
-                        corr = np.array(corr)
-                        
-            	        self.correlation[s].get(vs[0], vs[1])[p][sp] = corr
+                    corr = np.array(corr)
+                    
+                    self.correlation[s].get(vs[0], vs[1])[sp] = corr
 
     def _show(self):
 
         for (s, spud) in self.correlation.items():
             for ((v1, v2), periods) in spud.items():
-                m_plot = self._get_movie_plot(s, v1, v2, periods)
+                m_plot = self._plot_movie(s, v1, v2, periods)
 
     # TODO: consider getting rid of load and just working directly from hdf5 repo
-    def _get_movie_plot(self, s, v1, v2, periods):
+    def _plot_movie(self, s, v1, v2, subperiods):
 
         # TODO: pick a good fps
         writer = AVConvWriter(fps=1)
@@ -230,15 +213,16 @@ class ViewPairwiseCorrelationRunner:
             self.full_time_dir, filename)
 
         with writer.saving(fig, path, num_frames):
-            for (p, subperiods) in enumerate(periods):
-                # TODO: add frame to indicate end of 24-hour period
+            for (sp, corr) in enumerate(subperiods):
+                if sp % self.num_periods[s] == 0:
+                    do_something = 'Poop'
+                    # TODO: add frame to indicate end of period
 
-                for (sp, corr) in enumerate(subperiods):
-                    plot = get_plot(corr, sp, p)
+                plot = get_plot(corr, sp, p)
 
-                    writer.grab_frame()
+                writer.grab_frame()
 
-    def _get_correlation_plot(self, c, p, sp, v1, v2):
+    def _get_correlation_plot(self, c, sp, v1, v2):
 
         (m, n) = c.shape
         x_labels = ['2^{:02d}'.format(i) 
@@ -251,9 +235,7 @@ class ViewPairwiseCorrelationRunner:
             'vs',
             str(v2),
             'for subperiod',
-            str(sp),
-            'of period',
-            str(p)])
+            str(sp)])
         x_name = 'Subsampling rate for view 1 (' + self.names[v2] + ')'
         y_name = 'Subsampling rate for view 2 (' + self.names[v1] + ')'
         val_name = 'Pearson correlation'
@@ -270,6 +252,7 @@ class ViewPairwiseCorrelationRunner:
             vmin=-1)
         
     def _save_and_clear_plot(self, plot): 
+
         plot.get_figure().savefig(
                 path, format='pdf')
         sns.plt.clf()
