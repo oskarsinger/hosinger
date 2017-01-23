@@ -60,7 +60,8 @@ def run_it_all_day_bb(
     if not dataset == 'cm':
 
         if wavelet_save:
-            wavelet_dir = get_ts('DTCWT')
+            wavelet_dir = os.path.join(
+                wavelet_dir, get_ts('DTCWT'))
 
             os.mkdir(wavelet_dir)
 
