@@ -48,6 +48,18 @@ class DTCWTMask:
         # Probably put all this is a separate func
         data = None
         hdf5_repo = None
+        name = '_'.join([
+            's',
+            self.ds.get_status()['data_loader'].name(),
+            'f',
+            str(self.hertz),
+            'p',
+            str(self.period),
+            'mf',
+            str(self.max_freqs)]) + '.hdf5'
+
+        self.save_load_path = os.path.join(
+            save_load_path, name)
 
         if self.load:
             hdf5_repo = h5py.File(
@@ -63,20 +75,6 @@ class DTCWTMask:
             data = np.reshape(
                 get_array_mod(data, self.window),
                 (self.num_batches, self.window))
-
-            name = '_'.join([
-                's',
-                self.ds.get_status()['data_loader'].name(),
-                'f',
-                str(self.hertz),
-                'p',
-                str(self.period),
-                'mf',
-                str(self.max_freqs)]) + '.hdf5'
-
-            self.save_load_path = os.path.join(
-                save_load_path, name)
-
             hdf5_repo = h5py.File(
                 self.save_load_path, 'w')
 

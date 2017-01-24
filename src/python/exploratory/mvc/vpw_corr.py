@@ -39,6 +39,7 @@ class ViewPairwiseCorrelation:
                               for (i, name) in enumerate(self.names)}
         self.num_views = len(self.servers.values()[0])
 
+        """
         np_path = os.path.join(
             self.save_load_dir, 'num_periods.json')
         num_periods = None
@@ -53,6 +54,9 @@ class ViewPairwiseCorrelation:
                 f.write(json.dumps(num_periods))
 
         self.num_periods = num_periods
+        """
+        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
+                            for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
 
         self.correlation = {s : SPUD(self.num_views, no_double=True)
