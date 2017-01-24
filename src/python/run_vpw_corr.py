@@ -75,6 +75,8 @@ def run_it_all_day_bb(
                 wavelet_dir, get_ts('DTCWT'))
 
             os.mkdir(wavelet_dir)
+        elif wavelet_load:
+            'Give proper paths to each server'
 
         servers = {s : [DTCWTM(
                             ds, 
