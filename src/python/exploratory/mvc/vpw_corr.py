@@ -159,6 +159,7 @@ class ViewPairwiseCorrelation:
                 spud.insert(k[0], k[1], l)
                 
         for s in self.subjects:
+            print 'Loading corr for subject', s
             s_group = self.hdf5_repo[s]
 
             for (k_str, k_group) in s_group.items():
@@ -173,8 +174,9 @@ class ViewPairwiseCorrelation:
     def _show(self):
 
         for (s, spud) in self.correlation.items():
-            for ((v1, v2), periods) in spud.items():
-                m_plot = self._plot_movie(s, v1, v2, periods)
+            print 'Generating plots for subject', s
+            for ((v1, v2), subperiods) in spud.items():
+                self._plot_movie(s, v1, v2, subperiods)
 
     # TODO: consider getting rid of load and just working directly from hdf5 repo
     def _plot_movie(self, s, v1, v2, subperiods):
@@ -185,7 +187,9 @@ class ViewPairwiseCorrelation:
         get_plot = lambda c, sp: self._get_correlation_plot(
             c, sp, v1, v2)
         num_frames = self.num_periods[s] * self.num_subperiods
-        filename = 'views_' + \
+        filename = \
+            'subject_' + s + \
+            '_views_' + \
             self.names[v1] + \
             '-' + \
             self.names[v2] + \
@@ -193,7 +197,7 @@ class ViewPairwiseCorrelation:
         path = os.path.join(
             self.full_time_dir, filename)
 
-        with writer.saving(fig, path, num_frames):
+        with writer.saving(fig, path, dpi=100):
             for (sp, corr) in enumerate(subperiods):
                 if sp % self.num_periods[s] == 0:
                     do_something = 'Poop'

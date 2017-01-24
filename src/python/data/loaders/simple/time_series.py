@@ -29,8 +29,7 @@ class BatchPhysiologicalTimeSeriesLoader:
 
         return '_'.join([
             self.class_name,
-            self.measurement_type,
-            self.subject])
+            self.measurement_type])
 
     def rows(self):
 
