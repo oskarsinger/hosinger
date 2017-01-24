@@ -122,7 +122,6 @@ class DTCWTMask:
                 group = self.hdf5_repo[key]
 
                 for (j, freq) in enumerate(Yh):
-                    print 'j', j, 'freq', freq
                     group.create_dataset(
                         'Yh_' + str(j), data=freq)
 

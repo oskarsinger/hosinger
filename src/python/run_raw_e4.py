@@ -1,6 +1,6 @@
 import click
 
-from runners.raw import E4RawDataPlotRunner as E4RDPR
+from exploratory.raw import E4RawDataPlotRunner as E4RDPR
 
 @click.command()
 @click.option('--data-path')
