@@ -138,8 +138,6 @@ class CMRawDataPlotRunner:
                 data = view.get_data()
                 float_num_periods = float(data.shape[0]) / self.window
                 int_num_periods = int(float_num_periods)
-                print 'float_num_periods', float_num_periods
-                print 'int_num_periods', int_num_periods
 
                 if float_num_periods - int_num_periods > 0:
                     int_num_periods += 1
@@ -151,7 +149,6 @@ class CMRawDataPlotRunner:
                 reshaped = data.reshape(
                     (int_num_periods, self.window))
                 means = np.mean(reshaped, axis=1)[:,np.newaxis]
-                print 'means is None', means is None
                 views[v][s] = np.copy(means)
 
-            return views
+        return views
