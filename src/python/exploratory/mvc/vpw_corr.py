@@ -197,7 +197,7 @@ class ViewPairwiseCorrelation:
         path = os.path.join(
             self.full_time_dir, filename)
 
-        with writer.saving(fig, path, dpi=100):
+        with writer.saving(fig, path, 100):
             for (sp, corr) in enumerate(subperiods):
                 if sp % self.num_periods[s] == 0:
                     do_something = 'Poop'
