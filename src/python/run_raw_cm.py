@@ -1,6 +1,6 @@
 import click
 
-from runners.raw import CMRawDataPlotRunner as CMRDPR
+from exploratory.raw import CMRawDataPlotRunner as CMRDPR
 
 @click.command()
 @click.option('--data-path')
