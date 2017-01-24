@@ -15,7 +15,7 @@ class BatchPhysiologicalTimeSeriesLoader:
         self.period = period
         self.num_periods = num_periods
 
-        self.name = 'SimpleBatchPhysiologicalTimeSeries'
+        self.class_name = 'SimpleBatchPhysiologicalTimeSeries'
 
     def get_data(self):
 
@@ -27,7 +27,7 @@ class BatchPhysiologicalTimeSeriesLoader:
 
     def name(self):
 
-        return self.name + self.measurement_type
+        return self.class_name + self.measurement_type
 
     def rows(self):
 
