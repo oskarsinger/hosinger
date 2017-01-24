@@ -62,14 +62,15 @@ class CMRawDataPlotRunner:
         if self.u:
             self.valid_sympts.add('U')
 
-        sample_dls = self.loaders.values()[0]
-
-        self.names = [dl.name()
-                      for dl in sample_dls]
         self.rate = 1.0 / (8.0 * 3600.0)
         self.window = self.rate * self.period
         self.loaders = dlstcts.get_cm_loaders_all_subjects(
             self.filepath)
+
+        sample_dls = self.loaders.values()[0]
+
+        self.names = [dl.name()
+                      for dl in sample_dls]
         self.servers = {s : [BS(dl) for dl in dls]
                         for (s, dls) in self.loaders.items()}
 
