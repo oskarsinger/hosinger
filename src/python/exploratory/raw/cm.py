@@ -66,6 +66,7 @@ class CMRawDataPlotRunner:
         self.window = self.rate * self.period
         self.loaders = dlstcts.get_cm_loaders_all_subjects(
             self.filepath)
+        self.subjects = self.loaders.keys()
 
         sample_dls = self.loaders.values()[0]
 
