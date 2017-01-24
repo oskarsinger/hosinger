@@ -224,8 +224,8 @@ class ViewPairwiseCorrelation:
             self.names[v2],
             'for subperiod',
             str(sp)])
-        x_name = 'Dimensions of ' + self.names[v2]
-        y_name = 'Dimensions of ' + self.names[v1]
+        x_name = 'Dimensions of view 2: ' + self.names[v2]
+        y_name = 'Dimensions of view 1: ' + self.names[v1]
         val_name = 'Pearson correlation'
 
         return plot_matrix_heat(
