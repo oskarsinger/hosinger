@@ -84,6 +84,7 @@ def get_cm_loaders_all_subjects(filepath):
 
         for line in f:
             items = line.strip().split(',')
+            print 'items', items
             (s, t, c, m, d) = items
 
             if t == -72:
@@ -101,6 +102,7 @@ def get_cm_loaders_all_subjects(filepath):
     loaders = {}
 
     for (s, (cs, ms, ds)) in cm_pairs.items():
+        print 'subject', s
         c_loader = BPTSL(
             np.array(cs)[:,np.newaxis],
             s,
