@@ -32,8 +32,8 @@ class ViewPairwiseCorrelation:
         self.servers = servers
         self.num_subperiods = num_subperiods
 	self.subjects = self.servers.keys()
-        self.names = [s.get_status()['data_loader'].name()
-                      for s in self.servers.values()[0]]
+        self.names = [ds.get_status()['data_loader'].name()
+                      for ds in self.servers.values()[0]]
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = len(self.servers.values()[0])
@@ -62,7 +62,7 @@ class ViewPairwiseCorrelation:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('VPWCR')
+            model_dir = get_ts('VPWC')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
