@@ -202,7 +202,9 @@ class ViewPairwiseCorrelation:
                 plot = get_plot(corr, sp)
                 
                 writer.grab_frame()
-                sns.plt.clf()
+                plt.clf()
+
+        plt.close(fig)
 
     def _get_correlation_plot(self, c, sp, v1, v2):
 
