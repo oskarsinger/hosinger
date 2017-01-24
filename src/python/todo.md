@@ -49,14 +49,12 @@
 * Implement the paper on low-rank estimates of QN matrices
 
 ###Particle MCMC
-NOTE: This will have to wait until winter break or next semester probably.
+* Browse the Springer PDF!
 
-* Try to find a way to propagate particle MCMC info efficiently across the network.
-
-* Figure out exactly how to do particle MCMC and try to do some writing. Reading the Springer PDF a bit will probably help a lot.
+* Go to the RM-HMC reading group, and read the materials! Think about how it fits into the framework you are already using.
 
 ###Federated
-* Think carefully about when it is possible to do projected gradient in the context of federated, and how it can be accomplished.
+* Think carefully about when it is possible to do projected gradient in the context of federated, and how it can be accomplished. Certainly, you need to be doing it before using your most recent model to make a prediction. Maybe elsewhere to keep things on track.
 
 * Play around with non-linear functions to replace A in order to deal with more difficult objective functions that are maybe not decomposable.
 
@@ -76,8 +74,6 @@ NOTE: This will have to wait until winter break or next semester probably.
 * T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
-* TOP PRIORITY: run experiments on cortisol and melatonin data from Yaya
-
 * Look at error of partial reconstructions rather than the reconstructions themselves.
 
 * Show correlation of the partial reconstructions maybe?
@@ -86,8 +82,4 @@ NOTE: This will have to wait until winter break or next semester probably.
 
 * Produce some autocorrelation plots for the E4 data.
 
-* In general, work on speeding up these tools. They are pretty slow right now, and I could probably take more advantage of numpy's performance improvements by doing more reshaping and less looping, etc.
-    * Should I just server up the full, concatenate dataset, without period-wise separation, then use numpy operations to do all the averaging and such? Probalby can clean-up/speed-up that way. Worry about that later.
-
-* Separate plots by subject.
-    * How to show subject-wise correlation plots.
+* How to show subject-wise correlation plots.

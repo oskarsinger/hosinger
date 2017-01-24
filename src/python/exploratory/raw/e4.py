@@ -126,6 +126,7 @@ class E4RawDataPlotRunner:
                 [a.get_yticklabels() for a in fig.axes],
                 visible=False)
 
+            print 'path', path
             fig.savefig(path, format='png')
             sns.plt.clf()
 
