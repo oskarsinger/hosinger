@@ -1,4 +1,5 @@
 import os
+import json
 import h5py
 import matplotlib
 
@@ -37,8 +38,21 @@ class ViewPairwiseCorrelation:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = len(self.servers.values()[0])
-        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
-                            for (s, servers) in self.servers.items()}
+
+        np_path = os.path.join(
+            self.save_load_dir, 'num_periods.json')
+        num_periods = None
+
+        with open(np_path, 'r' if show else 'w') as f:
+            if self.show:
+                num_periods = json.loads(f)
+            else:
+                num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
+                                    for (s, servers) in self.servers.items()}
+                
+                f.write(json.dumps(num_periods))
+
+        self.num_periods = num_periods
 	self.max_periods = max(self.num_periods.values())
 
         self.correlation = {s : SPUD(self.num_views, no_double=True)
