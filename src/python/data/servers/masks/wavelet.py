@@ -124,10 +124,10 @@ class DTCWTMask:
                 for (j, freq) in enumerate(Yh):
                     print 'j', j, 'freq', freq
                     group.create_dataset(
-                        'Yh_' + str(j), freq)
+                        'Yh_' + str(j), data=freq)
 
                 group.create_dataset(
-                    'Yl', freq)
+                    'Yl', data=freq)
 
         if self.padded:
             wavelets = get_pw(Yh, Yl)
