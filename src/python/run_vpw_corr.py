@@ -54,7 +54,7 @@ def run_it_all_day_bb(
     servers = None
 
     if dataset == 'cm':
-        batch_size = 1
+        batch_size = 3
         servers = {s : [B2M(
                             dl, 
                             batch_size, 
