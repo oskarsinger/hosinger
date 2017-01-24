@@ -9,7 +9,7 @@ class Batch2Minibatch:
         data_loader, batch_size, 
         center=False,
         random=True, 
-        lazy=True, 
+        lazy=True,
         n_components=None):
 
         self.dl = data_loader
@@ -55,6 +55,7 @@ class Batch2Minibatch:
     def _init_data(self):
 
         self.data = self.dl.get_data()
+        self.num_batches = int(self.data.shape[0] / batch_size)
 
     def finished(self):
 

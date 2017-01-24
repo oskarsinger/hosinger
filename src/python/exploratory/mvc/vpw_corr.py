@@ -37,7 +37,7 @@ class ViewPairwiseCorrelation:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = len(self.servers.values()[0])
-        self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
+        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
 
