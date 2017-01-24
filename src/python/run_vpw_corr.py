@@ -54,7 +54,7 @@ def run_it_all_day_bb(
     servers = None
 
     if dataset == 'cm':
-        batch_size = 3
+        batch_size = 1
         servers = {s : [B2M(
                             dl, 
                             batch_size, 
@@ -90,6 +90,7 @@ def run_it_all_day_bb(
         servers,
         save_load_dir,
         num_subperiods=num_subperiods,
+        clock_time=dataset=='e4',
         show=show)
 
     vpwc.run()

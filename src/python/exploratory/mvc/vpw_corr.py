@@ -22,6 +22,7 @@ class ViewPairwiseCorrelation:
         servers,
         save_load_dir,
         num_subperiods=1,
+        clock_time=False,
         show=False):
 
         self.show = show
@@ -32,6 +33,8 @@ class ViewPairwiseCorrelation:
 
         self.servers = servers
         self.num_subperiods = num_subperiods
+        self.clock_time = clock_time
+
 	self.subjects = self.servers.keys()
         self.names = [ds.get_status()['data_loader'].name()
                       for ds in self.servers.values()[0]]
