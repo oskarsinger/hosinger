@@ -66,7 +66,7 @@ class DTCWTMask:
                 self.save_load_path, 'r')
             data = None
 
-            self.num_batches = len(self.hdf5_repo)
+            self.num_batches = len(hdf5_repo)
         elif self.save:
             data = self.ds.get_data()
 
