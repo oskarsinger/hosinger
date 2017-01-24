@@ -53,6 +53,8 @@ class E4RawDataPlotRunner:
         self.save_dir = os.path.join(
             save_dir, subdir)
 
+        os.mkdir(self.save_dir)
+
         self.valid_sympts = set()
 
         if self.hsx:
