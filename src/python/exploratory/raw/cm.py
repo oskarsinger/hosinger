@@ -69,6 +69,7 @@ class CMRawDataPlotRunner:
 
         sample_dls = self.loaders.values()[0]
 
+        self.num_views = len(sample_dls)
         self.names = [dl.name()
                       for dl in sample_dls]
         self.servers = {s : [BS(dl) for dl in dls]
