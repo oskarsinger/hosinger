@@ -81,3 +81,9 @@
 * Do vertically stacked plots for CCA components instead of plots of vertically stacked components
 
 * Produce some autocorrelation plots for the E4 data.
+
+* Add plots of raw data that progress in step with the correlation during the Pearson correlation movie. To do that, I need to change the way I am retrieving raw data plots to make it callable as subroutine in the correlation plots. Should have a plot server that updates over time.
+
+* Switch the axis of the correlation plots so that 0 is at the bottom left for both views.
+
+* Fix Al's Matlab script to work with CM data.
