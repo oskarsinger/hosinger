@@ -213,19 +213,19 @@ class ViewPairwiseCorrelation:
     def _get_correlation_plot(self, c, sp, v1, v2):
 
         (m, n) = c.shape
-        x_labels = ['2^{:02d}'.format(i) 
+        x_labels = ['{:02d}'.format(i) 
                     for i in xrange(n)]
-        y_labels = ['2^{:02d}'.format(i)
+        y_labels = ['{:02d}'.format(i)
                     for i in xrange(m)]
         title = ' '.join([
-            'Frequency component correlation of view',
-            str(v1),
+            'Pearson correlation of view',
+            self.names[v1],
             'vs',
-            str(v2),
+            self.names[v2],
             'for subperiod',
             str(sp)])
-        x_name = 'Subsampling rate for view 1 (' + self.names[v2] + ')'
-        y_name = 'Subsampling rate for view 2 (' + self.names[v1] + ')'
+        x_name = 'Dimensions of ' + self.names[v2]
+        y_name = 'Dimensions of ' + self.names[v1]
         val_name = 'Pearson correlation'
 
         return plot_matrix_heat(
