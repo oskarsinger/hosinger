@@ -159,7 +159,6 @@ class ViewPairwiseCorrelation:
                 spud.insert(k[0], k[1], l)
                 
         for s in self.subjects:
-            print 'Loading corr for subject', s
             s_group = self.hdf5_repo[s]
 
             for (k_str, k_group) in s_group.items():
@@ -175,6 +174,7 @@ class ViewPairwiseCorrelation:
 
         for (s, spud) in self.correlation.items():
             print 'Generating plots for subject', s
+
             for ((v1, v2), subperiods) in spud.items():
                 self._plot_movie(s, v1, v2, subperiods)
 

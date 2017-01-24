@@ -122,7 +122,7 @@ def get_cm_loaders_all_subjects(filepath):
         d_loader = BPTSL(
             np.array(ds)[:,np.newaxis],
             s,
-            c_mt,
+            d_mt,
             hertz,
             period,
             num_periods)
