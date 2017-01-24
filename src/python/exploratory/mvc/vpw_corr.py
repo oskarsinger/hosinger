@@ -138,7 +138,7 @@ class ViewPairwiseCorrelation:
             self.hdf5_repo.create_group(s)
 
         s_group = self.hdf5_repo[s]
-        v_string = str(i) + '-' + str(j)
+        v_string = str(v1) + '-' + str(v2)
 
         if v_string not in s_group:
             s_group.create_group(v_string)
