@@ -112,8 +112,6 @@ class DTCWTMask:
                 self.num_freqs - 1,
                 self.biorthogonal,
                 self.qshift)
-            print 'Yh', Yh
-            print 'Yl', Yl
             wavelets = (Yh, Yl)
 
             if self.save:
@@ -124,6 +122,7 @@ class DTCWTMask:
                 group = self.hdf5_repo[key]
 
                 for (j, freq) in enumerate(Yh):
+                    print 'j', j, 'freq', freq
                     group.create_dataset(
                         'Yh_' + str(j), freq)
 
