@@ -147,7 +147,7 @@ class CMRawDataPlotRunner:
                     data = np.vstack([data, padding])
 
                 reshaped = data.reshape(
-                    (int_num_periods, window))
+                    (int_num_periods, self.window))
                 means = np.mean(reshaped, axis=1)[:,np.newaxis]
                 views[v][s] = np.copy(means)
 
