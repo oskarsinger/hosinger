@@ -13,7 +13,7 @@ from data.servers.batch import BatchServer as BS
 from lazyprojector import plot_lines
 from drrobert.file_io import get_timestamped as get_ts
 
-class CMRawDataPlotRunner:
+class CMRawDataPlot:
 
     def __init__(self,
         filepath,
