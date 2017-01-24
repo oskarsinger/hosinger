@@ -146,8 +146,6 @@ class ViewPairwiseCorrelation:
         v_group = s_group[v_string]
         sp_string = str(sp)
         
-        print 'c is None in _save', c is None
-
         v_group.create_dataset(sp_string, data=c)
 
     def _load(self):
@@ -168,9 +166,7 @@ class ViewPairwiseCorrelation:
 
                 for (sp_str, corr) in k_group.items():
                     sp = int(sp_str)
-
                     corr = np.array(corr)
-                    print 'c is None in _load', corr is None
                     
                     self.correlation[s].get(vs[0], vs[1])[sp] = corr
 
@@ -205,8 +201,9 @@ class ViewPairwiseCorrelation:
                     # TODO: add frame to indicate end of period
 
                 plot = get_plot(corr, sp)
-
+                
                 writer.grab_frame()
+                sns.plt.clf()
 
     def _get_correlation_plot(self, c, sp, v1, v2):
 
