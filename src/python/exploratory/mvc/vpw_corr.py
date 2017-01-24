@@ -93,7 +93,7 @@ class ViewPairwiseCorrelation:
                 subperiods = [ds.get_data() for ds in servers]
 
                 for i in xrange(self.num_views):
-                    for j in xrange(i+1, self.num_views):
+                    for j in xrange(i, self.num_views):
                         v1_mat = subperiods[i]
                         v2_mat = subperiods[j]
                         (n1, p1) = v1_mat.shape
