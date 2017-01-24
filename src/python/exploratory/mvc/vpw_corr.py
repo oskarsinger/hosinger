@@ -74,7 +74,8 @@ class ViewPairwiseCorrelation:
             self.save_load_dir,
             'correlation.hdf5')
         self.hdf5_repo = h5py.File(
-            hdf5_path, 'w' if not show else 'r')
+            hdf5_path, 'r' if show else 'w')
+        print 'self.hdf5_repo.keys()', self.hdf5_repo.keys()
         self.plot_dir = init_dir(
             'plots',
             show,
