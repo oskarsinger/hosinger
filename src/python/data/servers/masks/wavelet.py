@@ -112,6 +112,8 @@ class DTCWTMask:
                 self.num_freqs - 1,
                 self.biorthogonal,
                 self.qshift)
+            print 'Yh', Yh
+            print 'Yl', Yl
             wavelets = (Yh, Yl)
 
             if self.save:
