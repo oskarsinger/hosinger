@@ -75,7 +75,6 @@ class ViewPairwiseCorrelation:
             'correlation.hdf5')
         self.hdf5_repo = h5py.File(
             hdf5_path, 'r' if show else 'w')
-        print 'self.hdf5_repo.keys()', self.hdf5_repo.keys()
         self.plot_dir = init_dir(
             'plots',
             show,
@@ -91,7 +90,7 @@ class ViewPairwiseCorrelation:
             print 'Computing correlations for subject', s
 
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
-                subperiods = [s.get_data() for s in servers]
+                subperiods = [ds.get_data() for ds in servers]
 
                 for i in xrange(self.num_views):
                     for j in xrange(i+1, self.num_views):
