@@ -100,7 +100,7 @@ class CMRawDataPlotRunner:
                     ax=ax)
 
             title = \
-                self.name + ' value of view ' + \
+                'Mean value of view ' + \
                 self.names[v] + \
                 ' for period length ' + \
                 str(self.period) + ' seconds'
