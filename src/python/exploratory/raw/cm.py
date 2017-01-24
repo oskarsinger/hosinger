@@ -13,7 +13,7 @@ from data.servers.batch import BatchServer as BS
 from lazyprojector import plot_lines
 from drrobert.file_io import get_timestamped as get_ts
 
-class CMRawDataPlot:
+class CMRawDataPlotRunner:
 
     def __init__(self,
         filepath,
@@ -45,6 +45,8 @@ class CMRawDataPlot:
         
         self.save_dir = os.path.join(
             save_dir, subdir)
+
+        os.mkdir(self.save_dir)
 
         self.valid_sympts = set()
 
