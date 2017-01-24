@@ -122,7 +122,7 @@ class CMRawDataPlotRunner:
 
     def _get_x(self, num_rows, v, s):
 
-        return np.arange(num_rows).astype(float)
+        return np.arange(num_rows).astype(float)[:,np.newaxis]
 
     def _get_ys(self):
 
