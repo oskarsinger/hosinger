@@ -195,7 +195,6 @@ class ViewPairwiseCorrelation:
 
         with writer.saving(fig, path, num_frames):
             for (sp, corr) in enumerate(subperiods):
-                print 'c is None in _plot_movie', corr is None
                 if sp % self.num_periods[s] == 0:
                     do_something = 'Poop'
                     # TODO: add frame to indicate end of period
