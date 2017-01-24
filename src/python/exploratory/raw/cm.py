@@ -141,7 +141,7 @@ class CMRawDataPlotRunner:
 
                 if float_num_periods - int_num_periods > 0:
                     int_num_periods += 1
-                    full_length = int_num_periods * window
+                    full_length = int_num_periods * self.window
                     padding_l = full_length - data.shape[0]
                     padding = np.ones((padding_l, 1)) * np.nan
                     data = np.vstack([data, padding])
