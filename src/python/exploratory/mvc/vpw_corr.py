@@ -183,8 +183,8 @@ class ViewPairwiseCorrelation:
         # TODO: pick a good fps
         writer = AVConvWriter(fps=1)
         fig = plt.figure()
-        get_plot = lambda c, sp, p: self._get_correlation_plot(
-            c, p, sp, v1, v2)
+        get_plot = lambda c, sp: self._get_correlation_plot(
+            c, sp, v1, v2)
         num_frames = self.num_periods[s] * self.num_subperiods
         filename = 'views_' + \
             self.names[v1] + \
@@ -200,7 +200,7 @@ class ViewPairwiseCorrelation:
                     do_something = 'Poop'
                     # TODO: add frame to indicate end of period
 
-                plot = get_plot(corr, sp, p)
+                plot = get_plot(corr, sp)
 
                 writer.grab_frame()
 
