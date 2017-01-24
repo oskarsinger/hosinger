@@ -107,7 +107,6 @@ class DTCWTMask:
             Yl = np.array(group['Yl'])
             wavelets = (Yh, Yl)
         else:
-            key = str(i)
             (Yl, Yh, _) = dtcwt.oned.dtwavexfm(
                 self.data[i,:][:,np.newaxis],
                 self.num_freqs - 1,
@@ -116,14 +115,17 @@ class DTCWTMask:
             wavelets = (Yh, Yl)
 
             if self.save:
+                key = str(i)
+                
                 self.hdf5_repo.create_group(key)
+
                 group = self.hdf5_repo[key]
 
                 for (j, freq) in enumerate(Yh):
-                    group[key].create_dataset(
+                    group.create_dataset(
                         'Yh_' + str(j), freq)
 
-                group[key].create_dataset(
+                group.create_dataset(
                     'Yl', freq)
 
         if self.padded:
