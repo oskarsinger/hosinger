@@ -55,7 +55,7 @@ class Batch2Minibatch:
     def _init_data(self):
 
         self.data = self.dl.get_data()
-        self.num_batches = int(self.data.shape[0] / self.batch_size)
+        self.num_batches = int(self.data.shape[0] / self.bs)
 
     def finished(self):
 
