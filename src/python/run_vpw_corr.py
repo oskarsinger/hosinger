@@ -5,6 +5,7 @@ from exploratory.mvc import ViewPairwiseCorrelation as VPWC
 from data.servers.masks import Interp1DMask as I1DM
 from data.servers.masks import DTCWTMask as DTCWTM
 from data.servers.batch import BatchServer as BS
+from data.servers.minibatch import Batch2Minibatch as B2M
 from drrobert.file_io import get_timestamped as get_ts
 
 import data.loaders.shortcuts as dlsh
@@ -50,14 +51,24 @@ def run_it_all_day_bb(
         loaders = {'e' + str(i): dls.get_FPGL(n, ps, hertzes)
                    for i in xrange(2)}
 
-    servers = {s : [BS(dl) for dl in dls]
-               for (s, dls) in loaders.items()}
+    servers = None
 
-    if interpolate:
-        servers = {s : [I1DM(ds) for ds in dss]
-                   for (s, dss) in servers.items()}
-        
-    if not dataset == 'cm':
+    if dataset == 'cm':
+        batch_size = 3
+        servers = {s : [B2M(
+                            dl, 
+                            batch_size, 
+                            random=False, 
+                            lazy=False) 
+                        for dl in dls]
+                   for (s, dls) in loaders.items()}
+    else:
+        servers = {s : [BS(dl) for dl in dls]
+                   for (s, dls) in loaders.items()}
+
+        if interpolate:
+            servers = {s : [I1DM(ds) for ds in dss]
+                       for (s, dss) in servers.items()}
 
         if wavelet_save:
             wavelet_dir = os.path.join(

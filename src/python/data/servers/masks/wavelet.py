@@ -52,15 +52,15 @@ class DTCWTMask:
                 self.save_load_path, 'r')
             data = None
 
-            self.num_periods = len(self.hdf5_repo)
+            self.num_batches = len(self.hdf5_repo)
         else:
             data = self.ds.get_data()
 
-            self.num_periods = int(float(data.shape[0]) / self.window)
+            self.num_batches = int(float(data.shape[0]) / self.window)
 
             data = np.reshape(
                 get_array_mod(data, self.window),
-                (self.num_periods, self.window))
+                (self.num_batches, self.window))
 
             name = '_'.join([
                 's',
@@ -91,7 +91,7 @@ class DTCWTMask:
             self.num_rounds += 1
         else:
             wavelets = [self._get_one_period(i)
-                        for i in xrange(self.num_periods)]
+                        for i in xrange(self.num_batches)]
 
         return wavelets
 
@@ -138,7 +138,7 @@ class DTCWTMask:
 
     def cols(self):
 
-        return self.ds.cols()
+        return self.num_freqs
 
     def rows(self):
 
