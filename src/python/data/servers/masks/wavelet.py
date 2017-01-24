@@ -44,6 +44,8 @@ class DTCWTMask:
             'near_sym_b')
         self.qshift = dtcwt.utils.get_wavelet_basis(
             'qshift_b')
+
+        # Probably put all this is a separate func
         data = None
         hdf5_repo = None
 
@@ -53,7 +55,7 @@ class DTCWTMask:
             data = None
 
             self.num_batches = len(self.hdf5_repo)
-        else:
+        elif self.save:
             data = self.ds.get_data()
 
             self.num_batches = int(float(data.shape[0]) / self.window)
