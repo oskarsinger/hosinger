@@ -81,5 +81,3 @@
 * Do vertically stacked plots for CCA components instead of plots of vertically stacked components
 
 * Produce some autocorrelation plots for the E4 data.
-
-* How to show subject-wise correlation plots.
