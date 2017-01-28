@@ -106,11 +106,11 @@ class ViewPairwiseCorrelation:
                         print 'v1_mat.dtype', v1_mat.dtype
                         print 'v2_mat.dtype', v2_mat.dtype
 
-                        if v1_mat.dtype in {'complex128', 'complex64'}:
+                        if v1_mat.dtype in {np.complex128, np.complex64}:
                             print 'Taking magnitude of v1_mat'
                             v1_mat = np.absolute(v1_mat)
 
-                        if v2_mat.dtype in {'complex128', 'complex64'}:
+                        if v2_mat.dtype in {np.complex128, np.complex64}:
                             print 'Taking magnitude of v2_mat'
                             v2_mat = np.absolute(v2_mat)
 
