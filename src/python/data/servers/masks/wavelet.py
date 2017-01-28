@@ -147,6 +147,8 @@ class DTCWTMask:
 
         self.ds.refresh()
 
+        self.num_rounds = 0
+
     def get_status(self):
         
         new_status = {

@@ -58,6 +58,12 @@ class BatchServer:
 
         return self.dl.name()
 
+    def refresh(self):
+
+        'Poop'
+
+        # TODO: fill this in later
+
     def get_status(self):
 
         return {
