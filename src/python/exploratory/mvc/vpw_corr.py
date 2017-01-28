@@ -14,6 +14,7 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.file_io import init_dir
 from drrobert.stats import get_pearson_matrix as get_pm
+from drrobert.ts import get_dt_index as get_dti
 from lazyprojector import plot_matrix_heat
 
 class ViewPairwiseCorrelation:
@@ -41,27 +42,9 @@ class ViewPairwiseCorrelation:
         self.names2indices = {name : i 
                               for (i, name) in enumerate(self.names)}
         self.num_views = len(self.servers.values()[0])
-
-        """
-        np_path = os.path.join(
-            self.save_load_dir, 'num_periods.json')
-        num_periods = None
-
-        with open(np_path, 'r' if show else 'w') as f:
-            if self.show:
-                num_periods = json.loads(f)
-            else:
-                num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
-                                    for (s, servers) in self.servers.items()}
-                
-                f.write(json.dumps(num_periods))
-
-        self.num_periods = num_periods
-        """
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
-
         self.correlation = {s : SPUD(self.num_views, no_double=True)
                             for s in self.subjects}
 
@@ -205,8 +188,8 @@ class ViewPairwiseCorrelation:
         # TODO: pick a good fps
         writer = AVConvWriter(fps=1)
         fig = plt.figure()
-        get_plot = lambda c, sp: self._get_correlation_plot(
-            c, sp, v1, v2)
+        get_plot = lambda c, sp, ax: self._get_correlation_plot(
+            c, sp, v1, v2, ax)
         num_frames = self.num_periods[s] * self.num_subperiods
         filename = \
             'subject_' + s + \
@@ -220,24 +203,48 @@ class ViewPairwiseCorrelation:
 
         with writer.saving(fig, path, 100):
             for (sp, corr) in enumerate(subperiods):
-                if sp % self.num_periods[s] == 0:
-                    do_something = 'Poop'
-                    # TODO: add frame to indicate end of period
 
-                plot = get_plot(corr, sp)
+                ax = fig.add_subplot(311)
+
+                corr_plot = get_corr_plot(corr, sp, ax)
+
+                fig.add_subplot(312)
+
+                sp_data2 = self.servers[s][v2].get_data()
+                v2_plot = _get_data_plot(s, v2, sp_data2)
                 
+                fig.add_subplot(313)
+
+                sp_data1 = self.servers[s][v1].get_data()
+                v1_plot = _get_data_plot(s, v1, sp_data1)
+
                 writer.grab_frame()
                 plt.clf()
 
+        for ds in self.servers[s]:
+            ds.refresh()
+
         plt.close(fig)
 
-    def _get_correlation_plot(self, c, sp, v1, v2):
+    def _get_data_plot(self, s, v, sp_data):
+
+        dl = self.servers[s][v].get_status()['data_loader']
+        start_time = dl.get_status()['start_times'][0]
+        dt_index = np.array(get_dti(
+            sp_data.shape[0], 
+            self.subperiod, 
+            dt))[:,np.newaxis]
+        plot = plt.plot(sp_data, dt_index)
+
+        return plot
+
+    def _get_correlation_plot(self, c, sp, v1, v2, ax):
 
         (m, n) = c.shape
         x_labels = ['{:02d}'.format(i) 
                     for i in xrange(n)]
         y_labels = ['{:02d}'.format(i)
-                    for i in xrange(m)]
+                    for i in reverse(xrange(m))]
         title = ' '.join([
             'Pearson correlation of view',
             self.names[v1],
@@ -250,7 +257,7 @@ class ViewPairwiseCorrelation:
         val_name = 'Pearson correlation'
 
         return plot_matrix_heat(
-            c,
+            c[::-1,:],
             x_labels,
             y_labels,
             title,
