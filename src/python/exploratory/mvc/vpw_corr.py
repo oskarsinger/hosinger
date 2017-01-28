@@ -246,7 +246,7 @@ class ViewPairwiseCorrelation:
         x_labels = ['{:02d}'.format(i) 
                     for i in xrange(n)]
         y_labels = ['{:02d}'.format(i)
-                    for i in reverse(xrange(m))]
+                    for i in reversed(xrange(m))]
         title = ' '.join([
             'Pearson correlation of view',
             self.names[v1],
