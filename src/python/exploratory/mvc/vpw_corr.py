@@ -238,7 +238,7 @@ class ViewPairwiseCorrelation:
             x_axis = np.array(get_dti(
                 sp_data.shape[0], 
                 24.0 * 3600.0 / self.num_subperiods,
-                dt))[:,np.newaxis]
+                start_time))[:,np.newaxis]
         else:
             x_axis = np.arange(sp_data.shape[0])
 
