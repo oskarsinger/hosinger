@@ -104,11 +104,9 @@ class ViewPairwiseCorrelation:
                         (n2, p2) = v2_mat.shape
 
                         if v1_mat.dtype is np.dtype('complex128'):
-                            print 'Taking magnitude of v1_mat'
                             v1_mat = np.absolute(v1_mat)
 
                         if v2_mat.dtype is np.dtype('complex128'):
-                            print 'Taking magnitude of v2_mat'
                             v2_mat = np.absolute(v2_mat)
 
                         if n1 < n2:
