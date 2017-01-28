@@ -17,7 +17,7 @@ cov_analysis=1; %if cov_analysis = 0 then mean is not subtracted from sample. Us
 % Specify operating parameters for time series (TS)
 Ts=60*8;%sampling period (in minutes)
 Tp=24;%Cyclic period in hours
-N=8;%Number of periods in record
+N=7;%Number of periods in record
 % Translate above params to index domain 
 T=floor(Tp*60/Ts);%Cyclic period in index domain. 
 Tpts=N*T; %Total number of time points
@@ -69,6 +69,8 @@ addpath('~/Dropbox/Matlab/Scripts/')
 [S, C, M] = csvimport('~/Data/CortisolMelatonin/cortisol_final.csv', 'columns', {'subject', 'cortisol', 'melatonin'});
 TS1 = C(S == 2);
 TS2 = M(S == 2);
+TS1 = TS1(1:end-1);
+TS2 = TS2(1:end-1);
 
 %TS1=TS1(1:Tpts);TS2=TS2(1:Tpts);
 figure
