@@ -230,15 +230,19 @@ class ViewPairwiseCorrelation:
 
     def _get_data_plot(self, s, v, sp_data, ax):
 
-        dl = self.servers[s][v].get_status()['data_loader']
-        start_time = dl.get_status()['start_times'][0]
-        dt_index = np.array(get_dti(
-            sp_data.shape[0], 
-            self.subperiod, 
-            dt))[:,np.newaxis]
-        plot = plt.plot(sp_data, dt_index, ax=ax)
+        x_axis = None
 
-        return plot
+        if self.clock_time:
+            dl = self.servers[s][v].get_status()['data_loader']
+            start_time = dl.get_status()['start_times'][0]
+            x_axis = np.array(get_dti(
+                sp_data.shape[0], 
+                24.0 * 3600.0 / self.num_subperiods,
+                dt))[:,np.newaxis]
+        else:
+            x_axis = np.arange(sp_data.shape[0])
+
+        return plt.plot(sp_data, x_axis, ax=ax)
 
     def _get_correlation_plot(self, c, sp, v1, v2, ax):
 
