@@ -103,6 +103,12 @@ class ViewPairwiseCorrelation:
                         (n1, p1) = v1_mat.shape
                         (n2, p2) = v2_mat.shape
 
+                        if v1_mat.dtype in {'complex128', 'complex64'}:
+                            v1_mat = np.absolute(v1_mat)
+
+                        if v2_mat.dtype in {'complex128', 'complex64'}:
+                            v2_mat = np.absolute(v2_mat)
+
                         if n1 < n2:
                             num_reps = int(float(n2) / n1)
                             repped = np.zeros((n2, p1), dtype=complex)
@@ -126,8 +132,8 @@ class ViewPairwiseCorrelation:
                             v2_mat = repped
                         
                         correlation = get_pm(
-                            np.absolute(v1_mat), 
-                            np.absolute(v2_mat))
+                            v1_mat, 
+                            v2_mat)
 
                         self._save(
                             correlation,
