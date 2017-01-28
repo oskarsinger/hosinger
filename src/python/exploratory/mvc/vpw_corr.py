@@ -188,7 +188,7 @@ class ViewPairwiseCorrelation:
         # TODO: pick a good fps
         writer = AVConvWriter(fps=1)
         fig = plt.figure()
-        get_plot = lambda c, sp, ax: self._get_correlation_plot(
+        get_corr_plot = lambda c, sp, ax: self._get_correlation_plot(
             c, sp, v1, v2, ax)
         num_frames = self.num_periods[s] * self.num_subperiods
         filename = \
@@ -204,19 +204,21 @@ class ViewPairwiseCorrelation:
         with writer.saving(fig, path, 100):
             for (sp, corr) in enumerate(subperiods):
 
-                ax = fig.add_subplot(311)
+                ax1 = fig.add_subplot(311)
 
-                corr_plot = get_corr_plot(corr, sp, ax)
+                corr_plot = get_corr_plot(corr, sp, ax1)
 
-                fig.add_subplot(312)
+                ax2 = fig.add_subplot(312)
 
                 sp_data2 = self.servers[s][v2].get_data()
-                v2_plot = _get_data_plot(s, v2, sp_data2)
+                v2_plot = self._get_data_plot(
+                    s, v2, sp_data2, ax2)
                 
-                fig.add_subplot(313)
+                ax3 = fig.add_subplot(313)
 
                 sp_data1 = self.servers[s][v1].get_data()
-                v1_plot = _get_data_plot(s, v1, sp_data1)
+                v1_plot = self._get_data_plot(
+                    s, v1, sp_data1, ax3)
 
                 writer.grab_frame()
                 plt.clf()
@@ -226,7 +228,7 @@ class ViewPairwiseCorrelation:
 
         plt.close(fig)
 
-    def _get_data_plot(self, s, v, sp_data):
+    def _get_data_plot(self, s, v, sp_data, ax):
 
         dl = self.servers[s][v].get_status()['data_loader']
         start_time = dl.get_status()['start_times'][0]
@@ -234,7 +236,7 @@ class ViewPairwiseCorrelation:
             sp_data.shape[0], 
             self.subperiod, 
             dt))[:,np.newaxis]
-        plot = plt.plot(sp_data, dt_index)
+        plot = plt.plot(sp_data, dt_index, ax=ax)
 
         return plot
 
@@ -265,7 +267,8 @@ class ViewPairwiseCorrelation:
             y_name,
             val_name,
             vmax=1,
-            vmin=-1)
+            vmin=-1,
+            ax=ax)
         
     def _save_and_clear_plot(self, plot): 
 
