@@ -13,6 +13,7 @@ from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.stats import get_cca_vecs
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.file_io import init_dir
+from drrobert.misc import unzip
 from lazyprojector import plot_matrix_heat, plot_lines
 from math import log, ceil
 
@@ -361,62 +362,70 @@ class ViewPairwiseCCA:
 
         for (s, spud) in self.ccas[self.cca_names[0]].items():
             for ((v1, v2), subperiods) in spud.items():
-                (y_labels, x_labels) = self._get_labels(
-                    k[0], k[1], self.num_periods[s])
                 fig = plt.figure()
                 filename = '_'.join([
                     'subject', s,
                     '_views_',
-                    self.names[v1] + '-' + self.names[v2]) + '.mp4'
+                    self.names[v1] + '-' + self.names[v2]) + '.png'
                 path = os.path.join(
                     self.n_time_p_frequency_dir, filename)
+                (v1_l, v2_l) = unzip(
+                    [(pair['1'], pair['2']) for pair in subperiods])
+                v1_tl = np.hstack(v1_l)
+                v2_tl = np.hstack(v2_l)
+                title = 'View-pairwise cca (n time p frequency) for views ' + \
+                    self.names[v1] + ' ' + self.names[v2] + \
+                    ' of subject ' + s + ' at subperiod ' + str(sp)
+                x_name = 'subperiod'
+                y_name = 'dimension'
+                v_name = 'canonical vector value'
+                ((yl1, yl2), xl) = self._get_labels(
+                    v1, v2, self.num_periods[s])
 
-                for (sp, periods) in enumerate(subperiods):
-                    timeline = np.hstack([p[0] for p in periods])
-                    title = 'View-pairwise cca (n time p frequency) for views ' + \
-                        self.names[k[0]] + ' ' + self.names[k[1]] + \
-                        ' of subject ' + s + ' at hour ' + str(sp)
+                ax1 = fig.add_subplot(211)
 
-                    self._matrix_plot_save_clear(
-                        timeline,
-                        x_labels,
-                        y_labels,
-                        title,
-                        'day')
+                plot_matrix_heat(
+                    tl1,
+                    xl,
+                    yl1
+                    '',
+                    x_name,
+                    y_name,
+                    v_name,
+                    vmax=1,
+                    vmin=-1,
+                    ax=ax1)
 
-    def _matrix_plot_save_clear(self, 
-        timeline, 
-        x_labels, 
-        y_labels, 
-        title,
-        day_or_hour):
+                ax2 = fig.add_subplot(212)
 
-        fn = '_'.join(title.split()) + '.pdf'
-        path = os.path.join(self.plot_dir, fn)
+                plot_matrix_heat(
+                    tl2,
+                    xl,
+                    yl2
+                    '',
+                    x_name,
+                    y_name,
+                    v_name,
+                    vmax=1,
+                    vmin=-1,
+                    ax=ax2)
 
-        plot_matrix_heat(
-            timeline,
-            x_labels,
-            y_labels,
-            title,
-            day_or_hour,
-            'frequency component canonical basis value and view',
-            'cca',
-            vmax=1,
-            vmin=-1)[0].get_figure().savefig(
-                path, format='pdf')
-        sns.plt.clf()
+                fn = '_'.join(title.split()) + '.png'
+                path = os.path.join(
+                    self.n_time_p_frequency_dir, fn)
+
+                fig.savefig(path, format='png')
 
     def _get_labels(self, view1, view2, x_len):
 
         n1 = self.p_by_view[view1]
         n2 = self.p_by_view[view2]
-        y1_labels = ['view ' + str(view1) + ' ' + rmu.get_2_digit(i)
+        y1_labels = ['view ' + str(view1) + ' {:02d}'.format(i)
                      for i in xrange(n1)]
-        y2_labels = ['view ' + str(view2) + ' ' + rmu.get_2_digit(i)
+        y2_labels = ['view ' + str(view2) + ' {:02d}'.format(i)
                      for i in xrange(n2)]
-        y_labels = y1_labels + y2_labels
-        x_labels = [rmu.get_2_digit(p, power=False)
+        y_labels = (y1_labels, y2_labels)
+        x_labels = ['{:02d}'.format(p)
                     for p in xrange(x_len)]
 
         return (y_labels, x_labels)
