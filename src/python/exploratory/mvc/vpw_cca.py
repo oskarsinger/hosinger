@@ -43,10 +43,10 @@ class ViewPairwiseCCA:
         self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
-        self.cca_names = {
-            'cca_over_time',
-            'cca_over_freqs',
-            'cc_over_time'}
+        self.cca_names = [
+            'n_time_p_frequency',
+            'n_frequency_p_time',
+            'n_time_p_frequency_cc']
 
         self.rates = dtcwt_runner.rates
 
@@ -83,36 +83,41 @@ class ViewPairwiseCCA:
         save_load_dir):
 
         if show:
+            self.save_load_dir = save_load_dir
+        else:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('VPWCCA')
+            model_dir = get_ts('VPWC')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
                 model_dir)
 
             os.mkdir(self.save_load_dir)
-        else:
-            self.save_load_dir = save_load_dir
+
             freqs_path = os.path.join(
                 self.save_load_dir,
-                'num_freqs.json')
+                'p_by_view.json')
 
             with open(freqs_path) as f:
                 line = f.readline()
 
-                self.num_freqs = json.loads(line)
+                self.p_by_view = json.loads(line)
 
         get_path = lambda n: os.path.join(
             self.save_load_dir, n)
         hdf5_paths = {n : get_path(n) for n in self.cca_names}
         self.hdf5_repos = {n : h5py.File(p, 'w' if save else 'r')
                            for p in hdf5_paths}
-        self.plot_dir = rmu.init_dir(
+        self.plot_dir = init_dir(
             'plots',
             show,
             self.save_load_dir) 
+        self.n_time_p_frequency_dir = init_dir(
+            'n_time_p_frequency',
+            show,
+            self.save_load_dir)
 
     def _compute(self):
 
@@ -126,25 +131,31 @@ class ViewPairwiseCCA:
                     for j in xrange(i, self.num_views):
                         v1_mat = subperiod[i]
                         v2_mat = subperiod[j]
-                        cca_over_time = np.vstack(get_cca_vecs(
+
+                        if v1_mat.dtype is np.dtype('complex218'):
+                            v1_mat = np.absolute(v1_mat)
+
+                        if v2_mat.dtype is np.dtype('complex218'):
+                            v2_mat = np.absolute(v2_mat)
+
+                        n_time_p_frequency = np.vstack(get_cca_vecs(
                             v1_mat, v2_mat))
                         cca_dim = min(v1_mat.shape + v2_mat.shape)
-                        cca_over_freqs = np.hstack(get_cca_vecs(
+                        n_frequency_p_time = np.hstack(get_cca_vecs(
                             v1_mat[:,:cca_dim].T,
                             v2_mat[:,:cca_dim].T,
                             num_nonzero=self.nnz))
-                        cc_over_time = self._get_cc_over_time(
+                        n_time_p_frequency_cc = self._get_n_time_p_frequency_cc(
                             v1_mat,
                             v2_mat,
-                            cca_over_time)
+                            n_time_p_frequency)
                         stuff = {
-                            self.cca_names[0]: cca_over_time,
-                            self.cca_names[1]: cca_over_freqs,
-                            self.cca_names[2]: cc_over_time}
+                            self.cca_names[0]: n_time_p_frequency,
+                            self.cca_names[1]: n_frequency_p_time,
+                            self.cca_names[2]: n_time_p_frequency_cc}
 
-                        if p == 0:
-                            self.num_freqs[i] = Y1_mat.shape[1] 
-                            self.num_freqs[j] = Y2_mat.shape[1]
+                        self.p_by_view[i] = Y1_mat.shape[1] 
+                        self.p_by_view[j] = Y2_mat.shape[1]
 
                         self._save(
                             stuff,
@@ -153,22 +164,22 @@ class ViewPairwiseCCA:
                             j,
                             sp)
 
-        num_freqs_json = json.dumps(self.num_freqs)
+        p_by_view_json = json.dumps(self.p_by_view)
         path = os.path.join(
             self.save_load_dir, 
-            'num_freqs.json')
+            'p_by_view.json')
 
         with open(path, 'w') as f:
-            f.write(num_freqs_json)
+            f.write(p_by_view_json)
 
-    def _get_cc_over_time(self, v1_mat, v2_mat, cca_over_time):
+    def _get_n_time_p_frequency_cc(self, v1_mat, v2_mat, n_time_p_frequency):
 
         v1_cc = np.dot(
             v1_mat, 
-            cca_over_time[:v1_mat.shape[1],:])
+            n_time_p_frequency[:v1_mat.shape[1],:])
         v2_cc = np.dot(
             v2_mat, 
-            cca_over_time[v1_mat.shape[1]:,:])
+            n_time_p_frequency[v1_mat.shape[1]:,:])
 
         return v1_cc * v2_cc
 
@@ -226,7 +237,7 @@ class ViewPairwiseCCA:
                         else:
                             cca_vs[sp] = np.array(sp_group)
 
-    def _show_cca_over_freqs(self):
+    def _show_n_frequency_p_time(self):
 
         tl_spuds = self._get_tl_spuds(1)
         default = lambda: {}
@@ -268,7 +279,7 @@ class ViewPairwiseCCA:
                 title,
                 unit_name=unit_name)
 
-    def _show_cc(self):
+    def _show_n_time_p_frequency_cc(self):
 
         tl_spuds = self._get_tl_spuds(2)
         default = lambda: {'Subject ' + s: None for s in self.subjects}
@@ -305,24 +316,24 @@ class ViewPairwiseCCA:
                     for s in self.ccas.keys()}
 
         for (s, spud) in self.ccas.items():
-            cc_over_time = SPUD(
+            n_time_p_frequency_cc = SPUD(
                 self.num_views, 
                 default=lambda: [None] * self.num_periods[s],
                 no_double=True)
 
-            for (k, subperiods) in spud.items():
-                num_freqs = min([
-                    self.num_freqs[k[0]],
-                    self.num_freqs[k[1]]])
+            for ((v1, v2), subperiods) in spud.items():
+                p_by_view = min([
+                    self.p_by_view[v1],
+                    self.p_by_view[v2]])
                 rate = max([
-                    self.rates[k[0]],
-                    self.rates[k[1]]])
+                    self.rates[v1],
+                    self.rates[v2]])
                 full_length = int(
-                    rate * self.subperiod / 2**(num_freqs)) # - 1))
+                    rate * self.subperiod / 2**(p_by_view)) # - 1))
 
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
-                        tls = cc_over_time.get(k[0], k[1])
+                        tls = n_time_p_frequency_cc.get(v1, v2)
                         p_over_time = period[index]
 
                         if tls[p] is None:
@@ -333,7 +344,7 @@ class ViewPairwiseCCA:
 
             for (k, tls) in cc_over_time.items():
                 tl = np.vstack(tls)
-                cc_over_time.insert(k[0], k[1], tl)
+                n_time_p_frequency_cc.insert(v1, v2, tl)
 
             tl_spuds[s] = cc_over_time
 
@@ -358,103 +369,19 @@ class ViewPairwiseCCA:
             path, format='pdf')
         sns.plt.clf()
 
-    def _show_cca_mean_over_subperiods(self):
+    def _show_n_time_p_frequency(self):
 
-        means = None
-        counts = None
-
-        if self.subject_mean:
-            keys = {rmu.get_symptom_status(s)
-                    for s in self.subjects}
-            means = {k: SPUD(self.num_views, no_double=True)
-                     for k in keys}
-            counts = {k: SPUD(
-                        self.num_views, 
-                        default=lambda:0, 
-                        no_double=True)
-                      for k in keys}
-            p = max(self.num_periods.values())
-
-            for spud in means.values():
-                for (k1, k2) in spud.keys():
-                    n = self.num_freqs[k1] + self.num_freqs[k2]
-
-                    spud.insert(k1, k2, np.zeros((n, p)))
-
-        for (s, spud) in self.ccas.items():
-            status = rmu.get_symptom_status(s)
-            default = lambda: [[] for p in xrange(self.num_periods[s])]
-            period_ccas = SPUD(
-                self.num_views, 
-                default=default,
-                no_double=True)
-
-            for (k, subperiods) in spud.items():
-                for periods in subperiods:
-                    for (p, cca) in enumerate(periods):
-                        period_ccas.get(k[0], k[1])[p].append(cca)
-
-            for (k, periods) in period_ccas.items():
-                timelines = [np.hstack([sp[0] for sp in subperiods])
-                             for subperiods in periods]
-                timeline = np.hstack(
-                    [np.mean(tl, axis=1)[:,np.newaxis] 
-                     for tl in timelines])
-
+        for (s, spud) in self.ccas[self.cca_names[0]].items():
+            for ((v1, v2), subperiods) in spud.items():
                 (y_labels, x_labels) = self._get_labels(
                     k[0], k[1], self.num_periods[s])
-                title = 'View-pairwise mean-over-hours cca' + \
-                    ' over days for views ' + \
-                    self.names[k[0]] + ' ' + self.names[k[1]] + \
-                    ' of subject ' + s
-
-                self._matrix_plot_save_clear(
-                    timeline,
-                    x_labels,
-                    y_labels,
-                    title,
-                    'day')
-
-    def _show_cca_over_subperiods(self):
-
-        for (s, spud) in self.correlation.items():
-            default = lambda: [[] for p in xrange(self.num_periods[s])]
-            period_corrs = SPUD(
-                self.num_views, 
-                default=default,
-                no_double=True)
-
-            for (k, subperiods) in spud.items():
-                for periods in subperiods:
-                    for (p, corr) in enumerate(periods):
-                        period_corrs.get(k[0], k[1])[p].append(corr)
-
-            for (k, periods) in period_corrs.items():
-                (y_labels, x_labels) = self._get_labels(
-                    k[0], k[1], self.num_subperiods)
-                name1 = self.names[k[0]]
-                name2 = self.names[k[1]]
-
-                for (p, subperiods) in enumerate(periods):
-                    timeline = np.hstack([sp[0] for sp in subperiods])
-                    title = 'View-pairwise cca over hours ' + \
-                        ' for views ' + name1 + ' ' + name2 + \
-                        ' of subject ' + s + ' and day ' + \
-                        rmu.get_2_digit(p)
-
-                    self._matrix_plot_save_clear(
-                        timeline,
-                        x_labels,
-                        y_labels,
-                        title,
-                        'hour')
-
-    def _show_cca_over_periods(self):
-
-        for (s, spud) in self.ccas.items():
-            for (k, subperiods) in spud.items():
-                (y_labels, x_labels) = self._get_labels(
-                    k[0], k[1], self.num_periods[s])
+                fig = plt.figure()
+                filename = '_'.join([
+                    'subject', s,
+                    '_views_',
+                    self.names[v1] + '-' + self.names[v2]) + '.mp4'
+                path = os.path.join(
+                    self.n_time_p_frequency_dir, filename)
 
                 for (sp, periods) in enumerate(subperiods):
                     timeline = np.hstack([p[0] for p in periods])
@@ -494,8 +421,8 @@ class ViewPairwiseCCA:
 
     def _get_labels(self, view1, view2, x_len):
 
-        n1 = self.num_freqs[view1]
-        n2 = self.num_freqs[view2]
+        n1 = self.p_by_view[view1]
+        n2 = self.p_by_view[view2]
         y1_labels = ['view ' + str(view1) + ' ' + rmu.get_2_digit(i)
                      for i in xrange(n1)]
         y2_labels = ['view ' + str(view2) + ' ' + rmu.get_2_digit(i)
