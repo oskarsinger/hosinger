@@ -131,9 +131,18 @@ class ViewPairwiseCorrelation:
 
                             v2_mat = repped
                         
+                        if v1_mat.dtype is not np.dtype('float64'):
+                            print 'v1_mat.dtype', v1_mat.dtype
+
+                        if v2_mat.dtype is not np.dtype('float64'):
+                            print 'v2_mat.dtype', v2_mat.dtype
+
                         correlation = get_pm(
                             v1_mat, 
                             v2_mat)
+
+                        if correlation.dtype is not np.dtype('float64'):
+                            print 'correlation.dtype', correlation.dtype
 
                         self._save(
                             correlation,
@@ -214,15 +223,29 @@ class ViewPairwiseCorrelation:
 
                 corr_plot = get_corr_plot(corr, sp, ax1)
 
+                if corr.dtype is np.dtype('complex128'):
+                    print 'corr is complex'
+                    corr = np.absolute(corr)
+
                 ax2 = fig.add_subplot(312)
 
                 sp_data2 = self.servers[s][v2].get_data()
+                
+                if sp_data2.dtype is np.dtype('complex128'):
+                    print 'sp_data2 is complex'
+                    sp_data2 = np.absolute(sp_data2)
+
                 v2_plot = self._get_data_plot(
                     s, v2, sp_data2, ax2)
                 
                 ax3 = fig.add_subplot(313)
 
                 sp_data1 = self.servers[s][v1].get_data()
+
+                if sp_data1.dtype is np.dtype('complex128'):
+                    print 'sp_data1 is complex'
+                    sp_data1 = np.absolute(sp_data1)
+
                 v1_plot = self._get_data_plot(
                     s, v1, sp_data1, ax3)
 
