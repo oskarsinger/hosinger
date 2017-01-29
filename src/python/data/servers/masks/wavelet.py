@@ -19,6 +19,7 @@ class DTCWTMask:
         max_freqs=7,
         padded=True,
         pr=False,
+        magnitude=False,
         serve_one_period=True,
         load=False,
         save=False):
@@ -31,6 +32,7 @@ class DTCWTMask:
         self.save_load_path = save_load_path
         self.padded = padded
         self.pr = pr
+        self.magnitude = magnitude
         self.serve_one_period = serve_one_period
         self.load = load
         self.save = save
@@ -128,10 +130,24 @@ class DTCWTMask:
                 group.create_dataset(
                     'Yl', data=freq)
 
-        if self.padded:
-            wavelets = get_pw(Yh, Yl)
-        elif self.pr:
+        if self.pr:
             wavelets = get_pr(Yh, Yl, self.biorthogonal, self.qshift)
+
+            if self.padded:
+                wavelets = get_pw(wavelets[:-1], wavelets[-1])
+        else:
+            if self.padded:
+                wavelets = get_pw(Yh, Yl)
+            else:
+                wavelets = Yh + [Yl]
+
+        if self.magnitude:
+            if self.padded:
+                wavelets = np.absolute(wavelets)
+            else:
+                Yl = wavelets[-1]
+                Yh = [np.absolute(w) for w in waveletes[:-1]]
+                wavelets = Yhs + [Yl]
 
         return wavelets
 

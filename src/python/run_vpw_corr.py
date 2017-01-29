@@ -16,6 +16,7 @@ import data.loaders.shortcuts as dlsh
 @click.option('--num-subperiods', default=24)
 @click.option('--dataset', default='e4')
 @click.option('--interpolate', default=False)
+@click.option('--pr', default=False)
 @click.option('--show', default=False)
 @click.option('--wavelet-load', default=False)
 @click.option('--wavelet-save', default=False)
@@ -26,6 +27,7 @@ def run_it_all_day_bb(
     num_subperiods,
     dataset,
     interpolate,
+    pr,
     show,
     wavelet_load,
     wavelet_save,
@@ -81,6 +83,8 @@ def run_it_all_day_bb(
         servers = {s : [DTCWTM(
                             ds, 
                             wavelet_dir, 
+                            magnitude=True,
+                            pr=pr,
                             load=wavelet_load,
                             save=wavelet_save)
                         for ds in dss]
