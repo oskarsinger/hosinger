@@ -66,15 +66,10 @@ class ViewPairwiseCCA:
         if self.show:
             self._load()
 
-            self._show_cca_over_periods()
-            self._show_cca_over_subperiods()
+            self._show_n_time_p_frequency()
+            self._show_n_frequency_p_time()
 
-            self._show_cca_mean_over_periods()
-            self._show_cca_mean_over_subperiods()
-
-            self._show_cca_over_freqs()
-
-            self._show_cc()
+            self._show_n_time_p_frequency_cc()
         else:
             self._compute()
 
@@ -259,8 +254,8 @@ class ViewPairwiseCCA:
         for (k, dm) in data_maps.items():
             x_name = 'time (days)'
             y_name = 'canonical vector value'
-            title = 'View-pairwise canonical vector values' + \
-                ' over frequencies for views ' + \
+            title = 'View-pairwise canonical vectors' + \
+                ' (n frequency p time) for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
             unit_name = 'Symptomatic?' \
                 if self.subject_mean else None
@@ -294,7 +289,7 @@ class ViewPairwiseCCA:
             x_name = 'time'
             y_name = 'canonical correlation'
             title = 'View-pairwise canonical correlation' + \
-                ' over time for views ' + \
+                ' (n time p frequency) over time for views ' + \
                 self.names[k[0]] + ' ' + self.names[k[1]]
 
             self._line_plot_save_clear(
@@ -308,7 +303,7 @@ class ViewPairwiseCCA:
         tl_spuds = {s: SPUD(self.num_views, no_double=True)
                     for s in self.ccas.keys()}
 
-        for (s, spud) in self.ccas.items():
+        for (s, spud) in self.ccas[self.cca_names[index]].items():
             n_time_p_frequency_cc = SPUD(
                 self.num_views, 
                 default=lambda: [None] * self.num_periods[s],
@@ -378,7 +373,7 @@ class ViewPairwiseCCA:
 
                 for (sp, periods) in enumerate(subperiods):
                     timeline = np.hstack([p[0] for p in periods])
-                    title = 'View-pairwise cca over days for views ' + \
+                    title = 'View-pairwise cca (n time p frequency) for views ' + \
                         self.names[k[0]] + ' ' + self.names[k[1]] + \
                         ' of subject ' + s + ' at hour ' + str(sp)
 
