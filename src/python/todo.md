@@ -78,8 +78,6 @@
 
 * Show correlation of the partial reconstructions maybe?
 
-* Do vertically stacked plots for CCA components instead of plots of vertically stacked components
-
 * Produce some autocorrelation plots for the E4 data.
 
 * Fix Al's Matlab script to work with CM data.
