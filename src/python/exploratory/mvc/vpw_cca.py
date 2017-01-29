@@ -131,13 +131,6 @@ class ViewPairwiseCCA:
                     for j in xrange(i, self.num_views):
                         v1_mat = subperiod[i]
                         v2_mat = subperiod[j]
-
-                        if v1_mat.dtype is np.dtype('complex218'):
-                            v1_mat = np.absolute(v1_mat)
-
-                        if v2_mat.dtype is np.dtype('complex218'):
-                            v2_mat = np.absolute(v2_mat)
-
                         n_time_p_frequency = np.vstack(get_cca_vecs(
                             v1_mat, v2_mat))
                         cca_dim = min(v1_mat.shape + v2_mat.shape)
@@ -154,8 +147,8 @@ class ViewPairwiseCCA:
                             self.cca_names[1]: n_frequency_p_time,
                             self.cca_names[2]: n_time_p_frequency_cc}
 
-                        self.p_by_view[i] = Y1_mat.shape[1] 
-                        self.p_by_view[j] = Y2_mat.shape[1]
+                        self.p_by_view[i] = v1_mat.shape[1] 
+                        self.p_by_view[j] = v2_mat.shape[1]
 
                         self._save(
                             stuff,
