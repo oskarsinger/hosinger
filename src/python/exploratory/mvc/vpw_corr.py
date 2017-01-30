@@ -37,8 +37,8 @@ class ViewPairwiseCorrelation:
         self.clock_time = clock_time
 
 	self.subjects = self.servers.keys()
-        self.names = {s : ds.get_status()['data_loader'].name()
-                      for (s, ds) in self.servers.items()}
+        self.names = {s : [ds.get_status()['data_loader'].name() for ds in dss]
+                      for (s, dss) in self.servers.items()}
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
