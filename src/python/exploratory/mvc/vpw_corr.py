@@ -210,7 +210,7 @@ class ViewPairwiseCorrelation:
                 ax2 = fig.add_subplot(312)
                 new_data2 = self.servers[s][v2].get_data()
                 data2 = new_data2 if data2 is None else np.vstack(
-                    data2, new_data2)
+                    [data2, new_data2])
 
                 self._get_data_plot(
                     s, v2, sp, data2, ax2)
@@ -218,7 +218,7 @@ class ViewPairwiseCorrelation:
                 ax3 = fig.add_subplot(313)
                 new_data1 = self.servers[s][v1].get_data()
                 data1 = new_data1 if data1 is None else np.vstack(
-                    data1, new_data1)
+                    [data1, new_data1])
 
                 self._get_data_plot(
                     s, v1, sp, data1, ax3)
