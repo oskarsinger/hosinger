@@ -209,8 +209,6 @@ class ViewPairwiseCorrelation:
             (self.num_subperiods * self.num_periods[s]))
 
         with writer.saving(fig, path, 100):
-            (data1, data2) = [None] * 2
-
             for (sp, corr) in enumerate(subperiods):
                 ax1 = fig.add_subplot(311)
 
@@ -249,7 +247,7 @@ class ViewPairwiseCorrelation:
                 factor,
                 start_time))[:,np.newaxis]
         else:
-            x_axis = np.arange(sp_data.shape[0])
+            x_axis = np.arange(data.shape[0])
 
         return plt.plot(x_axis, data)
 
