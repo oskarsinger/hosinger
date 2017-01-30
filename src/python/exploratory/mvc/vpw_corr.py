@@ -37,10 +37,8 @@ class ViewPairwiseCorrelation:
         self.clock_time = clock_time
 
 	self.subjects = self.servers.keys()
-        self.names = [ds.get_status()['data_loader'].name()
-                      for ds in self.servers.values()[0]]
-        self.names2indices = {name : i 
-                              for (i, name) in enumerate(self.names)}
+        self.names = {s : ds.get_status()['data_loader'].name()
+                      for (s, ds) in self.servers.items()}
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
@@ -189,36 +187,41 @@ class ViewPairwiseCorrelation:
         writer = AVConvWriter(fps=1)
         fig = plt.figure()
         get_corr_plot = lambda c, sp, ax: self._get_correlation_plot(
-            c, sp, v1, v2, ax)
+            c, sp, v1, v2, s, ax)
         num_frames = self.num_periods[s] * self.num_subperiods
         filename = \
             'subject_' + s + \
             '_views_' + \
-            self.names[v1] + \
+            self.names[s][v1] + \
             '-' + \
-            self.names[v2] + \
+            self.names[s][v2] + \
             '.mp4'
         path = os.path.join(
             self.full_time_dir, filename)
 
         with writer.saving(fig, path, 100):
-            for (sp, corr) in enumerate(subperiods):
+            (data1, data2) = [None] * 2
 
+            for (sp, corr) in enumerate(subperiods):
                 ax1 = fig.add_subplot(311)
 
                 get_corr_plot(corr, sp, ax1)
 
                 ax2 = fig.add_subplot(312)
-                sp_data2 = self.servers[s][v2].get_data()
+                new_data2 = self.servers[s][v2].get_data()
+                data2 = new_data2 if data2 is None else np.vstack(
+                    data2, new_data2)
 
                 self._get_data_plot(
-                    s, v2, sp_data2, ax2)
+                    s, v2, sp, data2, ax2)
                 
                 ax3 = fig.add_subplot(313)
-                sp_data1 = self.servers[s][v1].get_data()
+                new_data1 = self.servers[s][v1].get_data()
+                data1 = new_data1 if data1 is None else np.vstack(
+                    data1, new_data1)
 
                 self._get_data_plot(
-                    s, v1, sp_data1, ax3)
+                    s, v1, sp, data1, ax3)
 
                 writer.grab_frame()
                 plt.clf()
@@ -228,23 +231,24 @@ class ViewPairwiseCorrelation:
 
         plt.close(fig)
 
-    def _get_data_plot(self, s, v, sp_data, ax):
+    def _get_data_plot(self, s, v, sp, data, ax):
 
         x_axis = None
 
         if self.clock_time:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = dl.get_status()['start_times'][0]
+            factor = 3600.0 * (sp + 1) / data.shape[0]
             x_axis = np.array(get_dti(
-                sp_data.shape[0], 
-                24.0 * 3600.0 / self.num_subperiods,
+                data.shape[0],
+                factor,
                 start_time))[:,np.newaxis]
         else:
             x_axis = np.arange(sp_data.shape[0])
 
-        return plt.plot(sp_data, x_axis)
+        return plt.plot(x_axis, data)
 
-    def _get_correlation_plot(self, c, sp, v1, v2, ax):
+    def _get_correlation_plot(self, c, sp, v1, v2, s, ax):
 
         (m, n) = c.shape
         x_labels = ['{:02d}'.format(i) 
@@ -253,13 +257,13 @@ class ViewPairwiseCorrelation:
                     for i in reversed(xrange(m))]
         title = ' '.join([
             'Pearson correlation of view',
-            self.names[v1],
+            self.names[s][v1],
             'vs',
-            self.names[v2],
+            self.names[s][v2],
             'for subperiod',
             str(sp)])
-        x_name = 'Dimensions of view 2: ' + self.names[v2]
-        y_name = 'Dimensions of view 1: ' + self.names[v1]
+        x_name = 'Dimensions of view 2: ' + self.names[s][v2]
+        y_name = 'Dimensions of view 1: ' + self.names[s][v1]
         val_name = 'Pearson correlation'
 
         return plot_matrix_heat(
@@ -273,9 +277,3 @@ class ViewPairwiseCorrelation:
             vmax=1,
             vmin=-1,
             ax=ax)
-        
-    def _save_and_clear_plot(self, plot): 
-
-        plot.get_figure().savefig(
-                path, format='pdf')
-        sns.plt.clf()
