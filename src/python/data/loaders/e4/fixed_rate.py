@@ -64,6 +64,8 @@ class FixedRateLoader:
 
         self.num_rounds += 1
 
+        print 'batch', batch
+
         return batch
 
     def _refill_data(self):
