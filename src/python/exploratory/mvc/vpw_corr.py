@@ -37,8 +37,10 @@ class ViewPairwiseCorrelation:
         self.clock_time = clock_time
 
 	self.subjects = self.servers.keys()
-        self.names = {s : [ds.get_status()['data_loader'].name() for ds in dss]
-                      for (s, dss) in self.servers.items()}
+        self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
+                        for (s, dss) in self.servers.items()}
+        self.names = {s : [dl.name() for dl in dls]
+                      for (s, dls) in self.loaders.items()}
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
@@ -199,6 +201,12 @@ class ViewPairwiseCorrelation:
             '.mp4'
         path = os.path.join(
             self.full_time_dir, filename)
+        data1 = self.loaders[s][v1].get_data()
+        data2 = self.loaders[s][v2].get_data()
+        sp_length1 = int(data1.shape[0] / 
+            (self.num_subperiods * self.num_periods[s]))
+        sp_length2 = int(data2.shape[0] / 
+            (self.num_subperiods * self.num_periods[s]))
 
         with writer.saving(fig, path, 100):
             (data1, data2) = [None] * 2
@@ -209,20 +217,16 @@ class ViewPairwiseCorrelation:
                 get_corr_plot(corr, sp, ax1)
 
                 ax2 = fig.add_subplot(312)
-                new_data2 = self.servers[s][v2].get_data()
-                data2 = new_data2 if data2 is None else np.vstack(
-                    [data2, new_data2])
+                sp_data1 = data1[0:sp_length1 * (sp + 1),:]
 
                 self._get_data_plot(
-                    s, v2, sp, data2, ax2)
+                    s, v1, sp, sp_data1, ax2)
                 
                 ax3 = fig.add_subplot(313)
-                new_data1 = self.servers[s][v1].get_data()
-                data1 = new_data1 if data1 is None else np.vstack(
-                    [data1, new_data1])
+                sp_data2 = data2[0:sp_length2 * (sp + 1),:]
 
                 self._get_data_plot(
-                    s, v1, sp, data1, ax3)
+                    s, v2, sp, sp_data2, ax3)
 
                 writer.grab_frame()
                 plt.clf()
@@ -238,7 +242,7 @@ class ViewPairwiseCorrelation:
 
         if self.clock_time:
             dl = self.servers[s][v].get_status()['data_loader']
-            start_time = dl.get_status()['start_times'][0]
+            start_time = self.loaders[s][v].get_status()['start_times'][0]
             factor = 3600.0 * (sp + 1) / data.shape[0]
             x_axis = np.array(get_dti(
                 data.shape[0],
@@ -255,7 +259,7 @@ class ViewPairwiseCorrelation:
         x_labels = ['{:02d}'.format(i) 
                     for i in xrange(n)]
         y_labels = ['{:02d}'.format(i)
-                    for i in reversed(xrange(m))]
+                    for i in xrange(m)]
         title = ' '.join([
             'Pearson correlation of view',
             self.names[s][v1],
@@ -268,7 +272,7 @@ class ViewPairwiseCorrelation:
         val_name = 'Pearson correlation'
 
         return plot_matrix_heat(
-            c[::-1,:],
+            c,
             x_labels,
             y_labels,
             title,
