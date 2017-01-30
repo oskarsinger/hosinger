@@ -17,6 +17,8 @@ class FixedRateLoader:
         sensor, 
         reader,
         seconds=None,
+        upper=None,
+        lower=None,
         online=False):
 
         self.hdf5_path = hdf5_path
@@ -24,6 +26,8 @@ class FixedRateLoader:
         self.sensor = sensor
         self.reader = reader
         self.seconds = seconds
+        self.upper = upper
+        self.lower = lower
         self.online = online
 
         # Set the sampling frequency
@@ -61,6 +65,12 @@ class FixedRateLoader:
         if self.online and not isinstance(self.data, MissingData):
             batch = np.copy(self.data.astype(float))
             self.num_real_data += 1
+
+        if self.upper is not None:
+            batch[batch > self.upper] = self.upper
+
+        if self.lower is not None:
+            batch[batch < self.lower] = self.lower
 
         self.num_rounds += 1
 

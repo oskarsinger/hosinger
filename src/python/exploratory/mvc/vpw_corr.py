@@ -180,7 +180,7 @@ class ViewPairwiseCorrelation:
             print 'Generating plots for subject', s
 
             for ((v1, v2), subperiods) in spud.items():
-                print '\tGenerating plots for views', v1, v2
+                print '\tGenerating plot for views', v1, v2
                 self._plot_movie(s, v1, v2, subperiods)
 
     # TODO: consider getting rid of load and just working directly from hdf5 repo
