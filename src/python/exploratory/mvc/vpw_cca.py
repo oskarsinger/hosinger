@@ -252,21 +252,28 @@ class ViewPairwiseCCA:
                 data_maps.get(k[0], k[1])[s_key + str(1)] = phi1
                 data_maps.get(k[0], k[1])[s_key + str(2)] = phi2
 
-        for (k, dm) in data_maps.items():
+        fig = plt.figure()
+        
+        for ((v1, v2), dm) in data_maps.items():
             x_name = 'time (days)'
             y_name = 'canonical vector value'
             title = 'View-pairwise canonical vectors' + \
-                ' (n frequency p time) for views ' + \
-                self.names[k[0]] + ' ' + self.names[k[1]]
-            unit_name = 'Symptomatic?' \
-                if self.subject_mean else None
+                ' (n frequency p time) for views '
 
-            self._line_plot_save_clear(
-                dm,
-                x_name,
-                y_name,
-                title,
-                unit_name=unit_name)
+            for (i, (s, data)) in enumerate(dm.items()):
+                ax = fig.add_subplot(
+                    len(self.subjects), 1, i+1)
+                s_title = title + \
+                    self.names[s][v1] + ' ' + self.names[s][v2]
+                s_dm = {s : data}
+
+                self._line_plot_save_clear(
+                    s_dm,
+                    x_name,
+                    y_name,
+                    s_title)
+
+            plt.clf()
 
     def _show_n_time_p_frequency_cc(self):
 
@@ -286,18 +293,28 @@ class ViewPairwiseCCA:
                     None)
                 data_maps.get(k[0], k[1])[s_key] = data
 
-        for (k, dm) in data_maps.items():
+        fig = plt.figure()
+
+        for ((v1, v2), dm) in data_maps.items():
             x_name = 'time'
             y_name = 'canonical correlation'
             title = 'View-pairwise canonical correlation' + \
-                ' (n time p frequency) over time for views ' + \
-                self.names[k[0]] + ' ' + self.names[k[1]]
+                ' (n time p frequency) over time for views '
 
-            self._line_plot_save_clear(
-                dm,
-                x_name,
-                y_name,
-                title)
+            for (i, (s, data)) in enumerate(dm.items()):
+                ax = fig.add_subplot(
+                    len(self.subjects), 1, i+1)
+                s_title = title + \
+                    self.names[s][v1] + ' ' + self.names[s][v2]
+                s_dm = {s : data}
+
+                plot_lines(
+                    s_dm, 
+                    x_name, 
+                    y_name, 
+                    s_title)
+
+            plt.clf()
 
     def _get_tl_spuds(self, index):
 
