@@ -383,7 +383,7 @@ class ViewPairwiseCCA:
                 filename = '_'.join([
                     'subject', s,
                     '_views_',
-                    self.names[v1] + '-' + self.names[v2]) + '.png'
+                    self.names[v1] + '-' + self.names[v2]]) + '.png'
                 path = os.path.join(
                     self.n_time_p_frequency_dir, filename)
                 (v1_l, v2_l) = unzip(
