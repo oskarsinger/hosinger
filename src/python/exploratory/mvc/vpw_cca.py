@@ -126,7 +126,7 @@ class ViewPairwiseCCA:
         for (s, servers) in self.servers.items():
             print 'Computing CCAs for subject', s
 
-            for sp in enumerate(self.num_subperiods * self.num_periods[s]):
+            for sp in xrange(self.num_subperiods * self.num_periods[s]):
                 subperiods = [s.get_data() for s in servers]
 
                 for i in xrange(self.num_views):
