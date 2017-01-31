@@ -7,7 +7,6 @@ matplotlib.use('Cairo')
 
 import numpy as np
 import seaborn as sns
-import utils as rmu
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.stats import get_cca_vecs
@@ -239,16 +238,14 @@ class ViewPairwiseCCA:
             for (k, tl) in spud.items():
                 s_key = 'Subject ' + s + ' view '
                 factor = float(self.num_periods[s]) / tl.shape[0]
-                unit = rmu.get_symptom_status(s) \
-                    if self.subject_mean else None
                 phi1 = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl[:,0][:,np.newaxis],
-                    unit)
+                    None)
                 phi2 = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl[:,1][:,np.newaxis],
-                    unit)
+                    None)
                 data_maps.get(k[0], k[1])[s_key + str(1)] = phi1
                 data_maps.get(k[0], k[1])[s_key + str(2)] = phi2
 
