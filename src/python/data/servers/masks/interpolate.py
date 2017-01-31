@@ -16,8 +16,11 @@ class Interp1DMask:
         non_nan_x = np.copy(full_x[non_nan_indexes])
         non_nan_y = full_y[non_nan_indexes]
         f = IUS(non_nan_x, non_nan_y, k=3)
+        interped = f(full_x)[:,np.newaxis]
 
-        return f(full_x)[:,np.newaxis]
+        print 'interped has nan?', np.any(np.isnan(interped))
+
+        return interped
 
     def cols(self):
 
