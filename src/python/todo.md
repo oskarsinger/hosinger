@@ -81,3 +81,5 @@
 * Produce some autocorrelation plots for the E4 data.
 
 * Fix Al's Matlab script to work with CM data.
+
+* Touch up the movie plots and speed up the plot generation.

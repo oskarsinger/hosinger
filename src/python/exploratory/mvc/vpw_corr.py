@@ -210,19 +210,23 @@ class ViewPairwiseCorrelation:
 
         with writer.saving(fig, path, 100):
             for (sp, corr) in enumerate(subperiods):
+                print '\t\tGenerating frame', sp
                 ax1 = fig.add_subplot(311)
 
+                print '\t\t\tGenerating corr plot'
                 get_corr_plot(corr, sp, ax1)
 
                 ax2 = fig.add_subplot(312)
-                sp_data1 = data1[0:sp_length1 * (sp + 1),:]
+                sp_data1 = data1[sp_length1 * sp:sp_length1 * (sp + 1),:]
 
+                print '\t\t\tGenerating data plot 1'
                 self._get_data_plot(
                     s, v1, sp, sp_data1, ax2)
                 
                 ax3 = fig.add_subplot(313)
-                sp_data2 = data2[0:sp_length2 * (sp + 1),:]
+                sp_data2 = data2[sp_length2 * sp:sp_length2 * (sp + 1),:]
 
+                print '\t\t\tGenerating data plot 2'
                 self._get_data_plot(
                     s, v2, sp, sp_data2, ax3)
 
