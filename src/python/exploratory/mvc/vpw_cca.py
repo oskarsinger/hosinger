@@ -80,7 +80,7 @@ class ViewPairwiseCCA:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('VPWC')
+            model_dir = get_ts('VPWCCA')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
