@@ -103,7 +103,7 @@ class ViewPairwiseCCA:
             self.save_load_dir, n)
         hdf5_paths = {n : get_path(n) for n in self.cca_names}
         self.hdf5_repos = {n : h5py.File(p, 'r' if show else 'w')
-                           for p in hdf5_paths}
+                           for (n, p) in hdf5_paths.items()}
         self.plot_dir = init_dir(
             'plots',
             show,
