@@ -39,7 +39,7 @@ class ViewPairwiseCCA:
         self.names = {s : [dl.name() for dl in dls]
                       for (s, dls) in self.loaders.items()}
         self.num_views = len(self.servers.values()[0])
-        self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
+        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
 	self.max_periods = max(self.num_periods.values())
         self.cca_names = [
