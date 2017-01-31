@@ -131,8 +131,8 @@ class ViewPairwiseCCA:
 
                 for i in xrange(self.num_views):
                     for j in xrange(i, self.num_views):
-                        v1_mat = subperiod[i]
-                        v2_mat = subperiod[j]
+                        v1_mat = subperiods[i]
+                        v2_mat = subperiods[j]
                         n_time_p_frequency = np.vstack(get_cca_vecs(
                             v1_mat, v2_mat))
                         cca_dim = min(v1_mat.shape + v2_mat.shape)
