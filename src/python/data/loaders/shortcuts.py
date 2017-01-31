@@ -178,12 +178,21 @@ def get_e4_loaders(hdf5_path, subject, seconds, online):
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
 
+    get_loader = lambda n, r, u: FRL(
+        hdf5_path,
+        subject,
+        n,
+        r,
+        seconds=seconds,
+        online=online,
+        upper=u)
+
     return [
-        FRL(hdf5_path, subject, 'EDA', fac, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'TEMP', fac, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'ACC',  mag, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'BVP', fac, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
+        get_loader('EDA', fac, 30),
+        get_loader('TEMP', fac, 45),
+        get_loader('ACC', mag, None),
+        get_loader('BVP', fac, None),
+        get_loader('HR', fac, None)]
 
 def get_changing_e4_loaders(hdf5_path, subject, seconds, online):
 

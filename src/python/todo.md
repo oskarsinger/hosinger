@@ -81,5 +81,3 @@
 * Produce some autocorrelation plots for the E4 data.
 
 * Fix Al's Matlab script to work with CM data.
-
-* Put in thresholds on fixed-rate data loaders, especially for temperature.

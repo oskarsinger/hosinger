@@ -152,12 +152,6 @@ class E4RawDataPlotRunner:
 
                 name = self.names[v]
                 data = view.get_data()
-
-                if name == 'TEMP':
-                    data[data > 45] = 45
-                elif name == 'EDA':
-                    data[data > 30] = 30
-
                 window = int(r * self.period)
                 float_num_periods = float(data.shape[0]) / window
                 int_num_periods = int(float_num_periods)
