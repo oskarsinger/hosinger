@@ -245,7 +245,7 @@ class ViewPairwiseCorrelation:
         if self.clock_time:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
-            factor = 3600.0 * (sp + 1) / data.shape[0]
+            factor = 3600.0 / data.shape[0]
             x_axis = np.array(get_dti(
                 data.shape[0],
                 factor,
