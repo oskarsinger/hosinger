@@ -1,6 +1,13 @@
 import click
 
 from exploratory.mvc import ViewPairwiseCCA as VPWCCA
+from data.servers.masks import Interp1DMask as I1DM
+from data.servers.masks import DTCWTMask as DTCWTM
+from data.servers.batch import BatchServer as BS
+from data.servers.minibatch import Batch2Minibatch as B2M
+from drrobert.file_io import get_timestamped as get_ts
+
+import data.loaders.shortcuts as dlsh
 
 @click.command()
 @click.option('--save-load-dir')
