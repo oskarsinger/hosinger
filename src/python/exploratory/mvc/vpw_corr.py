@@ -245,11 +245,13 @@ class ViewPairwiseCorrelation:
         if self.clock_time:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
-            factor = 3600.0 / data.shape[0]
+            n = data.shape[0]
+            factor = 3600.0 / n
             x_axis = np.array(get_dti(
-                data.shape[0],
+                n,
                 factor,
-                start_time))[:,np.newaxis]
+                start_time,
+                offset=3600.0 * (sp + 1)))[:,np.newaxis]
         else:
             x_axis = np.arange(data.shape[0])
 
