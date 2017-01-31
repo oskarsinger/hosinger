@@ -88,14 +88,16 @@ class ViewPairwiseCCA:
 
             os.mkdir(self.save_load_dir)
 
-            freqs_path = os.path.join(
-                self.save_load_dir,
-                'p_by_view.json')
+        self.freqs_path = os.path.join(
+            self.save_load_dir,
+            'p_by_view.json')
 
-            with open(freqs_path) as f:
+        if show:
+            with open(self.freqs_path) as f:
                 line = f.readline()
 
                 self.p_by_view = json.loads(line)
+
 
         get_path = lambda n: os.path.join(
             self.save_load_dir, n)
@@ -107,9 +109,17 @@ class ViewPairwiseCCA:
             show,
             self.save_load_dir) 
         self.n_time_p_frequency_dir = init_dir(
-            'n_time_p_frequency',
+            self.cca_names[0],
             show,
-            self.save_load_dir)
+            self.plot_dir)
+        self.n_frequency_p_time_dir = init_dir(
+            self.cca_names[1],
+            show,
+            self.plot_dir)
+        self.n_time_p_frequency_cc_dir = init_dir(
+            self.cca_names[2],
+            show,
+            self.plot_dir)
 
     def _compute(self):
 
@@ -150,11 +160,8 @@ class ViewPairwiseCCA:
                             sp)
 
         p_by_view_json = json.dumps(self.p_by_view)
-        path = os.path.join(
-            self.save_load_dir, 
-            'p_by_view.json')
 
-        with open(path, 'w') as f:
+        with open(self.freqs_path, 'w') as f:
             f.write(p_by_view_json)
 
     def _get_n_time_p_frequency_cc(self, v1_mat, v2_mat, n_time_p_frequency):
