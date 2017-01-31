@@ -253,7 +253,7 @@ class ViewPairwiseCorrelation:
         else:
             x_axis = np.arange(data.shape[0])
 
-        return plt.plot(x_axis, data)
+        return ax.plot(x_axis, data)
 
     def _get_correlation_plot(self, c, sp, v1, v2, s, ax):
 
