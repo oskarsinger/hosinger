@@ -1,48 +1,97 @@
 import click
 
-from runners.wavelets import ViewPairwiseCCARunner as VPWCCAR
-from runners.wavelets import MVDTCWTRunner
+from exploratory.mvc import ViewPairwiseCCA as VPWCCA
 
 @click.command()
-@click.option('--data-path', default=None)
 @click.option('--save-load-dir')
-@click.option('--wavelet-dir')
+@click.option('--data-path', default=None)
+@click.option('--num-subperiods', default=24)
 @click.option('--dataset', default='e4')
-@click.option('--save', default=False)
-@click.option('--load', default=False)
-@click.option('--show', default=False)
-@click.option('--subject-mean', default=False)
+@click.option('--interpolate', default=False)
+@click.option('--pr', default=False)
 @click.option('--nnz', default=1)
+@click.option('--show', default=False)
+@click.option('--wavelet-save', default=False) 
+@click.option('--wavelet-load', default=False)
+@click.option('--wavelet-dir'=None)
 def run_it_all_day_bb(
-    data_path,
     save_load_dir,
-    wavelet_dir,
+    data_path,
+    num_subperiods,
     dataset,
-    save,
-    load,
+    interpolate,
+    pr,
+    nnz,
     show,
-    subject_mean,
-    nnz):
+    wavelet_save,
+    wavelet_load,
+    wavelet_dir):
 
-    dtcwt_runner = MVDTCWTRunner(
-        data_path=data_path,
-        dataset=dataset,
-        save_load_dir=wavelet_dir,
-        load=True)
+    loaders = None
 
-    if not load:
-        dtcwt_runner.run()
+    if dataset == 'e4':
+        loaders = dlsh.get_e4_loaders_all_subjects(
+            data_path, None, False)
+    elif dataset == 'cm':
+        loaders = dlsh.get_cm_loaders_all_subjects(
+            data_path)
+    elif dataset == 'ats':
+        loaders = dlsh.get_ats_loaders_all_subjects(
+            data_path)
+    elif dataset == 'atr':
+        loaders = dlsh.get_atr_loaders()
+    elif dataset == 'gr':
+        ps = [1] * 2
+        hertzes = [1.0/60] * 2
+        n = 60 * 24 * 8
+        loaders = {'e' + str(i): dls.get_FPGL(n, ps, hertzes)
+                   for i in xrange(2)}
 
-    runner = VPWCCAR(
-        dtcwt_runner,
+    servers = None
+
+    if dataset == 'cm':
+        batch_size = 3
+        servers = {s : [B2M(
+                            dl, 
+                            batch_size, 
+                            random=False, 
+                            lazy=False) 
+                        for dl in dls]
+                   for (s, dls) in loaders.items()}
+    else:
+        servers = {s : [BS(dl) for dl in dls]
+                   for (s, dls) in loaders.items()}
+
+        if interpolate:
+            servers = {s : [I1DM(ds) for ds in dss]
+                       for (s, dss) in servers.items()}
+
+        if wavelet_save:
+            wavelet_dir = os.path.join(
+                wavelet_dir, get_ts('DTCWT'))
+
+            os.mkdir(wavelet_dir)
+        elif wavelet_load:
+            'Give proper paths to each server'
+
+        servers = {s : [DTCWTM(
+                            ds, 
+                            wavelet_dir, 
+                            magnitude=True,
+                            pr=pr,
+                            load=wavelet_load,
+                            save=wavelet_save)
+                        for ds in dss]
+                   for (s, dss) in servers.items()}
+
+    vpwcca = VPWCCA(
+        servers,
         save_load_dir,
-        save=save,
-        load=load,
-        show=show,
-        subject_mean=subject_mean,
-        nnz=nnz)
+        num_subperiods=num_subperiods,
+        nnz=nnz,
+        show=show)
 
-    runner.run()
+    vpwcca.run()
 
 if __name__=='__main__':
     run_it_all_day_bb()

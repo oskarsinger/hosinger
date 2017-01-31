@@ -23,8 +23,8 @@ class ViewPairwiseCCA:
         servers,
         save_load_dir,
         num_subperiods=1,
-        show=False,
-        nnz=1):
+        nnz=1,
+        show=False):
 
         self.servers = servers
         self.show = show
