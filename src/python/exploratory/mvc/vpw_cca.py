@@ -34,11 +34,10 @@ class ViewPairwiseCCA:
 
         self.subjects = self.servers.keys()
         self.num_subperiods = num_subperiods
-        self.subperiod = dtcwt_runner.subperiod
-        self.names = [s.get_status()['data_loader'].name()
-                      for s in self.servers.values()[0]]
-        self.names2indices = {name : i 
-                              for (i, name) in enumerate(self.names)}
+        self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
+                        for (s, dss) in self.servers.items()}
+        self.names = {s : [dl.name() for dl in dls]
+                      for (s, dls) in self.loaders.items()}
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_periods / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
@@ -47,8 +46,6 @@ class ViewPairwiseCCA:
             'n_time_p_frequency',
             'n_frequency_p_time',
             'n_time_p_frequency_cc']
-
-        self.rates = dtcwt_runner.rates
 
         self._init_dirs(
             show, 
@@ -325,15 +322,6 @@ class ViewPairwiseCCA:
                 no_double=True)
 
             for ((v1, v2), subperiods) in spud.items():
-                p_by_view = min([
-                    self.p_by_view[v1],
-                    self.p_by_view[v2]])
-                rate = max([
-                    self.rates[v1],
-                    self.rates[v2]])
-                full_length = int(
-                    rate * self.subperiod / 2**(p_by_view)) # - 1))
-
                 for (sp, periods) in enumerate(subperiods):
                     for (p, period) in enumerate(periods):
                         tls = n_time_p_frequency_cc.get(v1, v2)
