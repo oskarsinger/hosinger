@@ -1,1 +1,2 @@
 from vpw_corr import ViewPairwiseCorrelation
+from vpw_cca import ViewPairwiseCCA
