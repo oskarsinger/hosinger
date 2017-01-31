@@ -404,7 +404,7 @@ class ViewPairwiseCCA:
                 plot_matrix_heat(
                     tl1,
                     xl,
-                    yl1
+                    yl1,
                     '',
                     x_name,
                     y_name,
