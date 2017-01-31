@@ -187,7 +187,7 @@ class ViewPairwiseCorrelation:
     def _plot_movie(self, s, v1, v2, subperiods):
 
         # TODO: pick a good fps
-        writer = AVConvWriter(fps=1)
+        writer = AVConvWriter(fps=0.5)
         fig = plt.figure()
         get_corr_plot = lambda c, sp, ax: self._get_correlation_plot(
             c, sp, v1, v2, s, ax)
