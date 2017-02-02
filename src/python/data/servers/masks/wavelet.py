@@ -130,6 +130,7 @@ class DTCWTMask:
                 group.create_dataset(
                     'Yl', data=freq)
 
+        # TODO: check for NaN after each post-processing step
         if self.pr:
             wavelets = get_pr(Yh, Yl, self.biorthogonal, self.qshift)
 
