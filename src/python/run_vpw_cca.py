@@ -38,7 +38,7 @@ def run_it_all_day_bb(
 
     if dataset == 'e4':
         loaders = dlsh.get_e4_loaders_all_subjects(
-            data_path, None, False)
+            data_path, False)
     elif dataset == 'cm':
         loaders = dlsh.get_cm_loaders_all_subjects(
             data_path)

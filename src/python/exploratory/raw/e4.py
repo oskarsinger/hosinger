@@ -70,7 +70,7 @@ class E4RawDataPlotRunner:
             self.valid_sympts.add('U')
 
         self.loaders = dlstcts.get_e4_loaders_all_subjects(
-            hdf5_path, None, False)
+            hdf5_path, False)
         self.servers = {s: [BS(dl) for dl in dls]
                         for (s, dls) in self.loaders.items()}
         
