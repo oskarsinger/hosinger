@@ -173,7 +173,7 @@ def get_ats_loaders_all_subjects(data_path):
         subject2: get_ats_loaders(
             data_path, subject=str(2))}
 
-def get_e4_loaders(hdf5_path, subject, seconds, online):
+def get_e4_loaders(hdf5_path, subject, online):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
@@ -183,7 +183,6 @@ def get_e4_loaders(hdf5_path, subject, seconds, online):
         subject,
         n,
         r,
-        seconds=seconds,
         online=online,
         upper=u)
 
@@ -194,40 +193,40 @@ def get_e4_loaders(hdf5_path, subject, seconds, online):
         get_loader('BVP', fac, None),
         get_loader('HR', fac, None)]
 
-def get_changing_e4_loaders(hdf5_path, subject, seconds, online):
+def get_changing_e4_loaders(hdf5_path, subject, online):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
 
     return [
-        FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'BVP', fac, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
+        FRL(hdf5_path, subject, 'ACC', mag, online=online),
+        FRL(hdf5_path, subject, 'BVP', fac, online=online),
+        FRL(hdf5_path, subject, 'HR', fac, online=online)]
 
-def get_hr_and_acc(hdf5_path, subject, seconds, online):
+def get_hr_and_acc(hdf5_path, subject, online):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
 
     return [
-        FRL(hdf5_path, subject, 'ACC', mag, seconds=seconds, online=online),
-        FRL(hdf5_path, subject, 'HR', fac, seconds=seconds, online=online)]
+        FRL(hdf5_path, subject, 'ACC', mag, online=online),
+        FRL(hdf5_path, subject, 'HR', fac, online=online)]
 
-def get_e4_loaders_all_subjects(hdf5_path, seconds, online):
+def get_e4_loaders_all_subjects(hdf5_path, online):
 
     subjects = h5py.File(hdf5_path).keys()
     bad = {'HRV15-0' + n for n in ['15', '07', '08']}
 
-    return {s : get_e4_loaders(hdf5_path, s, seconds, online)
+    return {s : get_e4_loaders(hdf5_path, s, online)
             for s in subjects
             if s not in bad}
 
-def get_hr_and_acc_all_subjects(hdf5_path, seconds, online):
+def get_hr_and_acc_all_subjects(hdf5_path, online):
 
     subjects = h5py.File(hdf5_path).keys()
     bad = {'HRV15-0' + n for n in ['15', '07', '08']}
 
-    return {s : get_hr_and_acc(hdf5_path, s, seconds, online)
+    return {s : get_hr_and_acc(hdf5_path, s, online)
             for s in subjects
             if s not in bad}
 
