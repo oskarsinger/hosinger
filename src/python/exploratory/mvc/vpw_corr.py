@@ -243,13 +243,16 @@ class ViewPairwiseCorrelation:
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             n = data.shape[0]
             factor = 3600.0 / n
-            x_axis = np.array(get_dti(
+            x_axis_l = get_dti(
                 n,
                 factor,
                 start_time,
-                offset=3600.0 * (sp + 1)))[:,np.newaxis]
+                offset=3600.0 * (sp + 1))
+	    x_axis_l = [dt.strftime('%d - %H:%M')
+			for dt in x_axis_l]
+	    x_axis = np.array(x_axis_l)[:,np.newaxis]
         else:
-            x_axis = np.arange(data.shape[0])
+            x_axis = np.arange(data.shape[0])[:,np.newaxis]
 
         return ax.plot(x_axis, data)
 
@@ -264,9 +267,18 @@ class ViewPairwiseCorrelation:
             'Pearson correlation of view',
             self.names[s][v1],
             'vs',
-            self.names[s][v2],
-            'for subperiod',
-            str(sp)])
+            self.names[s][v2]])
+
+        if self.clocktime:
+            title = ' '.join([
+                title,
+                'for',
+                ])
+        else:
+            title = ' '.join([
+                title,
+                'for subperiod',
+                str(sp)])
         x_name = 'Dimensions of view 2: ' + self.names[s][v2]
         y_name = 'Dimensions of view 1: ' + self.names[s][v1]
         val_name = 'Pearson correlation'

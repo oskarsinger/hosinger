@@ -16,7 +16,6 @@ class FixedRateLoader:
         subject, 
         sensor, 
         reader,
-        seconds=None,
         upper=None,
         lower=None,
         online=False):
@@ -25,7 +24,6 @@ class FixedRateLoader:
         self.subject = subject
         self.sensor = sensor
         self.reader = reader
-        self.seconds = seconds
         self.upper = upper
         self.lower = lower
         self.online = online
@@ -37,13 +35,14 @@ class FixedRateLoader:
         self.num_sessions = len(self.start_times)
         dataset = repo.values()[0][self.sensor]
         key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
-        self.hertz = dataset.attrs[key]
-        self.window = 1
+        self.original_hertz = dataset.attrs[key]
 
-        if self.seconds is not None: 
-            self.window = int(self.hertz * self.seconds)
+        if 'ACC' in self.sensor:
+            self.hertz = 1
         else:
-            self.seconds = 1.0 / self.hertz
+            self.hertz = self.original_hertz
+
+        self.seconds = 1.0 / self.original_hertz
 
         self.data = None
         self.on_deck_data = None
@@ -74,6 +73,10 @@ class FixedRateLoader:
 
         self.num_rounds += 1
 
+        # Subsample acceleration to once-per-second measurements
+        if 'ACC' in self.sensor:
+            batch = batch[::32,:]
+
         return batch
 
     def _refill_data(self):
@@ -100,7 +103,7 @@ class FixedRateLoader:
 
             if isinstance(new_data, MissingData):
                 num_rows = new_data.get_status()['num_missing_rows']
-                new_data = np.ones((num_rows, self.window)) * np.nan
+                new_data = np.ones((num_rows, 1)) * np.nan
 
             if data is None:
                 data = np.copy(new_data)
@@ -167,7 +170,7 @@ class FixedRateLoader:
 
     def cols(self):
 
-        return self.window
+        return 1
 
     def rows(self):
 
@@ -208,8 +211,8 @@ class FixedRateLoader:
             'subject': self.subject,
             'sensor': self.sensor,
             'hertz': self.hertz,
+            'original_hertz': self.original_hertz,
             'seconds': self.seconds,
-            'window': self.window,
             'num_rounds': self.num_rounds,
             'num_real_data': self.num_real_data,
             'num_sessions': self.num_sessions,

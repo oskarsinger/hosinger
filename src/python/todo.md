@@ -84,11 +84,7 @@
 
 * Fix the NaN-valued wavelets in the CCA code.
 
-* Fix the date axis on the time series plots; think about also showing the standard deviation instead of the raw data.
-
 * Maybe plug standard deviation into the wavelet decomposition
-
-* Try ten-minute wavelet experiments, and check lower frequencies, especially for acceleration.
 
 * Show similar R squared plots to Yaya's by regressing on E4 data, wavelet coefficients, CCA-filtered data, canonical correlation
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
