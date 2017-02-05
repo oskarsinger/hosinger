@@ -134,15 +134,18 @@ class ViewPairwiseCCA:
                     v1_mat = subperiods[i]
 
                     for j in xrange(i, self.num_views):
-                        print '\t\tComputing CCAs for views', i, j
                         v2_mat = subperiods[j]
+                        print '\t\tComputing CCAs for views', i, j
+                        print '\t\t\tComputing n_time_p_frequency'
                         n_time_p_frequency = get_cca_vecs(
                             v1_mat, v2_mat)
                         cca_dim = min(v1_mat.shape + v2_mat.shape)
+                        print '\t\t\tComputing n_frequency_p_time'
                         n_frequency_p_time = get_cca_vecs(
                             v1_mat[:,:cca_dim].T,
                             v2_mat[:,:cca_dim].T,
                             num_nonzero=self.nnz)
+                        print '\t\t\tComputing n_time_p_frequency_cc'
                         n_time_p_frequency_cc = self._get_n_time_p_frequency_cc(
                             v1_mat,
                             v2_mat,
@@ -155,6 +158,7 @@ class ViewPairwiseCCA:
                         self.p_by_view[i] = v1_mat.shape[1] 
                         self.p_by_view[j] = v2_mat.shape[1]
 
+                        print '\t\t\tSaving CCAs'
                         self._save(
                             stuff,
                             s,
