@@ -199,10 +199,9 @@ class ViewPairwiseCCA:
 
                 sp_group = v_group[sp_str]
                 (Phi1, Phi2) = cs[n]
-                print 'Phi1', Phi1[np.logical_not(Phi1 == 0)]
 
-                sp_group.create_dataset('1', Phi1)
-                sp_group.create_dataset('2', Phi2)
+                sp_group.create_dataset('1', data=Phi1)
+                sp_group.create_dataset('2', data=Phi2)
             else:
                 v_group.create_dataset(sp_str, data=cs[n])
 
