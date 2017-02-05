@@ -75,7 +75,7 @@ class FixedRateLoader:
 
         # Subsample acceleration to once-per-second measurements
         if self.original_hertz > 1:
-            batch = batch[::self.original_hertz,:]
+            batch = batch[::int(self.original_hertz),:]
 
         return batch
 
