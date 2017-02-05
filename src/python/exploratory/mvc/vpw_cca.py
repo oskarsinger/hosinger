@@ -127,11 +127,14 @@ class ViewPairwiseCCA:
             print 'Computing CCAs for subject', s
 
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
+                print '\tComputing CCAs for subperiod', sp
                 subperiods = [s.get_data() for s in servers]
 
                 for i in xrange(self.num_views):
+                    v1_mat = subperiods[i]
+
                     for j in xrange(i, self.num_views):
-                        v1_mat = subperiods[i]
+                        print '\t\tComputing CCAs for views', i, j
                         v2_mat = subperiods[j]
                         n_time_p_frequency = get_cca_vecs(
                             v1_mat, v2_mat)
