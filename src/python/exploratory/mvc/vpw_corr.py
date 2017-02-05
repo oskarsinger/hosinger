@@ -166,6 +166,7 @@ class ViewPairwiseCorrelation:
                 spud.insert(k[0], k[1], l)
                 
         for s in self.subjects:
+            print 's', s
             s_group = self.hdf5_repo[s]
 
             for (k_str, k_group) in s_group.items():
