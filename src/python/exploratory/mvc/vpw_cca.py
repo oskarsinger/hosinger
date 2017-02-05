@@ -199,7 +199,7 @@ class ViewPairwiseCCA:
 
                 sp_group = v_group[sp_str]
                 (Phi1, Phi2) = cs[n]
-                print 'Phi1', Phi1
+                print 'Phi1', np.all(Phi1 == 0)
 
                 sp_group.create_dataset('1', Phi1)
                 sp_group.create_dataset('2', Phi2)
