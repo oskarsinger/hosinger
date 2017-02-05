@@ -97,6 +97,8 @@ class ViewPairwiseCCA:
                 line = f.readline()
 
                 self.p_by_view = json.loads(line)
+        else:
+            self.p_by_view = [None] * self.num_views
 
 
         get_path = lambda n: os.path.join(
