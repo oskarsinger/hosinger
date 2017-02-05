@@ -81,6 +81,8 @@ def get_safe_power(s, power):
     else:
         new = np.power(masked_s, power)
 
+    print new
+
     return new.filled(0)
 
 def get_array_mod(a, divisor, axis=0):
