@@ -276,18 +276,9 @@ class ViewPairwiseCorrelation:
             'Pearson correlation of view',
             self.names[s][v1],
             'vs',
-            self.names[s][v2]])
-
-        if self.clocktime:
-            title = ' '.join([
-                title,
-                'for',
-                ])
-        else:
-            title = ' '.join([
-                title,
-                'for subperiod',
-                str(sp)])
+            self.names[s][v2],
+            'for subperiod',
+            str(sp)])
         x_name = 'Dimensions of view 2: ' + self.names[s][v2]
         y_name = 'Dimensions of view 1: ' + self.names[s][v1]
         val_name = 'Pearson correlation'
