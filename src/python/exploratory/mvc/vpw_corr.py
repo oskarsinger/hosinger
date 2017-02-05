@@ -37,6 +37,7 @@ class ViewPairwiseCorrelation:
         self.clock_time = clock_time
 
 	self.subjects = self.servers.keys()
+        print 'self.subjects', self.subjects
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
         self.names = {s : [dl.name() for dl in dls]
@@ -79,6 +80,7 @@ class ViewPairwiseCorrelation:
             'correlation.hdf5')
         self.hdf5_repo = h5py.File(
             hdf5_path, 'r' if show else 'w')
+        print 'self.hdf5_repo.keys()', self.hdf5_repo.keys()
         self.plot_dir = init_dir(
             'plots',
             show,
@@ -97,10 +99,11 @@ class ViewPairwiseCorrelation:
                 subperiods = [ds.get_data() for ds in servers]
 
                 for i in xrange(self.num_views):
+                    v1_mat = subperiods[i]
+                    (n1, p1) = v1_mat.shape
+
                     for j in xrange(i+1, self.num_views):
-                        v1_mat = subperiods[i]
                         v2_mat = subperiods[j]
-                        (n1, p1) = v1_mat.shape
                         (n2, p2) = v2_mat.shape
 
                         if n1 < n2:
