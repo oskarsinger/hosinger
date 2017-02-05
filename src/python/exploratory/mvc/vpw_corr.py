@@ -37,7 +37,6 @@ class ViewPairwiseCorrelation:
         self.clock_time = clock_time
 
 	self.subjects = self.servers.keys()
-        print 'self.subjects', self.subjects
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
         self.names = {s : [dl.name() for dl in dls]
@@ -80,7 +79,6 @@ class ViewPairwiseCorrelation:
             'correlation.hdf5')
         self.hdf5_repo = h5py.File(
             hdf5_path, 'r' if show else 'w')
-        print 'self.hdf5_repo.keys()', self.hdf5_repo.keys()
         self.plot_dir = init_dir(
             'plots',
             show,
@@ -166,17 +164,24 @@ class ViewPairwiseCorrelation:
                 spud.insert(k[0], k[1], l)
                 
         for s in self.subjects:
-            print 's', s
-            s_group = self.hdf5_repo[s]
+            if s in self.hdf5_repo:
+                s_group = self.hdf5_repo[s]
 
-            for (k_str, k_group) in s_group.items():
-                vs = [int(v) for v in k_str.split('-')]
+                for (k_str, k_group) in s_group.items():
+                    vs = [int(v) for v in k_str.split('-')]
 
-                for (sp_str, corr) in k_group.items():
-                    sp = int(sp_str)
-                    corr = np.array(corr)
-                    
-                    self.correlation[s].get(vs[0], vs[1])[sp] = corr
+                    for (sp_str, corr) in k_group.items():
+                        sp = int(sp_str)
+                        corr = np.array(corr)
+                        
+                        self.correlation[s].get(vs[0], vs[1])[sp] = corr
+            else:
+                print 'Could not find subject', s, 'in hdf5 repo'
+
+                del self.correlation[s]
+
+                self.subjects = [sub for sub in self.subjects
+                                 if not sub == s]
 
     def _show(self):
 
