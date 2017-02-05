@@ -127,7 +127,6 @@ class ViewPairwiseCCA:
             print 'Computing CCAs for subject', s
 
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
-                print '\tComputing CCAs for subperiod', sp
                 subperiods = [s.get_data() for s in servers]
 
                 for i in xrange(self.num_views):
@@ -135,17 +134,13 @@ class ViewPairwiseCCA:
 
                     for j in xrange(i, self.num_views):
                         v2_mat = subperiods[j]
-                        print '\t\tComputing CCAs for views', i, j
-                        print '\t\t\tComputing n_time_p_frequency'
                         n_time_p_frequency = get_cca_vecs(
                             v1_mat, v2_mat)
                         cca_dim = min(v1_mat.shape + v2_mat.shape)
-                        print '\t\t\tComputing n_frequency_p_time'
                         n_frequency_p_time = get_cca_vecs(
                             v1_mat[:,:cca_dim].T,
                             v2_mat[:,:cca_dim].T,
                             num_nonzero=self.nnz)
-                        print '\t\t\tComputing n_time_p_frequency_cc'
                         n_time_p_frequency_cc = self._get_n_time_p_frequency_cc(
                             v1_mat,
                             v2_mat,
@@ -158,7 +153,6 @@ class ViewPairwiseCCA:
                         self.p_by_view[i] = v1_mat.shape[1] 
                         self.p_by_view[j] = v2_mat.shape[1]
 
-                        print '\t\t\tSaving CCAs'
                         self._save(
                             stuff,
                             s,
@@ -175,10 +169,10 @@ class ViewPairwiseCCA:
 
         v1_cc = np.dot(
             v1_mat, 
-            n_time_p_frequency[:v1_mat.shape[1],:])
+            n_time_p_frequency[0])
         v2_cc = np.dot(
             v2_mat, 
-            n_time_p_frequency[v1_mat.shape[1]:,:])
+            n_time_p_frequency[1])
 
         return v1_cc * v2_cc
 
