@@ -200,6 +200,9 @@ class ViewPairwiseCCA:
                 sp_group = v_group[sp_str]
                 (Phi1, Phi2) = cs[n]
 
+                print 'Phi1.shape', Phi1.shape
+                print 'Phi2.shape', Phi2.shape
+
                 sp_group.create_dataset('1', Phi1)
                 sp_group.create_dataset('2', Phi2)
             else:
