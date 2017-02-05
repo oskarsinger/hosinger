@@ -49,13 +49,17 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
         x_weights = cca.x_weights_
         y_weights = cca.y_weights_
     else:
+        print 'Getting x_project'
         x_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
+        print 'Getting y_project'
         y_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
+        print 'Getting A'
         A = get_pearson_matrix(X1, X2)
         T = X1.shape[0]
         rank = 7
+        print 'Computing sparse CCA vecs'
         (x_weights, y_weights) = spancca.cca(
             A,
             rank,
