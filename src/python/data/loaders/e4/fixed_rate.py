@@ -37,7 +37,7 @@ class FixedRateLoader:
         key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
         self.original_hertz = dataset.attrs[key]
 
-        if 'ACC' in self.sensor:
+        if self.hertz > 1:
             self.hertz = 1
         else:
             self.hertz = self.original_hertz
@@ -74,8 +74,8 @@ class FixedRateLoader:
         self.num_rounds += 1
 
         # Subsample acceleration to once-per-second measurements
-        if 'ACC' in self.sensor:
-            batch = batch[::32,:]
+        if self.original_hertz > 1:
+            batch = batch[::self.original_hertz,:]
 
         return batch
 
