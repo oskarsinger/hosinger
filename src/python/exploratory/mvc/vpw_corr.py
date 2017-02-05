@@ -197,7 +197,7 @@ class ViewPairwiseCorrelation:
     def _plot_movie(self, s, v1, v2, subperiods):
 
         # TODO: pick a good fps
-        writer = AVConvWriter(fps=0.25)
+        writer = AVConvWriter(fps=2)
         fig = plt.figure()
         get_corr_plot = lambda c, sp, ax: self._get_correlation_plot(
             c, sp, v1, v2, s, ax)
@@ -258,8 +258,10 @@ class ViewPairwiseCorrelation:
                 factor,
                 start_time,
                 offset=3600.0 * (sp + 1)))
-            ax.xaxis.set_major_locator(mdates.MinuteLocator())
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d %H:%M'))
+            ax.xaxis.set_major_locator(
+                mdates.MinuteLocator(interval=15))
+            ax.xaxis.set_major_formatter(
+                mdates.DateFormatter('%b %d %H:%M'))
         else:
             x_axis = np.arange(data.shape[0])[:,np.newaxis]
 
@@ -279,8 +281,8 @@ class ViewPairwiseCorrelation:
             self.names[s][v2],
             'for subperiod',
             str(sp)])
-        x_name = 'Dimensions of view 2: ' + self.names[s][v2]
-        y_name = 'Dimensions of view 1: ' + self.names[s][v1]
+        x_name = 'Dimensions of view 2'
+        y_name = 'Dimensions of view 1'
         val_name = 'Pearson correlation'
 
         return plot_matrix_heat(
