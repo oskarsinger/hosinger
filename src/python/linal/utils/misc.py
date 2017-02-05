@@ -72,14 +72,16 @@ def get_thresholded(x, upper=None, lower=None):
 def get_safe_power(s, power):
 
     new = np.zeros_like(s)
+    masked_s = np.ma.masked_invalid(s)
 
     if power < 0:
-        non_zero = s != 0
-        new[non_zero] = np.power(s[non_zero], power)
+        non_zero = masked_s != 0
+        new[non_zero] = np.power(
+            masked_s[non_zero], power)
     else:
-        new = np.power(s, power)
+        new = np.power(masked_s, power)
 
-    return new
+    return new.filled(0)
 
 def get_array_mod(a, divisor, axis=0):
 
