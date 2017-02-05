@@ -64,7 +64,7 @@ class ViewPairwiseCCA:
             self._load()
 
             self._show_n_time_p_frequency()
-            self._show_n_frequency_p_time()
+            #self._show_n_frequency_p_time()
 
             self._show_n_time_p_frequency_cc()
         else:
