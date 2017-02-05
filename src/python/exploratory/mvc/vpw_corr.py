@@ -8,6 +8,7 @@ matplotlib.use('Cairo')
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 from matplotlib.animation import AVConvWriter
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
@@ -252,14 +253,13 @@ class ViewPairwiseCorrelation:
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             n = data.shape[0]
             factor = 3600.0 / n
-            x_axis_l = get_dti(
+            x_axis = np.array(get_dti(
                 n,
                 factor,
                 start_time,
-                offset=3600.0 * (sp + 1))
-	    x_axis_l = [dt.strftime('%d - %H:%M')
-			for dt in x_axis_l]
-	    x_axis = np.array(x_axis_l)[:,np.newaxis]
+                offset=3600.0 * (sp + 1)))
+            ax.xaxis.set_major_locator(mdates.MinuteLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d %H:%M'))
         else:
             x_axis = np.arange(data.shape[0])[:,np.newaxis]
 
