@@ -4,32 +4,34 @@ import numpy as np
 
 from scipy.stats import pearsonr
 from sklearn.cross_decomposition import CCA
+from linal.utils.misc import get_safe_power
 
 def get_pearson_matrix(X1, X2):
 
     (n, p1) = X1.shape
     p2 = X2.shape[1]
 
-    # Get means
+    # Get means, stds, and zero-mean vars
     mu1 = np.nanmean(X1, axis=0)
     mu2 = np.nanmean(X2, axis=0)
-
-    # Get zero-mean vars
+    std1 = np.nanstd(X1, axis=0)
+    std2 = np.nanstd(X2, axis=0)
     zm_X1 = X1 - mu1
     zm_X2 = X2 - mu2
 
-    corr = np.zeros((p1, p2))
+    # Get masked zero-mean vars
+    masked_X1 = np.ma.masked_invalid(zm_X1)
+    masked_X2 = np.ma.masked_invalid(zm_X2)
 
-    # Get numerator
-    for i in xrange(p1):
-        for j in xrange(p2):
-            numerator = np.nanmean(
-                zm_X1[:,i] * zm_X2[:,j])
-            sd1 = np.nanmean(np.power(zm_X1,2))**(0.5)
-            sd2 = np.nanmean(np.power(zm_X2,2))**(0.5)
-            corr[i,j] = numerator / (sd1 * sd2)
+    numerator = np.dot(
+        masked_X1.T, masked_X2).filled(0) / n
+    denominator = np.dot(
+            std1[:,np.newaxis], 
+            std2[:,np.newaxis].T)
+    inv_denom = get_safe_power(
+        denominator, -1)
 
-    return corr
+    return numerator * inv_denom
 
 def get_cca_vecs(X1, X2, num_nonzero=None):
 
