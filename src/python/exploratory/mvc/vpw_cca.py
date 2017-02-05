@@ -197,7 +197,7 @@ class ViewPairwiseCCA:
                 if sp_str not in v_group:
                     v_group.create_group(sp_str)
 
-                sp_group = v_group[sp]
+                sp_group = v_group[sp_str]
                 (Phi1, Phi2) = cs[n]
 
                 sp_group.create_dataset('1', Phi1)
