@@ -90,3 +90,5 @@
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
 
 * Fix the subperiods to get 10-minute intervals
+
+* Double check labeling on CCA plots

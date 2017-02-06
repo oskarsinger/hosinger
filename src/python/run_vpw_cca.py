@@ -86,6 +86,7 @@ def run_it_all_day_bb(
                             wavelet_dir, 
                             magnitude=True,
                             pr=pr,
+                            period=int(24*3600 / num_subperiods),
                             load=wavelet_load,
                             save=wavelet_save)
                         for ds in dss]
