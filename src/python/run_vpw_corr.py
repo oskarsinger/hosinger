@@ -29,7 +29,6 @@ def run_it_all_day_bb(
     interpolate,
     pr,
     show,
-    wavelet_period,
     wavelet_load,
     wavelet_save,
     wavelet_dir):
