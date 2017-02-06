@@ -274,13 +274,15 @@ class ViewPairwiseCorrelation:
                     for i in xrange(n)]
         y_labels = ['{:02d}'.format(i)
                     for i in xrange(m)]
+        denom = self.num_subperiods / self.num_periods[s]
+        (sp, p) = (sp % denom, int(sp / denom))
         title = ' '.join([
             'Pearson correlation of view',
             self.names[s][v1],
             'vs',
             self.names[s][v2],
-            'for subperiod',
-            str(sp)])
+            'for sp/p',
+            str(sp) + '/' + str(p)])
         x_name = 'Dimensions of view 2'
         y_name = 'Dimensions of view 1'
         val_name = 'Pearson correlation'
