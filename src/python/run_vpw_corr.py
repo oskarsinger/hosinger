@@ -13,7 +13,7 @@ import data.loaders.shortcuts as dlsh
 @click.command()
 @click.option('--save-load-dir')
 @click.option('--data-path', default=None)
-@click.option('--num-subperiods', default=24)
+@click.option('--num-subperiods', default=144)
 @click.option('--dataset', default='e4')
 @click.option('--interpolate', default=False)
 @click.option('--pr', default=False)
@@ -29,6 +29,7 @@ def run_it_all_day_bb(
     interpolate,
     pr,
     show,
+    wavelet_period,
     wavelet_load,
     wavelet_save,
     wavelet_dir):
@@ -85,6 +86,7 @@ def run_it_all_day_bb(
                             wavelet_dir, 
                             magnitude=True,
                             pr=pr,
+                            period=int(24*3600 / num_subperiods),
                             load=wavelet_load,
                             save=wavelet_save)
                         for ds in dss]
