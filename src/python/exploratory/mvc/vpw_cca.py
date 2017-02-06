@@ -271,11 +271,12 @@ class ViewPairwiseCCA:
                     self.names[s][v1] + ' ' + self.names[s][v2]
                 s_dm = {s : data}
 
-                self._line_plot_save_clear(
+                plot_lines(
                     s_dm,
                     x_name,
                     y_name,
-                    s_title)
+                    s_title,
+                    ax=ax)
 
             plt.clf()
 
@@ -316,7 +317,8 @@ class ViewPairwiseCCA:
                     s_dm, 
                     x_name, 
                     y_name, 
-                    s_title)
+                    s_title,
+                    ax=ax)
 
             plt.clf()
 
