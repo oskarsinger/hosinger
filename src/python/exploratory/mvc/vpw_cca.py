@@ -336,8 +336,11 @@ class ViewPairwiseCCA:
 
             x_name = 'time'
             y_name = 'canonical correlation'
+            v1_name = self.names.values()[0][v1].split('_')[0]
+            v1_name = self.names.values()[0][v2].split('_')[0]
             title = 'View-pairwise canonical correlation' + \
-                ' (n time p frequency) over time for views '
+                ' (n time p frequency) over time for view ' + \
+                v1_name + ' vs ' + v2_name
 
             for (i, (s, data)) in enumerate(dm.items()):
 
@@ -357,6 +360,12 @@ class ViewPairwiseCCA:
                     ax=ax)
 
             plt.clf()
+
+            fn = '_'.join(title.split()) + '.png'
+            path = os.path.join(
+                self.n_time_p_frequency_cc_dir, fn)
+
+            fig.savefig(path, format='png')
 
     def _show_n_time_p_frequency(self):
 

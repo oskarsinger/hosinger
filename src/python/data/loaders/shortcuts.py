@@ -173,7 +173,7 @@ def get_ats_loaders_all_subjects(data_path):
         subject2: get_ats_loaders(
             data_path, subject=str(2))}
 
-def get_e4_loaders(hdf5_path, subject, online):
+def get_e4_loaders(hdf5_path, subject, online, max_hertz=0.25):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
@@ -187,11 +187,11 @@ def get_e4_loaders(hdf5_path, subject, online):
         upper=u)
 
     return [
-        get_loader('EDA', fac, 30),
-        get_loader('TEMP', fac, 45),
-        get_loader('ACC', mag, None),
-        get_loader('BVP', fac, None),
-        get_loader('HR', fac, None)]
+        get_loader('EDA', fac, 30, max_hertz=max_hertz),
+        get_loader('TEMP', fac, 45, max_hertz=max_hertz),
+        get_loader('ACC', mag, None, max_hertz=max_hertz),
+        get_loader('BVP', fac, None, max_hertz=max_hertz),
+        get_loader('HR', fac, None, max_hertz=max_hertz)]
 
 def get_changing_e4_loaders(hdf5_path, subject, online):
 
@@ -199,9 +199,9 @@ def get_changing_e4_loaders(hdf5_path, subject, online):
     fac = fn.get_fields_as_columns
 
     return [
-        FRL(hdf5_path, subject, 'ACC', mag, online=online),
-        FRL(hdf5_path, subject, 'BVP', fac, online=online),
-        FRL(hdf5_path, subject, 'HR', fac, online=online)]
+        FRL(hdf5_path, subject, 'ACC', mag),
+        FRL(hdf5_path, subject, 'BVP', fac),
+        FRL(hdf5_path, subject, 'HR', fac)]
 
 def get_hr_and_acc(hdf5_path, subject, online):
 
@@ -212,12 +212,16 @@ def get_hr_and_acc(hdf5_path, subject, online):
         FRL(hdf5_path, subject, 'ACC', mag, online=online),
         FRL(hdf5_path, subject, 'HR', fac, online=online)]
 
-def get_e4_loaders_all_subjects(hdf5_path, online):
+def get_e4_loaders_all_subjects(hdf5_path, online, max_hertz=0.25):
 
     subjects = h5py.File(hdf5_path).keys()
     bad = {'HRV15-0' + n for n in ['15', '07', '08']}
 
-    return {s : get_e4_loaders(hdf5_path, s, online)
+    return {s : get_e4_loaders(
+                hdf5_path, 
+                s, 
+                online, 
+                max_hertz=max_hertz)
             for s in subjects
             if s not in bad}
 

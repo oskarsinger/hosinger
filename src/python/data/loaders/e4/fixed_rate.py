@@ -16,6 +16,7 @@ class FixedRateLoader:
         subject, 
         sensor, 
         reader,
+        max_hertz=0.25,
         upper=None,
         lower=None,
         online=False):
@@ -24,6 +25,7 @@ class FixedRateLoader:
         self.subject = subject
         self.sensor = sensor
         self.reader = reader
+        self.max_hertz = max_hertz
         self.upper = upper
         self.lower = lower
         self.online = online
@@ -37,8 +39,10 @@ class FixedRateLoader:
         key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
         self.original_hertz = dataset.attrs[key]
 
-        if self.original_hertz > 1:
-            self.hertz = 1
+        if self.original_hertz / self.max_hertz
+
+        if self.original_hertz > self.max_hertz:
+            self.hertz = self.max_hertz
         else:
             self.hertz = self.original_hertz
 
@@ -74,8 +78,9 @@ class FixedRateLoader:
         self.num_rounds += 1
 
         # Subsample acceleration to once-per-second measurements
-        if self.original_hertz > 1:
-            batch = batch[::int(self.original_hertz),:]
+        if self.original_hertz > self.max_hertz:
+            step = self.original_hert / self.max_hertz
+            batch = batch[::int(step),:]
 
         return batch
 
