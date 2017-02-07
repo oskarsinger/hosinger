@@ -31,9 +31,9 @@ class ViewPairwiseCCA:
         self.show = show
         self.nnz = nnz
         self.clock_time = clock_time
-        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
         self.subjects = self.servers.keys()
         self.num_subperiods = num_subperiods
+        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
         self.names = {s : [dl.name() for dl in dls]
