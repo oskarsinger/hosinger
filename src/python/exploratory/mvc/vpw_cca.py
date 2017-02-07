@@ -396,7 +396,8 @@ class ViewPairwiseCCA:
                 y_name = 'dimension'
                 v_name = 'canonical vector value'
                 ((yl1, yl2), xl) = self._get_labels(
-                    v1, v2, self.num_periods[s])
+                    v1, v2, 
+                    self.num_periods[s] * self.num_subperiods)
 
                 ax1 = fig.add_subplot(211)
 
