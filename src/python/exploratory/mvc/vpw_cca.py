@@ -386,8 +386,7 @@ class ViewPairwiseCCA:
                     self.names[s][v1] + '-' + self.names[s][v2]]) + '.png'
                 path = os.path.join(
                     self.n_time_p_frequency_dir, filename)
-                (v1_l, v2_l) = unzip(
-                    [(pair['1'], pair['2']) for pair in subperiods])
+                (v1_l, v2_l) = unzip(subperiods)
                 v1_tl = np.hstack(v1_l)
                 v2_tl = np.hstack(v2_l)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
