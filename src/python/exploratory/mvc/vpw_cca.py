@@ -391,7 +391,7 @@ class ViewPairwiseCCA:
                 v2_tl = np.hstack(v2_l)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[s][v1] + ' ' + self.names[s][v2] + \
-                    ' of subject ' + s + ' at subperiod ' + str(sp)
+                    ' of subject ' + s
                 x_name = 'subperiod'
                 y_name = 'dimension'
                 v_name = 'canonical vector value'
