@@ -40,10 +40,10 @@ def plot_matrix_heat(
         vmax=vmax,
         vmin=vmin)
 
-    plt.axis([x.min(), x.max(), y.min(), y.max()])
-    plt.colorbar()
-    plt.xlabel(x_name)
-    plt.ylabel(y_name)
+    ax.axis([x.min(), x.max(), y.min(), y.max()])
+    ax.colorbar()
+    ax.xlabel(x_name)
+    ax.ylabel(y_name)
 
     if n > 10:
         plot.yticklabels = n / 5
