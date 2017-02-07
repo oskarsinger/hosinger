@@ -242,9 +242,12 @@ class ViewPairwiseCCA:
 
         for (s, spud) in self.ccas[self.cca_names[2]].items():
             for ((v1, v2), subperiods) in spud.items():
-                tl = np.hstack(subperiods)
+                (phi1s, phi2s) = unzip(subperiods)
+                tls = (
+                    np.hstack(phi1s),
+                    np.hstack(phi2s))
 
-                tl_spuds[s].insert(v1, v2, tl)
+                tl_spuds[s].insert(v1, v2, tls)
 
         default = lambda: {}
         data_maps = SPUD(
@@ -256,13 +259,15 @@ class ViewPairwiseCCA:
             for ((v1, v2), tl) in spud.items():
                 s_key = 'Subject ' + s + ' view '
                 factor = float(self.num_periods[s]) / tl.shape[0]
+                # TODO: set up date axis
+                x_axis = 'Something'
                 phi1 = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl[:,0][:,np.newaxis],
+                    tl[0][:,np.newaxis],
                     None)
                 phi2 = (
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl[:,1][:,np.newaxis],
+                    tl[1][:,np.newaxis],
                     None)
                 data_maps.get(v1, v2)[s_key + str(1)] = phi1
                 data_maps.get(v1, v2)[s_key + str(2)] = phi2
@@ -299,10 +304,11 @@ class ViewPairwiseCCA:
 
     def _show_n_time_p_frequency_cc(self):
 
+        ntpfcc = self.ccas[self.cca_names[2]]
         tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ccas.keys()}
+                    for s in self.ntpfcc.keys()}
 
-        for (s, spud) in self.ccas[self.cca_names[2]].items():
+        for (s, spud) in self.ntpfcc.items():
             for ((v1, v2), subperiods) in spud.items():
                 tl = np.hstack(subperiods)
 
