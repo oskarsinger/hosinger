@@ -77,7 +77,7 @@ class FixedRateLoader:
 
         # Subsample acceleration to once-per-second measurements
         if self.original_hertz > self.max_hertz:
-            step = self.original_hert / self.max_hertz
+            step = self.original_hertz / self.max_hertz
             batch = batch[::int(step),:]
 
         return batch
