@@ -222,7 +222,7 @@ class ViewPairwiseCCA:
                     (v1, v2) = [int(v) for v in v_str.split('-')]
 
                     if not v1 == v2:
-                        cca_vs = cca_s.get(vs[0], vs[1])
+                        cca_vs = cca_s.get(v1, v2)
 
                         for (sp_str, sp_group) in v_group.items():
                             sp = int(sp_str)
