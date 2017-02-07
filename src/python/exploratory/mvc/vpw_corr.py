@@ -276,8 +276,8 @@ class ViewPairwiseCorrelation:
         (m, n) = c.shape
         x_labels = np.arange(n)
         y_labels = np.arange(m)
-        sp = sp % self.num_subperiods
         p = sp / self.num_subperiods
+        sp = sp % self.num_subperiods
         title = ' '.join([
             'Pearson correlation of view',
             self.names[s][v1],
