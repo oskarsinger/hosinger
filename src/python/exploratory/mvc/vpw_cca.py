@@ -237,7 +237,15 @@ class ViewPairwiseCCA:
 
     def _show_n_frequency_p_time(self):
 
-        tl_spuds = self._get_tl_spuds(1)
+        tl_spuds = {s: SPUD(self.num_views, no_double=True)
+                    for s in self.ccas.keys()}
+
+        for (s, spud) in self.ccas[self.cca_names[2]].items():
+            for ((v1, v2), subperiods) in spud.items():
+                tl = np.hstack(subperiods)
+
+                tl_spuds[s].insert(v1, v2, tl)
+
         default = lambda: {}
         data_maps = SPUD(
             self.num_views,
@@ -245,7 +253,7 @@ class ViewPairwiseCCA:
             no_double=True)
 
         for (s, spud) in tl_spuds.items():
-            for (k, tl) in spud.items():
+            for ((v1, v2), tl) in spud.items():
                 s_key = 'Subject ' + s + ' view '
                 factor = float(self.num_periods[s]) / tl.shape[0]
                 phi1 = (
@@ -256,8 +264,8 @@ class ViewPairwiseCCA:
                     factor * np.arange(tl.shape[0])[:,np.newaxis], 
                     tl[:,1][:,np.newaxis],
                     None)
-                data_maps.get(k[0], k[1])[s_key + str(1)] = phi1
-                data_maps.get(k[0], k[1])[s_key + str(2)] = phi2
+                data_maps.get(v1, v2)[s_key + str(1)] = phi1
+                data_maps.get(v1, v2)[s_key + str(2)] = phi2
 
         fig = plt.figure()
         
@@ -291,7 +299,15 @@ class ViewPairwiseCCA:
 
     def _show_n_time_p_frequency_cc(self):
 
-        tl_spuds = self._get_tl_spuds(2)
+        tl_spuds = {s: SPUD(self.num_views, no_double=True)
+                    for s in self.ccas.keys()}
+
+        for (s, spud) in self.ccas[self.cca_names[2]].items():
+            for ((v1, v2), subperiods) in spud.items():
+                tl = np.hstack(subperiods)
+
+                tl_spuds[s].insert(v1, v2, tl)
+
         default = lambda: {'Subject ' + s: None for s in self.subjects}
         data_maps = SPUD(
             self.num_views,
@@ -336,56 +352,6 @@ class ViewPairwiseCCA:
                     ax=ax)
 
             plt.clf()
-
-    def _get_tl_spuds(self, index):
-
-        tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ccas.keys()}
-
-        for (s, spud) in self.ccas[self.cca_names[index]].items():
-            n_time_p_frequency_cc = SPUD(
-                self.num_views, 
-                default=lambda: [None] * self.num_periods[s],
-                no_double=True)
-
-            for ((v1, v2), subperiods) in spud.items():
-                for (sp, periods) in enumerate(subperiods):
-                    for (p, period) in enumerate(periods):
-                        tls = n_time_p_frequency_cc.get(v1, v2)
-                        p_over_time = period[index]
-
-                        if tls[p] is None:
-                            tls[p] = p_over_time
-                        else:
-                            tls[p] = np.vstack(
-                                [tls[p], p_over_time])
-
-            for (k, tls) in cc_over_time.items():
-                tl = np.vstack(tls)
-                n_time_p_frequency_cc.insert(v1, v2, tl)
-
-            tl_spuds[s] = cc_over_time
-
-        return tl_spuds
-
-    def _line_plot_save_clear(self,
-        dm,
-        x_name,
-        y_name,
-        title,
-        unit_name=None):
-
-        fn = '_'.join(title.split()) + '.pdf'
-        path = os.path.join(self.plot_dir, fn)
-
-        plot_lines(
-            dm, 
-            x_name, 
-            y_name, 
-            title,
-            unit_name=unit_name).get_figure().savefig(
-            path, format='pdf')
-        sns.plt.clf()
 
     def _show_n_time_p_frequency(self):
 
