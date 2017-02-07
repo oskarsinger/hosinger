@@ -36,10 +36,9 @@ def plot_matrix_heat(
         x_name,
         y_name,
         val_name)
-    plot = plt.pcolormesh(
+    plot = ax.pcolormesh(
         x, y, v,
         cmap='RdBu',
-        ax=ax,
         vmax=vmax,
         vmin=vmin)
 
