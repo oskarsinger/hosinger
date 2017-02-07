@@ -24,15 +24,14 @@ class ViewPairwiseCCA:
         save_load_dir,
         num_subperiods=1,
         nnz=1,
+        clock_time=False,
         show=False):
 
         self.servers = servers
         self.show = show
         self.nnz = nnz
-
-        self._init_dirs
-
-
+        self.clock_time = clock_time
+        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
         self.subjects = self.servers.keys()
         self.num_subperiods = num_subperiods
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
@@ -350,14 +349,8 @@ class ViewPairwiseCCA:
                     len(self.subjects), 1, i+1)
                 s_title = title + \
                     self.names[s][v1] + ' ' + self.names[s][v2]
-                s_dm = {s : data}
 
-                plot_lines(
-                    s_dm, 
-                    x_name, 
-                    y_name, 
-                    s_title,
-                    ax=ax)
+                self._get_line_plot(s, v1, data, ax)
 
             plt.clf()
 
@@ -366,6 +359,29 @@ class ViewPairwiseCCA:
                 self.n_time_p_frequency_cc_dir, fn)
 
             fig.savefig(path, format='png')
+
+    def _get_line_plot(self, s, v, data, ax):
+
+        x_axis = None
+
+        if self.clock_time:
+            dl = self.servers[s][v].get_status()['data_loader']
+            start_time = self.loaders[s][v].get_status()['start_times'][0]
+            n = data.shape[0]
+            num_sps = self.num_subperiods * self.num_periods[s]
+            factor = num_sps * self.subperiod / n
+            x_axis = np.array(get_dti(
+                n,
+                factor,
+                start_time))
+            ax.xaxis.set_major_locator(
+                mdates.HourLocator(interval=12))
+            ax.xaxis.set_major_formatter(
+                mdates.DateFormatter('%b %d %H:%M'))
+        else:
+            x_axis = np.arange(data.shape[0])[:,np.newaxis]
+
+        return ax.plot(x_axis, data)
 
     def _show_n_time_p_frequency(self):
 
@@ -385,49 +401,73 @@ class ViewPairwiseCCA:
                 path = os.path.join(
                     self.n_time_p_frequency_dir, filename)
                 (v1_l, v2_l) = unzip(subperiods)
-                v1_tl = np.hstack(v1_l)
-                v2_tl = np.hstack(v2_l)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[s][v1] + ' ' + self.names[s][v2] + \
                     ' of subject ' + s
                 x_name = 'subperiod'
                 y_name = 'dimension'
                 v_name = 'canonical vector value'
-                yl1 = np.arange(self.p_by_view[v1])
-                yl2 = np.arange(self.p_by_view[v2])
-                x_len = self.num_periods[s] * self.num_subperiods
-                xl = np.arange(x_len)
 
                 ax1 = fig.add_subplot(211)
 
-                plot_matrix_heat(
-                    v1_tl,
-                    xl,
-                    yl1,
-                    '',
+                self._get_heat_plot(
+                    v1,
+                    v1_l,
                     x_name,
                     y_name,
                     v_name,
-                    vmax=1,
-                    vmin=-1,
-                    ax=ax1)
+                    ax1)
 
                 ax2 = fig.add_subplot(212)
 
-                plot_matrix_heat(
-                    v2_tl,
-                    xl,
-                    yl2,
-                    '',
+                self._get_heat_plot(
+                    v2,
+                    v2_l,
                     x_name,
                     y_name,
                     v_name,
-                    vmax=1,
-                    vmin=-1,
-                    ax=ax2)
+                    ax2)
+
+                plt.set_title(title)
 
                 fn = '_'.join(title.split()) + '.png'
                 path = os.path.join(
                     self.n_time_p_frequency_dir, fn)
 
                 fig.savefig(path, format='png')
+
+    def _get_heat_plot(self, s, v, ccal, x_name, y_name, v_name, ax):
+
+        tl = np.hstack(ccal)
+
+        yl = np.arange(self.p_by_view[v])
+        xl = np.arange(tl.shape[1])
+
+        plot_matrix_heat(
+            tl,
+            xl,
+            yl,
+            '',
+            x_name,
+            y_name,
+            v_name,
+            vmax=1,
+            vmin=-1,
+            ax=ax1)
+
+        if self.clock_time:
+            n = data.shape[0]
+            dl = self.servers[s][v].get_status()['data_loader']
+            start_time = self.loaders[s][v].get_status()['start_times'][0]
+            factor =  float(self.subperiod) / n
+            x_axis = np.array(get_dti(
+                n,
+                factor,
+                start_time,
+                offset=self.subperiod * (sp + 1)))
+
+            ax.xticks(xl, x_axis)
+            ax.xaxis.set_major_locator(
+                mdates.MinuteLocator(interval=self.x_interval))
+            ax.xaxis.set_major_formatter(
+                mdates.DateFormatter('%b %d %H:%M'))
