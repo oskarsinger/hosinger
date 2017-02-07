@@ -102,6 +102,7 @@ def run_it_all_day_bb(
         save_load_dir,
         num_subperiods=num_subperiods,
         nnz=nnz,
+        clock_time=dataset=='e4',
         show=show)
 
     vpwcca.run()
