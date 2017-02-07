@@ -274,10 +274,8 @@ class ViewPairwiseCorrelation:
     def _get_correlation_plot(self, c, sp, v1, v2, s, ax):
 
         (m, n) = c.shape
-        x_labels = ['{:02d}'.format(i) 
-                    for i in xrange(n)]
-        y_labels = ['{:02d}'.format(i)
-                    for i in xrange(m)]
+        x_labels = np.arange(n)[np.newaxis,:]
+        y_labels = np.arange(m)[:,np.newaxis]
         denom = self.num_subperiods / self.num_periods[s]
         (sp, p) = (sp % denom, int(sp / denom))
         title = ' '.join([
