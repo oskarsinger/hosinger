@@ -50,6 +50,9 @@ class ViewPairwiseCorrelation:
         self.correlation = {s : SPUD(self.num_views, no_double=True)
                             for s in self.subjects}
 
+        num_minutes = self.subperiod / 60
+        self.x_interval = num_minutes / 2
+
     def run(self):
 
         if self.show:
@@ -260,7 +263,7 @@ class ViewPairwiseCorrelation:
                 start_time,
                 offset=self.subperiod * (sp + 1)))
             ax.xaxis.set_major_locator(
-                mdates.MinuteLocator(interval=30))
+                mdates.MinuteLocator(interval=self.x_interval))
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
         else:
