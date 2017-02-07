@@ -134,7 +134,7 @@ class ViewPairwiseCCA:
                 for i in xrange(self.num_views):
                     v1_mat = subperiods[i]
 
-                    for j in xrange(i, self.num_views):
+                    for j in xrange(i+1, self.num_views):
                         v2_mat = subperiods[j]
                         n_time_p_frequency = get_cca_vecs(
                             v1_mat, v2_mat)
@@ -219,18 +219,20 @@ class ViewPairwiseCCA:
                 cca_s = cca[s]
 
                 for (v_str, v_group) in s_group.items():
-                    vs = [int(v) for v in v_str.split('-')]
-                    cca_vs = cca_s.get(vs[0], vs[1])
+                    (v1, v2) = [int(v) for v in v_str.split('-')]
 
-                    for (sp_str, sp_group) in v_group.items():
-                        sp = int(sp_str)
+                    if not v1 == v2:
+                        cca_vs = cca_s.get(vs[0], vs[1])
 
-                        if n in self.cca_names[:2]:
-                            cca_vs[sp] = (
-                                np.array(sp_group['1']),
-                                np.array(sp_group['2']))
-                        else:
-                            cca_vs[sp] = np.array(sp_group)
+                        for (sp_str, sp_group) in v_group.items():
+                            sp = int(sp_str)
+
+                            if n in self.cca_names[:2]:
+                                cca_vs[sp] = (
+                                    np.array(sp_group['1']),
+                                    np.array(sp_group['2']))
+                            else:
+                                cca_vs[sp] = np.array(sp_group)
 
     def _show_n_frequency_p_time(self):
 
