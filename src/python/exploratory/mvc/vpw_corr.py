@@ -37,6 +37,7 @@ class ViewPairwiseCorrelation:
         self.num_subperiods = num_subperiods
         self.clock_time = clock_time
 
+        self.subperiod = int(24 * 3600 / self.num_subperiods)
 	self.subjects = self.servers.keys()
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
@@ -252,12 +253,12 @@ class ViewPairwiseCorrelation:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             n = data.shape[0]
-            factor = 3600.0 / n
+            factor =  self.subperiod / n
             x_axis = np.array(get_dti(
                 n,
                 factor,
                 start_time,
-                offset=3600.0 * (sp + 1)))
+                offset=self.subperiod * (sp + 1)))
             ax.xaxis.set_major_locator(
                 mdates.MinuteLocator(interval=15))
             ax.xaxis.set_major_formatter(
