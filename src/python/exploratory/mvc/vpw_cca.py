@@ -401,7 +401,7 @@ class ViewPairwiseCCA:
                 ax1 = fig.add_subplot(211)
 
                 plot_matrix_heat(
-                    tl1,
+                    v1_tl,
                     xl,
                     yl1,
                     '',
@@ -415,7 +415,7 @@ class ViewPairwiseCCA:
                 ax2 = fig.add_subplot(212)
 
                 plot_matrix_heat(
-                    tl2,
+                    v2_tl,
                     xl,
                     yl2,
                     '',
