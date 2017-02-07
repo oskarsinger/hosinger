@@ -39,8 +39,6 @@ class FixedRateLoader:
         key = [k for k in dataset.attrs.keys() if 'hz' in k][0]
         self.original_hertz = dataset.attrs[key]
 
-        if self.original_hertz / self.max_hertz
-
         if self.original_hertz > self.max_hertz:
             self.hertz = self.max_hertz
         else:
