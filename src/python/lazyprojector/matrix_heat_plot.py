@@ -29,7 +29,7 @@ def plot_matrix_heat(
         ax = plt.axes()
 
     (n, p) = value_matrix.shape
-    (x, y, v) = _populate_data_source(
+    (x, y) = _get_labels(
         value_matrix, 
         x_labels, 
         y_labels,
@@ -37,7 +37,8 @@ def plot_matrix_heat(
         y_name,
         val_name)
     plot = ax.pcolormesh(
-        x, y, v,
+        x, y, 
+        value_matrix,
         cmap='RdBu',
         vmax=vmax,
         vmin=vmin)
@@ -63,26 +64,18 @@ def plot_matrix_heat(
 
     return plot
 
-def _populate_data_source(
-    value_matrix, 
+def _get_labels(
+    n, p,
     x_labels, 
-    y_labels,
-    x_name,
-    y_name,
-    val_name):
+    y_labels):
 
-    (n, p) = value_matrix.shape
-    x_element = []
-    y_element = []
-    values = []
+    x = np.zeros((n,p))
+    y = np.zeros((n,p))
 
-    for j in xrange(p):
-        for i in xrange(n):
-            x_element.append(x_labels[j])
-            y_element.append(y_labels[i])
-            values.append(value_matrix[i,j])
+    for i in xrange(n):
+        x[i,:] = np.copy(x_labels)
+        
+    for i in xrange(p):
+        y[:,i] = np.copy(y_labels)
 
-    return (
-        x_element,
-        y_element,
-        values)
+    return (x, y)
