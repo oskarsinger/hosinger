@@ -262,12 +262,18 @@ class ViewPairwiseCCA:
         fig = plt.figure()
         
         for ((v1, v2), dm) in data_maps.items():
+
+            print 'Generating n_frequency_p_time_plots for', v1, v2
+
             x_name = 'time (days)'
             y_name = 'canonical vector value'
             title = 'View-pairwise canonical vectors' + \
                 ' (n frequency p time) for views '
 
             for (i, (s, data)) in enumerate(dm.items()):
+
+                print '\tGenerating plot for subject', s
+
                 ax = fig.add_subplot(
                     len(self.subjects), 1, i+1)
                 s_title = title + \
@@ -304,12 +310,18 @@ class ViewPairwiseCCA:
         fig = plt.figure()
 
         for ((v1, v2), dm) in data_maps.items():
+            
+            print 'Generating n_time_p_frequency_plots_cc for', v1, v2
+
             x_name = 'time'
             y_name = 'canonical correlation'
             title = 'View-pairwise canonical correlation' + \
                 ' (n time p frequency) over time for views '
 
             for (i, (s, data)) in enumerate(dm.items()):
+
+                print '\tGenerating plot for subject', s
+
                 ax = fig.add_subplot(
                     len(self.subjects), 1, i+1)
                 s_title = title + \
@@ -378,7 +390,13 @@ class ViewPairwiseCCA:
     def _show_n_time_p_frequency(self):
 
         for (s, spud) in self.ccas[self.cca_names[0]].items():
+            
+            print 'Generating n_time_p_frequency plots for', s
+
             for ((v1, v2), subperiods) in spud.items():
+
+                print '\tGenerating plots for views', v1, v2
+
                 fig = plt.figure()
                 filename = '_'.join([
                     'subject', s,
