@@ -413,10 +413,10 @@ class ViewPairwiseCCA:
                 x_name = 'subperiod'
                 y_name = 'dimension'
                 v_name = 'canonical vector value'
-                yl1 = np.arange(self.p_by_view[v1])[:,np.newaxis]
-                yl2 = np.arange(self.p_by_view[v2])[:,np.newaxis]
+                yl1 = np.arange(self.p_by_view[v1])
+                yl2 = np.arange(self.p_by_view[v2])
                 x_len = self.num_periods[s] * self.num_subperiods
-                xl = np.arange(x_len)[np.newaxis,:]
+                xl = np.arange(x_len)
 
                 ax1 = fig.add_subplot(211)
 
