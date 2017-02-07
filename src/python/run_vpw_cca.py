@@ -1,4 +1,5 @@
 import click
+import os
 
 from exploratory.mvc import ViewPairwiseCCA as VPWCCA
 from data.servers.masks import Interp1DMask as I1DM
@@ -77,13 +78,11 @@ def run_it_all_day_bb(
             servers = {s : [I1DM(ds) for ds in dss]
                        for (s, dss) in servers.items()}
 
-        if wavelet_save:
+        if wavelet_load:
             wavelet_dir = os.path.join(
                 wavelet_dir, get_ts('DTCWT'))
 
             os.mkdir(wavelet_dir)
-        elif wavelet_load:
-            'Give proper paths to each server'
 
         servers = {s : [DTCWTM(
                             ds, 
