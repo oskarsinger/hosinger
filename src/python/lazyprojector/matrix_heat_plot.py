@@ -45,19 +45,23 @@ def plot_matrix_heat(
     plt.xlabel(x_name)
     plt.ylabel(y_name)
 
+    """
     if n > 10:
         plot.yticklabels = n / 5
 
     if p > 10:
         plot.xticklabels = p / 5
+    """
 
     ax.set_title(title)
 
+    """
     for label in plot.get_yticklabels():
         label.set_rotation(45)
 
     for label in plot.get_xticklabels():
         label.set_rotation(45)
+    """
 
     return plot
 
