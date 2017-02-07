@@ -78,7 +78,7 @@ def run_it_all_day_bb(
             servers = {s : [I1DM(ds) for ds in dss]
                        for (s, dss) in servers.items()}
 
-        if wavelet_load:
+        if wavelet_save:
             wavelet_dir = os.path.join(
                 wavelet_dir, get_ts('DTCWT'))
 
