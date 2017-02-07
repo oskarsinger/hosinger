@@ -30,12 +30,9 @@ def plot_matrix_heat(
 
     (n, p) = value_matrix.shape
     (x, y) = _get_labels(
-        value_matrix, 
+        n, p,
         x_labels, 
-        y_labels,
-        x_name,
-        y_name,
-        val_name)
+        y_labels)
     plot = ax.pcolormesh(
         x, y, 
         value_matrix,
