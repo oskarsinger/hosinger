@@ -256,7 +256,7 @@ class ViewPairwiseCorrelation:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             n = data.shape[0]
-            factor =  self.subperiod / n
+            factor =  float(self.subperiod) / n
             x_axis = np.array(get_dti(
                 n,
                 factor,
