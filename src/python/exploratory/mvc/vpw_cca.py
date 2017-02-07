@@ -314,7 +314,7 @@ class ViewPairwiseCCA:
 
                 tl_spuds[s].insert(v1, v2, tl)
 
-        default = lambda: {'Subject ' + s: None for s in self.subjects}
+        default = lambda: {s: None for s in self.ntpfcc.keys()}
         data_maps = SPUD(
             self.num_views,
             default=default,
@@ -322,12 +322,11 @@ class ViewPairwiseCCA:
 
         for (s, spud) in tl_spuds.items():
             for (k, tl) in spud.items():
-                s_key = 'Subject ' + s
                 data = (
                     np.arange(len(tl))[:,np.newaxis], 
                     np.array(tl),
                     None)
-                data_maps.get(k[0], k[1])[s_key] = data
+                data_maps.get(k[0], k[1])[s] = data
 
         fig = plt.figure()
 
