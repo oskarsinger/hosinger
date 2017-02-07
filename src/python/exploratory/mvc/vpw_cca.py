@@ -451,14 +451,3 @@ class ViewPairwiseCCA:
                     self.n_time_p_frequency_dir, fn)
 
                 fig.savefig(path, format='png')
-
-    def _get_labels(self, view1, view2, x_len):
-
-        n1 = self.p_by_view[view1]
-        n2 = self.p_by_view[view2]
-        y1_labels = list(xrange(n1))
-        y2_labels = list(xrange(n2))
-        y_labels = (y1_labels, y2_labels)
-        x_labels = ['{:02d}'.format(p)
-
-        return (y_labels, x_labels)
