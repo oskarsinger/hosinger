@@ -16,6 +16,8 @@ import data.loaders.shortcuts as dlsh
 @click.option('--num-subperiods', default=144)
 @click.option('--dataset', default='e4')
 @click.option('--interpolate', default=False)
+@click.option('--max-freqs', default=5)
+@click.option('--max-hertz', default=0.25)
 @click.option('--pr', default=False)
 @click.option('--show', default=False)
 @click.option('--wavelet-load', default=False)
@@ -27,6 +29,8 @@ def run_it_all_day_bb(
     num_subperiods,
     dataset,
     interpolate,
+    max_freqs,
+    max_hertz,
     pr,
     show,
     wavelet_load,
@@ -37,7 +41,7 @@ def run_it_all_day_bb(
 
     if dataset == 'e4':
         loaders = dlsh.get_e4_loaders_all_subjects(
-            data_path, False)
+            data_path, False, max_hertz=max_hertz)
     elif dataset == 'cm':
         loaders = dlsh.get_cm_loaders_all_subjects(
             data_path)
@@ -86,6 +90,7 @@ def run_it_all_day_bb(
                             magnitude=True,
                             pr=pr,
                             period=int(24*3600 / num_subperiods),
+                            max_freqs=max_freqs,
                             load=wavelet_load,
                             save=wavelet_save)
                         for ds in dss]

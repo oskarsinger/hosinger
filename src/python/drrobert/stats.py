@@ -38,12 +38,6 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
     (x_weights, y_weights) = [None] * 2
 
     if num_nonzero is None:
-        if np.any(np.iscomplex(X1)):
-            X1 = np.absolute(X1)
-
-        if np.any(np.iscomplex(X2)):
-            X2 = np.absolute(X2)
-
         cca = CCA(n_components=1)
 
         cca.fit(X1, X2)
