@@ -183,15 +183,16 @@ def get_e4_loaders(hdf5_path, subject, online, max_hertz=0.25):
         subject,
         n,
         r,
+        max_hertz=max_hertz,
         online=online,
         upper=u)
 
     return [
-        get_loader('EDA', fac, 30, max_hertz=max_hertz),
-        get_loader('TEMP', fac, 45, max_hertz=max_hertz),
-        get_loader('ACC', mag, None, max_hertz=max_hertz),
-        get_loader('BVP', fac, None, max_hertz=max_hertz),
-        get_loader('HR', fac, None, max_hertz=max_hertz)]
+        get_loader('EDA', fac, 30),
+        get_loader('TEMP', fac, 45),
+        get_loader('ACC', mag, None),
+        get_loader('BVP', fac, None),
+        get_loader('HR', fac, None)]
 
 def get_changing_e4_loaders(hdf5_path, subject, online):
 
