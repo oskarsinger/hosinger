@@ -275,7 +275,7 @@ class ViewPairwiseCorrelation:
 
         (m, n) = c.shape
         x_labels = np.arange(n)
-        y_labels = np.arange(m)[::-1]
+        y_labels = np.arange(m)
         sp = sp % self.num_subperiods
         p = sp / self.num_subperiods
         title = ' '.join([
@@ -290,7 +290,7 @@ class ViewPairwiseCorrelation:
         val_name = 'Pearson correlation'
         
         plot_matrix_heat(
-            c[::-1,:],
+            c,
             x_labels,
             y_labels,
             title,
@@ -300,5 +300,3 @@ class ViewPairwiseCorrelation:
             vmax=1,
             vmin=-1,
             ax=ax)
-
-        ax.invert_yaxis()
