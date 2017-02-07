@@ -314,7 +314,7 @@ class ViewPairwiseCCA:
 
                 tl_spuds[s].insert(v1, v2, tl)
 
-        default = lambda: {s: None for s in self.ntpfcc.keys()}
+        default = lambda: {s: None for s in ntpfcc.keys()}
         data_maps = SPUD(
             self.num_views,
             default=default,
