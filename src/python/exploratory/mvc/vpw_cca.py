@@ -306,9 +306,9 @@ class ViewPairwiseCCA:
 
         ntpfcc = self.ccas[self.cca_names[2]]
         tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ntpfcc.keys()}
+                    for s in ntpfcc.keys()}
 
-        for (s, spud) in self.ntpfcc.items():
+        for (s, spud) in ntpfcc.items():
             for ((v1, v2), subperiods) in spud.items():
                 tl = np.hstack(subperiods)
 
