@@ -290,8 +290,8 @@ class ViewPairwiseCorrelation:
         x_name = 'Dimensions of view 2'
         y_name = 'Dimensions of view 1'
         val_name = 'Pearson correlation'
-
-        return plot_matrix_heat(
+        
+        plot_matrix_heat(
             c,
             x_labels,
             y_labels,
@@ -302,3 +302,5 @@ class ViewPairwiseCorrelation:
             vmax=1,
             vmin=-1,
             ax=ax)
+
+        ax.invert_yaxis()

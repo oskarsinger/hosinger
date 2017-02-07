@@ -88,3 +88,5 @@
 
 * Show similar R squared plots to Yaya's by regressing on E4 data, wavelet coefficients, CCA-filtered data, canonical correlation
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
+
+* Try to fix my heatmap function with direct calls to Matplotlib like in the example I found.
