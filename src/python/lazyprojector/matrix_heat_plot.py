@@ -29,18 +29,24 @@ def plot_matrix_heat(
         ax = plt.axes()
 
     (n, p) = value_matrix.shape
-    source = _populate_data_source(
+    (x, y, v) = _populate_data_source(
         value_matrix, 
         x_labels, 
         y_labels,
         x_name,
         y_name,
         val_name)
-    plot = sns.heatmap(
-        source,
+    plot = plt.pcolormesh(
+        x, y, v,
+        cmap='RdBu',
         ax=ax,
         vmax=vmax,
         vmin=vmin)
+
+    plt.axis([x.min(), x.max(), y.min(), y.max()])
+    plt.colorbar()
+    plt.xlabel(x_name)
+    plt.ylabel(y_name)
 
     if n > 10:
         plot.yticklabels = n / 5
@@ -77,13 +83,7 @@ def _populate_data_source(
             y_element.append(y_labels[i])
             values.append(value_matrix[i,j])
 
-            d = {
-                x_name: x_element,
-                y_name: y_element,
-                val_name: values}
-            df = pd.DataFrame(data=d).pivot(
-                y_name,
-                x_name,
-                val_name)
-
-    return df
+    return (
+        x_element,
+        y_element,
+        values)

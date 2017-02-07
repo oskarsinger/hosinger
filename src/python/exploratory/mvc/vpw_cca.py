@@ -413,9 +413,10 @@ class ViewPairwiseCCA:
                 x_name = 'subperiod'
                 y_name = 'dimension'
                 v_name = 'canonical vector value'
-                ((yl1, yl2), xl) = self._get_labels(
-                    v1, v2, 
-                    self.num_periods[s] * self.num_subperiods)
+                yl1 = list(xrange(self.p_by_view[v1]))
+                yl2 = list(xrange(self.p_by_view[v2]))
+                xl = list(xrange(
+                    self.num_periods[s] * self.num_subperiods))
 
                 ax1 = fig.add_subplot(211)
 
@@ -455,12 +456,9 @@ class ViewPairwiseCCA:
 
         n1 = self.p_by_view[view1]
         n2 = self.p_by_view[view2]
-        y1_labels = ['view ' + str(view1) + ' {:02d}'.format(i)
-                     for i in xrange(n1)]
-        y2_labels = ['view ' + str(view2) + ' {:02d}'.format(i)
-                     for i in xrange(n2)]
+        y1_labels = list(xrange(n1))
+        y2_labels = list(xrange(n2))
         y_labels = (y1_labels, y2_labels)
         x_labels = ['{:02d}'.format(p)
-                    for p in xrange(x_len)]
 
         return (y_labels, x_labels)
