@@ -59,6 +59,10 @@ class DTCWTMask:
             str(self.period),
             'mf',
             str(self.max_freqs)]) + '.hdf5'
+        print 'name', name
+        print '\tperiod', self.period
+        print '\thertz', self.hertz
+        print '\twindow', self.window
 
         self.save_load_path = os.path.join(
             save_load_path, name)

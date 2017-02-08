@@ -89,4 +89,8 @@
 
 * Separate and fix show_n_frequency_p_time
 
-* Event-based cca 
+* Event-based cca, possibly key-ing events off of sparse CCA with n frequency, p time.
+
+* Move time-wise padding into util function
+
+* Consider different max hertz for different views?
