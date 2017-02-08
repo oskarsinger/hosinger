@@ -16,7 +16,7 @@ class FixedRateLoader:
         subject, 
         sensor, 
         reader,
-        max_hertz=0.25,
+        max_hertz=1,
         upper=None,
         lower=None,
         online=False):

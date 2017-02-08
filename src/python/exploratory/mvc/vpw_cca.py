@@ -109,18 +109,6 @@ class ViewPairwiseCCA:
             'plots',
             show,
             self.save_load_dir) 
-        self.n_time_p_frequency_dir = init_dir(
-            self.cca_names[0],
-            show,
-            self.plot_dir)
-        self.n_frequency_p_time_dir = init_dir(
-            self.cca_names[1],
-            show,
-            self.plot_dir)
-        self.n_time_p_frequency_cc_dir = init_dir(
-            self.cca_names[2],
-            show,
-            self.plot_dir)
 
     def _compute(self):
 
@@ -132,9 +120,34 @@ class ViewPairwiseCCA:
 
                 for i in xrange(self.num_views):
                     v1_mat = subperiods[i]
+                    (n1, p1) = v1_mat.shape
 
                     for j in xrange(i+1, self.num_views):
                         v2_mat = subperiods[j]
+                        n2_p2 = v2_mat.shape
+
+                        if n1 < n2:
+                            num_reps = int(float(n2) / n1)
+                            repped = np.zeros((n2, p1))
+                            
+                            for r in xrange(num_reps):
+                                max_len = repped[r::num_reps,:].shape[0]
+                                repped[r::num_reps,:] = np.copy(
+                                    v1_mat[:max_len,:])
+
+                            v1_mat = repped
+
+                        elif n2 < n1:
+                            num_reps = int(float(n1) / n2)
+                            repped = np.zeros((n1, p2))
+                            
+                            for r in xrange(num_reps):
+                                max_len = repped[r::num_reps,:].shape[0]
+                                repped[r::num_reps,:] = np.copy(
+                                    v2_mat[:max_len,:])
+
+                            v2_mat = repped
+
                         n_time_p_frequency = get_cca_vecs(
                             v1_mat, v2_mat)
                         cca_dim = min(v1_mat.shape + v2_mat.shape)
@@ -377,7 +390,7 @@ class ViewPairwiseCCA:
 
                 fn = '_'.join(title.split()) + '.png'
                 path = os.path.join(
-                    self.n_time_p_frequency_dir, fn)
+                    self.plot_dir, fn)
 
                 fig.savefig(path, format='png')
                 plt.clf()

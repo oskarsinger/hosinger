@@ -17,7 +17,7 @@ import data.loaders.shortcuts as dlsh
 @click.option('--dataset', default='e4')
 @click.option('--interpolate', default=False)
 @click.option('--max-freqs', default=7)
-@click.option('--max-hertz', default=3)
+@click.option('--max-hertz', default=4)
 @click.option('--pr', default=False)
 @click.option('--show', default=False)
 @click.option('--wavelet-load', default=False)
