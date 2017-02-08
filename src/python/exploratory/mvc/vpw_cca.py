@@ -411,6 +411,7 @@ class ViewPairwiseCCA:
                 ax1 = fig.add_subplot(211)
 
                 self._get_heat_plot(
+                    s,
                     v1,
                     v1_l,
                     x_name,
@@ -421,6 +422,7 @@ class ViewPairwiseCCA:
                 ax2 = fig.add_subplot(212)
 
                 self._get_heat_plot(
+                    s,
                     v2,
                     v2_l,
                     x_name,
