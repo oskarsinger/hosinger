@@ -306,32 +306,21 @@ class ViewPairwiseCCA:
     def _show_n_time_p_frequency_cc(self):
 
         ntpfcc = self.ccas[self.cca_names[2]]
-        tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in ntpfcc.keys()}
+        default = lambda: {s : None for s in ntpfcc.keys()}
+        tl_spuds = SPUD(
+            self.num_views, 
+            default=default, 
+            no_double=True)
 
         for (s, spud) in ntpfcc.items():
             for ((v1, v2), subperiods) in spud.items():
                 tl = np.hstack(subperiods)
 
-                tl_spuds[s].insert(v1, v2, tl)
-
-        default = lambda: {s: None for s in ntpfcc.keys()}
-        data_maps = SPUD(
-            self.num_views,
-            default=default,
-            no_double=True)
-
-        for (s, spud) in tl_spuds.items():
-            for (k, tl) in spud.items():
-                data = (
-                    np.arange(len(tl))[:,np.newaxis], 
-                    np.array(tl),
-                    None)
-                data_maps.get(k[0], k[1])[s] = data
+                tl_spuds.get(v1, v2)[s] = tl
 
         fig = plt.figure()
 
-        for ((v1, v2), dm) in data_maps.items():
+        for ((v1, v2), tls) in tl_spuds.items():
             
             print 'Generating n_time_p_frequency_plots_cc for', v1, v2
 
@@ -343,14 +332,14 @@ class ViewPairwiseCCA:
                 ' (n time p frequency) over time for view ' + \
                 v1_name + ' vs ' + v2_name
 
-            for (i, (s, data)) in enumerate(dm.items()):
+            for (i, (s, tl)) in enumerate(tls.items()):
 
                 print '\tGenerating plot for subject', s
 
                 ax = fig.add_subplot(
-                    len(dm), 1, i+1)
+                    len(tls), 1, i+1)
 
-                self._get_line_plot(s, v1, data, ax)
+                self._get_line_plot(s, v1, tl, ax)
 
             fig.suptitle(title)
             plt.clf()
@@ -368,7 +357,6 @@ class ViewPairwiseCCA:
         if self.clock_time:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
-            print 'data', data
             n = data.shape[0]
             num_sps = self.num_subperiods * self.num_periods[s]
             factor = num_sps * self.subperiod / n
