@@ -458,7 +458,7 @@ class ViewPairwiseCCA:
             ax=ax)
 
         if self.clock_time:
-            n = data.shape[0]
+            n = tl.shape[0]
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             factor =  float(self.subperiod) / n
