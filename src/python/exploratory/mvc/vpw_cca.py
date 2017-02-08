@@ -471,6 +471,6 @@ class ViewPairwiseCCA:
 
             plt.xticks(xl, x_axis)
             ax.xaxis.set_major_locator(
-                mdates.MinuteLocator(interval=self.x_interval))
+                mdates.HourLocator(interval=12))
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
