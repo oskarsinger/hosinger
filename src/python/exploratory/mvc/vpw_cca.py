@@ -466,8 +466,7 @@ class ViewPairwiseCCA:
             x_axis = np.array(get_dti(
                 n,
                 factor,
-                start_time,
-                offset=self.subperiod * (sp + 1)))
+                start_time))
 
             ax.xticks(xl, x_axis)
             ax.xaxis.set_major_locator(
