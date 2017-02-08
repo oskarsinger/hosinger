@@ -65,7 +65,7 @@ class ViewPairwiseCCA:
         if self.show:
             self._load()
 
-            self._show_n_time_p_frequency()
+            #self._show_n_time_p_frequency()
             #self._show_n_frequency_p_time()
 
             self._show_n_time_p_frequency_cc()
@@ -368,6 +368,7 @@ class ViewPairwiseCCA:
         if self.clock_time:
             dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
+            print 'data', data
             n = data.shape[0]
             num_sps = self.num_subperiods * self.num_periods[s]
             factor = num_sps * self.subperiod / n
