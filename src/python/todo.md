@@ -84,7 +84,7 @@
 
 * Maybe plug standard deviation into the wavelet decomposition
 
-* Show similar R squared plots to Yaya's by regressing on E4 data, wavelet coefficients, CCA-filtered data, canonical correlation
+* Adapt Yaya's R script to take E4 data, wavelet coefficients, CCA-filtered data, canonical correlation as inputs
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
 
 * Fix show_n_frequency_p_time
