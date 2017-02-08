@@ -348,12 +348,11 @@ class ViewPairwiseCCA:
                 print '\tGenerating plot for subject', s
 
                 ax = fig.add_subplot(
-                    len(self.subjects), 1, i+1)
-                s_title = title + \
-                    self.names[s][v1] + ' ' + self.names[s][v2]
+                    len(dm), 1, i+1)
 
                 self._get_line_plot(s, v1, data, ax)
 
+            fig.suptitle(title)
             plt.clf()
 
             fn = '_'.join(title.split()) + '.png'
