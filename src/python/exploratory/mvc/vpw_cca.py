@@ -8,6 +8,7 @@ matplotlib.use('Cairo')
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
 from drrobert.stats import get_cca_vecs
