@@ -124,7 +124,7 @@ class ViewPairwiseCCA:
 
                     for j in xrange(i+1, self.num_views):
                         v2_mat = subperiods[j]
-                        n2_p2 = v2_mat.shape
+                        (n2, p2) = v2_mat.shape
 
                         if n1 < n2:
                             num_reps = int(float(n2) / n1)
