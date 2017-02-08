@@ -65,10 +65,7 @@ class ViewPairwiseCCA:
         if self.show:
             self._load()
 
-            #self._show_n_time_p_frequency()
-            #self._show_n_frequency_p_time()
-
-            self._show_n_time_p_frequency_cc()
+            self._show_n_time_p_frequency()
         else:
             self._compute()
 
@@ -303,7 +300,7 @@ class ViewPairwiseCCA:
 
             plt.clf()
 
-    def _show_n_time_p_frequency_cc(self):
+    def _show_n_time_p_frequency(self):
 
         ntpfcc = self.ccas[self.cca_names[2]]
         default = lambda: {s : None for s in ntpfcc.keys()}
@@ -317,63 +314,6 @@ class ViewPairwiseCCA:
                 tl = np.hstack(subperiods)
 
                 tl_spuds.get(v1, v2)[s] = tl
-
-        fig = plt.figure()
-
-        for ((v1, v2), tls) in tl_spuds.items():
-            
-            print 'Generating n_time_p_frequency_plots_cc for', v1, v2
-
-            x_name = 'time'
-            y_name = 'canonical correlation'
-            v1_name = self.names.values()[0][v1].split('_')[0]
-            v2_name = self.names.values()[0][v2].split('_')[0]
-            title = 'View-pairwise canonical correlation' + \
-                ' (n time p frequency) over time for view ' + \
-                v1_name + ' vs ' + v2_name
-
-            for (i, (s, tl)) in enumerate(tls.items()):
-
-                print '\tGenerating plot for subject', s
-
-                ax = fig.add_subplot(
-                    len(tls), 1, i+1)
-
-                self._get_line_plot(s, v1, tl, ax)
-
-            fig.suptitle(title)
-
-            fn = '_'.join(title.split()) + '.png'
-            path = os.path.join(
-                self.n_time_p_frequency_cc_dir, fn)
-
-            fig.savefig(path, format='png')
-            plt.clf()
-
-    def _get_line_plot(self, s, v, data, ax):
-
-        x_axis = None
-
-        if self.clock_time:
-            dl = self.servers[s][v].get_status()['data_loader']
-            start_time = self.loaders[s][v].get_status()['start_times'][0]
-            n = data.shape[0]
-            num_sps = self.num_subperiods * self.num_periods[s]
-            factor = num_sps * self.subperiod / n
-            x_axis = np.array(get_dti(
-                n,
-                factor,
-                start_time))
-            ax.xaxis.set_major_locator(
-                mdates.HourLocator(interval=12))
-            ax.xaxis.set_major_formatter(
-                mdates.DateFormatter('%b %d %H:%M'))
-        else:
-            x_axis = np.arange(data.shape[0])[:,np.newaxis]
-
-        return ax.plot(x_axis, data)
-
-    def _show_n_time_p_frequency(self):
 
         for (s, spud) in self.ccas[self.cca_names[0]].items():
             
@@ -398,7 +338,7 @@ class ViewPairwiseCCA:
                 y_name = 'dimension'
                 v_name = 'canonical vector value'
 
-                ax1 = fig.add_subplot(211)
+                ax1 = fig.add_subplot(311)
 
                 self._get_heat_plot(
                     s,
@@ -409,7 +349,7 @@ class ViewPairwiseCCA:
                     v_name,
                     ax1)
 
-                ax2 = fig.add_subplot(212)
+                ax2 = fig.add_subplot(312)
 
                 self._get_heat_plot(
                     s,
@@ -420,6 +360,19 @@ class ViewPairwiseCCA:
                     v_name,
                     ax2)
 
+                tl = ntpfcc.get(v1, v2)[s]
+                x_name = 'time'
+                y_name = 'canonical correlation'
+                ax3 = fig.add_subplot(313)
+
+                self._get_line_plot(
+                    s, 
+                    v1, 
+                    tl, 
+                    'time', 
+                    'canonical correlation', 
+                    ax3)
+
                 fig.suptitle(title)
 
                 fn = '_'.join(title.split()) + '.png'
@@ -427,6 +380,7 @@ class ViewPairwiseCCA:
                     self.n_time_p_frequency_dir, fn)
 
                 fig.savefig(path, format='png')
+                plt.clf()
 
     def _get_heat_plot(self, s, v, ccal, x_name, y_name, v_name, ax):
 
@@ -462,3 +416,32 @@ class ViewPairwiseCCA:
                 mdates.HourLocator(interval=12))
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
+
+    def _get_line_plot(self, s, v, data, x_name, y_name, ax):
+
+        x_axis = None
+
+        if self.clock_time:
+            dl = self.servers[s][v].get_status()['data_loader']
+            start_time = self.loaders[s][v].get_status()['start_times'][0]
+            n = data.shape[0]
+            num_sps = self.num_subperiods * self.num_periods[s]
+            factor = num_sps * self.subperiod / n
+            x_axis = np.array(get_dti(
+                n,
+                factor,
+                start_time))
+            ax.xaxis.set_major_locator(
+                mdates.HourLocator(interval=12))
+            ax.xaxis.set_major_formatter(
+                mdates.DateFormatter('%b %d %H:%M'))
+        else:
+            x_axis = np.arange(data.shape[0])[:,np.newaxis]
+
+        plot = ax.plot(x_axis, data)
+
+        plot.xtitle(x_name)
+        plot.y_title(y_name)
+
+        return plot
+
