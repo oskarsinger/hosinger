@@ -455,7 +455,7 @@ class ViewPairwiseCCA:
             v_name,
             vmax=1,
             vmin=-1,
-            ax=ax1)
+            ax=ax)
 
         if self.clock_time:
             n = data.shape[0]
