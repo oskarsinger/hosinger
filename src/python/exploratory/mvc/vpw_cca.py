@@ -338,7 +338,7 @@ class ViewPairwiseCCA:
             x_name = 'time'
             y_name = 'canonical correlation'
             v1_name = self.names.values()[0][v1].split('_')[0]
-            v1_name = self.names.values()[0][v2].split('_')[0]
+            v2_name = self.names.values()[0][v2].split('_')[0]
             title = 'View-pairwise canonical correlation' + \
                 ' (n time p frequency) over time for view ' + \
                 v1_name + ' vs ' + v2_name
