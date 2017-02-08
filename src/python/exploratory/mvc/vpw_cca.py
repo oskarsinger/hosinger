@@ -432,7 +432,7 @@ class ViewPairwiseCCA:
                     v_name,
                     ax2)
 
-                fig.set_title(title)
+                fig.suptitle(title)
 
                 fn = '_'.join(title.split()) + '.png'
                 path = os.path.join(
