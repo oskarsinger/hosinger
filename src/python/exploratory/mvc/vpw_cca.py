@@ -14,6 +14,7 @@ from drrobert.stats import get_cca_vecs
 from drrobert.file_io import get_timestamped as get_ts
 from drrobert.file_io import init_dir
 from drrobert.misc import unzip
+from drrobert.ts import get_dt_index as get_dti
 from lazyprojector import plot_matrix_heat, plot_lines
 from math import log, ceil
 
