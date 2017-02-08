@@ -342,13 +342,13 @@ class ViewPairwiseCCA:
                 self._get_line_plot(s, v1, tl, ax)
 
             fig.suptitle(title)
-            plt.clf()
 
             fn = '_'.join(title.split()) + '.png'
             path = os.path.join(
                 self.n_time_p_frequency_cc_dir, fn)
 
             fig.savefig(path, format='png')
+            plt.clf()
 
     def _get_line_plot(self, s, v, data, ax):
 
