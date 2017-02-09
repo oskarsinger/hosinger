@@ -50,9 +50,11 @@ class DTCWTMask:
         # Probably put all this is a separate func
         data = None
         hdf5_repo = None
+        dl = self.ds.get_status()['data_loader']
         name = '_'.join([
             's',
-            self.ds.get_status()['data_loader'].name(),
+            dl.name(),
+            dl.subject,
             'f',
             str(self.hertz),
             'p',
