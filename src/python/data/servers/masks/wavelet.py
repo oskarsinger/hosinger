@@ -151,6 +151,9 @@ class DTCWTMask:
                 Yh = [np.absolute(w) for w in waveletes[:-1]]
                 wavelets = Yhs + [Yl]
 
+        if self.padded:
+            print 'wavelets.shape', wavelets.shape
+
         return wavelets
 
     def cols(self):
