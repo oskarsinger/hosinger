@@ -1,12 +1,10 @@
 import os
-import json
 import h5py
 import matplotlib
 
 matplotlib.use('Cairo')
 
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
@@ -16,22 +14,20 @@ from drrobert.file_io import get_timestamped as get_ts
 from drrobert.file_io import init_dir
 from drrobert.misc import unzip
 from drrobert.ts import get_dt_index as get_dti
-from lazyprojector import plot_matrix_heat, plot_lines
+from exploratory.mvc.utils import get_matched_dims
 from math import log, ceil
 
-class ViewPairwiseCCA:
+class NTPFViewPairwiseCCA:
 
     def __init__(self,
         servers,
         save_load_dir,
         num_subperiods=1,
-        nnz=1,
         clock_time=False,
         show=False):
 
         self.servers = servers
         self.show = show
-        self.nnz = nnz
         self.clock_time = clock_time
         self.subjects = self.servers.keys()
         self.num_subperiods = num_subperiods
@@ -43,10 +39,8 @@ class ViewPairwiseCCA:
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
-	self.max_periods = max(self.num_periods.values())
         self.cca_names = [
             'n_time_p_frequency',
-            'n_frequency_p_time',
             'n_time_p_frequency_cc']
 
         self._init_dirs(
@@ -87,19 +81,6 @@ class ViewPairwiseCCA:
 
             os.mkdir(self.save_load_dir)
 
-        self.freqs_path = os.path.join(
-            self.save_load_dir,
-            'p_by_view.json')
-
-        if show:
-            with open(self.freqs_path) as f:
-                line = f.readline()
-
-                self.p_by_view = json.loads(line)
-        else:
-            self.p_by_view = [None] * self.num_views
-
-
         get_path = lambda n: os.path.join(
             self.save_load_dir, n)
         hdf5_paths = {n : get_path(n) for n in self.cca_names}
@@ -118,202 +99,73 @@ class ViewPairwiseCCA:
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
                 subperiods = [ds.get_data() for ds in servers]
 
-                for i in xrange(self.num_views):
-                    v1_mat = subperiods[i]
-                    (n1, p1) = v1_mat.shape
-
-                    for j in xrange(i+1, self.num_views):
-                        v2_mat = subperiods[j]
-                        (n2, p2) = v2_mat.shape
-
-                        if n1 < n2:
-                            num_reps = int(float(n2) / n1)
-                            repped = np.zeros((n2, p1))
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(
-                                    v1_mat[:max_len,:])
-
-                            v1_mat = repped
-
-                        elif n2 < n1:
-                            num_reps = int(float(n1) / n2)
-                            repped = np.zeros((n1, p2))
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(
-                                    v2_mat[:max_len,:])
-
-                            v2_mat = repped
-
-                        n_time_p_frequency = get_cca_vecs(
+                for v1 in xrange(self.num_views):
+                    for v2 in xrange(i+1, self.num_views):
+                        v1_mat = subperiods[v1]
+                        v2_mat = subperiods[v2]
+                        (v1_mat, v2_mat) = get_matched_dims(
                             v1_mat, v2_mat)
-                        n_frequency_p_time = get_cca_vecs(
-                            v1_mat.T, v2_mat.T,
-                            num_nonzero=self.nnz)
-                        n_time_p_frequency_cc = self._get_n_time_p_frequency_cc(
-                            v1_mat,
-                            v2_mat,
-                            n_time_p_frequency)
-                        stuff = {
-                            self.cca_names[0]: n_time_p_frequency,
-                            self.cca_names[1]: n_frequency_p_time,
-                            self.cca_names[2]: n_time_p_frequency_cc}
-
-                        self.p_by_view[i] = v1_mat.shape[1] 
-                        self.p_by_view[j] = v2_mat.shape[1]
+                        ntpf = get_cca_vecs(v1_mat, v2_mat)
+                        v1_cc = np.dot(v1_mat, ntpf[0])
+                        v2_cc = np.dot(v2_mat, ntpf[1])
+                        ntpfcc = v1_cc * v2_cc
 
                         self._save(
-                            stuff,
+                            ntpf,
+                            ntpfcc,
                             s,
-                            i,
-                            j,
+                            v1,
+                            v2,
                             sp)
 
-        p_by_view_json = json.dumps(self.p_by_view)
+    def _save(self, ntpf, ntpfcc, s, v1, v2, sp):
 
-        with open(self.freqs_path, 'w') as f:
-            f.write(p_by_view_json)
+        if s not in self.hdf5_repo:
+            repo.create_group(s)
 
-    def _get_n_time_p_frequency_cc(self, v1_mat, v2_mat, n_time_p_frequency):
+        s_group = repo[s]
+        v_str = str(v1) + '-' + str(v2)
+        
+        if v_str not in s_group:
+            s_group.create_group(v_str)
 
-        v1_cc = np.dot(
-            v1_mat, 
-            n_time_p_frequency[0])
-        v2_cc = np.dot(
-            v2_mat, 
-            n_time_p_frequency[1])
+        v_group = s_group[v_str]
+        sp_str = str(sp)
 
-        return v1_cc * v2_cc
+        if sp_str not in v_group:
+            v_group.create_group(sp_str)
 
-    def _save(self, cs, s, i, j, sp):
+        sp_group = v_group[sp_str]
 
-        for (n, repo) in self.hdf5_repos.items():
-            if s not in repo:
-                repo.create_group(s)
-
-            s_group = repo[s]
-            v_str = str(i) + '-' + str(j)
-            
-            if v_str not in s_group:
-                s_group.create_group(v_str)
-
-            v_group = s_group[v_str]
-            sp_str = str(sp)
-
-            if n in self.cca_names[:2]:
-                if sp_str not in v_group:
-                    v_group.create_group(sp_str)
-
-                sp_group = v_group[sp_str]
-                (Phi1, Phi2) = cs[n]
-
-                sp_group.create_dataset('1', data=Phi1)
-                sp_group.create_dataset('2', data=Phi2)
-            else:
-                v_group.create_dataset(sp_str, data=cs[n])
+        sp_group.create_dataset('Phi1', data=ntpf[0])
+        sp_group.create_dataset('Phi2', data=ntpf[1])
+        sp_group.create_dataset('CC', data=ntpfcc)
 
     def _load(self):
 
-        for (n, n_repo) in self.hdf5_repos.items():
-            cca = self.ccas[n]
-            for (s, spud) in cca.items():
-                for k in spud.keys():
-                    l = [None] * self.num_subperiods * self.num_periods[s]
+        for (s, spud) in self.cca.items():
+            for k in spud.keys():
+                l = [None] * self.num_subperiods * self.num_periods[s]
 
-                    spud.insert(k[0], k[1], l)
-            
-            for (s, s_group) in n_repo.items():
-                cca_s = cca[s]
-
-                for (v_str, v_group) in s_group.items():
-                    (v1, v2) = [int(v) for v in v_str.split('-')]
-
-                    if not v1 == v2:
-                        cca_vs = cca_s.get(v1, v2)
-
-                        for (sp_str, sp_group) in v_group.items():
-                            sp = int(sp_str)
-
-                            if n in self.cca_names[:2]:
-                                cca_vs[sp] = (
-                                    np.array(sp_group['1']),
-                                    np.array(sp_group['2']))
-                            else:
-                                cca_vs[sp] = np.array(sp_group)
-
-    def _show_n_frequency_p_time(self):
-
-        tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ccas.keys()}
-
-        for (s, spud) in self.ccas[self.cca_names[2]].items():
-            for ((v1, v2), subperiods) in spud.items():
-                (phi1s, phi2s) = unzip(subperiods)
-                tls = (
-                    np.hstack(phi1s),
-                    np.hstack(phi2s))
-
-                tl_spuds[s].insert(v1, v2, tls)
-
-        default = lambda: {}
-        data_maps = SPUD(
-            self.num_views,
-            default=default,
-            no_double=True)
-
-        for (s, spud) in tl_spuds.items():
-            for ((v1, v2), tl) in spud.items():
-                s_key = 'Subject ' + s + ' view '
-                factor = float(self.num_periods[s]) / tl.shape[0]
-                # TODO: set up date axis
-                x_axis = 'Something'
-                phi1 = (
-                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl[0][:,np.newaxis],
-                    None)
-                phi2 = (
-                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl[1][:,np.newaxis],
-                    None)
-                data_maps.get(v1, v2)[s_key + str(1)] = phi1
-                data_maps.get(v1, v2)[s_key + str(2)] = phi2
-
-        fig = plt.figure()
+                spud.insert(k[0], k[1], l)
         
-        for ((v1, v2), dm) in data_maps.items():
+        for (s, s_group) in self.hdf5_repo.items():
+            cca_s = cca[s]
 
-            print 'Generating n_frequency_p_time_plots for', v1, v2
+            for (v_str, v_group) in s_group.items():
+                (v1, v2) = [int(v) for v in v_str.split('-')]
 
-            x_name = 'time (days)'
-            y_name = 'canonical vector value'
-            title = 'View-pairwise canonical vectors' + \
-                ' (n frequency p time) for views '
+                cca_vs = cca_s.get(v1, v2)
 
-            for (i, (s, data)) in enumerate(dm.items()):
+                for (sp_str, sp_group) in v_group.items():
+                    sp = int(sp_str)
+                    ntpf = (sp_group['Phi1'], sp_group['Phi2'])
+                    ntpfcc = sp_group['CC']
+                    
+                    cca_vs[sp] = (ntpf, ntpfcc)
 
-                print '\tGenerating plot for subject', s
+    def _show(self):
 
-                ax = fig.add_subplot(
-                    len(self.subjects), 1, i+1)
-                s_title = title + \
-                    self.names[s][v1] + ' ' + self.names[s][v2]
-                s_dm = {s : data}
-
-                plot_lines(
-                    s_dm,
-                    x_name,
-                    y_name,
-                    s_title,
-                    ax=ax)
-
-            plt.clf()
-
-    def _show_n_time_p_frequency(self):
-
-        ntpfcc = self.ccas[self.cca_names[2]]
         default = lambda: {s : None for s in ntpfcc.keys()}
         tl_spuds = SPUD(
             self.num_views, 
@@ -326,7 +178,7 @@ class ViewPairwiseCCA:
 
                 tl_spuds.get(v1, v2)[s] = tl
 
-        for (s, spud) in self.ccas[self.cca_names[0]].items():
+        for (s, spud) in self.ccas.items():
             
             print 'Generating n_time_p_frequency plots for', s
 
@@ -341,7 +193,8 @@ class ViewPairwiseCCA:
                     self.names[s][v1] + '-' + self.names[s][v2]]) + '.png'
                 path = os.path.join(
                     self.n_time_p_frequency_dir, filename)
-                (v1_l, v2_l) = unzip(subperiods)
+                (nptf, ntpfcc) = unzip(subperiods)
+                (Phi1s, Phi2s) = unzip(ntpf)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[s][v1] + ' ' + self.names[s][v2] + \
                     ' of subject ' + s
@@ -351,10 +204,10 @@ class ViewPairwiseCCA:
 
                 ax1 = fig.add_subplot(311)
 
-                self._get_heat_plot(
+                self._plot_matrix_heat(
                     s,
                     v1,
-                    v1_l,
+                    Phi1s,
                     x_name,
                     y_name,
                     v_name,
@@ -362,24 +215,23 @@ class ViewPairwiseCCA:
 
                 ax2 = fig.add_subplot(312)
 
-                self._get_heat_plot(
+                self._plot_matrix_heat(
                     s,
                     v2,
-                    v2_l,
+                    Phi2s,
                     x_name,
                     y_name,
                     v_name,
                     ax2)
 
-                tl = ntpfcc.get(v1, v2)[s]
                 x_name = 'time'
                 y_name = 'canonical correlation'
                 ax3 = fig.add_subplot(313)
 
-                self._get_line_plot(
+                self._plot_line(
                     s, 
                     v1, 
-                    tl, 
+                    ntpfcc, 
                     'time', 
                     'canonical correlation', 
                     ax3)
@@ -393,12 +245,11 @@ class ViewPairwiseCCA:
                 fig.savefig(path, format='png')
                 plt.clf()
 
-    def _get_heat_plot(self, s, v, ccal, x_name, y_name, v_name, ax):
+    def _plot_matrix_heat(self, s, v, ccal, x_name, y_name, v_name, ax):
 
         tl = np.hstack(ccal)
-
-        yl = np.arange(self.p_by_view[v])
-        xl = np.arange(tl.shape[1])
+        (n, m) = tl.shape
+        (yl, xl) = (np.arange(n), np.arange(m))
 
         plot_matrix_heat(
             tl,
@@ -413,8 +264,6 @@ class ViewPairwiseCCA:
             ax=ax)
 
         if self.clock_time:
-            n = tl.shape[0]
-            dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             factor =  float(self.subperiod) / n
             x_axis = np.array(get_dti(
@@ -428,14 +277,14 @@ class ViewPairwiseCCA:
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
 
-    def _get_line_plot(self, s, v, data, x_name, y_name, ax):
+    def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
+        tl = np.vstack(datal)
+        n = tl.shape[0]
         x_axis = None
 
         if self.clock_time:
-            dl = self.servers[s][v].get_status()['data_loader']
             start_time = self.loaders[s][v].get_status()['start_times'][0]
-            n = data.shape[0]
             num_sps = self.num_subperiods * self.num_periods[s]
             factor = num_sps * self.subperiod / n
             x_axis = np.array(get_dti(
@@ -447,12 +296,9 @@ class ViewPairwiseCCA:
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
         else:
-            x_axis = np.arange(data.shape[0])[:,np.newaxis]
+            x_axis = np.arange(n)[:,np.newaxis]
 
-        plot = ax.plot(x_axis, data)
+        plot = ax.plot(x_axis, tl)
 
         plot.xtitle(x_name)
         plot.y_title(y_name)
-
-        return plot
-
