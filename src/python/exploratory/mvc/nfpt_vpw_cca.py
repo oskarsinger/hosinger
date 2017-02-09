@@ -37,8 +37,7 @@ class NFPTViewPairwiseCCA:
         self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
-        self.names = {s : [dl.name() for dl in dls]
-                      for (s, dls) in self.loaders.items()}
+        self.names = [dl.name() for dl in self.loaders.values()[0]]
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
@@ -165,7 +164,7 @@ class NFPTViewPairwiseCCA:
                 fig = plt.figure()
                 title = 'View-pairwise canonical vectors' + \
                     ' (n frequency p time) for views ' + \
-                    self.names[s][v1] + ' ' + self.names[s][v2] + \
+                    self.names[v1] + ' ' + self.names[v2] + \
                     ' of subject ' + s
                 x_name = 'subperiod'
                 y_name = 'canonical vector value'

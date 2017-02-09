@@ -101,45 +101,19 @@ class ViewPairwiseCorrelation:
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
                 subperiods = [ds.get_data() for ds in servers]
 
-                for i in xrange(self.num_views):
-                    v1_mat = subperiods[i]
-                    (n1, p1) = v1_mat.shape
-
-                    for j in xrange(i+1, self.num_views):
-                        v2_mat = subperiods[j]
-                        (n2, p2) = v2_mat.shape
-
-                        if n1 < n2:
-                            num_reps = int(float(n2) / n1)
-                            repped = np.zeros((n2, p1))
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(
-                                    v1_mat[:max_len,:])
-
-                            v1_mat = repped
-
-                        elif n2 < n1:
-                            num_reps = int(float(n1) / n2)
-                            repped = np.zeros((n1, p2))
-                            
-                            for r in xrange(num_reps):
-                                max_len = repped[r::num_reps,:].shape[0]
-                                repped[r::num_reps,:] = np.copy(
-                                    v2_mat[:max_len,:])
-
-                            v2_mat = repped
-
-                        correlation = get_pm(
-                            v1_mat, 
-                            v2_mat)
+                for v1 in xrange(self.num_views):
+                    for v2 in xrange(v1+1, self.num_views):
+                        v1_mat = subperiods[v1]
+                        v2_mat = subperiods[v2]
+                        (v1_mat, v2_mat) = get_matched_dims(
+                            v1_mat, v2_mat)
+                        correlation = get_pm(v1_mat, v2_mat)
 
                         self._save(
                             correlation,
                             s,
-                            i,
-                            j,
+                            v1,
+                            v2,
                             sp)
                      
     def _save(self, c, s, v1, v2, sp):
