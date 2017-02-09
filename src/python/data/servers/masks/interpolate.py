@@ -18,8 +18,6 @@ class Interp1DMask:
         f = IUS(non_nan_x, non_nan_y, k=3)
         interped = f(full_x)[:,np.newaxis]
 
-        print 'interped.shape', interped.shape
-
         return interped
 
     def cols(self):
