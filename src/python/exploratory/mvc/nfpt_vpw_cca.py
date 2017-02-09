@@ -207,7 +207,7 @@ class NFPTViewPairwiseCCA:
         if self.clock_time:
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             num_sps = self.num_subperiods * self.num_periods[s]
-            factor = num_sps * self.subperiod / n
+            factor = float(num_sps * self.subperiod) / n
             x_axis = np.array(get_dti(
                 n,
                 factor,
@@ -219,7 +219,6 @@ class NFPTViewPairwiseCCA:
         else:
             x_axis = np.arange(n)[:,np.newaxis]
 
-        plot = ax.plot(x_axis, tl)
-
-        plot.xtitle(x_name)
-        plot.y_title(y_name)
+        ax.plot(x_axis, tl)
+        ax.set_xlabel(x_name)
+        ax.set_ylabel(y_name)
