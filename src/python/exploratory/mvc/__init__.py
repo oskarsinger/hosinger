@@ -1,2 +1,2 @@
 from vpw_corr import ViewPairwiseCorrelation
-from vpw_cca import ViewPairwiseCCA
+from ntpf_vpw_cca import NTPFViewPairwiseCCA

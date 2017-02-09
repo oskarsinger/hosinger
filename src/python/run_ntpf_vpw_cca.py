@@ -1,7 +1,7 @@
 import click
 import os
 
-from exploratory.mvc import ViewPairwiseCCA as VPWCCA
+from exploratory.mvc import NTPFViewPairwiseCCA as NTPFVPWCCA
 from data.servers.masks import Interp1DMask as I1DM
 from data.servers.masks import DTCWTMask as DTCWTM
 from data.servers.batch import BatchServer as BS
@@ -96,7 +96,7 @@ def run_it_all_day_bb(
                         for ds in dss]
                    for (s, dss) in servers.items()}
 
-    vpwcca = VPWCCA(
+    ntpfvpwcca = NTPFVPWCCA(
         servers,
         save_load_dir,
         num_subperiods=num_subperiods,
@@ -104,7 +104,7 @@ def run_it_all_day_bb(
         clock_time=dataset=='e4',
         show=show)
 
-    vpwcca.run()
+    ntpfvpwcca.run()
 
 if __name__=='__main__':
     run_it_all_day_bb()
