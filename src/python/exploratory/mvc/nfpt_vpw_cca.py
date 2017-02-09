@@ -102,7 +102,7 @@ class NFPTViewPairwiseCCA:
                             v1_mat.T, v2_mat.T,
                             num_nonzero=self.nnz)
 
-                        self.save(
+                        self._save(
                             nfpt,
                             s,
                             v1,
