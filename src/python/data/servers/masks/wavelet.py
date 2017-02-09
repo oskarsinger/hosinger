@@ -79,6 +79,7 @@ class DTCWTMask:
             data = np.reshape(
                 get_array_mod(data, self.window),
                 (self.num_batches, self.window))
+            print 'reshaped data.shape', data.shape
             hdf5_repo = h5py.File(
                 self.save_load_path, 'w')
 
