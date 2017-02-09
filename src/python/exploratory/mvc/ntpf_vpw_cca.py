@@ -166,7 +166,7 @@ class NTPFViewPairwiseCCA:
                 print '\tGenerating plots for views', v1, v2
 
                 fig = plt.figure()
-                (nptf, ntpfcc) = unzip(subperiods)
+                (ntpf, ntpfcc) = unzip(subperiods)
                 (Phi1s, Phi2s) = unzip(ntpf)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[s][v1] + ' ' + self.names[s][v2] + \
