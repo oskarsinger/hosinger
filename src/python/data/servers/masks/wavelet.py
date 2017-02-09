@@ -64,8 +64,6 @@ class DTCWTMask:
             save_load_path, name)
 
         if self.load:
-            print 'Creating DTCWTMask from path', self.save_load_path
-
             hdf5_repo = h5py.File(
                 self.save_load_path, 'r')
             data = None
