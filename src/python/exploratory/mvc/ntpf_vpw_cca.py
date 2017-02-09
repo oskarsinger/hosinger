@@ -112,9 +112,9 @@ class NTPFViewPairwiseCCA:
     def _save(self, ntpf, ntpfcc, s, v1, v2, sp):
 
         if s not in self.hdf5_repo:
-            repo.create_group(s)
+            self.hdf5_repo.create_group(s)
 
-        s_group = repo[s]
+        s_group = self.hdf5_repo[s]
         v_str = str(v1) + '-' + str(v2)
         
         if v_str not in s_group:
