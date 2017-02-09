@@ -157,7 +157,7 @@ class NFPTViewPairwiseCCA:
 
             print 'Generating n_frequency_p_time plots for', s
 
-            for ((v1, v2), subperiods) in data_maps.items():
+            for ((v1, v2), subperiods) in spud.items():
 
                 print '\tGenerating plots for', v1, v2
 
