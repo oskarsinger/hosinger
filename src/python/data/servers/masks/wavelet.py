@@ -79,7 +79,6 @@ class DTCWTMask:
             data = np.reshape(
                 get_array_mod(data, self.window),
                 (self.num_batches, self.window))
-            print 'reshaped data.shape', data.shape
             hdf5_repo = h5py.File(
                 self.save_load_path, 'w')
 
@@ -151,9 +150,6 @@ class DTCWTMask:
                 Yl = wavelets[-1]
                 Yh = [np.absolute(w) for w in waveletes[:-1]]
                 wavelets = Yhs + [Yl]
-
-        if self.padded:
-            print 'wavelets.shape', wavelets.shape
 
         return wavelets
 

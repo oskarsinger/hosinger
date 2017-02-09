@@ -126,8 +126,6 @@ class ViewPairwiseCCA:
                         v2_mat = subperiods[j]
                         (n2, p2) = v2_mat.shape
 
-                        print 'n1', n1, 'p1', p1, 'n2', n2, 'p2', p2
-
                         if n1 < n2:
                             num_reps = int(float(n2) / n1)
                             repped = np.zeros((n2, p1))
@@ -139,8 +137,6 @@ class ViewPairwiseCCA:
 
                             v1_mat = repped
 
-                            print 'new v1_mat.shape', v1_mat.shape
-
                         elif n2 < n1:
                             num_reps = int(float(n1) / n2)
                             repped = np.zeros((n1, p2))
@@ -151,8 +147,6 @@ class ViewPairwiseCCA:
                                     v2_mat[:max_len,:])
 
                             v2_mat = repped
-
-                            print 'new v2_mat.shape', v2_mat.shape
 
                         n_time_p_frequency = get_cca_vecs(
                             v1_mat, v2_mat)
