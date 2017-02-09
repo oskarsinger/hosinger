@@ -7,22 +7,10 @@
 
 * Revamp CV
     * Clean up your optimization and CCA code, then put them on github
-    * E4 project, both wavelets and online CCA, mainly wavelets since that's where the results are
-    * Network interference project, complex optimization scheme synthesizing several recent publications and original ideas
-    * Volunteering
-    * Frisbee
 
 * Create hdf5 serialization helpers for standard datatypes if they don't already exist.
 
 #Network Interference
-
-##Infrastructure
-* Develop a Parameter class to take care of nasty indexing for stuff like FSVRG. That actually may not be necessary until we have more complex parameter sharing and feature generation stuff.
-
-##Learning
-* Eventually, I need to be concerned about subsampling nodes in the network for using in the weighted proximal updates. Need to come up with a sampling scheme, and I should ask Walter and Brandon about this. Should also take a look at federated optimization paper. Also, turns out Brendan McMahan and co have a paper about this that could be helpful, although I think they sample at each round, and I'd want to have probably a subset at the beginning. That may be more related to the model than the estimation. Let's see where they take the SBM stuff.
-    
-##Network
 
 ##Visualization
 * Need to make visualization to assess convergence of the algorithm on the local parameters. Should I also be assessing convergence on global model, or does that matter? Make that a later step? Maybe I should show the max error over all nodes for each coordinate.
@@ -47,11 +35,6 @@
 * Implement full AdaGrad and Adam, diagonal Adam
 
 * Implement the paper on low-rank estimates of QN matrices
-
-###Particle MCMC
-* Browse the Springer PDF!
-
-* Go to the RM-HMC reading group, and read the materials! Think about how it fits into the framework you are already using.
 
 ###Federated
 * Think carefully about when it is possible to do projected gradient in the context of federated, and how it can be accomplished. Certainly, you need to be doing it before using your most recent model to make a prediction. Maybe elsewhere to keep things on track.
@@ -87,10 +70,6 @@
 * Adapt Yaya's R script to take E4 data, wavelet coefficients, CCA-filtered data, canonical correlation as inputs
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
 
-* Separate and fix show_n_frequency_p_time
-
-* Event-based cca, possibly key-ing events off of sparse CCA with n frequency, p time.
-
-* Move time-wise padding into util function
+* Event-based data point collection, possibly key-ing events off of sparse CCA with n frequency, p time. Or hand-tailored event heuristics. Try first on test data.
 
 * Consider different max hertz for different views?
