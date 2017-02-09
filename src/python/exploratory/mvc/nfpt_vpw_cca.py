@@ -33,6 +33,23 @@ class NFPTViewPairwiseCCA:
         self.clock_time = clock_time
         self.show = show
 
+        self.subjects = self.servers.keys()
+        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
+        self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
+                        for (s, dss) in self.servers.items()}
+        self.names = {s : [dl.name() for dl in dls]
+                      for (s, dls) in self.loaders.items()}
+        self.num_views = len(self.servers.values()[0])
+        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
+                            for (s, servers) in self.servers.items()}
+
+        self._init_dirs(save_load_dir)
+
+        self.cca = {s : SPUD(
+                        self.num_views, 
+                        no_double=True)
+                    for s in self.subjects}
+
     def run(self):
 
         if self.show:
@@ -40,6 +57,32 @@ class NFPTViewPairwiseCCA:
             self._show()
         else:
             self._compute()
+
+    def _init_dirs(self, save_load_dir):
+
+        if self.show:
+            self.save_load_dir = save_load_dir
+        else:
+            if not os.path.isdir(save_load_dir):
+                os.mkdir(save_load_dir)
+
+            model_dir = get_ts('NFPTVPWCCA')
+
+            self.save_load_dir = os.path.join(
+                save_load_dir,
+                model_dir)
+
+            os.mkdir(self.save_load_dir)
+
+        hdf5_path = os.path.join(
+            self.save_load_dir, 'ccas')
+        self.hdf5_repo = h5py.File(
+            hdf5_path, 
+            'r' if show else 'w')
+        self.plot_dir = init_dir(
+            'plots',
+            self.show,
+            self.save_load_dir) 
 
     def _compute(self):
 
@@ -50,80 +93,133 @@ class NFPTViewPairwiseCCA:
                 subperiods = [ds.get_data() for ds in servers]
 
                 for v1 in xrange(self.num_views):
-                    for v2 in xrange(i+1, self.num_views):
-                        v1_mat = subperiods[i]
-                        v2_mat = subperiods[j]
+                    for v2 in xrange(v1+1, self.num_views):
+                        v1_mat = subperiods[v1]
+                        v2_mat = subperiods[v2]
                         (v1_mat, v2_mat) = get_matched_dims(
                             v1_mat, v2_mat)
-
-                        n_frequency_p_time = get_cca_vecs(
+                        nfpt = get_cca_vecs(
                             v1_mat.T, v2_mat.T,
                             num_nonzero=self.nnz)
 
+                        self.save(
+                            nfpt,
+                            s,
+                            v1,
+                            v2,
+                            sp)
+
+    def _save(self, nfpt, s, v1, v2, sp):
+
+        if s not in self.hdf5_repo:
+            repo.create_group(s)
+
+        s_group = repo[s]
+        v_str = str(v1) + '-' + str(v2)
+        
+        if v_str not in s_group:
+            s_group.create_group(v_str)
+
+        v_group = s_group[v_str]
+        sp_str = str(sp)
+
+        if sp_str not in v_group:
+            v_group.create_group(sp_str)
+
+        sp_group = v_group[sp_str]
+
+        sp_group.create_dataset('Phi1', data=nfpt[0])
+        sp_group.create_dataset('Phi2', data=nfpt[1])
+
+    def _load(self):
+
+        for (s, spud) in self.cca.items():
+            for k in spud.keys():
+                l = [None] * self.num_subperiods * self.num_periods[s]
+
+                spud.insert(k[0], k[1], l)
+        
+        for (s, s_group) in self.hdf5_repo.items():
+            cca_s = cca[s]
+
+            for (v_str, v_group) in s_group.items():
+                (v1, v2) = [int(v) for v in v_str.split('-')]
+
+                cca_vs = cca_s.get(v1, v2)
+
+                for (sp_str, sp_group) in v_group.items():
+                    sp = int(sp_str)
+                    cca_vs[sp] = (sp_group['Phi1'], sp_group['Phi2'])
+
     def _show(self):
 
-        tl_spuds = {s: SPUD(self.num_views, no_double=True)
-                    for s in self.ccas.keys()}
+        for (s, spud) in self.cca.items():
 
-        for (s, spud) in self.ccas[self.cca_names[2]].items():
-            for ((v1, v2), subperiods) in spud.items():
-                (phi1s, phi2s) = unzip(subperiods)
-                tls = (
-                    np.hstack(phi1s),
-                    np.hstack(phi2s))
+            print 'Generating n_frequency_p_time plots for', s
 
-                tl_spuds[s].insert(v1, v2, tls)
+            for ((v1, v2), subperiods) in data_maps.items():
 
-        default = lambda: {}
-        data_maps = SPUD(
-            self.num_views,
-            default=default,
-            no_double=True)
+                print '\tGenerating plots for', v1, v2
 
-        for (s, spud) in tl_spuds.items():
-            for ((v1, v2), tl) in spud.items():
-                s_key = 'Subject ' + s + ' view '
-                factor = float(self.num_periods[s]) / tl.shape[0]
-                # TODO: set up date axis
-                x_axis = 'Something'
-                phi1 = (
-                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl[0][:,np.newaxis],
-                    None)
-                phi2 = (
-                    factor * np.arange(tl.shape[0])[:,np.newaxis], 
-                    tl[1][:,np.newaxis],
-                    None)
-                data_maps.get(v1, v2)[s_key + str(1)] = phi1
-                data_maps.get(v1, v2)[s_key + str(2)] = phi2
+                (Phi1s, Phi2s) = unzip(subperiods)
+                fig = plt.figure()
+                title = 'View-pairwise canonical vectors' + \
+                    ' (n frequency p time) for views ' + \
+                    self.names[s][v1] + ' ' + self.names[s][v2] + \
+                    ' of subject ' + s
+                x_name = 'subperiod'
+                y_name = 'canonical vector value'
+                ax1 = fig.add_subplot(211)
 
-        fig = plt.figure()
-        
-        for ((v1, v2), dm) in data_maps.items():
-
-            print 'Generating n_frequency_p_time_plots for', v1, v2
-
-            x_name = 'time (days)'
-            y_name = 'canonical vector value'
-            title = 'View-pairwise canonical vectors' + \
-                ' (n frequency p time) for views '
-
-            for (i, (s, data)) in enumerate(dm.items()):
-
-                print '\tGenerating plot for subject', s
-
-                ax = fig.add_subplot(
-                    len(self.subjects), 1, i+1)
-                s_title = title + \
-                    self.names[s][v1] + ' ' + self.names[s][v2]
-                s_dm = {s : data}
-
-                plot_lines(
-                    s_dm,
+                self._plot_line(
+                    s, 
+                    v1, 
+                    Phi1s,
                     x_name,
                     y_name,
-                    s_title,
-                    ax=ax)
+                    ax1)
 
-            plt.clf()
+                ax2 = fig.add_subplot(212)
 
+                self._plot_line(
+                    s, 
+                    v2, 
+                    Phi2s,
+                    x_name,
+                    y_name,
+                    ax2)
+
+                fig.suptitle(title)
+
+                fn = '_'.join(title.split()) + '.png'
+                path = os.path.join(
+                    self.plot_dir, fn)
+
+                fig.savefig(path, format='png')
+                plt.clf()
+
+    def _plot_line(self, s, v, datal, x_name, y_name, ax):
+
+        tl = np.vstack(datal)
+        n = tl.shape[0]
+        x_axis = None
+
+        if self.clock_time:
+            start_time = self.loaders[s][v].get_status()['start_times'][0]
+            num_sps = self.num_subperiods * self.num_periods[s]
+            factor = num_sps * self.subperiod / n
+            x_axis = np.array(get_dti(
+                n,
+                factor,
+                start_time))
+            ax.xaxis.set_major_locator(
+                mdates.HourLocator(interval=12))
+            ax.xaxis.set_major_formatter(
+                mdates.DateFormatter('%b %d %H:%M'))
+        else:
+            x_axis = np.arange(n)[:,np.newaxis]
+
+        plot = ax.plot(x_axis, tl)
+
+        plot.xtitle(x_name)
+        plot.y_title(y_name)
