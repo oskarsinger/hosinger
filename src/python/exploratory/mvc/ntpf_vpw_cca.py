@@ -141,7 +141,7 @@ class NTPFViewPairwiseCCA:
                 spud.insert(k[0], k[1], l)
         
         for (s, s_group) in self.hdf5_repo.items():
-            cca_s = cca[s]
+            cca_s = self.cca[s]
 
             for (v_str, v_group) in s_group.items():
                 (v1, v2) = [int(v) for v in v_str.split('-')]
