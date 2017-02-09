@@ -57,7 +57,8 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             rank,
             T,
             x_project,
-            y_project)
+            y_project,
+            verbose=False)
 
     return (
         x_weights,
