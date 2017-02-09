@@ -1,7 +1,7 @@
 import click
 import os
 
-from exploratory.mvc import NTPFViewPairwiseCCA as NTPFVPWCCA
+from exploratory.mvc import NFPTViewPairwiseCCA as NFPTVPWCCA
 from data.servers.masks import Interp1DMask as I1DM
 from data.servers.masks import DTCWTMask as DTCWTM
 from data.servers.batch import BatchServer as BS
@@ -32,6 +32,7 @@ def run_it_all_day_bb(
     max_freqs,
     max_hertz,
     pr,
+    nnz,
     show,
     wavelet_save,
     wavelet_load,
@@ -94,14 +95,15 @@ def run_it_all_day_bb(
                         for ds in dss]
                    for (s, dss) in servers.items()}
 
-    ntpfvpwcca = NTPFVPWCCA(
+    nfptvpwcca = NFPTVPWCCA(
         servers,
         save_load_dir,
         num_subperiods=num_subperiods,
+        nnz=nnz,
         clock_time=dataset=='e4',
         show=show)
 
-    ntpfvpwcca.run()
+    nfptvpwcca.run()
 
 if __name__=='__main__':
     run_it_all_day_bb()
