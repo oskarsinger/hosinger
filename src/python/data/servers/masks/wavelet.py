@@ -159,7 +159,7 @@ class DTCWTMask:
 
     def rows(self):
 
-        return self.ds.rows()
+        return self.ds.rows() / 2
 
     def refresh(self):
 
