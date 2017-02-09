@@ -27,10 +27,11 @@ class NTPFViewPairwiseCCA:
         show=False):
 
         self.servers = servers
-        self.show = show
-        self.clock_time = clock_time
-        self.subjects = self.servers.keys()
         self.num_subperiods = num_subperiods
+        self.clock_time = clock_time
+        self.show = show
+
+        self.subjects = self.servers.keys()
         self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
@@ -39,41 +40,31 @@ class NTPFViewPairwiseCCA:
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
-        self.cca_names = [
-            'n_time_p_frequency',
-            'n_time_p_frequency_cc']
 
-        self._init_dirs(
-            show, 
-            save_load_dir)
+        self._init_dirs(save_load_dir)
 
-        get_container = lambda: {s : SPUD(
-                                    self.num_views, 
-                                    no_double=True)
-                                 for s in self.subjects}
-        self.ccas = {n : get_container()
-                     for n in self.cca_names}
+        self.cca = {s : SPUD(
+                        self.num_views, 
+                        no_double=True)
+                    for s in self.subjects}
 
     def run(self):
 
         if self.show:
             self._load()
-
-            self._show_n_time_p_frequency()
+            self._show()
         else:
             self._compute()
 
-    def _init_dirs(self, 
-        show, 
-        save_load_dir):
+    def _init_dirs(self, save_load_dir):
 
-        if show:
+        if self.show:
             self.save_load_dir = save_load_dir
         else:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('VPWCCA')
+            model_dir = get_ts('NTPFVPWCCA')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
@@ -81,14 +72,14 @@ class NTPFViewPairwiseCCA:
 
             os.mkdir(self.save_load_dir)
 
-        get_path = lambda n: os.path.join(
-            self.save_load_dir, n)
-        hdf5_paths = {n : get_path(n) for n in self.cca_names}
-        self.hdf5_repos = {n : h5py.File(p, 'r' if show else 'w')
-                           for (n, p) in hdf5_paths.items()}
+        hdf5_path = os.path.join(
+            self.save_load_dir, 'ccas')
+        self.hdf5_repo = h5py.File(
+            hdf5_path, 
+            'r' if show else 'w')
         self.plot_dir = init_dir(
             'plots',
-            show,
+            self.show,
             self.save_load_dir) 
 
     def _compute(self):
@@ -100,7 +91,7 @@ class NTPFViewPairwiseCCA:
                 subperiods = [ds.get_data() for ds in servers]
 
                 for v1 in xrange(self.num_views):
-                    for v2 in xrange(i+1, self.num_views):
+                    for v2 in xrange(v1+1, self.num_views):
                         v1_mat = subperiods[v1]
                         v2_mat = subperiods[v2]
                         (v1_mat, v2_mat) = get_matched_dims(
@@ -166,19 +157,7 @@ class NTPFViewPairwiseCCA:
 
     def _show(self):
 
-        default = lambda: {s : None for s in ntpfcc.keys()}
-        tl_spuds = SPUD(
-            self.num_views, 
-            default=default, 
-            no_double=True)
-
-        for (s, spud) in ntpfcc.items():
-            for ((v1, v2), subperiods) in spud.items():
-                tl = np.hstack(subperiods)
-
-                tl_spuds.get(v1, v2)[s] = tl
-
-        for (s, spud) in self.ccas.items():
+        for (s, spud) in self.cca.items():
             
             print 'Generating n_time_p_frequency plots for', s
 
@@ -187,12 +166,6 @@ class NTPFViewPairwiseCCA:
                 print '\tGenerating plots for views', v1, v2
 
                 fig = plt.figure()
-                filename = '_'.join([
-                    'subject', s,
-                    '_views_',
-                    self.names[s][v1] + '-' + self.names[s][v2]]) + '.png'
-                path = os.path.join(
-                    self.n_time_p_frequency_dir, filename)
                 (nptf, ntpfcc) = unzip(subperiods)
                 (Phi1s, Phi2s) = unzip(ntpf)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
@@ -224,8 +197,6 @@ class NTPFViewPairwiseCCA:
                     v_name,
                     ax2)
 
-                x_name = 'time'
-                y_name = 'canonical correlation'
                 ax3 = fig.add_subplot(313)
 
                 self._plot_line(
