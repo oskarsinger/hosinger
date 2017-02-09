@@ -78,7 +78,7 @@ class NFPTViewPairwiseCCA:
             self.save_load_dir, 'ccas')
         self.hdf5_repo = h5py.File(
             hdf5_path, 
-            'r' if show else 'w')
+            'r' if self.show else 'w')
         self.plot_dir = init_dir(
             'plots',
             self.show,
