@@ -270,7 +270,6 @@ class NTPFViewPairwiseCCA:
         else:
             x_axis = np.arange(n)[:,np.newaxis]
 
-        plot = ax.plot(x_axis, tl)
-
-        plot.xtitle(x_name)
-        plot.y_title(y_name)
+        ax.plot(x_axis, tl)
+        ax.set_xlabel(x_name)
+        ax.set_ylabel(y_name)
