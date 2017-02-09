@@ -14,6 +14,7 @@ from drrobert.file_io import get_timestamped as get_ts
 from drrobert.file_io import init_dir
 from drrobert.misc import unzip
 from drrobert.ts import get_dt_index as get_dti
+from lazyprojector import plot_matrix_heat
 from exploratory.mvc.utils import get_matched_dims
 from math import log, ceil
 
