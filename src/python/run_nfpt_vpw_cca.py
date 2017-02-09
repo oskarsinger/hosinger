@@ -19,6 +19,7 @@ import data.loaders.shortcuts as dlsh
 @click.option('--max-freqs', default=7)
 @click.option('--max-hertz', default=4)
 @click.option('--pr', default=False)
+@click.option('--nnz', default=1)
 @click.option('--show', default=False)
 @click.option('--wavelet-save', default=False) 
 @click.option('--wavelet-load', default=False)
