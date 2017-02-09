@@ -199,7 +199,7 @@ class FixedRateLoader:
 
     def name(self):
 
-        return self.sensor + '_' + self.subject
+        return self.sensor
 
     def refresh(self):
 
