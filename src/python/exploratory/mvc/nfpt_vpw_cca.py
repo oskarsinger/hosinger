@@ -212,7 +212,7 @@ class NFPTViewPairwiseCCA:
                 factor,
                 start_time))
             ax.xaxis.set_major_locator(
-                mdates.HourLocator(interval=12))
+                mdates.HourLocator(interval=24))
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
         else:
