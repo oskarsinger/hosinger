@@ -90,6 +90,9 @@ class E4RawDataPlotRunner:
         ys = self._get_ys()
 
         for (v, ys_v) in enumerate(ys):
+
+            print  'Generating plots for view', self.names[v]
+
             fig = plt.figure()
 
             for (i, (s, y)) in enumerate(ys_v.items()):
@@ -156,21 +159,14 @@ class E4RawDataPlotRunner:
 
     def _plot_line(self, s, v, ys, x_name, y_name, ax):
 
-        x_axis = None
+        dt = self.loaders[s][v].get_status()['start_times'][0]
+        xs = np.array(get_dt_index(
+            ys.shape[0], self.period, dt))
 
-        if self.clock_time:
-            dt = self.loaders[s][v].get_status()['start_times'][0]
-            dt_index_list = get_dt_index(
-                ys.shape[0], self.period, dt)
-            dt_index_array = np.array(dt_index_list)
-
-            ax.xaxis.set_major_locator(
-                mdates.HourLocator(interval=24))
-            ax.xaxis.set_major_formatter(
-                mdates.DateFormatter('%d-th %H:%M'))
-        else:
-            x_axis = np.arange(n)[:,np.newaxis]
-
-        ax.plot(x_axis, ys)
+        ax.xaxis.set_major_locator(
+            mdates.HourLocator(interval=24))
+        ax.xaxis.set_major_formatter(
+            mdates.DateFormatter('%d-th %H:%M'))
+        ax.plot(xs, ys)
         ax.set_xlabel(x_name)
         ax.set_ylabel(y_name)

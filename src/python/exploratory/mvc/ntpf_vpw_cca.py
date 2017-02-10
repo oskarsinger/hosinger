@@ -222,7 +222,6 @@ class NTPFViewPairwiseCCA:
     def _plot_matrix_heat(self, s, v, ccal, x_name, y_name, v_name, ax):
 
         tl = np.hstack(ccal)
-        print 'tl', tl
         (n, m) = tl.shape
         (yl, xl) = (np.arange(n), np.arange(m))
 
