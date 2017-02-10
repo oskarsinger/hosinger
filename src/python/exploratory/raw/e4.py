@@ -104,8 +104,8 @@ class E4RawDataPlotRunner:
                     s,
                     v,
                     y,
-                    'period', 
-                    'value', 
+                    'time', 
+                    '', 
                     ax=ax)
 
             title = \
