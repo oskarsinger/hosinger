@@ -230,6 +230,8 @@ class NTPFViewPairwiseCCA:
             x_name,
             y_name,
             v_name,
+            vmax=1,
+            vmin=-1,
             ax=ax)
 
         if self.clock_time:
