@@ -243,7 +243,7 @@ class NTPFViewPairwiseCCA:
             num_sps = self.num_subperiods * self.num_periods[s]
             factor = float(self.subperiod) *  num_sps / n
             x_axis = get_dti(n, factor, start_time)
-            x_axis = [d.strftime('%d %H:%M') for d in x_axis]
+            x_axis = [d.strftime('%d-th %H:%M') for d in x_axis]
 
             plt.xticks(xl, x_axis)
             ax.xaxis.set_major_locator(
@@ -267,7 +267,7 @@ class NTPFViewPairwiseCCA:
             ax.xaxis.set_major_locator(
                 mdates.HourLocator(interval=24))
             ax.xaxis.set_major_formatter(
-                mdates.DateFormatter('%d %H:%M'))
+                mdates.DateFormatter('%d-th %H:%M'))
         else:
             x_axis = np.arange(n)[:,np.newaxis]
 
