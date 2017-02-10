@@ -244,7 +244,7 @@ class NTPFViewPairwiseCCA:
             plt.xticks(xl, x_axis)
             ax.xaxis.set_major_locator(
                 matplotlib.ticker.IndexLocator(
-                    base=int(24.0 * 3600.0 / factor)))
+                    int(24.0 * 3600.0 / factor), 0))
             ax.set_xticklabels(
                 ax.xaxis.get_majorticklabels(), 
                 rotation=45)
