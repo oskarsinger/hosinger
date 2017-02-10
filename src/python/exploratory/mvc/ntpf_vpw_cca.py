@@ -230,23 +230,21 @@ class NTPFViewPairwiseCCA:
             x_name,
             y_name,
             v_name,
-            vmax=1,
-            vmin=-1,
             ax=ax)
 
         if self.clock_time:
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             factor =  float(self.subperiod) / n
-            x_axis = np.array(get_dti(
-                n,
-                factor,
-                start_time))
+            x_axis = get_dti(n, factor, start_time)
+            x_axis = [d.strftime('%b %d %H:%M') for d in x_axis]
 
             plt.xticks(xl, x_axis)
+
+            spacing = int(24.0 * 3600.0 / factor)
+
             ax.xaxis.set_major_locator(
-                mdates.HourLocator(interval=12))
-            ax.xaxis.set_major_formatter(
-                mdates.DateFormatter('%b %d %H:%M'))
+                matplotlib.ticker.LinearLocator(
+                    numticks=xl[::spacing]))
 
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
@@ -263,7 +261,7 @@ class NTPFViewPairwiseCCA:
                 factor,
                 start_time))
             ax.xaxis.set_major_locator(
-                mdates.HourLocator(interval=12))
+                mdates.HourLocator(interval=24))
             ax.xaxis.set_major_formatter(
                 mdates.DateFormatter('%b %d %H:%M'))
         else:
