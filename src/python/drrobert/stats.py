@@ -51,7 +51,7 @@ def get_cca_vecs(X1, X2, num_nonzero=None):
             nnz=num_nonzero)
         A = get_pearson_matrix(X1, X2)
         T = X1.shape[0]
-        rank = 7
+        rank = num_nonzero * 2 + 1
         (x_weights, y_weights) = spancca.cca(
             A,
             rank,
