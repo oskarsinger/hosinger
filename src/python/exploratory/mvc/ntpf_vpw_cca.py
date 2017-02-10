@@ -208,6 +208,7 @@ class NTPFViewPairwiseCCA:
                     ax3)
 
                 fig.suptitle(title)
+                fig.autofmt_xdate()
 
                 fn = '_'.join(title.split()) + '.png'
                 path = os.path.join(
@@ -238,12 +239,15 @@ class NTPFViewPairwiseCCA:
             start_time = self.loaders[s][v].get_status()['start_times'][0]
             factor =  float(self.subperiod) / n
             x_axis = get_dti(n, factor, start_time)
-            x_axis = [d.strftime('%b %d %H:%M') for d in x_axis]
+            x_axis = [d.strftime('%d %H:%M') for d in x_axis]
 
             plt.xticks(xl, x_axis)
             ax.xaxis.set_major_locator(
-                matplotlib.ticker.LinearLocator(
-                    numticks=self.num_periods[s]))
+                matplotlib.ticker.IndexLocator(
+                    base=int(24.0 * 3600.0 / factor)))
+            ax.set_xticklabels(
+                ax.xaxis.get_majorticklabels(), 
+                rotation=45)
 
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
@@ -262,7 +266,7 @@ class NTPFViewPairwiseCCA:
             ax.xaxis.set_major_locator(
                 mdates.HourLocator(interval=24))
             ax.xaxis.set_major_formatter(
-                mdates.DateFormatter('%b %d %H:%M'))
+                mdates.DateFormatter('%d %H:%M'))
         else:
             x_axis = np.arange(n)[:,np.newaxis]
 
