@@ -153,6 +153,7 @@ class NTPFViewPairwiseCCA:
                     ntpf = (
                         np.array(sp_group['Phi1']), 
                         np.array(sp_group['Phi2']))
+                    print 'ntpf', ntpf
                     ntpfcc = np.array(sp_group['CC'])
                     
                     cca_vs[sp] = (ntpf, ntpfcc)
@@ -170,6 +171,8 @@ class NTPFViewPairwiseCCA:
                 fig = plt.figure()
                 (ntpf, ntpfcc) = unzip(subperiods)
                 (Phi1s, Phi2s) = unzip(ntpf)
+                print 'Phi1s', Phi1s
+                print 'Phi2s', Phi2s
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[v1] + ' ' + self.names[v2] + \
                     ' of subject ' + s
