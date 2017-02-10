@@ -241,12 +241,9 @@ class NTPFViewPairwiseCCA:
             x_axis = [d.strftime('%b %d %H:%M') for d in x_axis]
 
             plt.xticks(xl, x_axis)
-
-            spacing = int(24.0 * 3600.0 / factor)
-
             ax.xaxis.set_major_locator(
                 matplotlib.ticker.LinearLocator(
-                    numticks=xl[::spacing]))
+                    numticks=self.num_periods[s]))
 
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
