@@ -4,15 +4,12 @@ import matplotlib
 matplotlib.use('Cairo')
 
 import numpy as np
-import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 import data.loaders.shortcuts as dlstcts
 import data.loaders.e4.utils as e4u
 
 from data.servers.batch import BatchServer as BS
 from data.servers.masks import Interp1DMask as I1DM
-from lazyprojector import plot_lines
 from drrobert.ts import get_dt_index
 from drrobert.file_io import get_timestamped as get_ts
 
@@ -98,17 +95,13 @@ class E4RawDataPlotRunner:
             for (i, (s, y)) in enumerate(ys_v.items()):
                 ax = fig.add_subplot(
                     len(ys_v), 1, i+1)
-                data_map = {s : (
-                    self._get_x(y.shape[0], v, s), 
-                    y, 
-                    None)}
 
-                plot_lines(
-                    data_map,
+                self._plot_line(
+                    s,
+                    v,
+                    ys,
                     'period', 
                     'value', 
-                    '',
-                    unit_name='Subject',
                     ax=ax)
 
             title = \
@@ -129,16 +122,7 @@ class E4RawDataPlotRunner:
                 visible=False)
 
             fig.savefig(path, format='png')
-            sns.plt.clf()
-
-    def _get_x(self, num_rows, v, s):
-
-        dt = self.loaders[s][v].get_status()['start_times'][0]
-        dt_index_list = get_dt_index(
-            num_rows, self.period, dt)
-        dt_index_array = np.array(dt_index_list)
-
-        return dt_index_array[:,np.newaxis]
+            plt.clf()
 
     def _get_ys(self):
 
@@ -169,3 +153,24 @@ class E4RawDataPlotRunner:
                 views[v][s] = np.copy(means)
 
         return views
+
+    def _plot_line(self, s, v, ys, x_name, y_name, ax):
+
+        x_axis = None
+
+        if self.clock_time:
+            dt = self.loaders[s][v].get_status()['start_times'][0]
+            dt_index_list = get_dt_index(
+                ys.shape[0], self.period, dt)
+            dt_index_array = np.array(dt_index_list)
+
+            ax.xaxis.set_major_locator(
+                mdates.HourLocator(interval=24))
+            ax.xaxis.set_major_formatter(
+                mdates.DateFormatter('%d-th %H:%M'))
+        else:
+            x_axis = np.arange(n)[:,np.newaxis]
+
+        ax.plot(x_axis, ys)
+        ax.set_xlabel(x_name)
+        ax.set_ylabel(y_name)
