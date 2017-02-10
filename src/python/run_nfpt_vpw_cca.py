@@ -59,25 +59,23 @@ def run_it_all_day_bb(
         loaders = {'e' + str(i): dls.get_FPGL(n, ps, hertzes)
                    for i in xrange(2)}
 
-    servers = None
+    servers = {s : [BS(dl) for dl in dls]
+               for (s, dls) in loaders.items()}
+
+    if interpolate:
+        servers = {s : [I1DM(ds) for ds in dss]
+                   for (s, dss) in servers.items()}
 
     if dataset == 'cm':
         batch_size = 3
         servers = {s : [B2M(
-                            dl, 
-                            batch_size, 
-                            random=False, 
-                            lazy=False) 
-                        for dl in dls]
-                   for (s, dls) in loaders.items()}
+                            data_server=ds,
+                            batch_size,
+                            random=False,
+                            lazy=False)
+                        for ds in dss]
+                   for (s, dss) in servers.items()}
     else:
-        servers = {s : [BS(dl) for dl in dls]
-                   for (s, dls) in loaders.items()}
-
-        if interpolate:
-            servers = {s : [I1DM(ds) for ds in dss]
-                       for (s, dss) in servers.items()}
-
         if wavelet_save:
             wavelet_dir = os.path.join(
                 wavelet_dir, get_ts('DTCWT'))
