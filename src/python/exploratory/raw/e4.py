@@ -5,6 +5,7 @@ matplotlib.use('Cairo')
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import data.loaders.shortcuts as dlstcts
 import data.loaders.e4.utils as e4u
 
