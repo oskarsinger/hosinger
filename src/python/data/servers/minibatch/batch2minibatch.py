@@ -45,7 +45,7 @@ class Batch2Minibatch:
             current = np.copy(get_minibatch(self.data, self.bs))
         else:
             n = self.data.shape[0]
-            begin = self.num_rounds * self.bs % n
+            begin = (self.num_rounds * self.bs) % n
             end = begin + self.bs
             
             if end > n:
@@ -64,7 +64,7 @@ class Batch2Minibatch:
     def _init_data(self):
 
         self.data = self.ds.get_data()
-        self.num_batches = int(self.data.shape[0] / self.bs)
+        self.num_batches = int(float(self.data.shape[0]) / self.bs)
 
     def finished(self):
 
