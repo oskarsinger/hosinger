@@ -16,14 +16,17 @@ class BatchPhysiologicalTimeSeriesLoader:
         self.num_periods = num_periods
 
         self.class_name = 'SimpleBatchPhysiologicalTimeSeries'
+        self.num_rounds = 0
 
     def get_data(self):
+
+        self.num_rounds += 1
 
         return self.TS
 
     def finished(self):
 
-        print 'Poop'
+        return self.num_rounds > 0
 
     def name(self):
 
@@ -35,11 +38,11 @@ class BatchPhysiologicalTimeSeriesLoader:
 
     def cols(self):
 
-        return 1
+        return self.TS.shape[1]
 
     def refresh(self):
 
-        print 'Poop'
+        self.num_rounds = 0
 
     def get_status(self):
 
