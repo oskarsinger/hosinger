@@ -240,17 +240,15 @@ class NTPFViewPairwiseCCA:
 
         if self.clock_time:
             start_time = self.loaders[s][v].get_status()['start_times'][0]
-            factor =  float(self.subperiod) / n
+            num_sps = self.num_subperiods * self.num_periods[s]
+            factor = float(self.subperiod) *  num_sps / n
             x_axis = get_dti(n, factor, start_time)
             x_axis = [d.strftime('%d %H:%M') for d in x_axis]
 
             plt.xticks(xl, x_axis)
             ax.xaxis.set_major_locator(
-                matplotlib.ticker.IndexLocator(
-                    int(24.0 * 3600.0 / factor), 0))
-            ax.set_xticklabels(
-                ax.xaxis.get_majorticklabels(), 
-                rotation=45)
+                matplotlib.ticker.LinearLocator(
+                    numticks=self.num_periods[s]))
 
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
