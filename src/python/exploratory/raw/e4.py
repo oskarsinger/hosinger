@@ -102,7 +102,7 @@ class E4RawDataPlotRunner:
                 self._plot_line(
                     s,
                     v,
-                    ys,
+                    y,
                     'period', 
                     'value', 
                     ax=ax)
