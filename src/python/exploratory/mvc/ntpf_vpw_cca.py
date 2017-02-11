@@ -151,8 +151,8 @@ class NTPFViewPairwiseCCA:
                 for (sp_str, sp_group) in v_group.items():
                     sp = int(sp_str)
                     ntpf = (
-                        np.array(sp_group['Phi1']), 
-                        np.array(sp_group['Phi2']))
+                            np.array(sp_group['Phi1'])[:,np.newaxis],
+                            np.array(sp_group['Phi2'])[:,np.newaxis])
                     ntpfcc = np.array(sp_group['CC'])
                     
                     cca_vs[sp] = (ntpf, ntpfcc)
