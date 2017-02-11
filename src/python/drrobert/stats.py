@@ -4,7 +4,7 @@ import numpy as np
 
 from scipy.stats import pearsonr
 from sklearn.decomposition import TruncatedSVD
-from linal.utils.misc import get_safe_power,
+from linal.utils.misc import get_safe_power
 from linal.svd_funcs import get_svd_power
 
 def get_pearson_matrix(X1, X2):
