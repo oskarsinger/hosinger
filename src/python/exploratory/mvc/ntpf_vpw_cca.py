@@ -98,11 +98,8 @@ class NTPFViewPairwiseCCA:
                             v1_mat, v2_mat)
                         ntpf = get_cca_vecs(v1_mat, v2_mat)
                         v1_cc = np.dot(v1_mat, ntpf[0])
-                        print 'v1_cc.shape', v1_cc.shape
                         v2_cc = np.dot(v2_mat, ntpf[1])
-                        print 'v2_cc.shape', v2_cc.shape
                         ntpfcc = v1_cc * v2_cc
-                        print 'ntpfcc.shape from compute', ntpfcc.shape
 
                         self._save(
                             ntpf,
@@ -172,7 +169,6 @@ class NTPFViewPairwiseCCA:
 
                 fig = plt.figure()
                 (ntpf, ntpfcc) = unzip(subperiods)
-                print 'ntpfcc.shape from _show', ntpfcc.shape
                 (Phi1s, Phi2s) = unzip(ntpf)
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[v1] + ' ' + self.names[v2] + \
@@ -256,6 +252,7 @@ class NTPFViewPairwiseCCA:
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
         tl = np.vstack(datal)
+        print 'tl.shape from _show', tl.shape
         n = tl.shape[0]
         x_axis = None
 
