@@ -3,7 +3,6 @@ import spancca
 import numpy as np
 
 from scipy.stats import pearsonr
-from sklearn.decomposition import TruncatedSVD
 from linal.utils.misc import get_safe_power
 from linal.svd_funcs import get_svd_power
 
@@ -25,10 +24,10 @@ def get_pearson_matrix(X1, X2):
     masked_X2 = np.ma.masked_invalid(zm_X2)
 
     numerator = np.dot(
-        masked_X1.H, masked_X2).filled(0) / n
+        masked_X1.T, masked_X2).filled(0) / n
     denominator = np.dot(
             std1[:,np.newaxis], 
-            std2[:,np.newaxis].H)
+            std2[:,np.newaxis].T)
     inv_denom = get_safe_power(
         denominator, -1)
 
@@ -56,9 +55,9 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         zm_X2 = X2 - mu2
 
         # Get sample covariance matrices
-        CX1 = np.dot(zm_X1.H, zm_X1) / n
-        CX2 = np.dot(zm_X2.H, zm_X2) / n
-        CX12 = np.dot(zm_X1.H, zm_X2) / n
+        CX1 = np.dot(zm_X1.T, zm_X1) / n
+        CX2 = np.dot(zm_X2.T, zm_X2) / n
+        CX12 = np.dot(zm_X1.T, zm_X2) / n
 
         # Get inverse sqrts and normed sample cross-covariance
         CX1_inv_sqrt = get_svd_power(CX1, -0.5)
@@ -71,7 +70,7 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         (U, s, V) = np.linalg.svd(Omega)
         (x1_weights, x2_weights) = (
             np.dot(CX1_inv_sqrt, U[:,0]), 
-            np.dot(CX2_inv_sqrt, V.H[:,0]))
+            np.dot(CX2_inv_sqrt, V.T[:,0]))
     else:
         x_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
