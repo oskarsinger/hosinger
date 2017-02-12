@@ -73,9 +73,9 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         (x1_weights, x2_weights) = (
             np.dot(CX1_inv_sqrt, U[:,0]), 
             np.dot(CX2_inv_sqrt, V.T[:,0]))
-        quad1 = get_quadratic(x_weights1, CX1)
+        quad1 = get_quadratic(x1_weights, CX1)
         error1 = np.abs(quad1 - 1)
-        quad2 = get_quadratic(x_weights2, CX2)
+        quad2 = get_quadratic(x2_weights, CX2)
         error2 = np.abs(quad2 - 1)
         cancorr = get_multi_dot([
             x1_weights, 
