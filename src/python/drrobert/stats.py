@@ -73,11 +73,22 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         (x1_weights, x2_weights) = (
             np.dot(CX1_inv_sqrt, U[:,0]), 
             np.dot(CX2_inv_sqrt, V.T[:,0]))
-        error = np.linalg.norm(
-            get_multi_dot([x1_weights, CX12, x2_weights.T]) - 1)
+        quad1 = get_quadratic(x_weights1, CX1)
+        error1 = np.abs(quad1 - 1)
+        quad2 = get_quadratic(x_weights2, CX2)
+        error2 = np.abs(quad2 - 1)
+        cancorr = get_multi_dot([
+            x1_weights, 
+            CX12, 
+            x2_weights.T])
 
-        if error > 10**(-3):
-            print 'error', error
+        if error1 > 10**(-2) or error2 > 10**(-2) or cancorr > 1:
+            print 'error1', error1
+            print 'quad1', quad1
+            print 'error2', error2
+            print 'quad2', quad2
+            print 'cancorr', cancorr
+            print '\n'
     else:
         x_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
