@@ -74,9 +74,9 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
             np.dot(CX1_inv_sqrt, U[:,0]), 
             np.dot(CX2_inv_sqrt, V.T[:,0]))
         error1 = np.linalg.norm(
-            get_quadratic(x1_weights, CX1) - np.eye(p1))
+            get_quadratic(x1_weights, CX1) - 1)
         error2 = np.linalg.norm(
-            get_quadratic(x2_weights, CX2) - np.eye(p2))
+            get_quadratic(x2_weights, CX2) - 1)
 
         if error1 > 10**(-2):
             print 'error1', error1 
