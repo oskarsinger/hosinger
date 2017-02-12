@@ -73,7 +73,7 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         unnormed_Phi1 = U[:,:n_components]
         unnormed_Phi2 = V.T[:,:n_components]
         (x1_weights, x2_weights) = (
-            np.dot(CX1_inv_sqrt, unnormed_Phi1)
+            np.dot(CX1_inv_sqrt, unnormed_Phi1),
             np.dot(CX2_inv_sqrt, unnormed_Phi2))
     else:
         x_project = spancca.projections.setup_sparse(
