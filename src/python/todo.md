@@ -15,7 +15,10 @@
 ##Algorithms
 * Implement the zero-order method we developed and test on some easy convex problems and maybe some more difficult convex or even non-convex ones.
 
-* Maybe derive and implement an ADMM alg. Zero-order ADMM?
+* Maybe derive and implement an ADMM alg. Al would be very happy if you had experiments on synthesized data for both the zero-order stuff we already talking about and an ADMM variant. Zero-order ADMM?
+    * Difficulties of ADMM:
+        * How does the pairwise arrangement fit into an ADMM framework? Duchi is putting it in terms of proximal operators/Bregman divergences, which could help me head in that direction.
+        * Think more about the relationship to bandit algorithms like UCB and Thompson sampling. Linear function on the simplex like Shamir says. Bandit feedback is harder because you only see one dimension at a time?
 
 #Network Interference
 
@@ -58,19 +61,13 @@
 * Figure out how to integrate prox RL into my optimization library, or maybe just whether it should be added. Probably it should just be something inside an RL module that calls my prox optimization stuff.
 
 #E4
-* First show 'statistical picture' (CCA heat maps), then scatter plot, then individual example, then introduce likely causal relationship between accelerometer and heart rate
-
-##Experiments
-* T-tests and p-values for spike in temperature vs reported symptoms
 
 ##Visualization
 * Look at error of partial reconstructions rather than the reconstructions themselves.
 
 * Show correlation of the partial reconstructions maybe?
 
-* Produce some autocorrelation plots for the E4 data.
-
-* Fix Al's Matlab script to work with CM data.
+* Fix Al's Matlab script to work with CM data. Maybe just reimplement in Python. That will be easier for you to understand anyway. And it will probably be more scalable too since it will be under your framework.
 
 * Maybe plug standard deviation into the wavelet decomposition
 
@@ -78,5 +75,3 @@
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
 
 * Event-based data point collection, possibly key-ing events off of sparse CCA with n frequency, p time. Or hand-tailored event heuristics. Try first on test data.
-
-* Consider different max hertz for different views?
