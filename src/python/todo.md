@@ -10,6 +10,13 @@
 
 * Create hdf5 serialization helpers for standard datatypes if they don't already exist.
 
+#Swarm Robotics
+
+##Algorithms
+* Implement the zero-order method we developed and test on some easy convex problems and maybe some more difficult convex or even non-convex ones.
+
+* Maybe derive and implement an ADMM alg. Zero-order ADMM?
+
 #Network Interference
 
 ##Visualization

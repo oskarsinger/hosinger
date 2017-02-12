@@ -4,6 +4,7 @@ import numpy as np
 
 from scipy.stats import pearsonr
 from linal.utils.misc import get_safe_power
+from libal.utils.prod import get_quadratic, get_multi_dot
 from linal.svd_funcs import get_svd_power
 
 def get_pearson_matrix(X1, X2):
@@ -62,15 +63,26 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         # Get inverse sqrts and normed sample cross-covariance
         CX1_inv_sqrt = get_svd_power(CX1, -0.5)
         CX2_inv_sqrt = get_svd_power(CX2, -0.5)
-        Omega = np.dot(
+        Omega = get_multi_dot([
             CX1_inv_sqrt,
-            np.dot(CX12, CX2_inv_sqrt))
+            CX12, 
+            CX2_inv_sqrt])
 
         # Get canonical vectors
         (U, s, V) = np.linalg.svd(Omega)
         (x1_weights, x2_weights) = (
             np.dot(CX1_inv_sqrt, U[:,0]), 
             np.dot(CX2_inv_sqrt, V.T[:,0]))
+        error1 = np.linalg.norm(
+            get_quadratic(x1_weights, CX1) - np.eye(p1))
+        error1 = np.linalg.norm(
+            get_quadratic(x2_weights, CX2) - np.eye(p2))
+
+        if error1 > 10**(-2):
+            print 'error1', error1 
+            
+        if error2 > 10**(-2):
+            print 'error2', error2
     else:
         x_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
