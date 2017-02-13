@@ -153,7 +153,7 @@ class NTPFViewPairwiseCCA:
                     ntpf = (
                             np.array(sp_group['Phi1']),
                             np.array(sp_group['Phi2']))
-                    ntpfcc = np.array(sp_group['CC'])[:,np.newaxis]
+                    ntpfcc = np.array(sp_group['CC'])
                     
                     cca_vs[sp] = (ntpf, ntpfcc)
 
@@ -252,7 +252,6 @@ class NTPFViewPairwiseCCA:
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
         tl = np.vstack(datal)
-        print 'tl.shape', tl.shape
         n = tl.shape[0]
         x_axis = None
 
