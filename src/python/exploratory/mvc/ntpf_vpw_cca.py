@@ -252,6 +252,7 @@ class NTPFViewPairwiseCCA:
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
         tl = np.vstack(datal)
+        print 'tl.shape', tl.shape
         n = tl.shape[0]
         x_axis = None
 
