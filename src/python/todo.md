@@ -14,6 +14,9 @@
 
 ##Algorithms
 * Implement the zero-order method we developed and test on some easy convex problems and maybe some more difficult convex or even non-convex ones.
+    * First, make a data synthesizer. It should just be a function that gives a value based on spacial coordinates. Start with a quadratic.
+    * How do I simulate local neighbor checks? I probably can't. That's the whole reason Al wants to use hardware.
+    * Consider looking at some GPU stuff.
 
 * Maybe derive and implement an ADMM alg. Al would be very happy if you had experiments on synthesized data for both the zero-order stuff we already talking about and an ADMM variant. Zero-order ADMM?
     * Difficulties of ADMM:
