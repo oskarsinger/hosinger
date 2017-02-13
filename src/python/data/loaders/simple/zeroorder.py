@@ -19,7 +19,7 @@ class QuadraticZeroOrderLoader:
         
         self.num_rounds = 0
 
-    def get_data(X):
+    def get_data(self, X):
 
         self.num_rounds += 1
 

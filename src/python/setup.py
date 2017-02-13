@@ -4,8 +4,6 @@ setup(
     name='OskarResearchCode',
     version='0.01',
     packages=[
-        'em',
-        'learners',
         'wavelets',
         'wavelets.dtcwt',
         'optimization',
@@ -45,4 +43,6 @@ setup(
         #'runners.distributed',
         'exploratory',
         'exploratory.mvc',
-        'exploratory.raw'])
+        'exploratory.raw',
+        'simulation',
+        'models'])
