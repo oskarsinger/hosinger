@@ -8,7 +8,7 @@
 * Revamp CV
     * Clean up your optimization and CCA code, then put them on github
 
-* Create hdf5 serialization helpers for standard datatypes if they don't already exist.
+* Consider moving all the bandit stuff into a derivative free/zero-order package of the optimization package
 
 #Swarm Robotics
 

@@ -1,2 +1,3 @@
-from h_kmeans import HKmeans
+from hkmeans import HKmeans
 from skeleton import SkeletonClustering
+from balltree import BallTree
