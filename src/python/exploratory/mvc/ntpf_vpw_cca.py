@@ -99,7 +99,7 @@ class NTPFViewPairwiseCCA:
                         ntpf = get_cca_vecs(v1_mat, v2_mat)
                         v1_cc = np.dot(v1_mat, ntpf[0])
                         v2_cc = np.dot(v2_mat, ntpf[1])
-                        ntpfcc = v1_cc * v2_cc
+                        ntpfcc = (v1_cc * v2_cc)
 
                         self._save(
                             ntpf,
@@ -151,8 +151,8 @@ class NTPFViewPairwiseCCA:
                 for (sp_str, sp_group) in v_group.items():
                     sp = int(sp_str)
                     ntpf = (
-                            np.array(sp_group['Phi1'])[:,np.newaxis],
-                            np.array(sp_group['Phi2'])[:,np.newaxis])
+                            np.array(sp_group['Phi1']),
+                            np.array(sp_group['Phi2']))
                     ntpfcc = np.array(sp_group['CC'])[:,np.newaxis]
                     
                     cca_vs[sp] = (ntpf, ntpfcc)
