@@ -97,13 +97,9 @@ class NTPFViewPairwiseCCA:
                         (v1_mat, v2_mat) = get_matched_dims(
                             v1_mat, v2_mat)
                         ntpf = get_cca_vecs(v1_mat, v2_mat)
-                        v1_cc = np.dot(v1_mat, ntpf[0])
-                        v2_cc = np.dot(v2_mat, ntpf[1])
-                        ntpfcc = (v1_cc * v2_cc)
 
                         self._save(
                             ntpf,
-                            ntpfcc,
                             s,
                             v1,
                             v2,
@@ -130,7 +126,7 @@ class NTPFViewPairwiseCCA:
 
         sp_group.create_dataset('Phi1', data=ntpf[0])
         sp_group.create_dataset('Phi2', data=ntpf[1])
-        sp_group.create_dataset('CC', data=ntpfcc)
+        sp_group.create_dataset('CC', data=ntpf[4])
 
     def _load(self):
 

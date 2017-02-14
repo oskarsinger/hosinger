@@ -91,6 +91,13 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
             y_project,
             verbose=False)
 
+    projected1 = np.dot(X1, x1_weights)
+    projected2 = np.dot(X2, x2_weights)
+    cc = np.sum(projected1 * projected2, axis=1)
+
     return (
         x1_weights,
-        x2_weights)
+        x2_weights,
+        projected1,
+        projected2,
+        cc)
