@@ -49,51 +49,19 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     (x1_weights, x2_weights) = [None] * 2
 
     if num_nonzero is None:
-        # Get means and zero-mean vars
-        mu1 = np.nanmean(X1, axis=0)
-        mu2 = np.nanmean(X2, axis=0)
-        zm_X1 = X1 - mu1
-        zm_X2 = X2 - mu2
-
-        # Get sample covariance matrices
-        CX1 = np.dot(zm_X1.T, zm_X1) / n
-        CX2 = np.dot(zm_X2.T, zm_X2) / n
-        CX12 = np.dot(zm_X1.T, zm_X2) / n
-
-        # Get inverse sqrts and normed sample cross-covariance
-        CX1_inv_sqrt = get_svd_power(CX1, -0.5)
-        CX2_inv_sqrt = get_svd_power(CX2, -0.5)
-        Omega = get_multi_dot([
-            CX1_inv_sqrt,
-            CX12, 
-            CX2_inv_sqrt])
-
-        # Get canonical vectors
-        (U, s, V) = np.linalg.svd(Omega)
-        unnormed_Phi1 = U[:,:n_components]
-        unnormed_Phi2 = V.T[:,:n_components]
-        (x1_weights, x2_weights) = (
-            np.dot(CX1_inv_sqrt, unnormed_Phi1),
-            np.dot(CX2_inv_sqrt, unnormed_Phi2))
+        (x1_weights, x2_weights) = _get_dense_cca(
+            X1, X2, n, n_components)
     else:
-        x_project = spancca.projections.setup_sparse(
-            nnz=num_nonzero)
-        y_project = spancca.projections.setup_sparse(
-            nnz=num_nonzero)
-        A = get_pearson_matrix(X1, X2)
-        T = X1.shape[0]
-        rank = num_nonzero * 2 + 1
-        (x1_weights, x2_weights) = spancca.cca(
-            A,
-            rank,
-            T,
-            x_project,
-            y_project,
-            verbose=False)
+        (x1_weights, x2_weights) = _get_sparse_cca(
+            X1, X2, num_nonzero)
 
     projected1 = np.dot(X1, x1_weights)
     projected2 = np.dot(X2, x2_weights)
     cc = np.sum(projected1 * projected2, axis=1)
+    
+    if np.any(np.abs(cc) > 1):
+        print 'x1 error', np.dot(projected1.T, projected1)
+        print 'x2 error', np.dot(projected2.T, projected2)
 
     return (
         x1_weights,
@@ -101,3 +69,51 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         projected1,
         projected2,
         cc)
+
+def _get_sparse_cca(X1, X2, num_nonzero):
+
+    x_project = spancca.projections.setup_sparse(
+        nnz=num_nonzero)
+    y_project = spancca.projections.setup_sparse(
+        nnz=num_nonzero)
+    A = get_pearson_matrix(X1, X2)
+    T = X1.shape[0]
+    rank = num_nonzero * 2 + 1
+
+    return spancca.cca(
+        A,
+        rank,
+        T,
+        x_project,
+        y_project,
+        verbose=False)
+
+def _get_dense_cca(X1, X2, n, n_components):
+
+    # Get means and zero-mean vars
+    mu1 = np.nanmean(X1, axis=0)
+    mu2 = np.nanmean(X2, axis=0)
+    zm_X1 = X1 - mu1
+    zm_X2 = X2 - mu2
+
+    # Get sample covariance matrices
+    CX1 = np.dot(zm_X1.T, zm_X1) / n
+    CX2 = np.dot(zm_X2.T, zm_X2) / n
+    CX12 = np.dot(zm_X1.T, zm_X2) / n
+
+    # Get inverse sqrts and normed sample cross-covariance
+    CX1_inv_sqrt = get_svd_power(CX1, -0.5)
+    CX2_inv_sqrt = get_svd_power(CX2, -0.5)
+    Omega = get_multi_dot([
+        CX1_inv_sqrt,
+        CX12, 
+        CX2_inv_sqrt])
+
+    # Get canonical vectors
+    (U, s, V) = np.linalg.svd(Omega)
+    unnormed_Phi1 = U[:,:n_components]
+    unnormed_Phi2 = V.T[:,:n_components]
+
+    return (
+        np.dot(CX1_inv_sqrt, unnormed_Phi1),
+        np.dot(CX2_inv_sqrt, unnormed_Phi2))
