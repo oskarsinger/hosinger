@@ -71,7 +71,6 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
         (U, s, V) = np.linalg.svd(Omega)
         unnormed_Phi1 = U[:,:n_components]
         unnormed_Phi2 = V.T[:,:n_components]
-
         Phi1 = np.dot(CX1_inv_sqrt, unnormed_Phi1)
         Phi2 = np.dot(CX2_inv_sqrt, unnormed_Phi2)
     else:
@@ -91,6 +90,7 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     projected1 = np.dot(zm_X1, Phi1)
     projected2 = np.dot(zm_X2, Phi2)
     cc = np.sum(
-        projected1 * projected2, axis=1)[:,np.newaxis]
+        projected1 * projected2, 
+        axis=1)[:,np.newaxis]
 
     return (Phi1, Phi2, cc)

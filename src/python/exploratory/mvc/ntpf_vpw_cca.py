@@ -334,7 +334,7 @@ class NTPFViewPairwiseCCA:
         tl = np.vstack(datal)
 
         if np.any(np.abs(tl) > 1):
-            print 'tl[np.abs(tl) > 1]', tl[np.abs(tl) > 1]
+            print 'np.max(tl)', np.max(tl)
 
         n = tl.shape[0]
         x_axis = None
