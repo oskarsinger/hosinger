@@ -89,8 +89,11 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
 
     projected1 = np.dot(zm_X1, Phi1)
     projected2 = np.dot(zm_X2, Phi2)
-    cc = np.sum(
-        projected1 * projected2, 
-        axis=1)[:,np.newaxis]
+    pre_cc = projected1 * projected2
+
+    if np.any(np.abs(pre_cc) > 1):
+        print 'np.max(pre_cc)', np.max(pre_cc)
+
+    cc = np.sum(pre_cc, axis=1)[:,np.newaxis]
 
     return (Phi1, Phi2, cc)
