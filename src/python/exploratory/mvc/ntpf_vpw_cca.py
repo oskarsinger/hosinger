@@ -205,7 +205,7 @@ class NTPFViewPairwiseCCA:
 
         sp_group.create_dataset('Phi1', data=ntpf[0])
         sp_group.create_dataset('Phi2', data=ntpf[1])
-        sp_group.create_dataset('CC', data=ntpf[4])
+        sp_group.create_dataset('CC', data=ntpf[2])
 
     def _load(self):
 
