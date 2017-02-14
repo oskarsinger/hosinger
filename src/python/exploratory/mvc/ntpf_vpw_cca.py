@@ -42,6 +42,7 @@ class EventAlignedNTPFViewPairwiseCCA:
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
+        self.window = {s : np - 2 for (s, np) in self.num_periods}
 
         self._init_dirs(save_load_dir)
 
@@ -88,11 +89,13 @@ class EventAlignedNTPFViewPairwiseCCA:
         
         for (s, servers) in self.servers.items():
             print 'Computing CCAs for subject', s
+            w = self.window[s]
+            T = self.num_periods[s] * self.num_periods
 
-            for t in xrange(T-max([s1, s2])):
-                for i in xrange(N):
-                    X1[i,:] = TS1[t + (T * (i-1)):t + (T * (i-1) + s1)]
-                    X1[i,:] = TS1[t + (T * (i-1)):t + (T * (i-1) + s2)]
+            for t in xrange(T - w):
+                for i in xrange(self.num_periods[s]):
+                    X1[i,:] = TS1[t + (T * (i-1)):t + (T * (i-1) + w)]
+                    X2[i,:] = TS2[t + (T * (i-1)):t + (T * (i-1) + w)]
 
     def _load(self):
 
