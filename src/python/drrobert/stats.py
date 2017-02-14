@@ -61,9 +61,10 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     
     if np.any(np.abs(cc) > 1):
         print 'From drrobert.stats'
-        print '\tcc[np.abs(cc) > 1]', cc[np.abs(cc) > 1]
+        print '\tx1', x1_weights
         print '\tx1 error', np.linalg.norm(
             np.dot(projected1.T, projected1) - np.eye(n_components))
+        print '\tx2', x2_weights
         print '\tx2 error', np.linalg.norm(
             np.dot(projected2.T, projected2) - np.eye(n_components))
 
@@ -107,7 +108,9 @@ def _get_dense_cca(X1, X2, n, n_components):
 
     # Get inverse sqrts and normed sample cross-covariance
     CX1_inv_sqrt = get_svd_power(CX1, -0.5)
+    print 'CX1_inv_srqt', CX1_inv_sqrt
     CX2_inv_sqrt = get_svd_power(CX2, -0.5)
+    print 'CX2_inv_srqt', CX2_inv_sqrt
     Omega = get_multi_dot([
         CX1_inv_sqrt,
         CX12, 
