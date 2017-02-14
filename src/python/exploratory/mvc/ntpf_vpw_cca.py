@@ -23,20 +23,25 @@ class EventAlignedNTPFViewPairwiseCCA:
     def __init__(self,
         servers,
         save_load_dir,
+        num_subperiods=1,
         cov_analysis=True,
         clock_time=False,
         show=False):
 
         self.servers = servers
+        self.num_subperiods = num_subperiods
         self.cov_analysis = cov_analysis
         self.clock_time = clock_time
         self.show = show
 
         self.subjects = self.servers.keys()
+        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
         self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
                         for (s, dss) in self.servers.items()}
         self.names = [dl.name() for dl in self.loaders.values()[0]]
         self.num_views = len(self.servers.values()[0])
+        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
+                            for (s, servers) in self.servers.items()}
 
         self._init_dirs(save_load_dir)
 
@@ -86,8 +91,8 @@ class EventAlignedNTPFViewPairwiseCCA:
 
             for t in xrange(T-max([s1, s2])):
                 for i in xrange(N):
-                    X1[i,:] = 'something'
-                    X2[i,:] = 'something'
+                    X1[i,:] = TS1[t + (T * (i-1)):t + (T * (i-1) + s1)]
+                    X1[i,:] = TS1[t + (T * (i-1)):t + (T * (i-1) + s2)]
 
     def _load(self):
 
@@ -276,9 +281,6 @@ class NTPFViewPairwiseCCA:
 
                 ax3 = fig.add_subplot(313)
 
-                if np.any(np.abs(ntpfcc) > 1):
-                    print 'From ntpf _show, ntpfcc is not feasible'
-
                 self._plot_line(
                     s, 
                     v1, 
@@ -330,6 +332,10 @@ class NTPFViewPairwiseCCA:
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
         tl = np.vstack(datal)
+
+        if np.any(np.abs(tl) > 1):
+            print 'tl[np.abs(tl) > 1]', tl[np.abs(tl) > 1]
+
         n = tl.shape[0]
         x_axis = None
 
