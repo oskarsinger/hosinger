@@ -61,6 +61,7 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     
     if np.any(np.abs(cc) > 1):
         print 'From drrobert.stats'
+        print '\tcc[np.abs(cc) > 1]', cc[np.abs(cc) > 1]
         print '\tx1 error', np.linalg.norm(
             np.dot(projected1.T, projected1) - np.eye(n_components))
         print '\tx2 error', np.linalg.norm(
