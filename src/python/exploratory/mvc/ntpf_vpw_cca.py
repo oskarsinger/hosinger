@@ -23,10 +23,12 @@ class EventAlignedNTPFViewPairwiseCCA:
     def __init__(self,
         servers,
         save_load_dir,
+        cov_analysis=True,
         clock_time=False,
         show=False):
 
         self.servers = servers
+        self.cov_analysis = cov_analysis
         self.clock_time = clock_time
         self.show = show
 
@@ -76,6 +78,24 @@ class EventAlignedNTPFViewPairwiseCCA:
             'plots',
             self.show,
             self.save_load_dir) 
+
+    def _compute(self):
+        
+        for (s, servers) in self.servers.items():
+            print 'Computing CCAs for subject', s
+
+            for t in xrange(T-max([s1, s2])):
+                for i in xrange(N):
+                    X1[i,:] = 'something'
+                    X2[i,:] = 'something'
+
+    def _load(self):
+
+        print 'Poop'
+
+    def _show(self):
+
+        print 'Poop'
 
 class NTPFViewPairwiseCCA:
 
@@ -147,7 +167,6 @@ class NTPFViewPairwiseCCA:
             print 'Computing CCAs for subject', s
 
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
-                print 'sp', sp
                 subperiods = [ds.get_data() for ds in servers]
 
                 for v1 in xrange(self.num_views):
@@ -157,11 +176,6 @@ class NTPFViewPairwiseCCA:
                         (v1_mat, v2_mat) = get_matched_dims(
                             v1_mat, v2_mat)
                         ntpf = get_cca_vecs(v1_mat, v2_mat)
-
-                        if np.any(np.abs(ntpf[4]) > 1):
-                            print 'From ntpf _compute'
-                            print '\tx1 error', np.dot(ntpf[2].T, ntpf[2])
-                            print '\tx2 error', np.dot(ntpf[3].T, ntpf[3])
 
                         self._save(
                             ntpf,
