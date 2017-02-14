@@ -98,6 +98,11 @@ class NTPFViewPairwiseCCA:
                             v1_mat, v2_mat)
                         ntpf = get_cca_vecs(v1_mat, v2_mat)
 
+                        if np.any(np.abs(ntpf[4]) > 1):
+                            print 'From ntpf _compute'
+                            print '\tx1 error', np.dot(ntpf[2].T, ntpf[2])
+                            print '\tx2 error', np.dot(ntpf[3].T, ntpf[3])
+
                         self._save(
                             ntpf,
                             s,
@@ -196,6 +201,9 @@ class NTPFViewPairwiseCCA:
                     ax2)
 
                 ax3 = fig.add_subplot(313)
+
+                if np.any(np.abs(ntpfcc) > 1):
+                    print 'From ntpf _show, ntpfcc is not feasible'
 
                 self._plot_line(
                     s, 

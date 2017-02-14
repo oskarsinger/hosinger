@@ -60,8 +60,9 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     cc = np.sum(projected1 * projected2, axis=1)
     
     if np.any(np.abs(cc) > 1):
-        print 'x1 error', np.dot(projected1.T, projected1)
-        print 'x2 error', np.dot(projected2.T, projected2)
+        print 'From drrobert.stats'
+        print '\tx1 error', np.dot(projected1.T, projected1)
+        print '\tx2 error', np.dot(projected2.T, projected2)
 
     return (
         x1_weights,
