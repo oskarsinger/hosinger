@@ -18,6 +18,65 @@ from lazyprojector import plot_matrix_heat
 from exploratory.mvc.utils import get_matched_dims
 from math import log, ceil
 
+class EventAlignedNTPFViewPairwiseCCA:
+
+    def __init__(self,
+        servers,
+        save_load_dir,
+        clock_time=False,
+        show=False):
+
+        self.servers = servers
+        self.clock_time = clock_time
+        self.show = show
+
+        self.subjects = self.servers.keys()
+        self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
+                        for (s, dss) in self.servers.items()}
+        self.names = [dl.name() for dl in self.loaders.values()[0]]
+        self.num_views = len(self.servers.values()[0])
+
+        self._init_dirs(save_load_dir)
+
+        self.cca = {s : SPUD(
+                        self.num_views, 
+                        no_double=True)
+                    for s in self.subjects}
+
+    def run(self):
+
+        if self.show:
+            self._load()
+            self._show()
+        else:
+            self._compute()
+
+    def _init_dirs(self, save_load_dir):
+
+        if self.show:
+            self.save_load_dir = save_load_dir
+        else:
+            if not os.path.isdir(save_load_dir):
+                os.mkdir(save_load_dir)
+
+            model_dir = get_ts('EBNTPFVPWCCA')
+
+            self.save_load_dir = os.path.join(
+                save_load_dir,
+                model_dir)
+
+            os.mkdir(self.save_load_dir)
+
+        hdf5_path = os.path.join(
+            self.save_load_dir, 'ccas')
+        self.hdf5_repo = h5py.File(
+            hdf5_path, 
+            'r' if self.show else 'w')
+        self.plot_dir = init_dir(
+            'plots',
+            self.show,
+            self.save_load_dir) 
+
 class NTPFViewPairwiseCCA:
 
     def __init__(self,
@@ -110,7 +169,7 @@ class NTPFViewPairwiseCCA:
                             v2,
                             sp)
 
-    def _save(self, ntpf, ntpfcc, s, v1, v2, sp):
+    def _save(self, ntpf, s, v1, v2, sp):
 
         if s not in self.hdf5_repo:
             self.hdf5_repo.create_group(s)
