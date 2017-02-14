@@ -147,6 +147,7 @@ class NTPFViewPairwiseCCA:
             print 'Computing CCAs for subject', s
 
             for sp in xrange(self.num_subperiods * self.num_periods[s]):
+                print 'sp', sp
                 subperiods = [ds.get_data() for ds in servers]
 
                 for v1 in xrange(self.num_views):
