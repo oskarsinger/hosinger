@@ -46,55 +46,6 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     else:
         n = n1
 
-    (x1_weights, x2_weights) = [None] * 2
-
-    if num_nonzero is None:
-        (x1_weights, x2_weights) = _get_dense_cca(
-            X1, X2, n, n_components)
-    else:
-        (x1_weights, x2_weights) = _get_sparse_cca(
-            X1, X2, num_nonzero)
-
-    projected1 = np.dot(X1, x1_weights)
-    projected2 = np.dot(X2, x2_weights)
-    cc = np.sum(projected1 * projected2, axis=1)
-    
-    if np.any(np.abs(cc) > 1):
-        print 'From drrobert.stats'
-        print '\tx1', x1_weights
-        print '\tx1 error', np.linalg.norm(
-            np.dot(projected1.T, projected1) - np.eye(n_components))
-        print '\tx2', x2_weights
-        print '\tx2 error', np.linalg.norm(
-            np.dot(projected2.T, projected2) - np.eye(n_components))
-
-    return (
-        x1_weights,
-        x2_weights,
-        projected1,
-        projected2,
-        cc)
-
-def _get_sparse_cca(X1, X2, num_nonzero):
-
-    x_project = spancca.projections.setup_sparse(
-        nnz=num_nonzero)
-    y_project = spancca.projections.setup_sparse(
-        nnz=num_nonzero)
-    A = get_pearson_matrix(X1, X2)
-    T = X1.shape[0]
-    rank = num_nonzero * 2 + 1
-
-    return spancca.cca(
-        A,
-        rank,
-        T,
-        x_project,
-        y_project,
-        verbose=False)
-
-def _get_dense_cca(X1, X2, n, n_components):
-
     # Get means and zero-mean vars
     mu1 = np.nanmean(X1, axis=0)
     mu2 = np.nanmean(X2, axis=0)
@@ -108,19 +59,38 @@ def _get_dense_cca(X1, X2, n, n_components):
 
     # Get inverse sqrts and normed sample cross-covariance
     CX1_inv_sqrt = get_svd_power(CX1, -0.5)
-    print 'CX1_inv_srqt', CX1_inv_sqrt
     CX2_inv_sqrt = get_svd_power(CX2, -0.5)
-    print 'CX2_inv_srqt', CX2_inv_sqrt
+
     Omega = get_multi_dot([
         CX1_inv_sqrt,
         CX12, 
         CX2_inv_sqrt])
+    (Phi1, Phi2) = [None] * 2
 
-    # Get canonical vectors
-    (U, s, V) = np.linalg.svd(Omega)
-    unnormed_Phi1 = U[:,:n_components]
-    unnormed_Phi2 = V.T[:,:n_components]
+    if num_nonzero is None:
+        (U, s, V) = np.linalg.svd(Omega)
+        unnormed_Phi1 = U[:,:n_components]
+        unnormed_Phi2 = V.T[:,:n_components]
 
-    return (
-        np.dot(CX1_inv_sqrt, unnormed_Phi1),
-        np.dot(CX2_inv_sqrt, unnormed_Phi2))
+        Phi1 = np.dot(CX1_inv_sqrt, unnormed_Phi1)
+        Phi2 = np.dot(CX2_inv_sqrt, unnormed_Phi2)
+    else:
+        x_project = spancca.projections.setup_sparse(
+            nnz=num_nonzero)
+        y_project = spancca.projections.setup_sparse(
+            nnz=num_nonzero)
+        rank = num_nonzero * 2 + 1
+        (Phi1, Phi2) = spancca.cca(
+            Omega,
+            rank,
+            n,
+            x_project,
+            y_project,
+            verbose=False)
+
+    projected1 = np.dot(zm_X1, Phi1)
+    projected2 = np.dot(zm_X2, Phi2)
+    cc = np.sum(
+        projected1 * projected2, axis=1)[:,np.newaxis]
+
+    return (Phi1, Phi2, cc)
