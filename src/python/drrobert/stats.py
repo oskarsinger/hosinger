@@ -46,16 +46,17 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
     else:
         n = n1
 
-    # Get means and zero-mean vars
+    # Get means, zero-mean, normed vars
     mu1 = np.nanmean(X1, axis=0)
     mu2 = np.nanmean(X2, axis=0)
-    zm_X1 = X1 - mu1
-    zm_X2 = X2 - mu2
+    normalizer = n**(0.5)
+    zm_X1 = (X1 - mu1) / normalizer
+    zm_X2 = (X2 - mu2) / normalizer
 
     # Get sample covariance matrices
-    CX1 = np.dot(zm_X1.T, zm_X1) / n
-    CX2 = np.dot(zm_X2.T, zm_X2) / n
-    CX12 = np.dot(zm_X1.T, zm_X2) / n
+    CX1 = np.dot(zm_X1.T, zm_X1)
+    CX2 = np.dot(zm_X2.T, zm_X2)
+    CX12 = np.dot(zm_X1.T, zm_X2)
 
     # Get inverse sqrts and normed sample cross-covariance
     CX1_inv_sqrt = get_svd_power(CX1, -0.5)
