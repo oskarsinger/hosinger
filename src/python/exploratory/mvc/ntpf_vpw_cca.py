@@ -18,122 +18,6 @@ from lazyprojector import plot_matrix_heat
 from exploratory.mvc.utils import get_matched_dims
 from math import log, ceil
 
-class EventAlignedNTPFViewPairwiseCCA:
-
-    def __init__(self,
-        servers,
-        save_load_dir,
-        num_subperiods=1,
-        cov_analysis=True,
-        clock_time=False,
-        show=False):
-
-        self.servers = servers
-        self.num_subperiods = num_subperiods
-        self.cov_analysis = cov_analysis
-        self.clock_time = clock_time
-        self.show = show
-
-        self.subjects = self.servers.keys()
-        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
-        self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
-                        for (s, dss) in self.servers.items()}
-        self.names = [dl.name() for dl in self.loaders.values()[0]]
-        self.num_views = len(self.servers.values()[0])
-        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
-                            for (s, servers) in self.servers.items()}
-        self.window = {s : np - 2 for (s, np) in self.num_periods}
-
-        self._init_dirs(save_load_dir)
-
-        self.cca = {s : SPUD(
-                        self.num_views, 
-                        no_double=True)
-                    for s in self.subjects}
-
-    def run(self):
-
-        if self.show:
-            self._load()
-            self._show()
-        else:
-            self._compute()
-
-    def _init_dirs(self, save_load_dir):
-
-        if self.show:
-            self.save_load_dir = save_load_dir
-        else:
-            if not os.path.isdir(save_load_dir):
-                os.mkdir(save_load_dir)
-
-            model_dir = get_ts('EBNTPFVPWCCA')
-
-            self.save_load_dir = os.path.join(
-                save_load_dir,
-                model_dir)
-
-            os.mkdir(self.save_load_dir)
-
-        hdf5_path = os.path.join(
-            self.save_load_dir, 'ccas')
-        self.hdf5_repo = h5py.File(
-            hdf5_path, 
-            'r' if self.show else 'w')
-        self.plot_dir = init_dir(
-            'plots',
-            self.show,
-            self.save_load_dir) 
-
-    def _compute(self):
-
-        reshaped = {s : [None] * self.num_views
-                    for s in self.servers.keys()}
-
-        for (s, servers) in self.servers.items():
-            print 'Computing CCAs for subject', s
-            w = self.window[s]
-            T = self.num_periods[s] * self.num_periods
-            cca_s = self.cca[s]
-            rs = reshaped[s]
-
-            for sp in xrange(self.num_subperiods * self.num_periods[s]):
-                subperiods = [ds.get_data() for ds in servers]
-
-                for (v, data) in enumerate(subperiods):
-                    
-                    if rs[v] is None:
-                        rs[v] = np.zeros(('Poop1', 'Poop2'))
-                        rs[v][0,:] = 'Poopypoop'
-                    else:
-                        rs[v][i,:]
-
-
-        for (s, views) in reshaped.items():
-            for v1 in xrange(self.num_views):
-                for v2 in xrange(v1+1, self.num_views):
-                    v1_mat = views[v1]
-                    v2_mat = views[v2]
-                    (v1_mat, v2_mat) = get_matched_dims(
-                        v1_mat, v2_mat)
-
-                    if cca_s.get(v1, v2) is None:
-                        cca_s.insert(v1, v2, 'Poop')
-                    else:
-                        begin = t + (T * (i-1))
-                        end = begin + w
-                        (X1, X2) = cca_s.get(v1, v2)
-                        X1[i,:] = TS1[begin:end]
-                        X2[i,:] = TS2[begin:end]
-
-    def _load(self):
-
-        print 'Poop'
-
-    def _show(self):
-
-        print 'Poop'
-
 class NTPFViewPairwiseCCA:
 
     def __init__(self,
@@ -377,11 +261,6 @@ class NTPFViewPairwiseCCA:
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
         tl = np.vstack(datal)
-
-        if np.any(np.abs(tl) > 1):
-            print 'np.max(tl)', np.max(tl)
-
-        n = tl.shape[0]
         x_axis = None
 
         if self.clock_time:
