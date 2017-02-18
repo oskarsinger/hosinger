@@ -82,3 +82,5 @@
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
 
 * Event-based data point collection, possibly key-ing events off of sparse CCA with n frequency, p time. Or hand-tailored event heuristics. Try first on test data.
+
+* Look at one day at a time to see if we can find periodicity within a day.

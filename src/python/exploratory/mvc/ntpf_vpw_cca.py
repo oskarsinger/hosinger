@@ -86,16 +86,45 @@ class EventAlignedNTPFViewPairwiseCCA:
             self.save_load_dir) 
 
     def _compute(self):
-        
+
+        reshaped = {s : [None] * self.num_views
+                    for s in self.servers.keys()}
+
         for (s, servers) in self.servers.items():
             print 'Computing CCAs for subject', s
             w = self.window[s]
             T = self.num_periods[s] * self.num_periods
+            cca_s = self.cca[s]
+            rs = reshaped[s]
 
-            for t in xrange(T - w):
-                for i in xrange(self.num_periods[s]):
-                    X1[i,:] = TS1[t + (T * (i-1)):t + (T * (i-1) + w)]
-                    X2[i,:] = TS2[t + (T * (i-1)):t + (T * (i-1) + w)]
+            for sp in xrange(self.num_subperiods * self.num_periods[s]):
+                subperiods = [ds.get_data() for ds in servers]
+
+                for (v, data) in enumerate(subperiods):
+                    
+                    if rs[v] is None:
+                        rs[v] = np.zeros(('Poop1', 'Poop2'))
+                        rs[v][0,:] = 'Poopypoop'
+                    else:
+                        rs[v][i,:]
+
+
+        for (s, views) in reshaped.items():
+            for v1 in xrange(self.num_views):
+                for v2 in xrange(v1+1, self.num_views):
+                    v1_mat = views[v1]
+                    v2_mat = views[v2]
+                    (v1_mat, v2_mat) = get_matched_dims(
+                        v1_mat, v2_mat)
+
+                    if cca_s.get(v1, v2) is None:
+                        cca_s.insert(v1, v2, 'Poop')
+                    else:
+                        begin = t + (T * (i-1))
+                        end = begin + w
+                        (X1, X2) = cca_s.get(v1, v2)
+                        X1[i,:] = TS1[begin:end]
+                        X2[i,:] = TS2[begin:end]
 
     def _load(self):
 
@@ -307,6 +336,19 @@ class NTPFViewPairwiseCCA:
         tl = np.hstack(ccal)
         (n, m) = tl.shape
         (yl, xl) = (np.arange(n), np.arange(m))
+
+        # If canonical parameters are too small, threshold and ceiling/floor to emphasize larger values
+        if np.all(np.abs(tl) < 0.5):
+            tl = np.copy(tl)
+            threshold = np.max(np.abs(tl))
+            tl_gt = tl > threshold
+            tl_lt = tl < -threshold
+            tl_middle = np.logical_not(
+                np.logical_or(tl_gt, tl_lt))
+
+            tl[tl_gt] = 1
+            tl[tl_lt] = -1
+            tl[tl_middle] = 0
 
         plot_matrix_heat(
             tl,
