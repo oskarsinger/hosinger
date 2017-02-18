@@ -1,0 +1,205 @@
+import os
+import h5py
+import matplotlib
+
+matplotlib.use('Cairo')
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+from drrobert.data_structures import SparsePairwiseUnorderedDict as SPUD
+from drrobert.stats import get_cca_vecs
+from drrobert.file_io import get_timestamped as get_ts
+from drrobert.file_io import init_dir
+from drrobert.misc import unzip
+from drrobert.ts import get_dt_index as get_dti
+from lazyprojector import plot_matrix_heat
+from exploratory.mvc.utils import get_matched_dims
+from math import log, ceil
+
+class NTPTViewPairwiseCCA:
+
+    def __init__(self,
+        servers,
+        save_load_dir,
+        window,
+        num_subperiods=1,
+        cov_analysis=True,
+        clock_time=False,
+        show=False):
+
+        self.servers = servers
+        self.window = window
+        self.num_subperiods = num_subperiods
+        self.cov_analysis = cov_analysis
+        self.clock_time = clock_time
+        self.show = show
+
+        self.subjects = self.servers.keys()
+        self.cols = [ds.cols() for ds in self.servers.values()[0]]
+        self.subperiod = int(24.0 * 3600.0 / self.num_subperiods)
+        self.loaders = {s : [ds.get_status()['data_loader'] for ds in dss]
+                        for (s, dss) in self.servers.items()}
+        self.names = [dl.name() for dl in self.loaders.values()[0]]
+        self.num_views = len(self.servers.values()[0])
+        self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
+                            for (s, servers) in self.servers.items()}
+        self.sparse = {s : window > np - 2 
+                       for (s, np) in self.num_periods.items()}
+
+        self._init_dirs(save_load_dir)
+
+        self.cca = {s : SPUD(
+                        self.num_views, 
+                        no_double=True)
+                    for s in self.subjects}
+
+    def run(self):
+
+        if self.show:
+            self._load()
+            self._show()
+        else:
+            self._compute()
+
+    def _init_dirs(self, save_load_dir):
+
+        if self.show:
+            self.save_load_dir = save_load_dir
+        else:
+            if not os.path.isdir(save_load_dir):
+                os.mkdir(save_load_dir)
+
+            model_dir = get_ts('EBNTPFVPWCCA')
+
+            self.save_load_dir = os.path.join(
+                save_load_dir,
+                model_dir)
+
+            os.mkdir(self.save_load_dir)
+
+        hdf5_path = os.path.join(
+            self.save_load_dir, 'ccas')
+        self.hdf5_repo = h5py.File(
+            hdf5_path, 
+            'r' if self.show else 'w')
+        self.plot_dir = init_dir(
+            'plots',
+            self.show,
+            self.save_load_dir) 
+
+    def _compute(self):
+
+        tls = {s : [[None] * self.num_subperiods
+                    for i in xrange(self.num_views)]
+               for s in self.servers.keys()}
+
+        for (s, servers) in self.servers.items():
+            print 'Computing CCAs for subject', s
+            w = self.window[s]
+            T = self.num_periods[s] * self.num_subperiods
+            cca_s = self.cca[s]
+            tls_s = tls[s]
+
+            for sp in xrange(T):
+                sp_within_p = sp % self.num_subperiods
+                subperiods = [ds.get_data().T for ds in servers]
+
+                for (v, data) in enumerate(subperiods):
+                    
+                    if tls_s[v] is None:
+                        tls_s[v][sp_within_p] = subperiods[v]
+                    else:
+                        tls_s[v][sp_within_p] = np.vstack([
+                            tsl_s[v], subperiods[v]])
+
+        for (s, views) in tls.items():
+            for v1 in xrange(self.num_views):
+                for v2 in xrange(v1+1, self.num_views):
+                    for sp in xrange(self.num_subperiods):
+                        step1 = self.cols[v1]
+                        step2 = self.cols[v2]
+                        v1_mat = views[v1][sp]
+                        v2_mat = views[v2][sp]
+                        (v1_mat, v2_mat) = get_matched_dims(
+                            v1_mat, v2_mat)
+
+                        for i in xrange(step1):
+                            v1_mat_i = v1_mat[i::step1,:]
+
+                            for j in xrange(step2):
+                                v2_mat_j = v2_mat[j::step2,:]
+                                ntpt = get_cca_vecs(
+                                    v1_mat_i, v2_mat_j, num_nonzero=1)
+
+                                self._save(
+                                    ntpt,
+                                    s,
+                                    v1,
+                                    v2,
+                                    sp,
+                                    i,
+                                    j)
+
+    def _save(self, ntpt, s, v1, v2, sp, i, j):
+
+        if s not in self.hdf5_repo:
+            self.hdf5_repo.create_group(s)
+
+        s_group = self.hdf5_repo[s]
+        v_str = str(v1) + '-' + str(v2)
+        
+        if v_str not in s_group:
+            s_group.create_group(v_str)
+
+        v_group = s_group[v_str]
+        sp_str = str(sp)
+
+        if sp_str not in v_group:
+            v_group.create_group(sp_str)
+
+        sp_group = v_group[sp_str]
+        f_str = str(i) + '-' + str(j)
+
+        if f_str not in sp_group:
+            sp_group.create_group(f_str)
+
+        f_group = sp_group[f_str]
+
+        f_group.create_dataset('Phi1', data=ntpt[0])
+        f_group.create_dataset('Phi2', data=ntpt[1])
+        f_group.create_dataset('CC', data=ntpt[2])
+
+    def _load(self):
+
+        for (s, spud) in self.cca.items():
+            for k in spud.keys():
+                l = [None] * self.num_subperiods
+
+                spud.insert(k[0], k[1], l)
+        
+        for (s, s_group) in self.hdf5_repo.items():
+            cca_s = self.cca[s]
+
+            for (v_str, v_group) in s_group.items():
+                (v1, v2) = [int(v) for v in v_str.split('-')]
+
+                cca_vs = cca_s.get(v1, v2)
+
+                for (sp_str, sp_group) in v_group.items():
+
+                    for i in xrange(self.cols[v1]):
+                        for j in xrange(self.cols[v2]):
+                            sp = int(sp_str)
+                            ntpt = (
+                                    np.array(sp_group['Phi1']),
+                                    np.array(sp_group['Phi2']))
+                            ntptcc = np.array(sp_group['CC'])
+                            
+                            cca_vs[sp] = (ntpt, ntptcc)
+
+    def _show(self):
+
+        print 'Poop'
+

@@ -70,13 +70,12 @@
 #E4
 
 ##Visualization
-* Look at error of partial reconstructions rather than the reconstructions themselves.
+* Different variations on inputs
+    * Error of partial reconstruction
+    * Show correlation of the partial reconstructions maybe?
+    * Maybe plug standard deviation into the wavelet decomposition
 
-* Show correlation of the partial reconstructions maybe?
-
-* Fix Al's Matlab script to work with CM data. Maybe just reimplement in Python. That will be easier for you to understand anyway. And it will probably be more scalable too since it will be under your framework.
-
-* Maybe plug standard deviation into the wavelet decomposition
+* Fix Al's Matlab script to work with wavelet and CM data. May require generalizing your SPUD data structure to work with different index counts for each index.
 
 * Adapt Yaya's R script to take E4 data, wavelet coefficients, CCA-filtered data, canonical correlation as inputs
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
