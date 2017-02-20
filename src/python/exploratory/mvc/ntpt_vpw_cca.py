@@ -125,25 +125,25 @@ class NTPTViewPairwiseCCA:
                         (v1_mat, v2_mat) = get_matched_dims(
                             v1_mat, v2_mat)
 
-                        for i in xrange(step1):
-                            v1_mat_i = v1_mat[i::step1,:]
+                        for f1 in xrange(step1):
+                            v1_mat_f1 = v1_mat[f1::step1,:]
 
-                            for j in xrange(step2):
-                                v2_mat_j = v2_mat[j::step2,:]
+                            for f2 in xrange(step2):
+                                v2_mat_f2 = v2_mat[f2::step2,:]
                                 # TODO: only do sparse CCA if dimensionally necessary
                                 ntpt = get_cca_vecs(
-                                    v1_mat_i, v2_mat_j, num_nonzero=1)
+                                    v1_mat_f1, v2_mat_f2, num_nonzero=1)
 
                                 self._save(
                                     ntpt,
                                     s,
                                     v1,
                                     v2,
-                                    sp,
-                                    i,
-                                    j)
+                                    f1,
+                                    f2,
+                                    sp)
 
-    def _save(self, ntpt, s, v1, v2, sp, i, j):
+    def _save(self, ntpt, s, v1, v2, f1, f2, sp):
 
         if s not in self.hdf5_repo:
             self.hdf5_repo.create_group(s)
@@ -155,52 +155,52 @@ class NTPTViewPairwiseCCA:
             s_group.create_group(v_str)
 
         v_group = s_group[v_str]
-        sp_str = str(sp)
-
-        if sp_str not in v_group:
-            v_group.create_group(sp_str)
-
-        sp_group = v_group[sp_str]
         f_str = str(i) + '-' + str(j)
 
-        if f_str not in sp_group:
-            sp_group.create_group(f_str)
+        if f_str not in v_group:
+            v_group.create_group(f_str)
 
-        f_group = sp_group[f_str]
+        f_group = v_group[f_str]
+        sp_str = str(sp)
 
-        f_group.create_dataset('Phi1', data=ntpt[0])
-        f_group.create_dataset('Phi2', data=ntpt[1])
-        f_group.create_dataset('CC', data=ntpt[2])
+        if sp_str not in f_group:
+            f_group.create_group(sp_str)
+
+        sp_group = v_group[sp_str]
+
+        sp_group.create_dataset('Phi1', data=ntpt[0])
+        sp_group.create_dataset('Phi2', data=ntpt[1])
+        sp_group.create_dataset('CC', data=ntpt[2])
 
     def _load(self):
 
         for (s, spud) in self.cca.items():
-            for k in spud.keys():
-                l = [None] * self.num_subperiods
-
-                spud.insert(k[0], k[1], l)
+            for (v1, v2) in spud.keys():
+                l = {(f1, f2) : [None] * self.num_subperiods
+                     for f1 in xrange(self.cols[v1])
+                     for f2 in xrange(self.cols[v2])}
+                spud.insert(, l)
         
         for (s, s_group) in self.hdf5_repo.items():
             cca_s = self.cca[s]
 
             for (v_str, v_group) in s_group.items():
                 (v1, v2) = [int(v) for v in v_str.split('-')]
-
                 cca_vs = cca_s.get(v1, v2)
 
-                for (sp_str, sp_group) in v_group.items():
+                for f_str in v_group.items():
+                    f_tuple = tuple([int(f) for f in f_str.split('-')])
+                    cca_fvs = cca_vs[f_tuple]
 
-                    for i in xrange(self.cols[v1]):
-                        for j in xrange(self.cols[v2]):
-                            sp = int(sp_str)
-                            ntpt = (
-                                    np.array(sp_group['Phi1']),
-                                    np.array(sp_group['Phi2']))
-                            ntptcc = np.array(sp_group['CC'])
-                            
-                            cca_vs[sp] = (ntpt, ntptcc)
+                    for (sp_str, sp_group) in v_group.items():
+                        sp = int(sp_str)
+                        ntpt = (
+                                np.array(sp_group['Phi1']),
+                                np.array(sp_group['Phi2']))
+                        ntptcc = np.array(sp_group['CC'])
+                        
+                        cca_fvs[sp] = (ntpt, ntptcc)
 
     def _show(self):
 
         print 'Poop'
-
