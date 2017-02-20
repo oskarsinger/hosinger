@@ -224,7 +224,7 @@ class NTPFViewPairwiseCCA:
         # If canonical parameters are too small, threshold and ceiling/floor to emphasize larger values
         if np.all(np.abs(tl) < 0.5):
             tl = np.copy(tl)
-            threshold = np.max(np.abs(tl))
+            threshold = 0.5 * np.max(np.abs(tl))
             tl_gt = tl > threshold
             tl_lt = tl < -threshold
             tl_middle = np.logical_not(
