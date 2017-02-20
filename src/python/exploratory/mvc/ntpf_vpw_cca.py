@@ -261,6 +261,7 @@ class NTPFViewPairwiseCCA:
     def _plot_line(self, s, v, datal, x_name, y_name, ax):
 
         tl = np.vstack(datal)
+        (n, m) = tl.shape
         x_axis = None
 
         if self.clock_time:
