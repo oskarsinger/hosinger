@@ -130,6 +130,7 @@ class NTPTViewPairwiseCCA:
 
                             for j in xrange(step2):
                                 v2_mat_j = v2_mat[j::step2,:]
+                                # TODO: only do sparse CCA if dimensionally necessary
                                 ntpt = get_cca_vecs(
                                     v1_mat_i, v2_mat_j, num_nonzero=1)
 
