@@ -69,7 +69,7 @@ class NTPTViewPairwiseCCA:
             if not os.path.isdir(save_load_dir):
                 os.mkdir(save_load_dir)
 
-            model_dir = get_ts('EBNTPFVPWCCA')
+            model_dir = get_ts('NTPTVPWCCA')
 
             self.save_load_dir = os.path.join(
                 save_load_dir,
