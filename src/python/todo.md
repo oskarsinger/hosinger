@@ -12,6 +12,14 @@
 
 #Swarm Robotics
 
+##Infrastructure
+* Simulation framework
+    * Grid framework
+    * Simulation runner
+    * Unit object that Markus can use
+    * Movie plotting
+    * Evaluation metrics
+
 ##Algorithms
 * Implement the zero-order method we developed and test on some easy convex problems and maybe some more difficult convex or even non-convex ones.
     * First, make a data synthesizer. It should just be a function that gives a value based on spacial coordinates. Start with a quadratic.
@@ -70,12 +78,16 @@
 #E4
 
 ##Visualization
+* Talk to Brandon about plotting project.
+
 * Different variations on inputs
     * Error of partial reconstruction
     * Show correlation of the partial reconstructions maybe?
     * Maybe plug standard deviation into the wavelet decomposition
 
-* Fix Al's Matlab script to work with wavelet and CM data. May require generalizing your SPUD data structure to work with different index counts for each index.
+* Figure out why my version of Al's script is so slow. I put it some print statements, just need to run the experiments.
+
+* Talk to Brandon about plotting stuff. Totally slipped my mind. Oops.
 
 * Adapt Yaya's R script to take E4 data, wavelet coefficients, CCA-filtered data, canonical correlation as inputs
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
