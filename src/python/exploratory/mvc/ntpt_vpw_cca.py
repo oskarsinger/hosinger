@@ -179,7 +179,8 @@ class NTPTViewPairwiseCCA:
                 l = {(f1, f2) : [None] * self.num_subperiods
                      for f1 in xrange(self.cols[v1])
                      for f2 in xrange(self.cols[v2])}
-                spud.insert(, l)
+
+                spud.insert(v1, v2, l)
         
         for (s, s_group) in self.hdf5_repo.items():
             cca_s = self.cca[s]
@@ -203,4 +204,84 @@ class NTPTViewPairwiseCCA:
 
     def _show(self):
 
-        print 'Poop'
+        for (s, spud) in self.cca.items():  
+            print 'Generating n_time_p_time plots for subject', s
+
+            for ((v1, v2), freq_pairs) in spud.items():
+                print '\tGenerating plots for view pair', v1, v2
+
+                for ((f1, f2), subperiods) in freq_pairs.items():
+                    print '\t\tGenerating plot frequency pair', f1, f2
+
+                    fig = plt.figure()
+                    (ntpt, ntptcc) = unzip(subperiods)
+                    (Phi1s, Phi2s) = unzip(ntpt)
+                    title = 'View-pairwise cca (n time p time) for views ' + \
+                        self.names[v1] + ' ' + self.names[v2] + \
+                        ' of subject ' + s
+                    x_name = 'subperiod'
+                    y_name = 'dimension'
+                    v_name = 'canonical vector value'
+
+                    ax1 = fig.add_subplot(211)
+
+                    self._plot_matrix_heat(
+                        s,
+                        v1,
+                        Phi1s,
+                        x_name,
+                        y_name,
+                        v_name,
+                        ax1)
+
+                    ax2 = fig.add_subplot(212)
+
+                    self._plot_matrix_heat(
+                        s,
+                        v2,
+                        Phi2s,
+                        x_name,
+                        y_name,
+                        v_name,
+                        ax2)
+
+                    fig.suptitle(title)
+                    fig.autofmt_xdate()
+
+                    fn = '_'.join(title.split()) + '.png'
+                    path = os.path.join(
+                        self.plot_dir, fn)
+
+                    fig.savefig(path, format='png')
+                    plt.clf()
+
+    def _plot_matrix_heat(self, s, v, ccal, x_name, y_name, v_name, ax):
+
+        tl = np.hstack(ccal)
+        (n, m) = tl.shape
+        (yl, xl) = (np.arange(n), np.arange(m))
+
+        # If canonical parameters are small, ceiling/floor to emphasize larger values
+        if np.all(np.abs(tl) < 0.5):
+            tl = np.copy(tl)
+            threshold = 0.2 * np.max(np.abs(tl))
+            tl_gt = tl > threshold
+            tl_lt = tl < -threshold
+            tl_middle = np.logical_not(
+                np.logical_or(tl_gt, tl_lt))
+
+            tl[tl_gt] = 1
+            tl[tl_lt] = -1
+            tl[tl_middle] = 0
+
+        plot_matrix_heat(
+            tl,
+            xl,
+            yl,
+            '',
+            x_name,
+            y_name,
+            v_name,
+            vmax=1,
+            vmin=-1,
+            ax=ax)
