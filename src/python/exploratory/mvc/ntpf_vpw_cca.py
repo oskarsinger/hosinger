@@ -169,9 +169,6 @@ class NTPFViewPairwiseCCA:
                 title = 'View-pairwise cca (n time p frequency) for views ' + \
                     self.names[v1] + ' ' + self.names[v2] + \
                     ' of subject ' + s
-                x_name = 'subperiod'
-                y_name = 'dimension'
-                v_name = 'canonical vector value'
 
                 ax1 = fig.add_subplot(311)
 
@@ -179,9 +176,9 @@ class NTPFViewPairwiseCCA:
                     s,
                     v1,
                     Phi1s,
-                    x_name,
-                    y_name,
-                    v_name,
+                    'subperiod',
+                    'dimension',
+                    'canonical vector value',
                     ax1)
 
                 ax2 = fig.add_subplot(312)
@@ -190,9 +187,9 @@ class NTPFViewPairwiseCCA:
                     s,
                     v2,
                     Phi2s,
-                    x_name,
-                    y_name,
-                    v_name,
+                    'subperiod',
+                    'dimension',
+                    'canonical vector value',
                     ax2)
 
                 ax3 = fig.add_subplot(313)

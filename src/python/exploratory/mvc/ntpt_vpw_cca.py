@@ -23,16 +23,16 @@ class NTPTViewPairwiseCCA:
     def __init__(self,
         servers,
         save_load_dir,
-        window,
         num_subperiods=1,
         cov_analysis=True,
         clock_time=False,
         show=False):
 
         self.servers = servers
-        self.window = window
         self.num_subperiods = num_subperiods
+        # TODO: implement optional cov_analysis like in Al's script
         self.cov_analysis = cov_analysis
+        # TODO: implement clock time x axis on heat plot
         self.clock_time = clock_time
         self.show = show
 
@@ -45,8 +45,6 @@ class NTPTViewPairwiseCCA:
         self.num_views = len(self.servers.values()[0])
         self.num_periods = {s : int(servers[0].num_batches / self.num_subperiods)
                             for (s, servers) in self.servers.items()}
-        self.sparse = {s : window > np - 2 
-                       for (s, np) in self.num_periods.items()}
 
         self._init_dirs(save_load_dir)
 
@@ -97,7 +95,6 @@ class NTPTViewPairwiseCCA:
 
         for (s, servers) in self.servers.items():
             print 'Computing CCAs for subject', s
-            w = self.window[s]
             T = self.num_periods[s] * self.num_subperiods
             cca_s = self.cca[s]
             tls_s = tls[s]
@@ -216,11 +213,12 @@ class NTPTViewPairwiseCCA:
                     fig = plt.figure()
                     (ntpt, ntptcc) = unzip(subperiods)
                     (Phi1s, Phi2s) = unzip(ntpt)
-                    title = 'View-pairwise cca (n time p time) for views ' + \
-                        self.names[v1] + ' ' + self.names[v2] + \
+                    title = 'View-pairwise cca (n time p time) for ' + \
+                        ' dim. ' + str(f1) + ' of view ' + self.names[v1] + \
+                        ' dim. ' + str(f2) + ' of view ' + self.names[v2] + \
                         ' of subject ' + s
                     x_name = 'subperiod'
-                    y_name = 'dimension'
+                    y_name = 'sample'
                     v_name = 'canonical vector value'
 
                     ax1 = fig.add_subplot(211)
@@ -229,9 +227,9 @@ class NTPTViewPairwiseCCA:
                         s,
                         v1,
                         Phi1s,
-                        x_name,
-                        y_name,
-                        v_name,
+                        'subperiod',
+                        'sample',
+                        'canonical vector value',
                         ax1)
 
                     ax2 = fig.add_subplot(212)
@@ -240,9 +238,9 @@ class NTPTViewPairwiseCCA:
                         s,
                         v2,
                         Phi2s,
-                        x_name,
-                        y_name,
-                        v_name,
+                        'subperiod',
+                        'sample',
+                        'canonical vector value',
                         ax2)
 
                     fig.suptitle(title)
