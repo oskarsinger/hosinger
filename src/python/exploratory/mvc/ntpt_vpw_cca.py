@@ -89,29 +89,11 @@ class NTPTViewPairwiseCCA:
 
     def _compute(self):
 
-        tls = {s : [[None] * self.num_subperiods
-                    for i in xrange(self.num_views)]
-               for s in self.servers.keys()}
-
-        for (s, servers) in self.servers.items():
+        for s in self.servers.keys():
             print 'Computing CCAs for subject', s
-            T = self.num_periods[s] * self.num_subperiods
-            cca_s = self.cca[s]
-            tls_s = tls[s]
 
-            for sp in xrange(T):
-                sp_within_p = sp % self.num_subperiods
-                subperiods = [ds.get_data().T for ds in servers]
+            views = self._get_timelines(s)
 
-                for (v, data) in enumerate(subperiods):
-                    
-                    if tls_s[v] is None:
-                        tls_s[v][sp_within_p] = subperiods[v]
-                    else:
-                        tls_s[v][sp_within_p] = np.vstack([
-                            tls_s[v], subperiods[v]])
-
-        for (s, views) in tls.items():
             for v1 in xrange(self.num_views):
                 for v2 in xrange(v1+1, self.num_views):
                     for sp in xrange(self.num_subperiods):
@@ -139,6 +121,26 @@ class NTPTViewPairwiseCCA:
                                     f1,
                                     f2,
                                     sp)
+
+    def _get_timelines(self, s):
+
+        servers = self.servers[s]
+        tls = [[None] * self.num_subperiods
+               for i in xrange(self.num_views)]
+
+        for sp in xrange(self.num_periods[s] * self.num_subperiods):
+            sp_within_p = sp % self.num_subperiods
+            subperiods = [ds.get_data().T for ds in servers]
+
+            for (v, data) in enumerate(subperiods):
+                
+                if tls_s[v] is None:
+                    tls[v][sp_within_p] = subperiods[v]
+                else:
+                    tls[v][sp_within_p] = np.vstack([
+                        tls[v], subperiods[v]])
+
+        return tls
 
     def _save(self, ntpt, s, v1, v2, f1, f2, sp):
 
