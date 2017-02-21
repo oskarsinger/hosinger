@@ -44,5 +44,4 @@ setup(
         'exploratory',
         'exploratory.mvc',
         'exploratory.raw',
-        'simulation',
         'models'])
