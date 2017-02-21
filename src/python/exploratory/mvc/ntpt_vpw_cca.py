@@ -165,7 +165,7 @@ class NTPTViewPairwiseCCA:
         if sp_str not in f_group:
             f_group.create_group(sp_str)
 
-        sp_group = v_group[sp_str]
+        sp_group = f_group[sp_str]
 
         sp_group.create_dataset('Phi1', data=ntpt[0])
         sp_group.create_dataset('Phi2', data=ntpt[1])
