@@ -221,7 +221,7 @@ class NTPFViewPairwiseCCA:
         (n, m) = tl.shape
         (yl, xl) = (np.arange(n), np.arange(m))
 
-        # If canonical parameters are too small, threshold and ceiling/floor to emphasize larger values
+        # If canonical parameters are small, ceiling/floor to emphasize larger values
         if np.all(np.abs(tl) < 0.5):
             tl = np.copy(tl)
             threshold = 0.2 * np.max(np.abs(tl))
