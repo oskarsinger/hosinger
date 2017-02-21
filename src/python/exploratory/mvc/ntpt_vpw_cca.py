@@ -134,11 +134,11 @@ class NTPTViewPairwiseCCA:
 
             for (v, data) in enumerate(subperiods):
                 
-                if tls_s[v] is None:
+                if tls_s[v][sp_within_p] is None:
                     tls[v][sp_within_p] = subperiods[v]
                 else:
                     tls[v][sp_within_p] = np.vstack([
-                        tls[v], subperiods[v]])
+                        tls[v][sp_within_p], subperiods[v]])
 
         return tls
 
