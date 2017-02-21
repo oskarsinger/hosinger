@@ -109,7 +109,7 @@ class NTPTViewPairwiseCCA:
                         tls_s[v][sp_within_p] = subperiods[v]
                     else:
                         tls_s[v][sp_within_p] = np.vstack([
-                            tsl_s[v], subperiods[v]])
+                            tls_s[v], subperiods[v]])
 
         for (s, views) in tls.items():
             for v1 in xrange(self.num_views):
