@@ -17,6 +17,7 @@ from drrobert.ts import get_dt_index as get_dti
 from lazyprojector import plot_matrix_heat
 from exploratory.mvc.utils import get_matched_dims
 from math import log, ceil
+from itertools import combinations, product
 
 class NTPTViewPairwiseCCA:
 
@@ -91,36 +92,36 @@ class NTPTViewPairwiseCCA:
 
         for s in self.servers.keys():
             print 'Computing CCAs for subject', s
+            print '\tRetrieving timelines'
 
             views = self._get_timelines(s)
 
-            for v1 in xrange(self.num_views):
-                for v2 in xrange(v1+1, self.num_views):
-                    for sp in xrange(self.num_subperiods):
-                        step1 = self.cols[v1]
-                        step2 = self.cols[v2]
-                        v1_mat = views[v1][sp]
-                        v2_mat = views[v2][sp]
-                        (v1_mat, v2_mat) = get_matched_dims(
-                            v1_mat, v2_mat)
+            for (v1, v2) in combinations(xrange(self.num_views), 2):
+                print '\t Computing for view pair', v1, v2
 
-                        for f1 in xrange(step1):
-                            v1_mat_f1 = v1_mat[f1::step1,:]
+                for sp in xrange(self.num_subperiods):
+                    step1 = self.cols[v1]
+                    step2 = self.cols[v2]
+                    v1_mat = views[v1][sp]
+                    v2_mat = views[v2][sp]
+                    (v1_mat, v2_mat) = get_matched_dims(
+                        v1_mat, v2_mat)
 
-                            for f2 in xrange(step2):
-                                v2_mat_f2 = v2_mat[f2::step2,:]
-                                # TODO: only do sparse CCA if dimensionally necessary
-                                ntpt = get_cca_vecs(
-                                    v1_mat_f1, v2_mat_f2, num_nonzero=1)
+                    for f1 in product(xrange(step1), xrange(step2)):
+                        v1_mat_f1 = v1_mat[f1::step1,:]
+                        v2_mat_f2 = v2_mat[f2::step2,:]
+                        # TODO: only do sparse CCA if dimensionally necessary
+                        ntpt = get_cca_vecs(
+                            v1_mat_f1, v2_mat_f2, num_nonzero=1)
 
-                                self._save(
-                                    ntpt,
-                                    s,
-                                    v1,
-                                    v2,
-                                    f1,
-                                    f2,
-                                    sp)
+                        self._save(
+                            ntpt,
+                            s,
+                            v1,
+                            v2,
+                            f1,
+                            f2,
+                            sp)
 
     def _get_timelines(self, s):
 
