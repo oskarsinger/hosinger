@@ -154,7 +154,7 @@ class NTPTViewPairwiseCCA:
             s_group.create_group(v_str)
 
         v_group = s_group[v_str]
-        f_str = str(i) + '-' + str(j)
+        f_str = str(f1) + '-' + str(f2)
 
         if f_str not in v_group:
             v_group.create_group(f_str)
