@@ -208,7 +208,7 @@ def get_hr_and_acc(hdf5_path, subject, online=False, max_herz=0.25):
         online=online)
 
     return [
-        get_loader('ACC', mag)
+        get_loader('ACC', mag),
         get_loader('HR', fac)]
 
 def get_e4_loaders_all_subjects(hdf5_path, online=False, max_hertz=0.25):
