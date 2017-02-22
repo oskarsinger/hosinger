@@ -86,7 +86,7 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
             n,
             x_project,
             y_project,
-            verbose=True)
+            verbose=False)
 
     projected1 = np.dot(zm_X1, Phi1)
     projected2 = np.dot(zm_X2, Phi2)
