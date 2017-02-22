@@ -92,32 +92,32 @@ class NTPTViewPairwiseCCA:
 
         for s in self.servers.keys():
             print 'Computing CCAs for subject', s
-            print '\tRetrieving timelines'
 
             views = self._get_timelines(s)
 
             for (v1, v2) in combinations(xrange(self.num_views), 2):
-                print '\t\t Computing for view pair', v1, v2
-
                 for sp in xrange(self.num_subperiods):
-                    print '\t\t\tComputing for sp', sp
-
                     step1 = self.cols[v1]
                     step2 = self.cols[v2]
+                    print '\tstep1', step1, 'step2', step2
                     v1_mat = views[v1][sp]
                     v2_mat = views[v2][sp]
                     (v1_mat, v2_mat) = get_matched_dims(
                         v1_mat, v2_mat)
 
                     for (f1, f2) in product(xrange(step1), xrange(step2)):
-                        print '\t\t\t\tComputing for feature pair', f1, f2
+                        print '\t\tComputing for feature pair', f1, f2
 
+                        print '\t\t\tGetting slices'
                         v1_mat_f1 = v1_mat[f1::step1,:]
                         v2_mat_f2 = v2_mat[f2::step2,:]
                         # TODO: only do sparse CCA if dimensionally necessary
+
+                        print '\t\t\tGetting CCA vecs'
                         ntpt = get_cca_vecs(
                             v1_mat_f1, v2_mat_f2, num_nonzero=1)
 
+                        print '\t\t\tSaving'
                         self._save(
                             ntpt,
                             s,
