@@ -194,26 +194,24 @@ def get_e4_loaders(hdf5_path, subject, online, max_hertz=0.25):
         get_loader('BVP', fac, None),
         get_loader('HR', fac, None)]
 
-def get_changing_e4_loaders(hdf5_path, subject, online):
+def get_hr_and_acc(hdf5_path, subject, online=False, max_herz=0.25):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
 
-    return [
-        FRL(hdf5_path, subject, 'ACC', mag),
-        FRL(hdf5_path, subject, 'BVP', fac),
-        FRL(hdf5_path, subject, 'HR', fac)]
-
-def get_hr_and_acc(hdf5_path, subject, online):
-
-    mag = fn.get_row_magnitude
-    fac = fn.get_fields_as_columns
+    get_loader = lambda n, r: FRL(
+        hdf5_path,
+        subject,
+        n,
+        r,
+        max_hertz=max_hertz,
+        online=online)
 
     return [
-        FRL(hdf5_path, subject, 'ACC', mag, online=online),
-        FRL(hdf5_path, subject, 'HR', fac, online=online)]
+        get_loader('ACC', mag)
+        get_loader('HR', fac)]
 
-def get_e4_loaders_all_subjects(hdf5_path, online, max_hertz=0.25):
+def get_e4_loaders_all_subjects(hdf5_path, online=False, max_hertz=0.25):
 
     subjects = h5py.File(hdf5_path).keys()
     bad = {'HRV15-0' + n for n in ['15', '07', '08']}
@@ -226,12 +224,16 @@ def get_e4_loaders_all_subjects(hdf5_path, online, max_hertz=0.25):
             for s in subjects
             if s not in bad}
 
-def get_hr_and_acc_all_subjects(hdf5_path, online):
+def get_hr_and_acc_all_subjects(hdf5_path, online=False, max_hertz=0.25):
 
     subjects = h5py.File(hdf5_path).keys()
     bad = {'HRV15-0' + n for n in ['15', '07', '08']}
 
-    return {s : get_hr_and_acc(hdf5_path, s, online)
+    return {s : get_hr_and_acc(
+                    hdf5_path, 
+                    s, 
+                    online=online, 
+                    max_hertz=max_hertz)
             for s in subjects
             if s not in bad}
 

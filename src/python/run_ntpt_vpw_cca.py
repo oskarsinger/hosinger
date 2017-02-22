@@ -40,8 +40,8 @@ def run_it_all_day_bb(
     loaders = None
 
     if dataset == 'e4':
-        loaders = dlsh.get_e4_loaders_all_subjects(
-            data_path, False, max_hertz=max_hertz)
+        loaders = dlsh.get_hr_and_acc_all_subjects(
+            data_path, max_hertz=max_hertz)
     elif dataset == 'cm':
         loaders = dlsh.get_cm_loaders_all_subjects(
             data_path)
