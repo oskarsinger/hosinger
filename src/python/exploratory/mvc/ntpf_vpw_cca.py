@@ -219,9 +219,10 @@ class NTPFViewPairwiseCCA:
         (yl, xl) = (np.arange(n), np.arange(m))
 
         # If canonical parameters are small, ceiling/floor to emphasize larger values
-        if np.all(np.abs(tl) < 0.5):
-            tl = np.copy(tl)
-            threshold = 0.2 * np.max(np.abs(tl))
+        abs_tl = np.abs(tl)
+
+        if np.sum(abs_tl < 0.5) / (n*m) < 0.1:
+            threshold = 0.5 * np.max(abs_tl[abs_tl < 0.5])
             tl_gt = tl > threshold
             tl_lt = tl < -threshold
             tl_middle = np.logical_not(
