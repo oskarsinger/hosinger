@@ -97,9 +97,11 @@ class NTPTViewPairwiseCCA:
             views = self._get_timelines(s)
 
             for (v1, v2) in combinations(xrange(self.num_views), 2):
-                print '\t Computing for view pair', v1, v2
+                print '\t\t Computing for view pair', v1, v2
 
                 for sp in xrange(self.num_subperiods):
+                    print '\t\t\tComputing for sp', sp
+
                     step1 = self.cols[v1]
                     step2 = self.cols[v2]
                     v1_mat = views[v1][sp]
@@ -107,7 +109,9 @@ class NTPTViewPairwiseCCA:
                     (v1_mat, v2_mat) = get_matched_dims(
                         v1_mat, v2_mat)
 
-                    for f1 in product(xrange(step1), xrange(step2)):
+                    for (f1, f2) in product(xrange(step1), xrange(step2)):
+                        print '\t\t\t\tComputing for feature pair', f1, f2
+
                         v1_mat_f1 = v1_mat[f1::step1,:]
                         v2_mat_f2 = v2_mat[f2::step2,:]
                         # TODO: only do sparse CCA if dimensionally necessary
