@@ -66,3 +66,5 @@
 * Event-based data point collection, possibly key-ing events off of sparse CCA with n frequency, p time. Or hand-tailored event heuristics. Try first on test data.
 
 * Look at one day at a time to see if we can find periodicity within a day.
+
+* Limit to a couple frequencies and just HR/ACC in Al's script
