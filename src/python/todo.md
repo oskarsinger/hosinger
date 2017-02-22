@@ -10,31 +10,6 @@
 
 * Consider moving all the bandit stuff into a derivative free/zero-order package of the optimization package
 
-#Swarm Robotics
-
-##Infrastructure
-* Simulation framework
-    * Grid framework
-    * Simulation runner
-    * Unit object that Markus can use
-    * Movie plotting
-    * Evaluation metrics
-
-##Algorithms
-* Implement the zero-order method we developed and test on some easy convex problems and maybe some more difficult convex or even non-convex ones.
-    * First, make a data synthesizer. It should just be a function that gives a value based on spacial coordinates. Start with a quadratic.
-    * How do I simulate local neighbor checks? I probably can't. That's the whole reason Al wants to use hardware.
-    * Maybe use stuff from my particle methods course to do efficient simulation.
-    * Consider looking at some GPU stuff. That may require a lot of communication overhead, which is kinda gross.
-
-* Maybe derive and implement an ADMM alg. Al would be very happy if you had experiments on synthesized data for both the zero-order stuff we already talking about and an ADMM variant. Zero-order ADMM?
-    * Difficulties of ADMM:
-        * How does the pairwise arrangement fit into an ADMM framework? Duchi is putting it in terms of proximal operators/Bregman divergences, which could help me head in that direction.
-        * Think more about the relationship to bandit algorithms like UCB and Thompson sampling. Linear function on the simplex like Shamir says. Bandit feedback is harder because you only see one dimension at a time?
-
-##Visualization
-* Movie plot of function surface with robot positions at each time step.
-
 #Network Interference
 
 ##Visualization
@@ -84,10 +59,6 @@
     * Error of partial reconstruction
     * Show correlation of the partial reconstructions maybe?
     * Maybe plug standard deviation into the wavelet decomposition
-
-* Figure out why my version of Al's script is so slow. I put it some print statements, just need to run the experiments.
-
-* Talk to Brandon about plotting stuff. Totally slipped my mind. Oops.
 
 * Adapt Yaya's R script to take E4 data, wavelet coefficients, CCA-filtered data, canonical correlation as inputs
     * It will help to build all off the above post-processing into data servers; consider making an mvc submodule for the data.servers.masks submodule.
