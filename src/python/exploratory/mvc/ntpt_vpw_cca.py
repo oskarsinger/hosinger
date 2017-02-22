@@ -99,25 +99,19 @@ class NTPTViewPairwiseCCA:
                 for sp in xrange(self.num_subperiods):
                     step1 = self.cols[v1]
                     step2 = self.cols[v2]
-                    print '\tstep1', step1, 'step2', step2
                     v1_mat = views[v1][sp]
                     v2_mat = views[v2][sp]
                     (v1_mat, v2_mat) = get_matched_dims(
                         v1_mat, v2_mat)
 
                     for (f1, f2) in product(xrange(step1), xrange(step2)):
-                        print '\t\tComputing for feature pair', f1, f2
-
-                        print '\t\t\tGetting slices'
                         v1_mat_f1 = v1_mat[f1::step1,:]
                         v2_mat_f2 = v2_mat[f2::step2,:]
-                        # TODO: only do sparse CCA if dimensionally necessary
 
-                        print '\t\t\tGetting CCA vecs'
+                        # TODO: only do sparse CCA if dimensionally necessary
                         ntpt = get_cca_vecs(
                             v1_mat_f1, v2_mat_f2, num_nonzero=1)
 
-                        print '\t\t\tSaving'
                         self._save(
                             ntpt,
                             s,
