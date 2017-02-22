@@ -194,7 +194,7 @@ def get_e4_loaders(hdf5_path, subject, online, max_hertz=0.25):
         get_loader('BVP', fac, None),
         get_loader('HR', fac, None)]
 
-def get_hr_and_acc(hdf5_path, subject, online=False, max_herz=0.25):
+def get_hr_and_acc(hdf5_path, subject, online=False, max_hertz=0.25):
 
     mag = fn.get_row_magnitude
     fac = fn.get_fields_as_columns
