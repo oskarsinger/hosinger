@@ -24,6 +24,7 @@ class NTPTViewPairwiseCCA:
     def __init__(self,
         servers,
         save_load_dir,
+        freqs=None,
         num_subperiods=1,
         cov_analysis=True,
         clock_time=False,
@@ -187,11 +188,11 @@ class NTPTViewPairwiseCCA:
                 (v1, v2) = [int(v) for v in v_str.split('-')]
                 cca_vs = cca_s.get(v1, v2)
 
-                for f_str in v_group.items():
+                for (f_str, f_group) in v_group.items():
                     f_tuple = tuple([int(f) for f in f_str.split('-')])
                     cca_fvs = cca_vs[f_tuple]
 
-                    for (sp_str, sp_group) in v_group.items():
+                    for (sp_str, sp_group) in f_group.items():
                         sp = int(sp_str)
                         ntpt = (
                                 np.array(sp_group['Phi1']),
