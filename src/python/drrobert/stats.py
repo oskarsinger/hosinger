@@ -79,7 +79,9 @@ def get_cca_vecs(X1, X2, n_components=1, num_nonzero=None):
             nnz=num_nonzero)
         y_project = spancca.projections.setup_sparse(
             nnz=num_nonzero)
-        rank = num_nonzero * 2 + 1
+        rank = min([
+            num_nonzero * 2 + 1,
+            min(Omega.shape) - 1])
         (Phi1, Phi2) = spancca.cca(
             Omega,
             rank,
