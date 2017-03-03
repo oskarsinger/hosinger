@@ -7,3 +7,7 @@
 
 * Consider moving all the bandit stuff into a derivative free/zero-order package of the optimization package
 
+* Transition to Python 3
+    * Change xrange to range
+    * Put parens on print statements
+    * Look up tools for assisting in the transition
