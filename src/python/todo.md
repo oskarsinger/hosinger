@@ -5,9 +5,9 @@
     * Is it possible to make this sufficiently general? Definitely should at least write a specific version for what I am working on.
     * This would be a great resume item for any of the Data Science for Social Good applications.
 
-* Consider moving all the bandit stuff into a derivative free/zero-order package of the optimization package
-
 * Transition to Python 3
     * Change xrange to range
     * Put parens on print statements
     * Look up tools for assisting in the transition
+
+* Consider removing drrobert to its own repo.
