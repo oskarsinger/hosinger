@@ -1,7 +1,3 @@
-import matplotlib
-
-matplotlib.use('Cairo')
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -9,7 +5,7 @@ import linal.utils.misc as lum
 import matplotlib.pyplot as plt
 
 from math import pi
-from utils import get_plot_path
+from .utils import get_plot_path
 
 def plot_matrix_heat(
     value_matrix, 
