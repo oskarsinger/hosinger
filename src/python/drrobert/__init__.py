@@ -1,11 +1,11 @@
-import file_io
-import data_structures
-import ml
-import debug
-import arithmetic
-import random
-import misc
-import fp
-import ts
-import network
-import stats
+from . import file_io
+from . import data_structures
+from . import ml
+from . import debug
+from . import arithmetic
+from . import random
+from . import misc
+from . import fp
+from . import ts
+from . import network
+from . import stats
