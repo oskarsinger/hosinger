@@ -1,5 +1,4 @@
-import utils
-import svd_funcs
-import random
-import tensor
-import formulas
+from . import utils
+from . import svd_funcs
+from . import random
+from . import formulas
