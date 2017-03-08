@@ -1,5 +1,7 @@
 import numpy as np
 
+from functools import reduce
+
 def get_mahalanobis_inner_product(A):
 
     inside_A = np.copy(A)
