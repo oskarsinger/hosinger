@@ -5,7 +5,6 @@ from . import debug
 from . import arithmetic
 from . import random
 from . import misc
-from . import fp
 from . import ts
 from . import network
 from . import stats
