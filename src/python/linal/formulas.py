@@ -1,7 +1,7 @@
 import numpy as np
 
-from svd_funcs import get_svd_power
-from utils.products import get_quadratic as gq
+from .svd_funcs import get_svd_power
+from .utils import get_quadratic as gq
 
 def get_woodbury_inversion(H, rho):
 

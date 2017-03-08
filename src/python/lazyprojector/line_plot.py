@@ -1,13 +1,9 @@
-import matplotlib
-
-matplotlib.use('Cairo')
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from utils import get_plot_path
+from .utils import get_plot_path
 
 def plot_lines(
     data_map,
