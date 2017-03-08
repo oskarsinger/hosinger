@@ -169,23 +169,23 @@ class RademacherGaussianMixtureModel:
 
     def get_objective(self, data, params):
 
-        print 'Poop'
+        print( 'Poop' )
 
     def get_residuals(self, data, params):
         
-        print 'Poop'
+        print( 'Poop' )
 
     def get_coordinate_counts(self, data):
 
-        print 'Poop'
+        print( 'Poop' )
 
     def get_datum(self, data, i):
 
-        print 'Poop'
+        print( 'Poop' )
 
     def get_parameter_shape(self, data, params):
 
-        print 'Poop'
+        print( 'Poop' )
 
     def get_gradient(self, data, params):
 

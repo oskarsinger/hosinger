@@ -12,7 +12,7 @@ def get_erdos_renyi(num_nodes, p, sym=False):
         begin = 0
         end = num_nodes - 1
         
-        for i in xrange(num_nodes):
+        for i in range(num_nodes):
             graph[i,i+1:] = np.copy(edges[begin:end])
             begin = end
             end += num_nodes - i - 2
@@ -27,10 +27,10 @@ def get_erdos_renyi(num_nodes, p, sym=False):
 def get_adj_lists(adj_matrix):
 
     n = adj_matrix.shape[0]
-    adj_lists = [[] for i in xrange(n)]
+    adj_lists = [[] for i in range(n)]
 
-    for i in xrange(n):
-        for j in xrange(n):
+    for i in range(n):
+        for j in range(n):
             if adj_matrix[i, j] == 1:
                 adj_lists[i].append(j)
 

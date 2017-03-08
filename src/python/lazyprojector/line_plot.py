@@ -63,7 +63,7 @@ def _get_dataframe(
 
     for name, (x, y, u) in data_map.items():
         new_n = np.array(
-            [name for i in xrange(x.shape[0])])
+            [name for i in range(x.shape[0])])
         new_n = new_n[:,np.newaxis]
         
         new_u = None
@@ -72,7 +72,7 @@ def _get_dataframe(
             new_u = np.ones(x.shape[0])
         else:
             new_u = np.array(
-                [u for i in xrange(x.shape[0])])
+                [u for i in range(x.shape[0])])
 
         new_u = new_u[:,np.newaxis]
 
