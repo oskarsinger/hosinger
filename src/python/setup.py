@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='OskarResearchCode',
+    name='MiscellaneousUtilities',
     version='0.01',
     packages=[
         'linal',

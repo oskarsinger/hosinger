@@ -6,7 +6,7 @@ def get_checklist(keys):
 
 def get_range_len(l):
 
-    return xrange(len(l))
+    return range(len(l))
 
 def get_list_range(n):
 
@@ -40,4 +40,4 @@ def get_nums_as_strings(l):
 def get_nested_list_transpose(nl):
 
     return [[l[i] for l in nl]
-            for i in xrange(len(nl[0]))]
+            for i in range(len(nl[0]))]

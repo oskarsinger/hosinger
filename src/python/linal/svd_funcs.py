@@ -41,7 +41,7 @@ def _get_sigma(n, p, s):
 
     sigma = np.zeros((n,p))
 
-    for i in xrange(s.shape[0]):
+    for i in range(s.shape[0]):
         sigma[i,i] = s[i]
 
     return sigma

@@ -57,10 +57,10 @@ def _get_labels(
     x = np.zeros((n,p))
     y = np.zeros((n,p))
 
-    for i in xrange(n):
+    for i in range(n):
         x[i,:] = np.copy(x_labels)
         
-    for i in xrange(p):
+    for i in range(p):
         y[:,i] = np.copy(y_labels)
 
     return (x, y)

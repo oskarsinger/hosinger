@@ -7,8 +7,8 @@ class SparsePairwiseUnorderedDict:
         self.no_double = no_double
 
         self.spud = {(i, j) : None if self.default is None else self.default()
-                     for i in xrange(self.num_indexes)
-                     for j in xrange(i, self.num_indexes)}
+                     for i in range(self.num_indexes)
+                     for j in range(i, self.num_indexes)}
 
         if self.no_double:
             self.spud = {k : v for (k, v) in self.spud.items()

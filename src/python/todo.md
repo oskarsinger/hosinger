@@ -6,7 +6,7 @@
     * This would be a great resume item for any of the Data Science for Social Good applications.
 
 * Transition to Python 3
-    * Change xrange to range
+    * Change range to range
     * Put parens on print statements
     * Look up tools for assisting in the transition
 
