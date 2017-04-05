@@ -1,6 +1,6 @@
 import numpy as np
 
-from linal.utils import get_multi_dot as gmd
+from .products import get_multi_dot as gmd
 
 def get_rank1_inv_update(A_inv, b, c):
     # Sherman-Morrison update from Matrix Cookbook
