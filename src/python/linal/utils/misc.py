@@ -1,5 +1,4 @@
 import numpy as np
-import drrobert.debug as drdb
 
 def get_non_nan(X):
 
@@ -54,17 +53,7 @@ def get_thresholded(x, upper=None, lower=None):
 
     if lower is not None:
         lower = np.ones_like(x) * lower
-
-        exception_msg = ' '.join([
-            'x:', str(x), 
-            '\n',
-            'lower:', str(lower)])
-
-        def less():
-            return new_x < lower
-
-        lower_idx = drdb.handle_runtime_warning(
-            less, exception_msg)
+        lower_idx = new_x < lower
         new_x[lower_idx] = lower[lower_idx]
 
     return new_x
