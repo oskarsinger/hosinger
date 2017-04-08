@@ -7,7 +7,7 @@ def get_erdos_renyi(num_nodes, p, sym=False):
     graph = np.zeros((num_nodes, num_nodes))
 
     if sym:
-        num_rvs = num_nodes * (num_nodes - 1) / 2
+        num_rvs = int(num_nodes * (num_nodes - 1) / 2)
         edges = bernoulli.rvs(p, size=num_rvs)
         begin = 0
         end = num_nodes - 1
