@@ -20,7 +20,7 @@ class LinearRegression:
         residuals = self.get_residuals(
             data, params)
 
-        return np.linalg.norm(residuals)
+        return np.linalg.norm(residuals)**2
 
     def get_residuals(self, data, params):
 
@@ -29,13 +29,11 @@ class LinearRegression:
 
         return b_hat - b
 
-    def get_coordinate_counts(self, data):
+    def get_coordinate_sums(self, data):
 
         A = data[0]
 
-        return np.sum(
-            (A != 0).astype(float),
-            axis=0)
+        return np.sum(A, axis=0)
 
     def get_datum(self, data, i):
 
