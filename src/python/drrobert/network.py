@@ -2,6 +2,15 @@ import numpy as np
 
 from scipy.stats import bernoulli
 
+def get_thresholded_similarity(X, threshold):
+
+    similarity = np.dot(X.T, X)
+    similarity /= np.max(similarity)
+    similarly[similarity > threshold] = 1
+    similarly[similarity <= threshold] = 0
+
+    return similarity
+
 def get_erdos_renyi(num_nodes, p, sym=False):
 
     graph = np.zeros((num_nodes, num_nodes))
