@@ -6,8 +6,8 @@ def get_thresholded_similarity(X, threshold):
 
     similarity = np.dot(X.T, X)
     similarity /= np.max(similarity)
-    similarly[similarity > threshold] = 1
-    similarly[similarity <= threshold] = 0
+    similarity[similarity > threshold] = 1
+    similarity[similarity <= threshold] = 0
 
     return similarity
 
