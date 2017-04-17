@@ -6,7 +6,7 @@ def get_thresholded_similarity(X, threshold):
 
     similarity = np.dot(X.T, X)
 
-    for i in range(X.shape[1]):
+    for i in range(similarity.shape[0]):
         similarity[i,i] = 0
 
     similarity /= np.max(similarity)
