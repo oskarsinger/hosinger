@@ -5,6 +5,10 @@ from scipy.stats import bernoulli
 def get_thresholded_similarity(X, threshold):
 
     similarity = np.dot(X.T, X)
+
+    for i in range(X.shape[1]):
+        similarity[i,i] = 0
+
     similarity /= np.max(similarity)
     similarity[similarity > threshold] = 1
     similarity[similarity <= threshold] = 0
