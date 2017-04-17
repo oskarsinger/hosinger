@@ -35,6 +35,9 @@ def get_erdos_renyi(num_nodes, p, sym=False):
         edges = bernoulli.rvs(p, size=num_nodes**2)
         graph += edges.reshape((num_nodes, num_nodes))
 
+    for i in range(num_nodes):
+        graph[i,i] = 0
+
     return graph
 
 def get_adj_lists(adj_matrix):
