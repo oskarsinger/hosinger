@@ -10,4 +10,6 @@ setup(
         'lazyprojector',
         'drrobert',
         'drrobert.data_structures',
+        'drrobert.network',
+        'drrobert.network.subset',
         'models'])
