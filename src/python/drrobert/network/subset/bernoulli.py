@@ -8,9 +8,10 @@ class BernoulliSubsetServer:
 
         self.num_nodes = self.bernoulli_ps.shape[0]
         self.choices = [0, 1]
-        self.ps = np.hstack([1-p, p])
+        self.ps = np.hstack(
+            [1-bernoulli_ps, bernoulli_ps])
         self.get_sample = lambda n: np.random.choice(
-            self.choices, p=ps[n,:])
+            self.choices, p=self.ps[n,:])
 
     def get_subset(self):
 

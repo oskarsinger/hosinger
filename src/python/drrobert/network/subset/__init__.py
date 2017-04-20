@@ -1,1 +1,1 @@
-from .bernoulli import NBernoulliSubsetServer
+from .bernoulli import BernoulliSubsetServer
