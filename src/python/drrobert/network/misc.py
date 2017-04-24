@@ -20,9 +20,11 @@ def get_thresholded_distance(X, threshold):
                 distances[i,j] = dist
                 distances[j,i] = dist
 
-    distances /= np.max(distances)
+    not_inf = np.logical_not(distances == np.inf)
+    min_dist = np.min(distances[not_inf])
+    inv_distances = min_dist / distances
     graph = np.zeros_like(distances)
-    graph[distances < threshold] = 1
+    graph[inv_distances > threshold] = 1
 
     return graph
 
