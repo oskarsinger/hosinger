@@ -2,6 +2,30 @@ import numpy as np
 
 from scipy.stats import bernoulli
 
+def get_thresholded_distance(X, threshold):
+
+    num_items = X.shape[1]
+    distances = np.zeros((num_items, num_items))
+
+    for i in range(num_items):
+        Xi = X[:,i]
+        for j in range(i, num_items):
+
+            if i == j:
+                distances[i,j] = np.inf
+            else:
+                Xj = X[:,j]
+                dist = np.linalg.norm(Xi - Xj)
+
+                distances[i,j] = dist
+                distances[j,i] = dist
+
+    distances /= np.max(distances)
+    graph = np.zeros_like(distances)
+    grap[distances < threshold] = 1
+
+    return graph
+
 def get_thresholded_similarity(X, threshold):
 
     similarity = np.dot(X.T, X)
@@ -10,10 +34,10 @@ def get_thresholded_similarity(X, threshold):
         similarity[i,i] = 0
 
     similarity /= np.max(similarity)
-    similarity[similarity > threshold] = 1
-    similarity[similarity <= threshold] = 0
+    graph = np.zeros_like(similarity)
+    graph[similarity > threshold] = 1
 
-    return similarity
+    return graph
 
 def get_erdos_renyi(num_nodes, p, sym=False):
 
