@@ -22,7 +22,7 @@ def get_thresholded_distance(X, threshold):
 
     distances /= np.max(distances)
     graph = np.zeros_like(distances)
-    grap[distances < threshold] = 1
+    graph[distances < threshold] = 1
 
     return graph
 
