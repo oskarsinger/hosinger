@@ -36,17 +36,14 @@ def get_running_variance(
 
 def get_running_avg(old, new, i):
 
-    alpha = 1.0 / i
-    beta = 1.0
-    new = new - old
+    weighted_old = (i - 1) * old
 
-    return get_moving_avg(
-        old, new, alpha, beta)
+    return (weighted_old + new) / i
 
-def get_moving_avg(old, new, alpha, beta):
+def get_moving_avg(old, new, beta):
 
     weighted_old = beta * old
-    weighted_new = alpha * new
+    weighted_new = (1 - beta) * new
 
     return weighted_old + weighted_new
 
