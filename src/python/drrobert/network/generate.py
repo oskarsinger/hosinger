@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import bernoulli
 from .misc import is_fully_connected
 
-def get_random_weight_based(N, p, fc=True, dist=True):
+def get_random_parameter_based(N, p, fc=True, dist=True):
 
     num_params = N * p
     ws = None
