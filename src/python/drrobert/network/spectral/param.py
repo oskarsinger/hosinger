@@ -25,7 +25,7 @@ class L2RegularizedRandomParameterGraph:
 
         log_e_vals = np.log(scale * self.e_vals + loc)
 
-        return np.sum(log_e_vals) * p
+        return np.sum(log_e_vals)
 
     def get_L_and_inv(self, loc, scale):
 
