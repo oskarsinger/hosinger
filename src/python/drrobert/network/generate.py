@@ -3,14 +3,22 @@ import numpy as np
 from scipy.stats import bernoulli
 from .misc import is_fully_connected
 
-def get_random_parameter_graph(N, p, fc=True, dist=True):
+def get_random_parameter_graph(N, p, threshold=None, dist=True):
 
     num_params = N * p
     ws = None
     w_mat = None
-    G = np.zeros((N, N))
+    G = None
 
-    while True:
+    if threshold is None:
+        w = np.random.randn(p, 1)
+        w_mat = np.hstack(
+            [np.copy(w) for _ in range(N)])
+        G = np.ones((N, N))
+
+        for i in range(N):
+            G[i,i] = 0
+    else:
         w = np.random.randn(num_params, 1)
         w_mat = w.reshape((p, N))
 
@@ -21,9 +29,6 @@ def get_random_parameter_graph(N, p, fc=True, dist=True):
             G = get_thresholded_similarity(
                 w_mat, threshold)
 
-        if (not fc) or is_fully_connected(G)
-            break
-
     Bs = [np.linalg.norm(w_mat[:,n])
           for n in range(N)]
     Bw = max(Bs)
@@ -33,7 +38,7 @@ def get_random_parameter_graph(N, p, fc=True, dist=True):
              if G[n,m] == 1]
     distances = [np.linalg.norm(d) for d in diffs]
     Dw = max(distances)
-    ws = [w[:,n] for n in range(N)]
+    ws = [w_mat[:,n] for n in range(N)]
 
     return (ws, Bw, Dw, G)
 

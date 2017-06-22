@@ -3,7 +3,8 @@ import numpy as np
 from linal.utils import get_quadratic as gq
 from drrobert.network import get_random_parameter_graph as get_rpg
 
-class L2RegularizedRandomParameterGraph:
+# TODO: complete this
+class L2RegularizedAppDetRandomParameterGraph:
 
     def __init__(self, N, p, fc=True, dist=True, sym=True):
         # TODO: actually use the symmetric graph option
@@ -17,7 +18,25 @@ class L2RegularizedRandomParameterGraph:
             fc=fc,
             dist=dist)
         self.d = np.sum(self.G, axis=1)
-        self.L = np.diag(d) - self.G
+        self.L = np.diag(self.d) - self.G
+
+        (self.e_vals, self.e_vecs) = np.linalg.eig(self.L)
+
+class L2RegularizedRandomParameterGraph:
+
+    def __init__(self, N, p, threshold=None, fc=True, dist=True, sym=True):
+        # TODO: actually use the symmetric graph option
+
+        self.N = N
+        self.p = p
+
+        (self.ws, self.Bw, self.Dw, self.G) = get_rpg(
+            self.N, 
+            self.p, 
+            threshold,
+            dist=dist)
+        self.d = np.sum(self.G, axis=1)
+        self.L = np.diag(self.d) - self.G
 
         (self.e_vals, self.e_vecs) = np.linalg.eig(self.L)
 
