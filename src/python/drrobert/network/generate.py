@@ -6,50 +6,34 @@ from .misc import is_fully_connected
 def get_random_parameter_graph(N, p, threshold=None, dist=True):
 
     num_params = N * p
-    ws = None
     w_mat = None
     G = None
+    Bw = None
+    Dw = None
 
     if threshold is None:
         w = np.random.randn(p, 1)
         w_mat = np.hstack(
             [np.copy(w) for _ in range(N)])
+        Dw = 0
+        Bw = np.linalg.norm(w)
         G = np.ones((N, N))
 
         for i in range(N):
             G[i,i] = 0
     else:
-        w = np.random.randn(num_params, 1)
-        w_mat = w.reshape((p, N))
-
-        if dist:
-            G = get_thresholded_distance(
-                w_mat, threshold)
-        else:
-            G = get_thresholded_similarity(
-                w_mat, threshold)
-
-    Bs = [np.linalg.norm(w_mat[:,n])
-          for n in range(N)]
-    Bw = max(Bs)
-    diffs = [w_mat[:,n] - w_mat[:,m]
+        w_mat = np.random.randn(p, N)
+        Bw = max(
+            [np.linalg.norm(w_mat[n,:])
+             for n in range(N)])
+        Dw = max(
+            [np.linalg.norm(w_mat[n,:] - w_mat[m,:])
              for n in range(N)
-             for m in range(n+1, N)
-             if G[n,m] == 1]
-    distances = [np.linalg.norm(d) for d in diffs]
-    Dw = max(distances)
-    ws = [w_mat[:,n] for n in range(N)]
+             for m in range(n+1, N)])
+        G = get_thresholded_distance(
+            w_mat, threshold)
 
-    return (ws, Bw, Dw, G)
-
-def get_complete():
-
-    G = np.ones((self.num_nodes, self.num_nodes))
-
-    for n in range(self.num_nodes):
-        G[n,n] = 0
-
-    return G
+    return (w_mat, Bw, Dw, G)
 
 def get_thresholded_distance(X, threshold):
 
