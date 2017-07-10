@@ -1,5 +1,13 @@
 import numpy as np
 
+def get_sparse_normal(m, n, density=0.1):
+
+    A = np.random.randn(m, n)
+    sample = np.random.uniform(size=(m,n))
+    fill_spots = (sample < density).astype(int)
+    
+    return A * fill_spots
+
 def get_rand_I_rows(n, r, p=None):
 
     rows = np.choice(
