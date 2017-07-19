@@ -1,4 +1,4 @@
 from . import utils
-from . import svd_funcs
+from . import svd
 from . import random
 from . import formulas
