@@ -50,8 +50,9 @@ class ColumnIncrementalSVD:
 
         s = self.k + l
         W_hat = np.zeros((s, s))
-        W_hat[:self.k,:self.k] += self.W
-        W_hat[self.k:,self.k:] += np.eye(l)
+        (end1, end2) = self.W.T.shape
+        W_hat[:end1,:end2] += self.W.T
+        W_hat[end1:,end2:] += np.eye(l)
 
         return W_hat
 
