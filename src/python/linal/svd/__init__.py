@@ -1,1 +1,1 @@
-from .svd_functions import *
+from .svd_funcs import *

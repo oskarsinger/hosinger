@@ -1,6 +1,6 @@
 import numpy as np
 
-from .utils import get_multi_dot, get_largest_entries, get_safe_power
+from linal.utils import get_multi_dot, get_largest_entries, get_safe_power
 
 def get_schatten_p_norm(A, p, energy=0.95, k=None):
 

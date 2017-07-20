@@ -42,9 +42,9 @@ class ColumnIncrementalSVD:
         
         self.B = s[:self.k]
         self.Q = np.dot(Q_hat, G_u)[:,:self.k]
-        self.W = np.dot(W_hat, G_v)[:,:self.k]
+        self.W = np.dot(W_hat, G_v)[:self.k,:]
 
-        return (self.Q, self.B, self.W)
+        return (self.Q, self.B, self.W.T)
 
     def _get_W_hat(self, l, G_v):
 
