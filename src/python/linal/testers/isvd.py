@@ -14,14 +14,16 @@ class ColumnIncrementalSVDTester:
 
         self.loader = GL(m, n)
         self.server = B2M(
-            1, data_loader=self.loader)
+            1, 
+            data_loader=self.loader,
+            random=False)
 
         data = self.loader.get_data().T
-        (U, s, V) = np.linalg.svd(data)
+        (U, s, VT) = np.linalg.svd(data)
 
         self.U = U[:,:self.k]
         self.s = s[:self.k]
-        self.V = V[:self.k,:]
+        self.VT = VT[:self.k,:]
         self.cisvd = CISVD(self.k)
 
     def run(self):
@@ -30,13 +32,16 @@ class ColumnIncrementalSVDTester:
 
         for t in range(self.m):
             data = self.server.get_data().T
-            (Ut, st, Vt) = self.cisvd.get_update(data)
-            U_loss = np.linalg.norm(Ut - self.U)**2
-            s_loss = np.linalg.norm(st - self.s)**2
-            V_loss = np.linalg.norm(Vt - self.V)**2
+            (Ut, st, VTt) = self.cisvd.get_update(data)
 
-            if t % interval == 0:
-                print('t', t)
-                print('U_loss', U_loss)
-                print('s_loss', s_loss)
-                print('V_loss', V_loss)
+            if t > self.k:
+                U_loss = np.linalg.norm(Ut - self.U)**2
+                s_loss = np.linalg.norm(st - self.s)**2
+                VT_comparator = self.VT[:,:VTt.shape[1]]
+                VT_loss = np.linalg.norm(VTt - VT_comparator)**2
+
+                if t % interval == 0:
+                    print('t', t)
+                    print('U_loss', U_loss)
+                    print('s_loss', s_loss)
+                    print('VT_loss', VT_loss)

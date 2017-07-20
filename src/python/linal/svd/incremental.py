@@ -23,50 +23,63 @@ class ColumnIncrementalSVD:
         self.B = None
         self.W = None
         self.m = None
+        self.l = 0
+        self.num_rounds = 0
 
     def get_update(self, A):
 
-        if self.m is None:
+        if self.l == 0:
             self.m = A.shape[0]
-            self.Q = np.vstack([
-                np.eye(self.k), 
-                np.zeros((self.m - self.k, self.k))])
-            self.B = np.ones(self.k)
-            self.W = np.eye(self.k)
 
-        l = A.shape[1]
-        (Q_hat, B_hat) = self._get_QB_hat(A)
-        W_hat = self._get_W_hat(l)
-        (G_u, s, G_v) = np.linalg.svd(
-            B_hat, full_matrices=False)
+        pre_trunc_Q = None
+        pre_trunc_B = None
+        pre_trunc_W = None
+        lt = A.shape[1]
+
+        if self.num_rounds == 0:
+            (Q, B) = np.linalg.qr(A)
+            (U, pre_trunc_B, WT) = np.linalg.svd(B)
+            pre_trunc_Q = np.dot(Q, U)
+            pre_trunc_W = WT.T
+        else:
+            (Q_hat, B_hat) = self._get_QB_hat(A)
+            W_hat = self._get_W_hat(lt)
+            (G_u, pre_trunc_B, G_vT) = np.linalg.svd(
+                B_hat, full_matrices=False)
+            pre_trunc_Q = np.dot(Q_hat, G_u)
+            pre_trunc_W = np.dot(W_hat, G_vT.T)
         
-        self.B = s[:self.k]
-        self.Q = np.dot(Q_hat, G_u)[:,:self.k]
-        self.W = np.dot(W_hat, G_v)[:self.k,:]
+        self.l += lt
+        self.B = pre_trunc_B[:self.k]
+        self.Q = pre_trunc_Q[:,:self.k]
+        self.W = pre_trunc_W[:,:self.k]
+        self.num_rounds += 1
 
         return (self.Q, self.B, self.W.T)
 
     def _get_W_hat(self, l):
 
-        s = self.k + l
-        W_hat = np.zeros((s, s))
-        (end1, end2) = self.W.T.shape
-        W_hat[:end1,:end2] += self.W.T
-        W_hat[end1:,end2:] += np.eye(l)
+        (Wn, Wm) = self.W.shape
+        W_hat = np.zeros(
+            (Wn + l, Wm + l))
+        W_hat[:Wn,:Wm] += self.W
+        W_hat[Wn:,Wm:] += np.eye(l)
 
         return W_hat
 
     def _get_QB_hat(self, A):
 
         l = A.shape[1]
-        s = self.k + l
+        kt = min(self.k, self.l)
+        s = kt + l
         C = np.dot(self.Q.T, A)
         (Q_perp, B_perp) = np.linalg.qr(
             A - np.dot(self.Q, C))
         Q_hat = np.hstack([self.Q, Q_perp])
         B_hat = np.zeros((s, s))
-        B_hat[:self.k,:self.k] += np.diag(self.B)
-        B_hat[:self.k,self.k:] += C
-        B_hat[self.k:,self.k:] += B_perp
+        B_hat[:kt,:kt] += np.diag(self.B)
+        B_hat[:kt,kt:] += C
+        B_hat[kt:,:kt] += C.T
+        B_hat[kt:,kt:] += B_perp
 
         return (Q_hat, B_hat)
