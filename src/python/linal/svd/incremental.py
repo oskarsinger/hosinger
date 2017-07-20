@@ -28,7 +28,7 @@ class ColumnIncrementalSVD:
 
         if self.m is None:
             self.m = A.shape[0]
-            self.Q = np.hstack([
+            self.Q = np.vstack([
                 np.eye(self.k), 
                 np.zeros((self.m - self.k, self.k))])
             self.B = np.ones(self.k)
@@ -46,10 +46,10 @@ class ColumnIncrementalSVD:
 
         return (self.Q, self.B, self.W.T)
 
-    def _get_W_hat(self, l, G_v):
+    def _get_W_hat(self, l):
 
         s = self.k + l
-        W_hat = np.zero((s, s))
+        W_hat = np.zeros((s, s))
         W_hat[:self.k,:self.k] += self.W
         W_hat[self.k:,self.k:] += np.eye(l)
 
@@ -61,7 +61,7 @@ class ColumnIncrementalSVD:
         s = self.k + l
         C = np.dot(self.Q.T, A)
         (Q_perp, B_perp) = np.linalg.qr(
-            A - np.dot(Q, C))
+            A - np.dot(self.Q, C))
         Q_hat = np.hstack([self.Q, Q_perp])
         B_hat = np.zeros((s, s))
         B_hat[:self.k,:self.k] += np.diag(self.B)

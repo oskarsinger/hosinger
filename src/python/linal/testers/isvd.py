@@ -12,16 +12,16 @@ class ColumnIncrementalSVDTester:
         self.n = n
         self.m = m
 
-        self.loader = GL(n, m)
+        self.loader = GL(m, n)
         self.server = B2M(
             1, data_loader=self.loader)
 
-        data = self.loader.get_data()
+        data = self.loader.get_data().T
         (U, s, V) = np.linalg.svd(data)
 
         self.U = U[:,:self.k]
         self.s = s[:self.k]
-        sefl.V = V[:self.k,:]
+        self.V = V[:self.k,:]
         self.cisvd = CISVD(self.k)
 
     def run(self):
@@ -29,7 +29,7 @@ class ColumnIncrementalSVDTester:
         interval = int(self.m / 10)
 
         for t in range(self.m):
-            data = self.server.get_data()
+            data = self.server.get_data().T
             (Ut, st, Vt) = self.cisvd.get_update(data)
             U_loss = np.linalg.norm(Ut - self.U)**2
             s_loss = np.linalg.norm(st - self.s)**2
