@@ -34,6 +34,9 @@ class ColumnIncrementalSVDTester:
             data = self.server.get_data().T
             (Ut, st, VTt) = self.cisvd.get_update(data)
 
+            # TODO: make sure the exact and approx are in same order
+            # TODO: figure out why U/V loss are constant-ish
+            # TODO: figure out why s loss jumps at last step
             if t > self.k:
                 U_loss = np.linalg.norm(Ut - self.U)**2
                 s_loss = np.linalg.norm(st - self.s)**2
