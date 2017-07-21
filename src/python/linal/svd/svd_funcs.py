@@ -32,16 +32,14 @@ def get_transformed_svd(A, get_trans, energy=0.95, k=None):
 
 def get_multiplied_svd(U, s, Vh):
 
-    (n, p) = (U.shape[0], Vh.shape[0])
-    sigma = _get_sigma(n, p, s)
-
-    return get_multi_dot([U, sigma, Vh])
-
-def _get_sigma(n, p, s):
-
+    (n, p) = (U.shape[1], Vh.shape[0])
     sigma = np.zeros((n,p))
 
     for i in range(s.shape[0]):
         sigma[i,i] = s[i]
+
+    return get_multi_dot([U, sigma, Vh])
+
+def _get_sigma(n, p, s):
 
     return sigma

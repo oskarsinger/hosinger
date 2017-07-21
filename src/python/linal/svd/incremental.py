@@ -49,10 +49,10 @@ class ColumnIncrementalSVD:
             pre_trunc_Q = np.dot(Q_hat, G_u)
             pre_trunc_W = np.dot(W_hat, G_vT.T)
         
-        self.l += lt
         self.B = pre_trunc_B[:self.k]
         self.Q = pre_trunc_Q[:,:self.k]
         self.W = pre_trunc_W[:,:self.k]
+        self.l += lt
         self.num_rounds += 1
 
         return (self.Q, self.B, self.W.T)
@@ -69,14 +69,13 @@ class ColumnIncrementalSVD:
 
     def _get_QB_hat(self, A):
 
-        l = A.shape[1]
+        lt = A.shape[1]
         kt = min(self.k, self.l)
-        s = kt + l
         C = np.dot(self.Q.T, A)
         (Q_perp, B_perp) = np.linalg.qr(
             A - np.dot(self.Q, C))
         Q_hat = np.hstack([self.Q, Q_perp])
-        B_hat = np.zeros((s, s))
+        B_hat = np.zeros((kt + lt, kt + lt))
         B_hat[:kt,:kt] += np.diag(self.B)
         B_hat[:kt,kt:] += C
         B_hat[kt:,:kt] += C.T
