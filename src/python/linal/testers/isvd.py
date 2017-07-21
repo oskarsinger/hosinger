@@ -22,7 +22,6 @@ class ColumnIncrementalSVDTester:
         self.data = self.loader.get_data().T
 
         (U, s, VT) = np.linalg.svd(self.data)
-        print('s', s)
 
         self.U = U[:,:self.k]
         self.s = s[:self.k]
@@ -37,15 +36,18 @@ class ColumnIncrementalSVDTester:
         for t in range(self.m):
             datat = self.server.get_data().T
             (Ut, st, VTt) = self.cisvd.get_update(datat)
+            mod_cond = t % interval == 0
+            end_cond = t == self.m - 1
+            and_right = mod_cond or end_cond
 
-            if t % interval == 0 or t == self.m - 1:
-                print('st', st)
-                approx_data_t = get_ms(Ut, st, VTt)
-                dimst = approx_data_t.shape[1]
-                truncd = self.approx_data[:,:dimst]
-                diff = approx_data_t - truncd
-                rec_loss = np.linalg.norm(diff)**2
-
+            if t > self.k and and_right:
                 print('t', t)
-                print('Reconstruction loss', rec_loss)
-                print('s loss', np.linalg.norm(st - self.s[:st.shape[0]])**2)
+
+                U_loss = np.linalg.norm(Ut - self.U)**2
+                s_loss = np.linalg.norm(st - self.s)**2
+                VT_comp = self.VT[:,:VTt.shape[1]]
+                VT_loss = np.linalg.norm(VTt - VT_comp)**2
+
+                print('U loss', U_loss)
+                print('s loss', s_loss)
+                print('VT_loss', VT_loss)

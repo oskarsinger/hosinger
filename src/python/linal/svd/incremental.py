@@ -1,8 +1,9 @@
 import numpy as np
 
 from linal.utils import get_multi_dot
+from linal.svd import get_multiplied_svd as get_ms
 
-# TODO: cite Markos paper
+# TODO: cite Markos 2016 paper
 class RowIncrementalSVD:
 
     def __init__(self, k):
@@ -31,26 +32,27 @@ class ColumnIncrementalSVD:
         if self.l == 0:
             self.m = A.shape[0]
 
-        pre_trunc_Q = None
-        pre_trunc_B = None
-        pre_trunc_W = None
+        Q_bar = None
+        B_bar = None
+        W_bar = None
         lt = A.shape[1]
 
         if self.num_rounds == 0:
-            (pre_trunc_Q, B) = np.linalg.qr(A)
-            pre_trunc_B = np.diag(B)
-            pre_trunc_W = np.eye(lt)
+            (Q_bar, B) = np.linalg.qr(A)
+            B_bar = np.diag(B)
+            W_bar = np.eye(lt)
         else:
             (Q_hat, B_hat) = self._get_QB_hat(A)
             W_hat = self._get_W_hat(lt)
-            (G_u, pre_trunc_B, G_vT) = np.linalg.svd(
+            (G_u, B_bar, G_vT) = np.linalg.svd(
                 B_hat, full_matrices=False)
-            pre_trunc_Q = np.dot(Q_hat, G_u)
-            pre_trunc_W = np.dot(W_hat, G_vT.T)
+            rec_diff = get_ms(G_u, B_bar, G_vT) - B_hat
+            Q_bar = np.dot(Q_hat, G_u)
+            W_bar = np.dot(W_hat, G_vT.T)
         
-        self.B = pre_trunc_B[:self.k]
-        self.Q = pre_trunc_Q[:,:self.k]
-        self.W = pre_trunc_W[:,:self.k]
+        self.B = B_bar[:self.k]
+        self.Q = Q_bar[:,:self.k]
+        self.W = W_bar[:,:self.k]
         self.l += lt
         self.num_rounds += 1
 
@@ -77,7 +79,6 @@ class ColumnIncrementalSVD:
         B_hat = np.zeros((kt + lt, kt + lt))
         B_hat[:kt,:kt] += np.diag(self.B)
         B_hat[:kt,kt:] += C
-        #B_hat[kt:,:kt] += C.T
         B_hat[kt:,kt:] += B_perp
 
         return (Q_hat, B_hat)
