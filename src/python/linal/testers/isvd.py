@@ -1,6 +1,7 @@
 import numpy as np
 
 from linal.svd import ColumnIncrementalSVD as CISVD
+from linal.svd import get_multiplied_svd as get_ms
 from whitehorses.loaders.simple import GaussianLoader as GL
 from whitehorses.servers.minibatch import Batch2Minibatch as B2M
 
@@ -18,12 +19,16 @@ class ColumnIncrementalSVDTester:
             data_loader=self.loader,
             random=False)
 
-        data = self.loader.get_data().T
-        (U, s, VT) = np.linalg.svd(data)
+        self.data = self.loader.get_data().T
+        (U, s, VT) = np.linalg.svd(self.data)
+        print('s', s)
 
         self.U = U[:,:self.k]
         self.s = s[:self.k]
         self.VT = VT[:self.k,:]
+
+        self.approx_data = get_ms(self.U, self.s, self.VT)
+
         self.cisvd = CISVD(self.k)
 
     def run(self):
@@ -31,20 +36,17 @@ class ColumnIncrementalSVDTester:
         interval = int(self.m / 10)
 
         for t in range(self.m):
-            data = self.server.get_data().T
-            (Ut, st, VTt) = self.cisvd.get_update(data)
+            datat = self.server.get_data().T
+            (Ut, st, VTt) = self.cisvd.get_update(datat)
 
-            # TODO: make sure the exact and approx are in same order
-            # TODO: figure out why U/V loss are constant-ish
-            # TODO: figure out why s loss jumps at last step
-            if t > self.k:
-                U_loss = np.linalg.norm(Ut - self.U)**2
-                s_loss = np.linalg.norm(st - self.s)**2
-                VT_comparator = self.VT[:,:VTt.shape[1]]
-                VT_loss = np.linalg.norm(VTt - VT_comparator)**2
+            if t % interval == 0 or t == self.m - 1:
+                #print('st', st)
+                approx_data_t = get_ms(Ut, st, VTt)
+                dimst = approx_data_t.shape[1]
+                truncd = self.data[:,:dimst]#self.approx_data[:,:dimst]
+                diff = approx_data_t - truncd
+                rec_loss = np.linalg.norm(diff)**2
 
-                if t % interval == 0:
-                    print('t', t)
-                    print('U_loss', U_loss)
-                    print('s_loss', s_loss)
-                    print('VT_loss', VT_loss)
+                print('t', t)
+                print('Reconstruction loss', rec_loss)
+                print('s loss', np.linalg.norm(st - self.s[:st.shape[0]])**2)
