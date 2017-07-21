@@ -3,17 +3,39 @@ import numpy as np
 from linal.utils import get_multi_dot
 from linal.svd import get_multiplied_svd as get_ms
 
+# TODO: take care of centering
+
 # TODO: cite Markos 2016 paper
 class RowIncrementalSVD:
 
     def __init__(self, k):
-        pass
+
+        self.k = k
+
+        self.Q = None
+        self.B = None
+        self.W = None
+        self.m = None
+        self.l = 0
+        self.num_rounds = 0
 
     def get_update(self, A):
-        pass
+
+        Q_bar = None
+        B_bar = None
+        W_bar = None
+        lt = A.shape[0]
+
+        if self.num_rounds == 0:
+            self.m = A.shape[1]
+        else:
+            pass
+
+    def _get_QB_hat(self, A):
+
+        C = np.dot(A, self.
 
 # TODO: cite Baker 2008 paper
-# TODO: consider random initialization of Q, B, W
 class ColumnIncrementalSVD:
 
     def __init__(self, k):
@@ -29,15 +51,13 @@ class ColumnIncrementalSVD:
 
     def get_update(self, A):
 
-        if self.l == 0:
-            self.m = A.shape[0]
-
         Q_bar = None
         B_bar = None
         W_bar = None
         lt = A.shape[1]
 
         if self.num_rounds == 0:
+            self.m = A.shape[0]
             (Q_bar, B) = np.linalg.qr(A)
             B_bar = np.diag(B)
             W_bar = np.eye(lt)
@@ -46,7 +66,6 @@ class ColumnIncrementalSVD:
             W_hat = self._get_W_hat(lt)
             (G_u, B_bar, G_vT) = np.linalg.svd(
                 B_hat, full_matrices=False)
-            rec_diff = get_ms(G_u, B_bar, G_vT) - B_hat
             Q_bar = np.dot(Q_hat, G_u)
             W_bar = np.dot(W_hat, G_vT.T)
         
@@ -73,8 +92,8 @@ class ColumnIncrementalSVD:
         lt = A.shape[1]
         kt = min(self.k, self.l)
         C = np.dot(self.Q.T, A)
-        (Q_perp, B_perp) = np.linalg.qr(
-            A - np.dot(self.Q, C))
+        pre_QR = A - np.dot(self.Q, C)
+        (Q_perp, B_perp) = np.linalg.qr(pre_QR)
         Q_hat = np.hstack([self.Q, Q_perp])
         B_hat = np.zeros((kt + lt, kt + lt))
         B_hat[:kt,:kt] += np.diag(self.B)
