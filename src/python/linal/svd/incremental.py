@@ -37,10 +37,9 @@ class ColumnIncrementalSVD:
         lt = A.shape[1]
 
         if self.num_rounds == 0:
-            (Q, B) = np.linalg.qr(A)
-            (U, pre_trunc_B, WT) = np.linalg.svd(B)
-            pre_trunc_Q = np.dot(Q, U)
-            pre_trunc_W = WT.T
+            (pre_trunc_Q, B) = np.linalg.qr(A)
+            pre_trunc_B = np.diag(B)
+            pre_trunc_W = np.eye(lt)
         else:
             (Q_hat, B_hat) = self._get_QB_hat(A)
             W_hat = self._get_W_hat(lt)
@@ -78,7 +77,7 @@ class ColumnIncrementalSVD:
         B_hat = np.zeros((kt + lt, kt + lt))
         B_hat[:kt,:kt] += np.diag(self.B)
         B_hat[:kt,kt:] += C
-        B_hat[kt:,:kt] += C.T
+        #B_hat[kt:,:kt] += C.T
         B_hat[kt:,kt:] += B_perp
 
         return (Q_hat, B_hat)
