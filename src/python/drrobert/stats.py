@@ -7,6 +7,14 @@ from linal.utils import get_safe_power
 from linal.utils import get_quadratic, get_multi_dot
 from linal.svd import get_svd_power
 
+def get_zm_uv(X):
+
+    (n, p) = X.shape
+    mu = np.nanmean(X, axis=0)
+    zm_X = X - mu
+
+    return zm_X / n**(0.5)
+
 def get_pearson_matrix(X1, X2):
 
     (n, p1) = X1.shape
