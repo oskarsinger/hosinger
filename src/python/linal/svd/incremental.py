@@ -32,8 +32,7 @@ class RowIncrementalSVD:
             pass
 
     def _get_QB_hat(self, A):
-
-        C = np.dot(A, self.
+        pass
 
 # TODO: cite Baker 2008 paper
 class ColumnIncrementalSVD:
