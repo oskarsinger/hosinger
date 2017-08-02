@@ -69,11 +69,8 @@ class ColumnIncrementalSVD:
             W_bar = np.dot(W_hat, G_vT.T)
         
         self.B = B_bar[:self.k]
-        print('B shape', self.B.shape)
         self.Q = Q_bar[:,:self.k]
-        print('Q shape', self.Q.shape)
         self.W = W_bar[:,:self.k]
-        print('W shape', self.W.shape)
         self.l += lt
         self.num_rounds += 1
 
