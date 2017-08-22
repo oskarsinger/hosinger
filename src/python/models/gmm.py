@@ -2,7 +2,7 @@ import numpy as np
 
 from drrobert.misc import unzip
 from scipy.stats import norm
-from optimization.utils import get_simplex_projection
+from fitterhappier.utils import get_simplex_projection
 from math import log
 
 # TODO: consider feeding in get_action as an arg
