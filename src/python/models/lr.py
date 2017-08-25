@@ -1,6 +1,6 @@
 import numpy as np
 
-class LinearRegression:
+class LinearRegressionModel:
 
     def __init__(self, p, i):
 
