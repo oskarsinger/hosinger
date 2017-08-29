@@ -3,7 +3,60 @@ import numpy as np
 from fitterhappier.stepsize import InversePowerScheduler as IPS
 from linal.utils import get_thresholded
 
-class PegasosHingeLossSVMModel:
+class PegasosHingeLossLinearSVMPlusModel:
+
+    def __init__(self, 
+        rp, pp, 
+        i, 
+        lam=10**(-5), gamma=10**(-5)):
+
+        self.rp = rp
+        self.pp = pp
+        self.id_number = i
+        self.lam = lam
+        self.gamma = gamma
+
+        self.num_rounds = 0
+        self.eta_scheduler = IPS(
+            initial=self.lam**(-1), power=1)
+
+    def get_gradient(self, data, params):
+
+        self.num_rounds += 1
+
+        eta = self.eta_scheduler.get_stepsize()
+        (X, X_star, y) = data
+        k = X.shape[0]
+        # TODO: fill the rest of this in
+
+    def get_objective(self, data, params):
+        pass
+
+    def get_residuals(self, data, params):
+        pass
+
+    def get_datum(self, data, i):
+
+        (X, X_star, y) = data
+        x_i = X[i,:][np.newaxis,:]
+        xs_i = X_star[i,:][np.newaxis,:]
+        y_i = y[i,:][np.newaxis,:]
+
+        return (x_i, xs_i, y_i)
+
+    def get_projection(self, data, params):
+
+        norm = np.linalg.norm(params)
+        scale = (norm * np.sqrt(self.lam))**(-1)
+        min_scale = min([1, scale])
+
+        return min_scale * params
+
+    def get_parameter_shape(self):
+
+        return (self.rp + self.pp, 1)
+
+class PegasosHingeLossLinearSVMModel:
 
     def __init__(self, p, i, lam=10**(-5)):
 
@@ -20,8 +73,7 @@ class PegasosHingeLossSVMModel:
         self.num_rounds += 1
 
         eta = self.eta_scheduler.get_stepsize()
-        X = data[0]
-        y = data[1]
+        (X, y) = data
         k = X.shape[0]
         y_hat = np.dot(X, params)
         y_prod = y * y_hat
