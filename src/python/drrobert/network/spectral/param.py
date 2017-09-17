@@ -22,9 +22,41 @@ class L2RegularizedAppDetRandomParameterGraph:
 
         (self.e_vals, self.e_vecs) = np.linalg.eig(self.L)
 
+class L2RegularizedParameterGraph:
+
+    def __init__(self, G, ws):
+
+        self.G = G
+        self.ws = ws
+
+        self.N = self.G.shape[0]
+        self.p = self.ws.shape[0]
+        self.d = np.sum(self.G, axis=1)
+        self.L = np.diag(self.d) - self.G
+        (self.e_vals, self.e_vecs) = np.linalg.eig(self.L)
+
+    def get_logdet(self, loc, scale):
+
+        eff_log_e_vals = np.log(scale * self.e_vals + loc)
+        eff_logdet = np.sum(eff_log_e_vals) * self.p
+
+        return eff_logdet
+
+    def get_L_and_inv(self, loc, scale):
+
+        aug_L_e_vals = scale * self.e_vals + loc
+        lambda_matrix = np.diag(aug_L_e_vals)
+        lambda_matrix_inv = np.diag(
+            np.power(aug_L_e_vals, -1))
+
+        aug_L = gq(self.e_vecs, lambda_matrix)
+        aug_L_inv = gq(self.e_vecs, lambda_matrix_inv)
+
+        return (aug_L, aug_L_inv)
+
 class L2RegularizedRandomParameterGraph:
 
-    def __init__(self, N, p, threshold=None, fc=True, dist=True, sym=True):
+    def __init__(self, N, p, threshold=None, dist=True, sym=True):
         # TODO: actually use the symmetric graph option
 
         self.N = N
@@ -37,14 +69,14 @@ class L2RegularizedRandomParameterGraph:
             dist=dist)
         self.d = np.sum(self.G, axis=1)
         self.L = np.diag(self.d) - self.G
-
         (self.e_vals, self.e_vecs) = np.linalg.eig(self.L)
 
     def get_logdet(self, loc, scale):
 
-        log_e_vals = np.log(scale * self.e_vals + loc)
+        eff_log_e_vals = np.log(scale * self.e_vals + loc)
+        eff_logdet = np.sum(eff_log_e_vals) * self.p
 
-        return np.sum(log_e_vals)
+        return eff_logdet
 
     def get_L_and_inv(self, loc, scale):
 
