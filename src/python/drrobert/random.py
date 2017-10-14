@@ -3,7 +3,7 @@ import numpy.random as npr
 
 from drrobert.misc import prod
 
-def rademacher(size=None, p=None):
+def rademacher(size=None, p=0.5):
 
     choices = [-1, 1]
     ps = [1-p, p]
