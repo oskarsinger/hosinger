@@ -8,7 +8,8 @@ class PegasosHingeLossLinearSVMPlusModel:
     def __init__(self, 
         rp, pp, 
         i, 
-        lam=10**(-5), gamma=10**(-5)):
+        lam=10**(-5), 
+        gamma=10**(-5)):
 
         self.rp = rp
         self.pp = pp

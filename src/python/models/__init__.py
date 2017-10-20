@@ -1,2 +1,4 @@
-from .lr import LinearRegression
-from .gmm import BanditNetworkRademacherGaussianMixtureModel
+from . import svm
+from . import network
+from . import regression
+from . import kernels
