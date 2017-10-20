@@ -2,50 +2,28 @@ import numpy as np
 
 from linal.utils import get_quadratic
 
-class Li2016LinearSVMPlus:
-
-    def __init__(self,
-        C,
-        gamma):
-
-        self.C = C
-        self.gamma = gamma
-
-    def get_objective(self, data, params):
-
-        # Initialize stuff
-        (X_o, X_p, y) = data
-        N = X_o.shape[0]
-        (theta, _) = params
-        (alpha, beta) = (theta[:N,:], theta[N:,:])
-        alpha_y = alpha * y
-        alpha_beta_C = alpha + beta - self.C
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
-
-        # Compute objective terms
-        alpha_sum = np.sum(alpha)
-        K_o_quad = get_quadratic(alpha_y, K_o)
-        K_p_quad = get_quadratic(alpha_beta_C, K_p)
-
-        return - alpha_sum + \
-            0.5 * K_o_quad + \
-            K_p_quad / (2 * self.gamma)
-
-            
 # TODO: try to account for N_o neq N_p
 # TODO: figure out how to enforce bias absorbed into weights
 # TODO: try to reuse some of this code since there's only a slight difference
-class Li2016KernelSVMPlus:
+class Li2016SVMPlus:
 
     def __init__(self, 
         C, 
         gamma, 
-        o_kernel,
-        p_kernel):
+        o_kernel=None,
+        p_kernel=None):
 
         self.C = C
         self.gamma = gamma
+
+        if o_kernel is None:
+            o_kernel = lambda x, y: np.dot(x.T, y)
+
         self.o_kernel = o_kernel
+
+        if p_kernel is None:
+            p_kernel = lambda x, y: np.dot(x.T, y)
+
         self.p_kernel = p_kernel
 
         self.K_o = None
