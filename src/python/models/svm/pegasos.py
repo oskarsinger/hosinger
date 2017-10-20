@@ -3,19 +3,14 @@ import numpy as np
 from fitterhappier.stepsize import InversePowerScheduler as IPS
 from linal.utils import get_thresholded
 
-class PegasosHingeLossLinearSVMPlusModel:
+# TODO: double check all this
+class PegasosHingeLossWeightedSVMModel:
 
-    def __init__(self, 
-        rp, pp, 
-        i, 
-        lam=10**(-5), 
-        gamma=10**(-5)):
+    def __init__(self, p, i=None, lam=10**(-5)):
 
-        self.rp = rp
-        self.pp = pp
-        self.id_number = i
+        self.p = p
+        self.idn = i
         self.lam = lam
-        self.gamma = gamma
 
         self.num_rounds = 0
         self.eta_scheduler = IPS(
@@ -26,24 +21,43 @@ class PegasosHingeLossLinearSVMPlusModel:
         self.num_rounds += 1
 
         eta = self.eta_scheduler.get_stepsize()
-        (X, X_star, y) = data
+        ((X, c), y) = data
         k = X.shape[0]
-        # TODO: fill the rest of this in
+        y_hat = np.dot(X, params)
+        y_prod = y * y_hat
+        data_term = np.sum(
+            c * y[y_prod < 1] * X[y_prod < 1],
+            axis=0) / (self.lam * k)
+        w_term = self.lam * params
+
+        return w_term - data_term
 
     def get_objective(self, data, params):
-        pass
+
+        residuals = get_residuals(data, params)   
+        r_term = np.sum(residuals) / residuals.shape[0]
+        w_term = np.linalg.norm(params)**2 * self.lam / 2
+        
+        return w_term + r_term
 
     def get_residuals(self, data, params):
-        pass
+
+        ((X, c), y) = data
+        y_hat = np.dot(X, params)
+        y_prod = y * y_hat 
+        threshd = c * get_thresholded(
+            1 - y_prod, lower=0)
+
+        return threshd
 
     def get_datum(self, data, i):
 
-        (X, X_star, y) = data
+        ((X, c), y) = data
         x_i = X[i,:][np.newaxis,:]
-        xs_i = X_star[i,:][np.newaxis,:]
+        c_i = c[i,:][np.newaxis,:]
         y_i = y[i,:][np.newaxis,:]
 
-        return (x_i, xs_i, y_i)
+        return ((x_i, c_i), y_i)
 
     def get_projection(self, data, params):
 
@@ -55,14 +69,14 @@ class PegasosHingeLossLinearSVMPlusModel:
 
     def get_parameter_shape(self):
 
-        return (self.rp + self.pp, 1)
+        return (self.p, 1)
 
-class PegasosHingeLossLinearSVMModel:
+class PegasosHingeLossSVMModel:
 
-    def __init__(self, p, i, lam=10**(-5)):
+    def __init__(self, p, i=None, lam=10**(-5)):
 
         self.p = p
-        self.id_number = i
+        self.idn = i
         self.lam = lam
 
         self.num_rounds = 0
@@ -96,7 +110,7 @@ class PegasosHingeLossLinearSVMModel:
     def get_residuals(self, data, params):
 
         (X, y) = data
-        y_hat = np.dot(A, params)
+        y_hat = np.dot(X, params)
         y_prod = y * y_hat 
         threshd = get_thresholded(
             1 - y_prod, lower=0)
@@ -105,11 +119,11 @@ class PegasosHingeLossLinearSVMModel:
 
     def get_datum(self, data, i):
 
-        (A, b) = data
-        a_i = A[i,:][np.newaxis,:]
-        b_i = b[i,:][np.newaxis,:]
+        (X, y) = data
+        x_i = X[i,:][np.newaxis,:]
+        y_i = y[i,:][np.newaxis,:]
 
-        return (a_i, b_i)
+        return (x_i, y_i)
 
     def get_projection(self, data, params):
 
