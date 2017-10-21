@@ -57,9 +57,19 @@ class Li2016SVMPlus:
         (theta, _) = params
         N = int(theta.shape[0] / 2)
         (alpha, beta) = (theta[:N,:], theta[N:,:])
+        (X_o, X_p, y) = data
+        (K_o, K_p) = self._get_Ks(X_o, X_p)
         alpha_y = alpha * y
         alpha_beta_C = alpha + beta - self.C
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
+
+        # Reduce to batch if doing stochastic coordinate descent
+        if batch is not None:
+            alpha = alpha[batch,:]
+            beta = beta[batch,:]
+            theta = np.vstack([alpha, beta])
+            y = beta[batch,:]
+            K_o = K_o[batch,:]
+            K_p = K_p[batch,:]
 
         # Compute alpha gradient terms
         ones = - np.ones_like(alpha) 
@@ -72,6 +82,8 @@ class Li2016SVMPlus:
 
         # Get scaled
         grad = np.vstack([alpha_grad, beta_grad])
+        beta_scale = np.diag(K_p[:,batch]) / self.gamma
+        alpha_scale = np.diag(K_o[:,batch]) + beta_scale
         scaled = grad / np.vstack([alpha_scale, beta_scale])
 
         return np.min(
