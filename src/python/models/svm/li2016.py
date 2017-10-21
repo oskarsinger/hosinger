@@ -50,7 +50,8 @@ class Li2016SVMPlus:
             0.5 * K_o_quad + \
             K_p_quad / (2 * self.gamma)
         
-    def get_gradient(self, data, params, i=None):
+    # TODO: implement the batch-based stuff
+    def get_gradient(self, data, params, batch=None):
 
         # Initialize stuff
         (theta, _) = params
