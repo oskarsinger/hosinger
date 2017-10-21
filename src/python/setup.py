@@ -12,4 +12,8 @@ setup(
         'drrobert.data_structures',
         'drrobert.network',
         'drrobert.network.subset',
-        'models'])
+        'models',
+        'models.kernels',
+        'models.regression',
+        'models.network',
+        'models.svm'])
