@@ -92,22 +92,22 @@ class Li2016SVMPlus:
 
     def _get_Ks(self, X_o, X_p):
 
-            if self.K_o is None:
-                self.K_o = self._get_new_K(self.o_kernel, X_o)
+        if self.K_o is None:
+            self.K_o = self._get_new_K(self.o_kernel, X_o)
 
-            if self.K_p is None:
-                self.K_p = self._get_new_K(self.p_kernel, X_p)
+        if self.K_p is None:
+            self.K_p = self._get_new_K(self.p_kernel, X_p)
 
-            K_o = self.K_o
-            K_p = self.K_p
-            
-            if self.scale is None:
-                beta_scale = np.diag(K_p) / self.gamma
-                alpha_scale = np.diag(K_o) + beta_scale
+        K_o = self.K_o
+        K_p = self.K_p
+        
+        if self.scale is None:
+            beta_scale = np.diag(K_p) / self.gamma
+            alpha_scale = np.diag(K_o) + beta_scale
 
-                self.scale = np.vstack([
-                    alpha_scale, 
-                    beta_scale])
+            self.scale = np.vstack([
+                alpha_scale, 
+                beta_scale])
 
         return (K_o, K_p)
 

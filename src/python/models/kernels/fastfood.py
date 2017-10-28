@@ -3,7 +3,7 @@ import fht
 import numpy as np
 
 from drrobert.random import rademacher
-from drrobert.linal.utils import RowPermutationMatrix as RPM
+from linal.utils import RowPermutationMatrix as RPM
 from scipy.stats import gengamma
 
 # TODO: learn about Legendre polynomials and implement this one
