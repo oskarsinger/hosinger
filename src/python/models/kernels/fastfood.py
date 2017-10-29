@@ -3,7 +3,7 @@ import fht
 import numpy as np
 
 from drrobert.random import rademacher
-from linal.utils import RowPermutationMatrix as RPM
+from theline.utils import RowPermutationMatrix as RPM
 from scipy.stats import gengamma
 
 # TODO: learn about Legendre polynomials and implement this one
@@ -28,7 +28,7 @@ class FastFoodGaussianRBFKernel:
 
         if S is None:
             samples = gengamma.rvs(self.d * 0.5, 2, size=self.d)
-            S = samples / (np.sqrt(2) * np.linalg.norm(self.G))
+            S = samples / (np.sqrt(2) * np.thelineg.norm(self.G))
 
         self.S = S
 

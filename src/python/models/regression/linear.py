@@ -20,7 +20,7 @@ class LinearRegressionModel:
         residuals = self.get_residuals(
             data, params)
 
-        return np.linalg.norm(residuals)**2
+        return np.thelineg.norm(residuals)**2
 
     def get_residuals(self, data, params):
 

@@ -1,6 +1,6 @@
 import numpy as np
 
-from linal.utils import get_quadratic
+from theline.utils import get_quadratic
 
 # TODO: try to account for N_o neq N_p
 # TODO: figure out how to enforce bias absorbed into weights

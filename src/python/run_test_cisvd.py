@@ -1,6 +1,6 @@
 import click
 
-from linal.testers import ColumnIncrementalSVDTester as CISVDT
+from theline.testers import ColumnIncrementalSVDTester as CISVDT
 
 @click.command()
 @click.option('--k', default=1)

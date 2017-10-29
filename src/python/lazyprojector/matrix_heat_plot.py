@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import linal.utils.misc as lum
+import theline.utils.misc as lum
 import matplotlib.pyplot as plt
 
 from math import pi
