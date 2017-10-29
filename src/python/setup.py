@@ -4,9 +4,6 @@ setup(
     name='MiscellaneousUtilities',
     version='0.01',
     packages=[
-        'linal',
-        'linal.random',
-        'linal.utils',
         'lazyprojector',
         'models',
         'models.kernels',
