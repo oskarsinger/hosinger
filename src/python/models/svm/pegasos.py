@@ -36,7 +36,7 @@ class PegasosHingeLossWeightedSVMModel:
 
         residuals = get_residuals(data, params)   
         r_term = np.sum(residuals) / residuals.shape[0]
-        w_term = np.thelineg.norm(params)**2 * self.lam / 2
+        w_term = np.linalg.norm(params)**2 * self.lam / 2
         
         return w_term + r_term
 
@@ -61,7 +61,7 @@ class PegasosHingeLossWeightedSVMModel:
 
     def get_projection(self, data, params):
 
-        norm = np.thelineg.norm(params)
+        norm = np.linalg.norm(params)
         scale = (norm * np.sqrt(self.lam))**(-1)
         min_scale = min([1, scale])
 
@@ -103,7 +103,7 @@ class PegasosHingeLossSVMModel:
 
         residuals = get_residuals(data, params)   
         r_term = np.sum(residuals) / residuals.shape[0]
-        w_term = np.thelineg.norm(params)**2 * self.lam / 2
+        w_term = np.linalg.norm(params)**2 * self.lam / 2
         
         return w_term + r_term
 
@@ -127,7 +127,7 @@ class PegasosHingeLossSVMModel:
 
     def get_projection(self, data, params):
 
-        norm = np.thelineg.norm(params)
+        norm = np.linalg.norm(params)
         scale = (norm * np.sqrt(self.lam))**(-1)
         min_scale = min([1, scale])
 

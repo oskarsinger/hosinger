@@ -28,7 +28,7 @@ class FastFoodGaussianRBFKernel:
 
         if S is None:
             samples = gengamma.rvs(self.d * 0.5, 2, size=self.d)
-            S = samples / (np.sqrt(2) * np.thelineg.norm(self.G))
+            S = samples / (np.sqrt(2) * np.linalg.norm(self.G))
 
         self.S = S
 
