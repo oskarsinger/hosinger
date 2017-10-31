@@ -55,6 +55,7 @@ class Li2016SVMPlus:
         N = int(params.shape[0] / 2)
         (alpha, beta) = (params[:N,:], params[N:,:])
         (X_o, X_p, y) = data
+        (K_o, K_p) = self._get_Ks(X_o, X_p)
         alpha_y = alpha * y
         alpha_beta_C = alpha + beta - self.C
 
@@ -62,12 +63,15 @@ class Li2016SVMPlus:
             alpha,
             alpha_beta_C,
             alpha_y,
-            batch=None if batch is None else batch[batch < N])
+            y,
+            K_o,
+            K_p,
+            batch=None if batch is None else batch[batch < N])[:,np.newaxis]
         beta_grad = self._get_beta_grad(
             beta,
             alpha_beta_C, 
             K_p,
-            batch=None if batch is None else batch[batch >= N])
+            batch=None if batch is None else batch[batch >= N])[:,np.newaxis]
 
         return np.vstack([alpha_grad, beta_grad])
 
@@ -75,9 +79,10 @@ class Li2016SVMPlus:
         alpha, 
         alpha_beta_C, 
         alpha_y, 
+        y,
+        K_o,
+        K_p,
         batch=None):
-
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
@@ -107,17 +112,12 @@ class Li2016SVMPlus:
 
     def _get_beta_grad(self, beta, alpha_beta_C, K_p, batch=None):
 
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
-
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
-            alpha = alpha[batch,:]
-            y = y[batch,:]
-            K_o = K_o[batch,:]
+            beta = beta[batch,:]
             K_p = K_p[batch,:]
 
             if np.isscalar(batch):
-                K_o = K_o[np.newaxis,:]
                 K_p = K_p[np.newaxis,:]
 
         # Compute beta gradient
@@ -128,7 +128,8 @@ class Li2016SVMPlus:
         scaled = beta_grad / beta_scale
 
         return np.min(
-            np.hstack([beta, scaled])
+            np.hstack([beta, scaled]),
+            axis=1)
 
     def _get_Ks(self, X_o, X_p):
 
