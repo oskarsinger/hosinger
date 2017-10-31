@@ -35,8 +35,7 @@ class Li2016SVMPlus:
         # Initialize stuff
         (X_o, X_p, y) = data
         N = X_o.shape[0]
-        (theta, _) = params
-        (alpha, beta) = (theta[:N,:], theta[N:,:])
+        (alpha, beta) = (params[:N,:], params[N:,:])
         alpha_y = alpha * y
         alpha_beta_C = alpha + beta - self.C
         (K_o, K_p) = self._get_Ks(X_o, X_p)
@@ -50,45 +49,86 @@ class Li2016SVMPlus:
             0.5 * K_o_quad + \
             K_p_quad / (2 * self.gamma)
         
-    # TODO: implement the batch-based stuff
     def get_gradient(self, data, params, batch=None):
 
         # Initialize stuff
-        (theta, _) = params
-        N = int(theta.shape[0] / 2)
-        (alpha, beta) = (theta[:N,:], theta[N:,:])
+        N = int(params.shape[0] / 2)
+        (alpha, beta) = (params[:N,:], params[N:,:])
         (X_o, X_p, y) = data
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
         alpha_y = alpha * y
         alpha_beta_C = alpha + beta - self.C
+
+        alpha_grad = self._get_alpha_grad(
+            alpha,
+            alpha_beta_C,
+            alpha_y,
+            batch=None if batch is None else batch[batch < N])
+        beta_grad = self._get_beta_grad(
+            beta,
+            alpha_beta_C, 
+            K_p,
+            batch=None if batch is None else batch[batch >= N])
+
+        return np.vstack([alpha_grad, beta_grad])
+
+    def _get_alpha_grad(self, 
+        alpha, 
+        alpha_beta_C, 
+        alpha_y, 
+        batch=None):
+
+        (K_o, K_p) = self._get_Ks(X_o, X_p)
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
             alpha = alpha[batch,:]
-            beta = beta[batch,:]
-            theta = np.vstack([alpha, beta])
-            y = beta[batch,:]
+            y = y[batch,:]
             K_o = K_o[batch,:]
             K_p = K_p[batch,:]
 
-        # Compute alpha gradient terms
+            if np.isscalar(batch):
+                K_o = K_o[np.newaxis,:]
+                K_p = K_p[np.newaxis,:]
+
+        # Compute alpha gradient
         ones = - np.ones_like(alpha) 
         K_o_term = y * np.dot(K_o, alpha_y)
         K_p_term = np.dot(K_p, alpha_beta_C)
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
-        # Compute beta gradient
-        beta_grad = np.copy(K_p_term)
-
-        # Get scaled
-        grad = np.vstack([alpha_grad, beta_grad])
+        # Compute scaled gradient
         beta_scale = np.diag(K_p[:,batch]) / self.gamma
         alpha_scale = np.diag(K_o[:,batch]) + beta_scale
-        scaled = grad / np.vstack([alpha_scale, beta_scale])
+        scaled = alpha_grad / alpha_scale
 
         return np.min(
-            np.hstack([theta, scaled]),
+            np.hstack([alpha, scaled]),
             axis=1)
+
+    def _get_beta_grad(self, beta, alpha_beta_C, K_p, batch=None):
+
+        (K_o, K_p) = self._get_Ks(X_o, X_p)
+
+        # Reduce to batch if doing stochastic coordinate descent
+        if batch is not None:
+            alpha = alpha[batch,:]
+            y = y[batch,:]
+            K_o = K_o[batch,:]
+            K_p = K_p[batch,:]
+
+            if np.isscalar(batch):
+                K_o = K_o[np.newaxis,:]
+                K_p = K_p[np.newaxis,:]
+
+        # Compute beta gradient
+        beta_grad = np.dot(K_p, alpha_beta_C)
+
+        # Compute scaled gradient
+        beta_scale = np.diag(K_p[:,batch]) / self.gamma
+        scaled = beta_grad / beta_scale
+
+        return np.min(
+            np.hstack([beta, scaled])
 
     def _get_Ks(self, X_o, X_p):
 
@@ -118,12 +158,12 @@ class Li2016SVMPlus:
 
         for n in range(N):
 
-            X_n = X_o[n,:]
+            X_n = X[n,:]
 
             for m in range(n, N):
 
                 K_nm = kernel(X_n, X[m,:])
-                K[n,m] = K_onm
-                K[m,n] = K_onm
+                K[n,m] = K_nm
+                K[m,n] = K_nm
 
         return K
