@@ -4,7 +4,7 @@ from fitterhappier.stepsize import InversePowerScheduler as IPS
 from theline.utils import get_thresholded
 
 # TODO: double check all this
-class PegasosHingeLossWeightedSVMModel:
+class PegasosHingeLossWeightedLinearSVMModel:
 
     def __init__(self, p, i=None, lam=10**(-5)):
 
