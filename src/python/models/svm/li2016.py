@@ -28,22 +28,26 @@ class Li2016SVMPlus:
 
         self.K_o = None
         self.K_p = None
-        self.scale = None
+        self.alpha_scale = None
+        self.beta_scale = None
 
     def get_objective(self, data, params):
 
         # Initialize stuff
         (X_o, X_p, y) = data
+
+        if self.K_o is None:
+            self._set_Ks(X_o, X_p)
+
         N = X_o.shape[0]
         (alpha, beta) = (params[:N,:], params[N:,:])
         alpha_y = alpha * y
         alpha_beta_C = alpha + beta - self.C
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
 
         # Compute objective terms
         alpha_sum = np.sum(alpha)
-        K_o_quad = get_quadratic(alpha_y, K_o)
-        K_p_quad = get_quadratic(alpha_beta_C, K_p)
+        K_o_quad = get_quadratic(alpha_y, self.K_o)
+        K_p_quad = get_quadratic(alpha_beta_C, self.K_p)
 
         return - alpha_sum + \
             0.5 * K_o_quad + \
@@ -56,7 +60,10 @@ class Li2016SVMPlus:
         N = int(params.shape[0] / 2)
         (alpha, beta) = (params[:N,:], params[N:,:])
         (X_o, X_p, y) = data
-        (K_o, K_p) = self._get_Ks(X_o, X_p)
+
+        if self.K_o is None:
+            self._set_Ks(X_o, X_p)
+
         alpha_y = alpha * y
         alpha_beta_C = alpha + beta - self.C
 
@@ -65,14 +72,11 @@ class Li2016SVMPlus:
             alpha_beta_C,
             alpha_y,
             y,
-            K_o,
-            K_p,
             batch=None if batch is None else batch[batch < N])[:,np.newaxis]
         beta_grad = self._get_beta_grad(
             beta,
             alpha_beta_C, 
-            K_p,
-            batch=None if batch is None else batch[batch >= N])[:,np.newaxis]
+            batch=None if batch is None else batch[batch >= N] - N)[:,np.newaxis]
 
         return np.vstack([alpha_grad, beta_grad])
 
@@ -81,20 +85,22 @@ class Li2016SVMPlus:
         alpha_beta_C, 
         alpha_y, 
         y,
-        K_o,
-        K_p,
         batch=None):
+
+        (K_o, K_p) = [None] * 2
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
             alpha = alpha[batch,:]
             y = y[batch,:]
-            K_o = K_o[batch,:]
-            K_p = K_p[batch,:]
+            K_o = self.K_o[batch,:]
+            K_p = self.K_p[batch,:]
 
             if np.isscalar(batch):
                 K_o = K_o[np.newaxis,:]
                 K_p = K_p[np.newaxis,:]
+        else:
+            (K_o, K_p) = (self.K_o, self.K_p)
 
         # Compute alpha gradient
         ones = - np.ones_like(alpha)
@@ -103,55 +109,42 @@ class Li2016SVMPlus:
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
         # Compute scaled gradient
-        beta_scale = np.diag(K_p[:,batch]) / self.gamma
-        alpha_scale = np.diag(K_o[:,batch]) + beta_scale
-        scaled = alpha_grad / alpha_scale
+        scaled = alpha_grad / self.alpha_scale[batch,:]
 
         return np.min(
             np.hstack([alpha, scaled]),
             axis=1)
 
-    def _get_beta_grad(self, beta, alpha_beta_C, K_p, batch=None):
+    def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
+
+        K_p = None
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
             beta = beta[batch,:]
-            K_p = K_p[batch,:]
+            K_p = self.K_p[batch,:]
 
             if np.isscalar(batch):
                 K_p = K_p[np.newaxis,:]
+        else:
+            K_p = self.K_p
 
         # Compute beta gradient
         beta_grad = np.dot(K_p, alpha_beta_C)
 
         # Compute scaled gradient
-        beta_scale = np.diag(K_p[:,batch]) / self.gamma
-        scaled = beta_grad / beta_scale
+        scaled = beta_grad / self.beta_scale[batch,:]
 
         return np.min(
             np.hstack([beta, scaled]),
             axis=1)
 
-    def _get_Ks(self, X_o, X_p):
+    def _set_Ks(self, X_o, X_p):
 
-        if self.K_o is None:
-            self.K_o = self._get_new_K(self.o_kernel, X_o)
-
-        if self.K_p is None:
-            self.K_p = self._get_new_K(self.p_kernel, X_p)
-
-        K_o = self.K_o
-        K_p = self.K_p
-        
-        if self.scale is None:
-            beta_scale = np.diag(K_p) / self.gamma
-            alpha_scale = np.diag(K_o) + beta_scale
-
-            self.scale = np.vstack([
-                alpha_scale, 
-                beta_scale])
-
-        return (K_o, K_p)
+        self.K_o = self._get_new_K(self.o_kernel, X_o)
+        self.K_p = self._get_new_K(self.p_kernel, X_p)
+        self.beta_scale = np.diag(K_p) / self.gamma
+        self.alpha_scale = np.diag(K_o) + beta_scale
 
     def _get_new_K(self, kernel, X):
 

@@ -2,7 +2,7 @@ import numpy as np
 
 class LinearRegressionModel:
 
-    def __init__(self, p, idn):
+    def __init__(self, p, idn=None):
 
         self.p = p
         self.idn = idn
