@@ -49,6 +49,7 @@ class Li2016SVMPlus:
             0.5 * K_o_quad + \
             K_p_quad / (2 * self.gamma)
         
+    # WARNING: expects batch in ascending sorted order
     def get_gradient(self, data, params, batch=None):
 
         # Initialize stuff
@@ -96,7 +97,7 @@ class Li2016SVMPlus:
                 K_p = K_p[np.newaxis,:]
 
         # Compute alpha gradient
-        ones = - np.ones_like(alpha) 
+        ones = - np.ones_like(alpha)
         K_o_term = y * np.dot(K_o, alpha_y)
         K_p_term = np.dot(K_p, alpha_beta_C)
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
