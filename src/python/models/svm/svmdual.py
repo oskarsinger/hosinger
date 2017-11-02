@@ -39,7 +39,7 @@ class SupportVectorMachineDualModel:
         (X, y) = data
 
         if self.K is None:
-            self.K = get_kernel_matrix(self.kernel, X)
+            self._set_K(X)
 
         N = X.shape[0]
         params_y = params * y
@@ -64,3 +64,8 @@ class SupportVectorMachineDualModel:
         return np.min(
             np.hstack([params, scaled]),
             axis=1)
+
+    def _set_K(self, X):
+
+        self.K = get_kernel_matrix(self.kernel, X)
+        self.scale = np.diag(self.K)

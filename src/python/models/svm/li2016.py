@@ -1,6 +1,7 @@
 import numpy as np
 
 from theline.utils import get_quadratic
+from models.kernels.utils import get_kernel_matrix
 
 # TODO: try to account for N_o neq N_p
 # TODO: figure out how to enforce bias absorbed into weights
@@ -141,24 +142,7 @@ class Li2016SVMPlus:
 
     def _set_Ks(self, X_o, X_p):
 
-        self.K_o = self._get_new_K(self.o_kernel, X_o)
-        self.K_p = self._get_new_K(self.p_kernel, X_p)
-        self.beta_scale = np.diag(K_p) / self.gamma
-        self.alpha_scale = np.diag(K_o) + beta_scale
-
-    def _get_new_K(self, kernel, X):
-
-        N = X.shape[0] 
-        K = np.zeros((N, N))
-
-        for n in range(N):
-
-            X_n = X[n,:]
-
-            for m in range(n, N):
-
-                K_nm = kernel(X_n, X[m,:])
-                K[n,m] = K_nm
-                K[m,n] = K_nm
-
-        return K
+        self.K_o = get_kernel_matrix(self.o_kernel, X_o)
+        self.K_p = get_kernel_matrix(self.p_kernel, X_p)
+        self.beta_scale = np.diag(self.K_p) / self.gamma
+        self.alpha_scale = np.diag(self.K_o) + beta_scale
