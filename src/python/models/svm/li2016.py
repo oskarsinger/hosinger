@@ -88,6 +88,8 @@ class Li2016SVMPlus:
             full_grad = np.vstack([
                 alpha_grad, beta_grad])
 
+        print(full_grad.shape)
+
         return full_grad
 
     def _get_alpha_grad(self, 
@@ -106,7 +108,7 @@ class Li2016SVMPlus:
             y = y[batch,:]
             K_o = self.K_o[batch,:]
             K_p = self.K_p[batch,:]
-            alpha_scale = self.alpha_scale[batch]
+            alpha_scale = self.alpha_scale[batch,:]
 
             if np.isscalar(batch):
                 K_o = K_o[np.newaxis,:]
@@ -135,7 +137,7 @@ class Li2016SVMPlus:
         if batch is not None:
             beta = beta[batch,:]
             K_p = self.K_p[batch,:]
-            beta_scale = self.beta_scale[batch]
+            beta_scale = self.beta_scale[batch,:]
 
             if np.isscalar(batch):
                 K_p = K_p[np.newaxis,:]
@@ -155,5 +157,5 @@ class Li2016SVMPlus:
 
         self.K_o = get_kernel_matrix(self.o_kernel, X_o)
         self.K_p = get_kernel_matrix(self.p_kernel, X_p)
-        self.beta_scale = np.diag(self.K_p) / self.gamma
-        self.alpha_scale = np.diag(self.K_o) + self.beta_scale
+        self.beta_scale = np.diag(self.K_p)[:,np.newaxis] / self.gamma
+        self.alpha_scale = np.diag(self.K_o)[:,np.newaxis] + self.beta_scale
