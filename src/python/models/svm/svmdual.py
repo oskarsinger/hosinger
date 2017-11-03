@@ -10,7 +10,7 @@ class SupportVectorMachineDualModel:
         self.C = C
         self.kernel = kernel
 
-        if ernel is None:
+        if kernel is None:
             kernel = lambda x, y: np.dot(x.T, y)
 
         self.kernel = kernel
@@ -52,6 +52,7 @@ class SupportVectorMachineDualModel:
 
             if np.isscalar(batch):
                 K = K[np.newaxis,:]
+                params = params[:,np.newaxis]
         else:
             K = self.K
 
@@ -59,7 +60,7 @@ class SupportVectorMachineDualModel:
         ones = - np.ones_like(params)
         K_term = y * np.dot(K, params_y)
 
-        scale = (ones + K_term) / self.scale[batch,:]
+        scaled = (ones + K_term) / self.scale[batch,:]
 
         return np.min(
             np.hstack([params, scaled]),
@@ -68,4 +69,4 @@ class SupportVectorMachineDualModel:
     def _set_K(self, X):
 
         self.K = get_kernel_matrix(self.kernel, X)
-        self.scale = np.diag(self.K)
+        self.scale = np.diag(self.K)[:,np.newaxis]
