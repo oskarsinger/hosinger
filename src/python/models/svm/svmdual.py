@@ -5,9 +5,8 @@ from models.kernels.utils import get_kernel_matrix
 
 class SupportVectorMachineDualModel:
 
-    def __init__(self, C, kernel):
+    def __init__(self, kernel):
 
-        self.C = C
         self.kernel = kernel
 
         if kernel is None:
@@ -49,22 +48,22 @@ class SupportVectorMachineDualModel:
             params = params[batch,:]
             y = y[batch,:]
             K = self.K[batch,:]
+            scale = self.scale[batch,:]
 
             if np.isscalar(batch):
                 K = K[np.newaxis,:]
                 params = params[:,np.newaxis]
         else:
             K = self.K
+            scale = self.scale
 
         # Compute gradient terms
         ones = - np.ones_like(params)
         K_term = y * np.dot(K, params_y)
 
-        scaled = (ones + K_term) / self.scale[batch,:]
+        scaled = (ones + K_term) / scale
 
-        return np.min(
-            np.hstack([params, scaled]),
-            axis=1)
+        return np.fmin(params, scaled)
 
     def _set_K(self, X):
 
