@@ -22,7 +22,7 @@ class SupportVectorMachineDualModel:
         (X, y) = data
 
         if self.K is None:
-            self.K = get_kernel_matrix(self.kernel, X)
+            self._set_K(X)
 
         N = X.shape[0]
         params_y = params * y

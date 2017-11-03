@@ -88,7 +88,6 @@ class Li2016SVMPlus:
             full_grad = np.vstack([
                 alpha_grad, beta_grad])
 
-        print(full_grad.shape)
 
         return full_grad
 
