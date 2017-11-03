@@ -1,6 +1,7 @@
 import numpy as np
 
 from theline.utils import get_quadratic
+from theline.utils import get_thresholded
 from models.kernels.utils import get_kernel_matrix
 
 # TODO: try to account for N_o neq N_p
@@ -31,6 +32,17 @@ class Li2016SVMPlus:
         self.K_p = None
         self.alpha_scale = None
         self.beta_scale = None
+
+    # WARNING: assumes kernel handles arbitrary number of svs and data
+    def get_prediction(self, data, params):
+
+        (alphas, svs) = params
+        eigenfunc_eval = self.kernel(svs, data)
+        func_eval = np.dot(
+            alphas.T, 
+            np.array(kernel_evals))
+
+        return np.sign(func_eval)
 
     def get_objective(self, data, params):
 
@@ -88,7 +100,6 @@ class Li2016SVMPlus:
             full_grad = np.vstack([
                 alpha_grad, beta_grad])
 
-
         return full_grad
 
     def _get_alpha_grad(self, 
@@ -123,9 +134,7 @@ class Li2016SVMPlus:
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
         # Compute scaled gradient
-        scaled = alpha_grad / alpha_scale
-
-        return np.fmin(alpha, scaled)
+        return alpha_grad / alpha_scale
 
     def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
 
@@ -148,9 +157,7 @@ class Li2016SVMPlus:
         beta_grad = np.dot(K_p, alpha_beta_C)
 
         # Compute scaled gradient
-        scaled = beta_grad / beta_scale
-
-        return np.fmin(beta, scaled)
+        return beta_grad / beta_scale
 
     def _set_Ks(self, X_o, X_p):
 
@@ -158,3 +165,13 @@ class Li2016SVMPlus:
         self.K_p = get_kernel_matrix(self.p_kernel, X_p)
         self.beta_scale = np.diag(self.K_p)[:,np.newaxis] / self.gamma
         self.alpha_scale = np.diag(self.K_o)[:,np.newaxis] + self.beta_scale
+
+    def get_projected(self, data, params):
+
+        N = int(params.shape[0] / 2)
+        upper = np.zeros((2 * N, 1))
+        upper[:N,:] = self.c
+        # TODO: double check this is correct
+        upper[N:,:] = self.c / self.gamma
+
+        return get_thresholded(params, lower=0)
