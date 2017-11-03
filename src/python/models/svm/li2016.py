@@ -73,13 +73,22 @@ class Li2016SVMPlus:
             alpha_beta_C,
             alpha_y,
             y,
-            batch=None if batch is None else batch[batch < N])[:,np.newaxis]
+            batch=None if batch is None else batch[batch < N])
         beta_grad = self._get_beta_grad(
             beta,
             alpha_beta_C, 
-            batch=None if batch is None else batch[batch >= N] - N)[:,np.newaxis]
+            batch=None if batch is None else batch[batch >= N] - N)
+        full_grad = None
 
-        return np.vstack([alpha_grad, beta_grad])
+        if alpha_grad.size == 0:
+            full_grad = beta_grad
+        elif beta_grad.size == 0:
+            full_grad = alpha_grad
+        else:
+            full_grad = np.vstack([
+                alpha_grad, beta_grad])
+
+        return full_grad
 
     def _get_alpha_grad(self, 
         alpha, 
@@ -97,7 +106,7 @@ class Li2016SVMPlus:
             y = y[batch,:]
             K_o = self.K_o[batch,:]
             K_p = self.K_p[batch,:]
-            alpha_scale = self.alpha_scale[batch,:]
+            alpha_scale = self.alpha_scale[batch]
 
             if np.isscalar(batch):
                 K_o = K_o[np.newaxis,:]
@@ -126,7 +135,7 @@ class Li2016SVMPlus:
         if batch is not None:
             beta = beta[batch,:]
             K_p = self.K_p[batch,:]
-            beta_scale = self.beta_scale[batch,:]
+            beta_scale = self.beta_scale[batch]
 
             if np.isscalar(batch):
                 K_p = K_p[np.newaxis,:]
