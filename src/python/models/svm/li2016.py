@@ -89,6 +89,7 @@ class Li2016SVMPlus:
         batch=None):
 
         (K_o, K_p) = [None] * 2
+        alpha_scale = None
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
@@ -96,12 +97,14 @@ class Li2016SVMPlus:
             y = y[batch,:]
             K_o = self.K_o[batch,:]
             K_p = self.K_p[batch,:]
+            alpha_scale = self.alpha_scale[batch,:]
 
             if np.isscalar(batch):
                 K_o = K_o[np.newaxis,:]
                 K_p = K_p[np.newaxis,:]
         else:
             (K_o, K_p) = (self.K_o, self.K_p)
+            alpha_scale = self.alpha_scale
 
         # Compute alpha gradient
         ones = - np.ones_like(alpha)
@@ -110,39 +113,38 @@ class Li2016SVMPlus:
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
         # Compute scaled gradient
-        scaled = alpha_grad / self.alpha_scale[batch,:]
+        scaled = alpha_grad / alpha_scale
 
-        return np.min(
-            np.hstack([alpha, scaled]),
-            axis=1)
+        return np.fmin(alpha, scaled)
 
     def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
 
         K_p = None
+        beta_scale = None
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
             beta = beta[batch,:]
             K_p = self.K_p[batch,:]
+            beta_scale = self.beta_scale[batch,:]
 
             if np.isscalar(batch):
                 K_p = K_p[np.newaxis,:]
         else:
             K_p = self.K_p
+            beta_scale = self.beta_scale
 
         # Compute beta gradient
         beta_grad = np.dot(K_p, alpha_beta_C)
 
         # Compute scaled gradient
-        scaled = beta_grad / self.beta_scale[batch,:]
+        scaled = beta_grad / beta_scale
 
-        return np.min(
-            np.hstack([beta, scaled]),
-            axis=1)
+        return np.fmin(beta, scaled)
 
     def _set_Ks(self, X_o, X_p):
 
         self.K_o = get_kernel_matrix(self.o_kernel, X_o)
         self.K_p = get_kernel_matrix(self.p_kernel, X_p)
         self.beta_scale = np.diag(self.K_p) / self.gamma
-        self.alpha_scale = np.diag(self.K_o) + beta_scale
+        self.alpha_scale = np.diag(self.K_o) + self.beta_scale

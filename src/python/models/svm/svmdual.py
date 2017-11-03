@@ -43,6 +43,7 @@ class SupportVectorMachineDualModel:
         N = X.shape[0]
         params_y = params * y
         K = None
+        scale = None
 
         if batch is not None:
             params = params[batch,:]
