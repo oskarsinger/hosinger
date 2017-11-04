@@ -73,7 +73,7 @@ class SupportVectorMachineDualModel:
 
         # Compute gradient terms
         ones = - np.ones_like(params)
-        K_term = y * np.dot(K, params_y)
+        K_term = np.dot(K, params_y) * y
 
         return (ones + K_term) / scale
 

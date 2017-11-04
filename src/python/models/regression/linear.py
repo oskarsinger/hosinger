@@ -7,11 +7,14 @@ class LinearRegressionModel:
         self.p = p
         self.idn = idn
 
-    def get_gradient(self, data, params):
+    def get_gradient(self, data, params, batch=None):
 
         A = data[0]
         residuals = self.get_residuals(
-            data, params)
+            data, params, batch=batch)
+
+        if batch is not None:
+            A = A[:,batch]
 
         return np.dot(A.T, residuals)
 
@@ -22,9 +25,14 @@ class LinearRegressionModel:
 
         return np.linalg.norm(residuals)**2
 
-    def get_residuals(self, data, params):
+    def get_residuals(self, data, params, batch=None):
 
         (A, b) = data
+
+        if batch is not None:
+            A = A[:,batch]
+            params = params[batch,:]
+
         b_hat = np.dot(A, params)
 
         return b_hat - b
