@@ -51,7 +51,7 @@ class LinearRegressionModel:
 
         return (a_i, b_i)
 
-    def get_projection(self, data, params):
+    def get_projected(self, data, params):
 
         return params
 
