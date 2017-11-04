@@ -1,7 +1,7 @@
 import numpy as np
 
 # TODO: implement this
-class LogisticRegression:
+class LogisticRegressionModel:
 
     def __init__(self):
         pass
