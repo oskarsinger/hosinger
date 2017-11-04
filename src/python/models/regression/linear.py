@@ -16,6 +16,9 @@ class LinearRegressionModel:
         if batch is not None:
             A = A[:,batch]
 
+            if np.isscalar(batch):
+                A = A[:,np.newaxis]
+
         return np.dot(A.T, residuals)
 
     def get_objective(self, data, params):
@@ -32,6 +35,10 @@ class LinearRegressionModel:
         if batch is not None:
             A = A[:,batch]
             params = params[batch,:]
+
+            if np.isscalar(batch):
+                A = A[:,np.newaxis]
+                params = params[:,np.newaxis]
 
         b_hat = np.dot(A, params)
 
