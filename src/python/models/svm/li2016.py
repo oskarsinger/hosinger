@@ -10,12 +10,12 @@ from models.kernels.utils import get_kernel_matrix
 class Li2016SVMPlus:
 
     def __init__(self, 
-        C, 
+        c, 
         gamma, 
         o_kernel=None,
         p_kernel=None):
 
-        self.C = C
+        self.c = c
         self.gamma = gamma
 
         if o_kernel is None:
@@ -55,7 +55,7 @@ class Li2016SVMPlus:
         N = X_o.shape[0]
         (alpha, beta) = (params[:N,:], params[N:,:])
         alpha_y = alpha * y
-        alpha_beta_C = alpha + beta - self.C
+        alpha_beta_C = alpha + beta - self.c
 
         # Compute objective terms
         alpha_sum = np.sum(alpha)
@@ -77,13 +77,10 @@ class Li2016SVMPlus:
         if self.K_o is None:
             self._set_Ks(X_o, X_p)
 
-        alpha_y = alpha * y
-        alpha_beta_C = alpha + beta - self.C
-
+        alpha_beta_C = alpha + beta - self.c
         alpha_grad = self._get_alpha_grad(
             alpha,
             alpha_beta_C,
-            alpha_y,
             y,
             batch=None if batch is None else batch[batch < N])
         beta_grad = self._get_beta_grad(
@@ -105,12 +102,12 @@ class Li2016SVMPlus:
     def _get_alpha_grad(self, 
         alpha, 
         alpha_beta_C, 
-        alpha_y, 
         y,
         batch=None):
 
         (K_o, K_p) = [None] * 2
         alpha_scale = None
+        alpha_y = alpha * y
 
         # Reduce to batch if doing stochastic coordinate descent
         if batch is not None:
@@ -169,9 +166,14 @@ class Li2016SVMPlus:
     def get_projected(self, data, params):
 
         N = int(params.shape[0] / 2)
-        upper = np.zeros((2 * N, 1))
-        upper[:N,:] = self.c
-        # TODO: double check this is correct
-        upper[N:,:] = self.c / self.gamma
+        (alpha, beta) = (params[:N,:], params[N:,:])
+        threshd_beta = get_thresholded(
+            beta,
+            lower=0,
+            upper=self.c / self.gamma)
+        threshd_alpha = get_thresholded(
+            alpha,
+            lower=0,
+            upper=self.c / self.gamma)
 
-        return get_thresholded(params, lower=0)
+        return np.vstack([threshd_alpha, threshd_beta])
