@@ -2,18 +2,24 @@ import numpy as np
 
 from theline.utils import get_quadratic
 from theline.utils import get_thresholded
+from theline.sketching import ROSSketcher
 from models.kernels.utils import get_kernel_matrix
 
-class SupportVectorMachineDualModel:
+class SketchedSupportVectorMachineDualModel:
 
-    def __init__(self, c, kernel=None):
+    def __init__(self, c, kernel=None, sketcher=None):
 
         self.c = c
-
+        
         if kernel is None:
             kernel = lambda x, y: np.dot(x.T, y)
 
         self.kernel = kernel
+
+        if sketcher is None:
+            sketcher = ROSSketcher
+
+        self.sketcher = sketcher
 
         self.K = None
 
@@ -21,6 +27,7 @@ class SupportVectorMachineDualModel:
     def get_prediction(self, data, params):
 
         (alphas, svs) = params
+        alphas = self.sketcher.get_unsketched(alphas)
         eigenfunc_eval = self.kernel(svs, data)
         func_eval = np.dot(
             alphas.T, 
@@ -75,8 +82,15 @@ class SupportVectorMachineDualModel:
 
     def _set_K(self, X):
 
-        self.K = get_kernel_matrix(self.kernel, X)
+        K = get_kernel_matrix(self.kernel, X)
+        right_sketch = self.sketcher.get_sketched(K)
+
+        self.K = self.sketcher.get_sketched(right_sketch.T).T 
 
     def get_projected(self, data, params):
 
-        return get_thresholded(params, upper=self.c, lower=0)
+        unsketched = self.sketcher.get_unsketched(params)
+        projected = get_thresholded(
+            unsketched, upper=self.c, lower=0)
+
+        return self.sketcher.get_sketched(projected)
