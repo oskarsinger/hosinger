@@ -34,34 +34,24 @@ class SketchedSupportVectorMachineDualModel:
     def get_objective(self, data, params):
 
         # Initialize stuff
-        (X, y) = data
-
         if self.K is None:
-            self._set_K(X)
-
-        N = X.shape[0]
-        params_y = params * y
+            self._set_K(data)
 
         # Compute objective terms
-        param_sum = np.sum(params)
-        K_quad = get_quadratic(params_y, self.K)
+        param_sum = np.sum(self.sketcher.get_unsketched(params))
+        K_quad = get_quadratic(params, self.K)
 
         return - param_sum + 0.5 * K_quad
 
     def get_gradient(self, data, params, batch=None):
         
-        (X, y) = data
-
         if self.K is None:
-            self._set_K(X)
+            self._set_K(data)
 
-        N = X.shape[0]
-        params_y = params * y
         K = None
 
         if batch is not None:
             params = params[batch,:]
-            y = y[batch,:]
             K = self.K[batch,:]
 
             if np.isscalar(batch):
@@ -70,18 +60,22 @@ class SketchedSupportVectorMachineDualModel:
         else:
             K = self.K
 
+        # TODO: fix this; it is not correct
         # Compute gradient terms
-        ones = - np.ones_like(params)
-        K_term = np.dot(K, params_y) * y
+        ones = - np.ones((N, 1))
+        K_term = np.dot(K, params)
 
         return (ones + K_term)
 
-    def _set_K(self, X):
+    def _set_K(self, data):
+
+        (X, y) = data
 
         if self.sketcher is None:
             self.sketcher = GS(X.shape[0])
 
         K = get_kernel_matrix(self.kernel, X)
+        K *= np.dot(y, y.T)
         right_sketch = self.sketcher.get_sketched(K)
 
         self.K = self.sketcher.get_sketched(right_sketch.T).T 
@@ -92,4 +86,4 @@ class SketchedSupportVectorMachineDualModel:
         projected = get_thresholded(
             unsketched, upper=self.c, lower=0)
 
-        return self.sketcher.get_sketched(projected)
+        return self.sketcher.get_sketched(projected.T).T
