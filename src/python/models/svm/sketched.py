@@ -2,7 +2,7 @@ import numpy as np
 
 from theline.utils import get_quadratic
 from theline.utils import get_thresholded
-from theline.sketching import ROSSketcher
+from theline.sketching import GaussianSketcher as GS
 from models.kernels.utils import get_kernel_matrix
 
 class SketchedSupportVectorMachineDualModel:
@@ -15,10 +15,6 @@ class SketchedSupportVectorMachineDualModel:
             kernel = lambda x, y: np.dot(x.T, y)
 
         self.kernel = kernel
-
-        if sketcher is None:
-            sketcher = ROSSketcher
-
         self.sketcher = sketcher
 
         self.K = None
@@ -81,6 +77,9 @@ class SketchedSupportVectorMachineDualModel:
         return (ones + K_term)
 
     def _set_K(self, X):
+
+        if self.sketcher is None:
+            self.sketcher = GS(X.shape[0])
 
         K = get_kernel_matrix(self.kernel, X)
         right_sketch = self.sketcher.get_sketched(K)
