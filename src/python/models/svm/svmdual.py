@@ -71,7 +71,7 @@ class SupportVectorMachineDualModel:
         ones = - np.ones_like(params)
         K_term = np.dot(K, params_y) * y
 
-        return (ones + K_term)
+        return ones + K_term
 
     def _set_K(self, X):
 

@@ -59,11 +59,14 @@ class Li2016SVMPlus:
 
         # Compute objective terms
         alpha_sum = np.sum(alpha)
+        #print('alpha_sum', alpha_sum)
         K_o_quad = get_quadratic(alpha_y, self.K_o)
+        #print('K_o_quad', K_o_quad / 2)
         K_p_quad = get_quadratic(alpha_beta_C, self.K_p)
+        #print('K_p_quad', K_p_quad / (2 * self.gamma))
 
         return - alpha_sum + \
-            0.5 * K_o_quad + \
+            K_o_quad / 2 + \
             K_p_quad / (2 * self.gamma)
         
     # WARNING: expects batch in ascending sorted order
@@ -97,6 +100,8 @@ class Li2016SVMPlus:
             full_grad = np.vstack([
                 alpha_grad, beta_grad])
 
+        #print(np.linalg.norm(full_grad))
+
         return full_grad
 
     def _get_alpha_grad(self, 
@@ -126,12 +131,12 @@ class Li2016SVMPlus:
 
         # Compute alpha gradient
         ones = - np.ones_like(alpha)
-        K_o_term = y * np.dot(K_o, alpha_y)
+        K_o_term = np.dot(K_o, alpha_y) * y
         K_p_term = np.dot(K_p, alpha_beta_C)
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
         # Compute scaled gradient
-        return alpha_grad / alpha_scale
+        return alpha_grad# / alpha_scale
 
     def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
 
@@ -151,10 +156,10 @@ class Li2016SVMPlus:
             beta_scale = self.beta_scale
 
         # Compute beta gradient
-        beta_grad = np.dot(K_p, alpha_beta_C)
+        beta_grad = np.dot(K_p, alpha_beta_C) / self.gamma
 
         # Compute scaled gradient
-        return beta_grad / beta_scale
+        return beta_grad# / beta_scale
 
     def _set_Ks(self, X_o, X_p):
 
@@ -165,15 +170,4 @@ class Li2016SVMPlus:
 
     def get_projected(self, data, params):
 
-        N = int(params.shape[0] / 2)
-        (alpha, beta) = (params[:N,:], params[N:,:])
-        threshd_beta = get_thresholded(
-            beta,
-            lower=0,
-            upper=self.c / self.gamma)
-        threshd_alpha = get_thresholded(
-            alpha,
-            lower=0,
-            upper=self.c / self.gamma)
-
-        return np.vstack([threshd_alpha, threshd_beta])
+        return get_thresholded(params, lower=0)
