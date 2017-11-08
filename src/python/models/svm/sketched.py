@@ -16,7 +16,8 @@ class SketchedSupportVectorMachineDualModel:
 
         self.kernel = kernel
         self.sketcher = sketcher
-
+        
+        self.sketcher_gradient_term = None
         self.K = None
 
     # WARNING: assumes kernel handles arbitrary number of svs and data
@@ -60,12 +61,10 @@ class SketchedSupportVectorMachineDualModel:
         else:
             K = self.K
 
-        # TODO: fix this; it is not correct
         # Compute gradient terms
-        ones = - np.ones((N, 1))
         K_term = np.dot(K, params)
 
-        return (ones + K_term)
+        return self.sketcher_gradient_term + K_term
 
     def _set_K(self, data):
 
@@ -73,6 +72,10 @@ class SketchedSupportVectorMachineDualModel:
 
         if self.sketcher is None:
             self.sketcher = GS(X.shape[0])
+
+        self.sketcher_gradient_term = - np.sum(
+            self.sketcher.get_matrix(), 
+            axis=0)[:,np.newaxis]
 
         K = get_kernel_matrix(self.kernel, X)
         K *= np.dot(y, y.T)
