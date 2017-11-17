@@ -59,11 +59,8 @@ class Li2016SVMPlus:
 
         # Compute objective terms
         alpha_sum = np.sum(alpha)
-        #print('alpha_sum', alpha_sum)
         K_o_quad = get_quadratic(alpha_y, self.K_o)
-        #print('K_o_quad', K_o_quad / 2)
         K_p_quad = get_quadratic(alpha_beta_C, self.K_p)
-        #print('K_p_quad', K_p_quad / (2 * self.gamma))
 
         return - alpha_sum + \
             K_o_quad / 2 + \
@@ -100,8 +97,6 @@ class Li2016SVMPlus:
             full_grad = np.vstack([
                 alpha_grad, beta_grad])
 
-        #print(np.linalg.norm(full_grad))
-
         return full_grad
 
     def _get_alpha_grad(self, 
@@ -136,7 +131,7 @@ class Li2016SVMPlus:
         alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
         # Compute scaled gradient
-        return alpha_grad# / alpha_scale
+        return alpha_grad
 
     def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
 
@@ -159,7 +154,7 @@ class Li2016SVMPlus:
         beta_grad = np.dot(K_p, alpha_beta_C) / self.gamma
 
         # Compute scaled gradient
-        return beta_grad# / beta_scale
+        return beta_grad
 
     def _set_Ks(self, X_o, X_p):
 
