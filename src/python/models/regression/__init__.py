@@ -1,2 +1,2 @@
 from .linear import LinearRegressionModel
-from .logistic import LogisticRegressionModel
+from .logistic import BinaryL2RegularizedLogisticRegressionModel
