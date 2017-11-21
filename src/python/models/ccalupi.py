@@ -7,24 +7,22 @@ class CCAPenalizedLUPIModel:
     def __init__(self, 
         o_model,
         p_model,
-        phi_o,
-        phi_p,
+        s_model,
         lambda_s,
         lambda_p,
         idn=None):
 
         self.o_model = o_model
         self.p_model = p_model
-        self.phi_o = phi_o
-        self.phi_p = phi_p
+        self.s_model = s_model
         self.lambda_s = lambda_s
         self.lambda_p = lambda_p
         self.idn = idn
 
     def get_prediction(self, data):
         
-        projected = self.phi_o.get_prediction(
-            data, params[1])
+        projected = self.s_model.get_prediction(
+            data[0], params[2])
 
         return self.o_model.get_prediction(
             projected, params[0])
@@ -32,24 +30,24 @@ class CCAPenalizedLUPIModel:
     def get_gradient(self, data, params):
 
         # Compute projected stuff
-        proj_o = self.phi_o.get_prediction(
+        proj_o = self.s_model.get_prediction(
             data[0], params[2]) 
-        proj_p = self.phi_p.get_prediction(
+        proj_p = self.s_model.get_prediction(
             data[1], params[3]) 
         proj_diff = proj_o - proj_p
 
         # Compute w grads
-        w_o_grad = self.o_model.get_gradient(
+        o_grad = self.o_model.get_gradient(
             proj_o,
-            (params[0], params[2]))
-        w_p_grad = self.p_model.get_gradient(
-            proj_p, params[1])
+            params[0])
+        p_grad = self.p_model.get_gradient(
+            proj_p, 
+            params[1])
 
         # Compute phi grads
-        phi_o_grad = self.phi_o.get_gradient(
-            data[0], (params[2], params[3]))
-        phi_p_grad = self.phi_p.get_gradient(
-            data[1], (params[3], params[2]))
+        (phi_o_grad, phi_p_grad) = self.s_model.get_gradient(
+            data, 
+            (params[2], params[3]))
         phi_o_f_grad = self.o_model.get_data_gradient(
             proj_o, params[0])
         phi_p_f_grad = self.p_model.get_data_gradient(
@@ -60,19 +58,19 @@ class CCAPenalizedLUPIModel:
         phi_p_ell_grad = np.dot(
             phi_p_grad.T,
             self.lambda_p * phi_p_f_grad - self.lambda_s * proj_diff)
+        s_grad = (phi_o_ell_grad, phi_p_ell_grad)
 
         return (
-            w_o_grad,
-            w_p_grad,
-            phi_o_ell_grad,
-            phi_p_ell_grad)
+            o_grad,
+            p_grad,
+            s_grad)
 
     def get_objective(self, data, params):
 
         # Compute projected stuff
-        proj_o = self.phi_o.get_prediction(
+        proj_o = self.s_model.get_prediction(
             data[0], params[2]) 
-        proj_p = self.phi_p.get_prediction(
+        proj_p = self.s_model.get_prediction(
             data[1], params[3]) 
         proj_diff = proj_o - proj_p
 
@@ -81,16 +79,18 @@ class CCAPenalizedLUPIModel:
             proj_o, params[0])
         p_obj = self.p_model.get_objective(
             proj_p, params[1])
-        cca_obj = np.linalg.norm(proj_diff)**2 / 2
+        s_obj = self.s_model.get_objective(
+            data,
+            (params[2], params[3]))
 
-        return o_obj + lambda_s * cca_obj + lambda_p * p_obj
+        return o_obj + lambda_s * s_obj + lambda_p * p_obj
 
     def get_residuals(self, data, params):
 
         # Get CCA projections
-        proj_o = self.phi_o.get_prediction(
+        proj_o = self.s_model.get_prediction(
             data[0], params[2]) 
-        proj_p = self.phi_p.get_prediction(
+        proj_p = self.s_model.get_prediction(
             data[1], params[3]) 
 
         # Get prediction residuals
@@ -100,7 +100,8 @@ class CCAPenalizedLUPIModel:
             proj_p, params[1])
 
         # Get CCA residuals
-        s_residuals = proj_o - proj_p
+        s_residuals = self.s_model.get_residuals(
+            data, (params[2], params[3]))
 
         return (
             o_residuals,
@@ -115,31 +116,25 @@ class CCAPenalizedLUPIModel:
 
     def get_projection(self, data, params):
 
-        (o_pars, p_pars, phi_o_pars, phi_p_pars) = params
-        projected_o = self.o_model.get_projected(
-            data[0], o_pars)
-        projected_p = self.p_model.get_projected(
-            data[1], p_pars)
-        projected_phi_o = self.phi_o.get_projected(
-            data[0], phi_o_pars)
-        projected_phi_p = self.phi_p.get_projected(
-            data[1], phi_p_pars)
+        proj_o = self.o_model.get_projected(
+            data[0], params[0])
+        proj_p = self.p_model.get_projected(
+            data[1], params[1])
+        proj_s = self.s_model.get_projected(
+            data, (params[2], params[3]))
 
         return (
-            projected_o,
-            projected_p,
-            projected_phi_o,
-            projected_phi_p)
+            proj_o,
+            proj_p,
+            proj_s)
 
     def get_parameter_shape(self):
 
         o_shape = self.o_model.parameter_shape()
         p_shape = self.p_model.parameter_shape()
-        phi_o_shape = self.phi_o.parameter_shape()
-        phi_p_shape = self.phi_p.parameter_shape()
+        s_shape = self.s_model.parameter_shape()
 
         return (
             o_shape,
             p_shape,
-            phi_o_shape,
-            phi_p_shape)
+            s_shape)

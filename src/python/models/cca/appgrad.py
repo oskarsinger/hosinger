@@ -18,6 +18,10 @@ class AppGradModel:
         self.k = k
         self.idn = idn
 
+    def get_prediction(self, data, params):
+
+        return np.dot(get_zm_uv(data), params)
+
     def get_objective(self, data, params):
 
         residuals = self.get_residuals(data, params)
