@@ -48,6 +48,7 @@ class CCAPenalizedLUPIModel:
         (phi_o_grad, phi_p_grad) = self.s_model.get_gradient(
             data, 
             (params[2], params[3]))
+        # TODO: the data gradients are only applicable to linear CCA; generalize them
         phi_o_f_grad = self.o_model.get_data_gradient(
             proj_o, 
             params[0],
