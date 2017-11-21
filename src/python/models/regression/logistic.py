@@ -18,11 +18,16 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
         return data_term + regularization
 
-    def get_data_gradient(self, data, params):
+    # TODO: this interface is kinda weird; maybe rethink it
+    def get_data_gradient(self, data, params, transform_grad):
 
         (X, y) = data
         denom = self.get_residuals(data, params)
         factor = - y * np.power(denom, -1)
+        # TODO: the dimensions here get a little funky; double check them
+        transform_term = np.dot(transform_grad, params.T)
+
+        return np.sum(factor * transform_term, axis=0)
 
     def get_objective(self, data, params):
 

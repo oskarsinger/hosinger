@@ -49,9 +49,13 @@ class CCAPenalizedLUPIModel:
             data, 
             (params[2], params[3]))
         phi_o_f_grad = self.o_model.get_data_gradient(
-            proj_o, params[0])
+            proj_o, 
+            params[0],
+            data[0].T)
         phi_p_f_grad = self.p_model.get_data_gradient(
-            proj_p, params[1])
+            proj_p, 
+            params[1],
+            data[1].T)
         phi_o_ell_grad = np.dot(
             phi_o_grad.T, 
             phi_o_f_grad + self.lambda_s * proj_diff)
