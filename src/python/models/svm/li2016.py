@@ -4,9 +4,7 @@ from theline.utils import get_quadratic
 from theline.utils import get_thresholded
 from models.kernels.utils import get_kernel_matrix
 
-# TODO: try to account for N_o neq N_p
-# TODO: figure out how to enforce bias absorbed into weights
-# TODO: try to reuse some of this code since there's only a slight difference
+# TODO: try to account for N_o neq N_p; can I just set no-privileged-info to all zeros?
 class Li2016SVMPlus:
 
     def __init__(self, 
@@ -36,11 +34,7 @@ class Li2016SVMPlus:
     # WARNING: assumes kernel handles arbitrary number of svs and data
     def get_prediction(self, data, params):
 
-        (alphas, svs) = params
-        eigenfunc_eval = self.kernel(svs, data)
-        func_eval = np.dot(
-            alphas.T, 
-            np.array(kernel_evals))
+        func_eval = self.o_kernel(params, data)
 
         return np.sign(func_eval)
 

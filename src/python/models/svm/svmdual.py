@@ -20,11 +20,7 @@ class SupportVectorMachineDualModel:
     # WARNING: assumes kernel handles arbitrary number of svs and data
     def get_prediction(self, data, params):
 
-        (alphas, svs) = params
-        eigenfunc_eval = self.kernel(svs, data)
-        func_eval = np.dot(
-            alphas.T, 
-            np.array(kernel_evals))
+        func_eval = self.kernel(params, data)
 
         return np.sign(func_eval)
 
