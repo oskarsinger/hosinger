@@ -1,7 +1,6 @@
 import numpy as np
 
 # TODO: deal with N_o neq N_p
-# TODO: consider having a CCA model instead of individual phi models
 class CCAPenalizedLUPIModel:
 
     def __init__(self, 
@@ -48,15 +47,16 @@ class CCAPenalizedLUPIModel:
         (phi_o_grad, phi_p_grad) = self.s_model.get_gradient(
             data, 
             (params[2], params[3]))
-        # TODO: the data gradients are only applicable to linear CCA; generalize them
+        (proj_grad1, proj_grad2) = self.s_model.get_projection_gradient(
+            data, (params[2], params[3]))
         phi_o_f_grad = self.o_model.get_data_gradient(
             proj_o, 
             params[0],
-            data[0].T)
+            proj_grad1)
         phi_p_f_grad = self.p_model.get_data_gradient(
             proj_p, 
             params[1],
-            data[1].T)
+            proj_grad2)
         phi_o_ell_grad = np.dot(
             phi_o_grad.T, 
             phi_o_f_grad + self.lambda_s * proj_diff)

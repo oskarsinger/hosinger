@@ -40,6 +40,14 @@ class AppGradModel:
 
         return (grad1, grad2)
 
+    def get_projection_gradient(self, data, params):
+
+        (X1, X2) = data
+        zmuvX1 = get_zm_uv(X1)
+        zmuvX2 = get_zm_uv(X2)
+
+        return (zmuvX1.T, zmuvX2.T)
+
     def get_residuals(self, data, params):
 
         (Phi1, Phi2) = params
