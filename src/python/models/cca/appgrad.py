@@ -1,7 +1,7 @@
 import numpy as np
 
 from drrobert.stats import get_zm_uv
-from linal.svd import get_svd_power
+from theline.svd import get_svd_power
 
 # TODO: cite AppGrad paper
 # TODO: try to make this more efficient in terms of calls to zmuv and other stuff
