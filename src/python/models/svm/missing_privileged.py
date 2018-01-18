@@ -43,10 +43,11 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
 
         N_missing = X_o_missing.shape[0]
         N_not_missing = X_o_not_missing.shape[0]
+        N = n_missing + N_not_missing
         (alpha_missing, alpha_not_missing, beta) = (
             params[:N_missing,:], 
-            params[N_missing:N_not_missing,:],
-            params[N_not_missing:,:])
+            params[N_missing:N,:],
+            params[N:,:])
         alpha_y_missing = alpha_missing * y_missing
         alpha_y_not_missing = alpha_not_missing * y_not_missing
         alpha_beta_C = alpha_not_missing + beta - self.c
@@ -76,10 +77,11 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
 
         N_missing = X_o_missing.shape[0]
         N_not_missing = X_o_not_missing.shape[0]
+        N = n_missing + N_not_missing
         (alpha_missing, alpha_not_missing, beta) = (
             params[:N_missing,:], 
-            params[N_missing:N_not_missing,:],
-            params[N_not_missing:,:])
+            params[N_missing:N,:],
+            params[N:,:])
 
         alpha_beta_C = alpha_not_missing + beta - self.c
         alpha_missing_grad = self._get_alpha_missing_grad(
@@ -157,6 +159,7 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
 
     def get_projected(self, data, params):
 
+        N_missing = data[0].shape[0]
         (alpha_missing, not_missing) = (
             params[:N_missing,:], 
             params[N_missing:,:],
