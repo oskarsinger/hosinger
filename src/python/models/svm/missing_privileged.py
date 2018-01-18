@@ -28,11 +28,6 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         self.K_o_missing = None
         self.K_o_not_missing = None
         self.K_p = None
-        self.alpha_scale = None
-        self.beta_scale = None
-
-    # WARNING: assumes kernel handles arbitrary number of svs and data
-    def get_prediction(self, data, params):
 
         func_eval = self.o_kernel(params, data)
 
@@ -100,21 +95,16 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
             beta,
             alpha_beta_C, 
             batch=None if batch is None else batch[batch >= N] - N)
-        full_grad = None
+        grads = [
+            alpha_missing_grad, 
+            alpha_not_missing_grad,
+            beta_grad]
+        non_zero = [g for g in grads if g.size > 0]
 
-        if alpha_grad.size == 0:
-            full_grad = beta_grad
-        elif beta_grad.size == 0:
-            full_grad = alpha_grad
-        else:
-            full_grad = np.vstack([
-                alpha_missing_grad, alpha_not_missing_grad, beta_grad])
-
-        return full_grad
+        return np.vstack(non_zero)
 
     def _get_alpha_missing_grad(self, 
         alpha, 
-        alpha_beta_C, 
         y,
         batch=None):
 
@@ -126,25 +116,20 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         if batch is not None:
             alpha = alpha[batch,:]
             y = y[batch,:]
-            K_o = self.K_o[batch,:]
+            K_o = self.K_o_missing[batch,:]
             K_p = self.K_p[batch,:]
-            alpha_scale = self.alpha_scale[batch,:]
 
             if np.isscalar(batch):
                 K_o = K_o[np.newaxis,:]
                 K_p = K_p[np.newaxis,:]
         else:
-            (K_o, K_p) = (self.K_o, self.K_p)
-            alpha_scale = self.alpha_scale
+            (K_o, K_p) = (self.K_o_missing, self.K_p)
 
         # Compute alpha gradient
         ones = - np.ones_like(alpha)
         K_o_term = np.dot(K_o, alpha_y) * y
-        K_p_term = np.dot(K_p, alpha_beta_C)
-        alpha_grad = ones + K_o_term + K_p_term / self.gamma
 
-        # Compute scaled gradient
-        return alpha_grad
+        return ones + K_o_term
 
     def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
 
@@ -155,27 +140,32 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         if batch is not None:
             beta = beta[batch,:]
             K_p = self.K_p[batch,:]
-            beta_scale = self.beta_scale[batch,:]
 
             if np.isscalar(batch):
                 K_p = K_p[np.newaxis,:]
         else:
             K_p = self.K_p
-            beta_scale = self.beta_scale
 
         # Compute beta gradient
-        beta_grad = np.dot(K_p, alpha_beta_C) / self.gamma
+        return np.dot(K_p, alpha_beta_C) / self.gamma
 
-        # Compute scaled gradient
-        return beta_grad
+    def _set_Ks(self, X_o_missing, X_o_not_missing, X_p):
 
-    def _set_Ks(self, X_o, X_p):
-
-        self.K_o = get_kernel_matrix(self.o_kernel, X_o)
+        self.K_o_missing = get_kernel_matrix(self.o_kernel, X_o_missing)
+        self.K_o_not_missing = get_kernel_matrix(self.o_kernel, X_o_not_missing)
         self.K_p = get_kernel_matrix(self.p_kernel, X_p)
-        self.beta_scale = np.diag(self.K_p)[:,np.newaxis] / self.gamma
-        self.alpha_scale = np.diag(self.K_o)[:,np.newaxis] + self.beta_scale
 
     def get_projected(self, data, params):
 
-        return get_thresholded(params, lower=0)
+        (alpha_missing, not_missing) = (
+            params[:N_missing,:], 
+            params[N_missing:,:],
+
+        alpha_missing = get_thresholded(
+            alpha_missing, upper=self.c, lower=0)
+        not_missing = get_thresholded(
+            not_missing, lower=0)
+
+        return np.vstack([
+            alpha_missing,
+            not_missing])
