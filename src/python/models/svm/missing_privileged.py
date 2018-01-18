@@ -29,21 +29,25 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         self.K_o_not_missing = None
         self.K_p = None
 
+    # WARNING: assumes kernel handles arbitrary number of svs and data
+    def get_prediction(self, data, params):
+
         func_eval = self.o_kernel(params, data)
 
         return np.sign(func_eval)
+
 
     def get_objective(self, data, params):
 
         # Initialize stuff
         (X_o_missing, X_o_not_missing, X_p, y_missing, y_not_missing) = data
 
-        if self.K_o is None:
+        if self.K_o_missing is None:
             self._set_Ks(X_o_missing, X_o_not_missing, X_p)
 
         N_missing = X_o_missing.shape[0]
         N_not_missing = X_o_not_missing.shape[0]
-        N = n_missing + N_not_missing
+        N = N_missing + N_not_missing
         (alpha_missing, alpha_not_missing, beta) = (
             params[:N_missing,:], 
             params[N_missing:N,:],
@@ -72,12 +76,12 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         # Initialize stuff
         (X_o_missing, X_o_not_missing, X_p, y_missing, y_not_missing) = data
 
-        if self.K_o is None:
+        if self.K_o_missing is None:
             self._set_Ks(X_o_missing, X_o_not_missing, X_p)
 
         N_missing = X_o_missing.shape[0]
         N_not_missing = X_o_not_missing.shape[0]
-        N = n_missing + N_not_missing
+        N = N_missing + N_not_missing
         (alpha_missing, alpha_not_missing, beta) = (
             params[:N_missing,:], 
             params[N_missing:N,:],
@@ -87,12 +91,12 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         alpha_missing_grad = self._get_alpha_missing_grad(
             alpha_missing,
             y_missing,
-            batch=None if batch is None else batch[batch < N])
+            batch=None if batch is None else batch[batch < N_missing])
         alpha_not_missing_grad = self._get_alpha_not_missing_grad(
             alpha_not_missing,
             alpha_beta_C,
             y_not_missing,
-            batch=None if batch is None else batch[batch < N])
+            batch=None if batch is None else batch[np.logical_and(batch >= N_missing, batch < N)] - N_missing)
         beta_grad = self._get_beta_grad(
             beta,
             alpha_beta_C, 
@@ -110,8 +114,7 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         y,
         batch=None):
 
-        (K_o, K_p) = [None] * 2
-        alpha_scale = None
+        K_o = None
         alpha_y = alpha * y
 
         # Reduce to batch if doing stochastic coordinate descent
@@ -119,19 +122,46 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
             alpha = alpha[batch,:]
             y = y[batch,:]
             K_o = self.K_o_missing[batch,:]
-            K_p = self.K_p[batch,:]
 
             if np.isscalar(batch):
                 K_o = K_o[np.newaxis,:]
-                K_p = K_p[np.newaxis,:]
         else:
-            (K_o, K_p) = (self.K_o_missing, self.K_p)
+            K_o = self.K_o_missing
 
         # Compute alpha gradient
         ones = - np.ones_like(alpha)
         K_o_term = np.dot(K_o, alpha_y) * y
 
         return ones + K_o_term
+
+    def _get_alpha_not_missing_grad(self, 
+        alpha, 
+        alpha_beta_C, 
+        y,
+        batch=None):
+
+        (K_o, K_p) = [None] * 2
+        alpha_y = alpha * y
+
+        # Reduce to batch if doing stochastic coordinate descent
+        if batch is not None:
+            alpha = alpha[batch,:]
+            y = y[batch,:]
+            K_o = self.K_o_not_missing[batch,:]
+            K_p = self.K_p[batch,:]
+
+            if np.isscalar(batch):
+                K_o = K_o[np.newaxis,:]
+                K_p = K_p[np.newaxis,:]
+        else:
+            (K_o, K_p) = (self.K_o, self.K_p)
+
+        # Compute alpha gradient
+        ones = - np.ones_like(alpha)
+        K_o_term = np.dot(K_o, alpha_y) * y
+        K_p_term = np.dot(K_p, alpha_beta_C)
+
+        return ones + K_o_term + K_p_term / self.gamma
 
     def _get_beta_grad(self, beta, alpha_beta_C, batch=None):
 
@@ -162,7 +192,7 @@ class Li2016SVMPlusWithMissingPrivilegedInformation:
         N_missing = data[0].shape[0]
         (alpha_missing, not_missing) = (
             params[:N_missing,:], 
-            params[N_missing:,:],
+            params[N_missing:,:])
 
         alpha_missing = get_thresholded(
             alpha_missing, upper=self.c, lower=0)

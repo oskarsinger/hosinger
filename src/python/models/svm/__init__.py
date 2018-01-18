@@ -1,3 +1,4 @@
 from .li2016 import Li2016SVMPlus
 from .svmdual import SupportVectorMachineDualModel
 from .sketched import SketchedSupportVectorMachineDualModel
+from .missing_privileged import Li2016SVMPlusWithMissingPrivilegedInformation

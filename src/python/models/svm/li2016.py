@@ -4,7 +4,6 @@ from theline.utils import get_quadratic
 from theline.utils import get_thresholded
 from models.kernels.utils import get_kernel_matrix
 
-# TODO: try to account for N_o neq N_p; can I just set no-privileged-info to all zeros?
 class Li2016SVMPlus:
 
     def __init__(self, 
