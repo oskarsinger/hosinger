@@ -165,6 +165,6 @@ class Li2016SVMPlus:
 
         if self.theta is not None:
             threshed = get_thresholded(
-                params, upper=self.C * self.theta)
+                params, upper=self.c * self.theta)
 
         return threshed
