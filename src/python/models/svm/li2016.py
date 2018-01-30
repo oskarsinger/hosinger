@@ -4,6 +4,7 @@ from theline.utils import get_quadratic
 from theline.utils import get_thresholded
 from models.kernels.utils import get_kernel_matrix
 
+# TODO: cite Vapnick paper for mixture parameter and Li paper for absorbtion of bias
 class Li2016SVMPlus:
 
     def __init__(self, 
