@@ -9,11 +9,13 @@ class Li2016SVMPlus:
     def __init__(self, 
         c, 
         gamma, 
+        theta=None,
         o_kernel=None,
         p_kernel=None):
 
         self.c = c
         self.gamma = gamma
+        self.theta = theta
 
         if o_kernel is None:
             o_kernel = lambda x, y: np.dot(x.T, y)
@@ -158,4 +160,10 @@ class Li2016SVMPlus:
 
     def get_projected(self, data, params):
 
-        return get_thresholded(params, lower=0)
+        threshed = get_thresholded(params, lower=0)
+
+        if self.theta is not None:
+            threshed = get_thresholded(
+                params, upper=self.C * self.theta)
+
+        return threshed
