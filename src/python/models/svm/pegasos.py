@@ -3,10 +3,42 @@ import numpy as np
 from fitterhappier.stepsize import InversePowerScheduler as IPS
 from theline.utils import get_thresholded
 
+class PegasosHingeLossSVMPlusWithSlacksModel:
+
+    def __init__(self, 
+        p,
+        gamma=0.5, 
+        C=10,
+        theta=1, 
+        lam=10**(-1), 
+        i=None):
+
+        self.p = p
+        self.gamma = gamma
+        self.C = C
+        self.theta = theta
+        self.i = i
+
+        self.num_rounds = 0
+        self.eta_scheduler = IPS(
+            initial=self.lam**(-1), power=1)
+
+    def get_gradient(self, data, params):
+
+        self.num_rounds += 1
+        
+        eta = self.eta_scheduler.get_stepsize()
+        (X_o, X_p, y) = data
+        (w_o, w_p) = params
+        k = X.shape[0]
+        y_hat_mag = np.dot(X_o, w_o)
+        y_prod = y * y_hat_mag
+        X_p_prod = np.dot(X_p, w_p)
+
 # TODO: double check all this
 class PegasosHingeLossWeightedLinearSVMModel:
 
-    def __init__(self, p, i=None, lam=10**(-5)):
+    def __init__(self, p, i=None, lam=10**(-1)):
 
         self.p = p
         self.idn = i
@@ -23,8 +55,8 @@ class PegasosHingeLossWeightedLinearSVMModel:
         eta = self.eta_scheduler.get_stepsize()
         ((X, c), y) = data
         k = X.shape[0]
-        y_hat = np.dot(X, params)
-        y_prod = y * y_hat
+        y_hat_mag = np.dot(X, params)
+        y_prod = y * y_hat_mag
         data_term = np.sum(
             c * y[y_prod < 1] * X[y_prod < 1],
             axis=0) / (self.lam * k)
