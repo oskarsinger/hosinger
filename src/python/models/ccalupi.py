@@ -63,12 +63,12 @@ class CCAPenalizedLUPIModel:
         phi_p_ell_grad = np.dot(
             phi_p_grad.T,
             self.lambda_p * phi_p_f_grad - self.lambda_s * proj_diff)
-        s_grad = (phi_o_ell_grad, phi_p_ell_grad)
 
         return (
             o_grad,
             p_grad,
-            s_grad)
+            phi_o_ell_grad,
+            phi_p_ell_grad)
 
     def get_objective(self, data, params):
 
@@ -131,7 +131,8 @@ class CCAPenalizedLUPIModel:
         return (
             proj_o,
             proj_p,
-            proj_s)
+            proj_s[0],
+            proj_s[1])
 
     def get_parameter_shape(self):
 
@@ -142,4 +143,5 @@ class CCAPenalizedLUPIModel:
         return (
             o_shape,
             p_shape,
-            s_shape)
+            s_shape[0],
+            s_shape[1])
