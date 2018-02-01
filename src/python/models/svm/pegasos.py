@@ -3,7 +3,7 @@ import numpy as np
 from fitterhappier.stepsize import InversePowerScheduler as IPS
 from theline.utils import get_thresholded
 
-# WARNING: all Pegasos implementations expect external step size of 1
+# WARNING: all Pegasos implementations expect external step size of 1/t
 
 class PegasosHingeLossSVMPlusWithSlacksModel:
 
@@ -11,7 +11,7 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
         d_o,
         d_p,
         gamma=0.5, 
-        C=10,
+        c=10,
         theta=1, 
         i=None):
 
@@ -19,25 +19,19 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
         self.d_p = d_p
         self.d = self.d_o + self.d_p
         self.gamma = gamma
-        self.C = C
+        self.c = c
         self.theta = theta
-        self.lam_o = 1.0 / (self.C * self.theta)
+        self.lam_o = 1.0 / (self.c * self.theta)
         self.lam_p = self.gamma * self.lam_o
         self.i = i
 
         self.num_rounds = 0
-        self.eta_scheduler_o = IPS(
-            initial=self.lam_o**(-1), power=1)
-        self.eta_scheduler_p = IPS(
-            initial=self.lam_p**(-1), power=1)
 
     def get_gradient(self, data, params):
 
         self.num_rounds += 1
         
-        # Extract data and params, get step size, etc.
-        eta_o = self.eta_scheduler_o.get_stepsize()
-        eta_p = self.eta_scheduler_p.get_stepsize()
+        # Extract data and params
         (X_o, X_p, y) = data
         w_o = params[:self.d_o,:]
         w_p = params[self.d_o:,:]
@@ -51,21 +45,19 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
         lt_one = y_and_X_p_prods < 1
 
         # Compute w_o gradient
-        data_o_term = eta_o * np.sum(
+        data_o_term = np.sum(
             y[lt_one,:] * X_o[lt_one,:],
-            axis=0) / k
-        reg_o_term = self.lam_o * eta_o * w_o
-        w_o_grad = reg_o_term - data_o_term
+            axis=0) / (k * self.lam_o)
+        w_o_grad = w_o - data_o_term
 
         # Compute w_p gradient
-        data_p_term1 = eta_p * np.sum(
+        data_p_term1 = np.sum(
             X_p[lt_one,:],
-            axis=0) / k
-        data_p_term2 = eta_p * np.sum(
+            axis=0) / (k * self.lam_p)
+        data_p_term2 = np.sum(
             X_p[X_p_prod > 0,:],
-            axis=0) / (self.theta * k)
-        reg_p_term = self.lam_p * eta_p * w_p
-        w_p_grad = reg_p_term - data_p_term1 - data_p_term2
+            axis=0) / (self.theta * k * self.lam_p)
+        w_p_grad = w_p - data_p_term1 - data_p_term2
 
         return np.vstack([w_o_grad, w_p_grad])
 
@@ -115,7 +107,7 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
 
         return (X_o_i, X_p_i, y_i)
 
-    def get_projection(self, data, params):
+    def get_projected(self, data, params):
 
         # Extract params
         w_o = params[:self.d_o,:]
@@ -141,8 +133,6 @@ class PegasosHingeLossWeightedLinearSVMModel:
         self.lam = lam
 
         self.num_rounds = 0
-        self.eta_scheduler = IPS(
-            initial=self.lam**(-1), power=1)
 
     def get_gradient(self, data, params):
 
@@ -153,12 +143,11 @@ class PegasosHingeLossWeightedLinearSVMModel:
         k = X.shape[0]
         y_hat_mag = np.dot(X, params)
         y_prod = y * y_hat_mag
-        data_term = eta * np.sum(
+        data_term = np.sum(
             c * y[y_prod < 1] * X[y_prod < 1],
-            axis=0) / k
-        reg_term = eta * self.lam * params
+            axis=0) / (k * self.lam)
 
-        return reg_term - data_term
+        return params - data_term
 
     def get_objective(self, data, params):
 
@@ -187,7 +176,7 @@ class PegasosHingeLossWeightedLinearSVMModel:
 
         return ((x_i, c_i), y_i)
 
-    def get_projection(self, data, params):
+    def get_projected(self, data, params):
 
         norm = np.linalg.norm(params)
         scale = (norm * np.sqrt(self.lam))**(-1)
@@ -208,8 +197,6 @@ class PegasosHingeLossSVMModel:
         self.lam = lam
 
         self.num_rounds = 0
-        self.eta_scheduler = IPS(
-            initial=self.lam**(-1), power=1)
 
     def get_gradient(self, data, params):
 
@@ -220,12 +207,11 @@ class PegasosHingeLossSVMModel:
         k = X.shape[0]
         y_hat = np.dot(X, params)
         y_prod = y * y_hat
-        data_term = eta * np.sum(
+        data_term = np.sum(
             y[y_prod < 1] * X[y_prod < 1],
-            axis=0) / k
-        reg_term = eta * self.lam * params
+            axis=0) / (k * self.lam)
 
-        return reg_term - data_term
+        return params - data_term
 
     def get_objective(self, data, params):
 
@@ -253,7 +239,7 @@ class PegasosHingeLossSVMModel:
 
         return (x_i, y_i)
 
-    def get_projection(self, data, params):
+    def get_projected(self, data, params):
 
         norm = np.linalg.norm(params)
         scale = (norm * np.sqrt(self.lam))**(-1)
