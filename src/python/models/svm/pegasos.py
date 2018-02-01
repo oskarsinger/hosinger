@@ -35,29 +35,29 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
         (X_o, X_p, y) = data
         w_o = params[:self.d_o,:]
         w_p = params[self.d_o:,:]
-        k = X.shape[0]
+        k = X_o.shape[0]
 
         # Compute hinge loss terms
         y_hat_mag = np.dot(X_o, w_o)
         y_prod = y * y_hat_mag
         X_p_prod = np.dot(X_p, w_p)
         y_and_X_p_prods = y_prod + X_p_prod
-        lt_one = y_and_X_p_prods < 1
+        lt_one = (y_and_X_p_prods < 1)[:,0]
 
         # Compute w_o gradient
         data_o_term = np.sum(
             y[lt_one,:] * X_o[lt_one,:],
-            axis=0) / (k * self.lam_o)
+            axis=0)[:,np.newaxis] / (k * self.lam_o)
         w_o_grad = w_o - data_o_term
 
         # Compute w_p gradient
         data_p_term1 = np.sum(
             X_p[lt_one,:],
-            axis=0) / (k * self.lam_p)
+            axis=0)[:,np.newaxis] / (k * self.lam_p)
         data_p_term2 = np.sum(
-            X_p[X_p_prod > 0,:],
-            axis=0) / (self.theta * k * self.lam_p)
-        w_p_grad = w_p - data_p_term1 - data_p_term2
+            X_p[(X_p_prod > 0)[:,0],:],
+            axis=0)[:,np.newaxis] / (self.theta * k * self.lam_p)
+        w_p_grad = w_p - data_p_term1 + data_p_term2
 
         return np.vstack([w_o_grad, w_p_grad])
 
@@ -72,8 +72,8 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
         reg_p_term = self.lam_p * np.linalg.norm(w_p)**2 / 2
 
         # Compute residual terms
-        residuals = get_residuals(data, params)   
-        data_term = residuals / residuals.shape[0]
+        residuals = self.get_residuals(data, params)   
+        data_term = np.sum(residuals) / residuals.shape[0]
 
         return reg_o_term + reg_p_term + data_term
 
@@ -86,7 +86,7 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
 
         # Compute first hinge term residuals
         y_hat_mag = np.dot(X_o, w_o)
-        y_prod = y * y_hat 
+        y_prod = y * y_hat_mag 
         X_p_prod = np.dot(X_p, w_p)
         y_and_X_p_prods = y_prod + X_p_prod
         threshd1 = get_thresholded(
@@ -96,7 +96,7 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
         threshd2 = get_thresholded(
             X_p_prod, lower=0)
 
-        return threshd1 + threshed2 / self.theta
+        return threshd1 + threshd2 / self.theta
 
     def get_datum(self, data, i):
 
@@ -151,7 +151,7 @@ class PegasosHingeLossWeightedLinearSVMModel:
 
     def get_objective(self, data, params):
 
-        residuals = get_residuals(data, params)   
+        residuals = self.get_residuals(data, params)   
         data_term = np.sum(residuals) / residuals.shape[0]
         reg_term = np.linalg.norm(params)**2 * self.lam / 2
         
@@ -160,8 +160,8 @@ class PegasosHingeLossWeightedLinearSVMModel:
     def get_residuals(self, data, params):
 
         ((X, c), y) = data
-        y_hat = np.dot(X, params)
-        y_prod = y * y_hat 
+        y_hat_mag = np.dot(X, params)
+        y_prod = y * y_hat_mag
         threshd = c * get_thresholded(
             1 - y_prod, lower=0)
 
@@ -205,8 +205,8 @@ class PegasosHingeLossSVMModel:
         eta = self.eta_scheduler.get_stepsize()
         (X, y) = data
         k = X.shape[0]
-        y_hat = np.dot(X, params)
-        y_prod = y * y_hat
+        y_hat_mag = np.dot(X, params)
+        y_prod = y * y_hat_mag
         data_term = np.sum(
             y[y_prod < 1] * X[y_prod < 1],
             axis=0) / (k * self.lam)
@@ -215,7 +215,7 @@ class PegasosHingeLossSVMModel:
 
     def get_objective(self, data, params):
 
-        residuals = get_residuals(data, params)   
+        residuals = self.get_residuals(data, params)   
         data_term = np.sum(residuals) / residuals.shape[0]
         reg_term = np.linalg.norm(params)**2 * self.lam / 2
         
@@ -224,8 +224,8 @@ class PegasosHingeLossSVMModel:
     def get_residuals(self, data, params):
 
         (X, y) = data
-        y_hat = np.dot(X, params)
-        y_prod = y * y_hat 
+        y_hat_mag = np.dot(X, params)
+        y_prod = y * y_hat_mag 
         threshd = get_thresholded(
             1 - y_prod, lower=0)
 
