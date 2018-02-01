@@ -55,9 +55,9 @@ class PegasosHingeLossSVMPlusWithSlacksModel:
             X_p[lt_one,:],
             axis=0)[:,np.newaxis] / (k * self.lam_p)
         data_p_term2 = np.sum(
-            X_p[(X_p_prod > 0)[:,0],:],
+            X_p[(X_p_prod < 0)[:,0],:],
             axis=0)[:,np.newaxis] / (self.theta * k * self.lam_p)
-        w_p_grad = w_p - data_p_term1 + data_p_term2
+        w_p_grad = w_p - data_p_term1 - data_p_term2
 
         return np.vstack([w_o_grad, w_p_grad])
 
