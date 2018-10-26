@@ -13,12 +13,13 @@ class BinaryL2RegularizedLogisticRegressionModel:
         (X, y) = data
         denom = self.get_residuals(data, params)
         factor = - y * np.power(denom, -1)
-        data_term = np.sum(factor * X, axis=0)
+        data_term = np.mean(factor * X, axis=0)
         regularization = self.gamma * params
 
         return data_term + regularization
 
     # TODO: this interface is kinda weird; maybe rethink it
+    # TODO: make sure I don't need to norm by batch size anywhere
     def get_data_gradient(self, data, params, transform_grad):
 
         (X, y) = data
@@ -32,7 +33,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
     def get_objective(self, data, params):
 
         residuals = self.get_residuals(data, params)
-        data_term = np.sum(np.log(residuals))
+        data_term = np.mean(np.log(residuals))
         param_norm = np.linalg.norm(params)**2
         regularization = self.gamma * param_norm / 2
 
