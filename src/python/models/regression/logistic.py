@@ -8,6 +8,16 @@ class BinaryL2RegularizedLogisticRegressionModel:
         self.gamma = gamma
         self.idn = idn
 
+
+    def get_prediction(self, data, params):
+
+        inside_exp = - np.dot(data, params)
+        denom = 1 + np.exp(inside_exp)
+        probs = np.power(denom, -1)
+
+        return (probs > 0.5).astype(float)
+
+
     def get_gradient(self, data, params):
 
         (X, y) = data
@@ -17,6 +27,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
         regularization = self.gamma * params
 
         return data_term + regularization
+
 
     # TODO: this interface is kinda weird; maybe rethink it
     # TODO: make sure I don't need to norm by batch size anywhere
@@ -30,6 +41,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
         return np.sum(factor * transform_term, axis=0)
 
+
     def get_objective(self, data, params):
 
         residuals = self.get_residuals(data, params)
@@ -39,12 +51,14 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
         return data_term + regularization
         
+        
     def get_residuals(self, data, params):
 
         (X, y) = data
         inside_exp = - y * np.dot(X, params)
 
         return 1 + np.exp(inside_exp)
+
 
     def get_datum(self, data, i):
 
@@ -54,9 +68,11 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
         return (a_i, b_i)
 
+
     def get_projected(self, data, params):
 
         return params
+
 
     def get_parameter_shape(self):
 
