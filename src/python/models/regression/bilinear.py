@@ -25,9 +25,16 @@ class BinaryL2RegularizedBilinearLogisticRegressionModel:
 
     def get_gradient(self, data, params):
 
-        (X1, X2, y) = data
-        denom = self.get_residuals(data, params)
-        factor = - y * np.power(denom, -1)
+        (X1, X2, Y, C) = [None] * 4
+
+        if len(data) == 4:
+            (X1, X2, Y, C) = data 
+        else:
+            (X1, X2, Y) = data
+            C = np.ones_like(y)
+
+        denom = np.exp(self.get_residuals(data, params))
+        factor = - Y * np.power(denom, -1) * C
         data_term = get_multi_dot([X2.T, factor, X1])
         regularization = self.gamma * params
 
@@ -36,8 +43,16 @@ class BinaryL2RegularizedBilinearLogisticRegressionModel:
         
     def get_objective(self, data, params):
 
-        residuals = self.get_residuals(data, params)
-        data_term = np.mean(np.log(residuals)) / 2
+        (Y, C) = [None] * 2
+
+        if len(data) == 4:
+            (_, _, Y, C) = data 
+        else:
+            (_, _, Y) = data
+            C = np.ones_like(y)
+
+        residuals = C * self.get_residuals(data, params)
+        data_term = np.mean(residuals) / 2
         param_norm = np.linalg.norm(params)**2
         regularization = self.gamma * param_norm / 2
 
@@ -46,20 +61,33 @@ class BinaryL2RegularizedBilinearLogisticRegressionModel:
 
     def get_residuals(self, data, params):
 
-        (X1, X2, y) = data
-        inside_exp = - y * get_multi_dot([X1, params, X2.T])
+        (X1, X2, Y) = data[:3]
+        inside_exp = - Y * get_multi_dot([X1, params, X2.T])
 
-        return 1 + np.exp(inside_exp)
+        return np.log(1 + np.exp(inside_exp))
 
 
     def get_datum(self, data, i, j):
 
-        (X1, X2, y) = data
+        (X1, X2, Y, C) = [None] * 4
+
+        if len(data) == 4:
+            (X1, X2, Y, C) = data
+        else:
+            (X1, X2, Y) = data
+
         x1_i = X1[i,:][np.newaxis,:]
         x2_j = X2[j,:][np.newaxis,:]
-        y_ij = y[i,j]
+        y_ij = Y[i,j]
+        c_ij = None if len(data) == 3 else C[i,j]
 
-        return (x1_i, x2_j, y_ij)
+        datum = (
+            (x1_i, x2_j, y_ij, c_ij) 
+            if c_ij else 
+            (x1_i, x2_j, y_ij)
+        )
+        
+        return datum
 
 
     def get_projected(self, data, params):
