@@ -12,7 +12,8 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
     def get_prediction(self, data, params):
 
-        inside_exp = - np.dot(data, params)
+        x = self._get_unpacked_data(data)[0]
+        inside_exp = - np.dot(x, params)
         denom = 1 + np.exp(inside_exp)
         probs = np.power(denom, -1)
 
@@ -21,14 +22,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
     def get_gradient(self, data, params):
 
-        (X, y, c) = [None] * 3 
-
-        if len(data) == 3:
-            (X, y, c) = data
-        else:
-            (X, y) = data
-            c = np.ones_like(y)
-
+        (X, y, c) = self._get_unpacked_data(data)
         denom = np.exp(self.get_residuals(data, params))
         factor = - y * np.power(denom, -1) * c
         data_term = np.mean(factor * X, axis=0)
@@ -53,14 +47,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
     def get_objective(self, data, params):
 
-        (y, c) = [None] * 2
-
-        if len(data) == 3:
-            (_, y, c) = data
-        else:
-            (_, y) = data
-            c = np.ones_like(y)
-
+        (_, y, c) = self.get_unpacked_data(data)
         residuals = c * self.get_residuals(data, params)
         data_term = np.mean(residuals)
         param_norm = np.linalg.norm(params)**2
@@ -71,7 +58,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
         
     def get_residuals(self, data, params):
 
-        (X, y) = data[:2]
+        (X, y) = self._get_unpacked_data(data)[:2]
         inside_exp = - y * np.dot(X, params)
 
         return np.log(1 + np.exp(inside_exp))
@@ -79,13 +66,7 @@ class BinaryL2RegularizedLogisticRegressionModel:
 
     def get_datum(self, data, i):
 
-        (X, y, c) = [None] * 3 
-
-        if len(data) == 3:
-            (X, y, c) = data
-        else:
-            (X, y) = data
-
+        (X, y, c) = self._get_unpacked_data(data)
         x_i = X[i,:][np.newaxis,:]
         y_i = y[i,:][np.newaxis,:]
         c_i = None if len(data) == 2 else c[i,:][np.newaxis,:]
@@ -106,3 +87,36 @@ class BinaryL2RegularizedLogisticRegressionModel:
     def get_parameter_shape(self):
 
         return (self.p, 1)
+
+
+    def _get_unpacked_data(self, data):
+
+        (X, y, c) = [None] * 3
+
+        if type(data) is list:
+            num_data = len(data[0])
+            X = np.array(
+                datum[0] for datum in data]
+            )
+
+            if num_data > 1:
+                y = np.array(
+                    datum[1] for datum in data]
+                )
+
+                if num_data == 3:
+                    c = np.array(
+                        datum[2] for datum in data]
+                    )
+                else:
+                    c = np.ones_like(y)
+        else:
+            if len(data) == 1:
+                X = data
+            elif len(data) == 2:
+                (X, y) = data
+                c = np.ones_like(data)
+            else:
+                (X, y, c) = data
+
+        return (X, y ,c)
