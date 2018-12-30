@@ -2,6 +2,7 @@ import numpy as np
 
 from theline.utils import get_multi_dot
 
+
 # TODO: account for sparse label matrix y with scipy sparse matrices
 class BinaryL2RegularizedBilinearLogisticRegressionModel:
 
